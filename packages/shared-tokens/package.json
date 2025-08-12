@@ -1,0 +1,22 @@
+{
+  "name": "@asafarim/shared-tokens",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "module": "index.js",
+  "files": [
+    "index.css",
+    "index.js",
+    "index.d.ts",
+    "tailwind-preset.cjs"
+  ],
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./tailwind-preset.cjs"
+    },
+    "./index.css": "./index.css",
+    "./tailwind-preset": "./tailwind-preset.cjs"
+  }
+}

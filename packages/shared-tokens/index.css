@@ -1,0 +1,16 @@
+:root{
+  --color-brand-50:  242 251 255; /* #f2fbff */
+  --color-brand-100: 230 246 255; /* #e6f6ff */
+  --color-brand-500: 14 165 233;  /* #0ea5e9 */
+  --color-brand-600: 2 132 199;   /* #0284c7 */
+  --color-brand-900: 11 59 86;    /* #0b3b56 */
+
+  --color-fg:    24 24 27;
+  --color-muted: 107 114 128;
+  --radius-xl: 14px;
+  --ring: 2 132 199; /* focus ring = brand-600 */
+}
+:root.dark{
+  --color-fg:    229 231 235;
+  --color-muted: 156 163 175;
+}

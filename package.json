@@ -1,0 +1,30 @@
+{
+  "name": "asafarim-dot-be",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "predev": "kill-port 3000 4200 5173 5174 5175",
+    "dev:web": "pnpm --filter @asafarim/web start",
+    "dev:core": "pnpm --filter @asafarim/core-app start",
+    "dev:ai": "pnpm --filter @asafarim/ai-ui start",
+    "dev:jobs": "pnpm --filter @asafarim/jobs-ui start",
+    "dev:blog": "pnpm --filter @asafarim/blog start",
+    "dev:identity": "dotnet watch --project apis/Identity.Api/Identity.Api.csproj",
+    "dev:aiapi": "dotnet watch --project apis/Ai.Api/Ai.Api.csproj",
+    "dev": "concurrently -n web,blog,core,ai,jobs -c \"blue,magenta,cyan,green,yellow\" \"pnpm dev:web\" \"pnpm dev:blog\" \"pnpm dev:core\" \"pnpm dev:ai\" \"pnpm dev:jobs\"",
+    "api:ai": "dotnet run --project apis/Ai.Api/Ai.Api.csproj",
+    "api:identity": "dotnet run --project apis/Identity.Api/Identity.Api.csproj",
+    "api:core": "dotnet run --project apis/Core.Api/Core.Api.csproj",
+    "preapi": "kill-port 5000 5001 5101 5102 5054",
+    "api": "concurrently -n ai,identity,core -c \"blue,magenta,yellow\" \"pnpm api:ai\" \"pnpm api:identity\" \"pnpm api:core\"",
+    "app": "concurrently \"pnpm dev\" \"pnpm api\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "kill-port": "^2.0.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.14.0"
+}

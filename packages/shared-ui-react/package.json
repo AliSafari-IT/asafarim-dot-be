@@ -1,0 +1,38 @@
+{
+  "name": "@asafarim/shared-ui-react",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "files": [
+    "components",
+    "package.json",
+    "tsconfig.json"
+  ],
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "prepublishOnly": "tsc -b"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./components/*": "./components/*"
+  },
+  "typesVersions": {
+    "*": {
+      "components/*": [
+        "components/*.ts",
+        "components/*.tsx"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "typescript": "~5.8.3"
+  }
+}

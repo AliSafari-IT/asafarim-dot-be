@@ -1,0 +1,10 @@
+.container { max-width: 1120px; margin: 0 auto; padding: 2rem 1rem; }
+.hero {
+  border-radius: var(--radius-xl);
+  background: rgb(var(--color-brand-50) / 0.6);
+  padding: 1.5rem;
+  border: 1px solid rgba(0,0,0,.08);
+}
+@media (prefers-color-scheme: dark) {
+  .hero { background: rgb(var(--color-brand-900) / 0.25); border-color: rgba(255,255,255,.08); }
+}
