@@ -1,0 +1,126 @@
+/* Uses your theme variables:
+   --color-background, --color-border, --color-foreground
+   Optional brand vars if present: --color-brand-600
+*/
+:root {
+    /* safe fallbacks in case brand token is missing */
+    --brand-600: var(--color-brand-600, #0284c7);
+  }
+  
+  .nav-root {
+    width: 100%;
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .nav-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 .75rem;
+  }
+  
+  .nav-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto; /* left | center | right */
+    align-items: center;
+    height: 56px;
+  }
+  
+  /* brand */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    text-decoration: none;
+    color: var(--color-foreground);
+  }
+  .brand__logo { height: 28px; width: auto; display: block; }
+  .brand__text { font-weight: 600; }
+  
+  /* center links (desktop only) */
+  .nav-center { display: flex; justify-content: center; }
+  .nav-list {
+    display: none; /* hidden by default, enabled at ≥768px */
+    align-items: center;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-link {
+    text-decoration: none;
+    color: var(--color-foreground);
+    font-weight: 500;
+  }
+  .nav-link:hover { color: var(--brand-600); }
+  .nav-link--active { color: var(--brand-600); }
+  
+  /* right controls */
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    justify-self: end;
+  }
+  
+  /* theme toggle placement rules */
+  .theme-in-header.is-hidden { display: none; }
+  
+  /* hamburger (mobile only) */
+  .hamburger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px; height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .hamburger__bar {
+    width: 22px; height: 2px;
+    background: var(--color-foreground);
+    border-radius: 2px;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  /* transform to "X" when open */
+  .hamburger__bar.x1 { transform: translateY(7px) rotate(45deg); }
+  .hamburger__bar.x2 { opacity: 0; }
+  .hamburger__bar.x3 { transform: translateY(-7px) rotate(-45deg); }
+  
+  /* mobile dropdown */
+  .mobile-menu {
+    display: none;
+    height: 0;
+    overflow: hidden;
+    transition: height .25s ease;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-background);
+  }
+  .mobile-menu.open { display: block; height: auto; }
+  
+  .mobile-inner { max-width: 1200px; margin: 0 auto; padding: .5rem .75rem; }
+  
+  .nav-list--vertical {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    list-style: none;
+    margin: .5rem 0;
+    padding: 0;
+  }
+  .theme-in-menu {
+    padding-top: .5rem;
+    margin-top: .5rem;
+    border-top: 1px solid var(--color-border);
+  }
+  
+  /* RESPONSIVE */
+  @media (min-width: 768px) {
+    .nav-list { display: flex; }
+    .hamburger { display: none; }      /* no hamburger on desktop */
+    .mobile-menu { display: none !important; }
+    .theme-in-header { display: block; } /* theme toggle stays in header on desktop */
+  }
+  
