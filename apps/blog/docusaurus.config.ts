@@ -5,8 +5,8 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'Blog | ASafariM',
+  tagline: 'Sharing my thoughts and experiences',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -15,7 +15,7 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://blog.asafarim.be',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -71,19 +71,80 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/logo.svg',
     navbar: {
-      title: 'My Site',
+      title: 'ASafariM',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'ASafariM Logo',
         src: 'img/logo.svg',
       },
       items: [
         {
-          type: 'docSidebar',
+          type: 'dropdown',
+          items: [
+            {
+              label: 'React Themes',
+              href: 'https://www.npmjs.com/package/@asafarim/react-themes',
+            },
+            {
+              label: 'Theme Switch',
+              href: 'https://www.npmjs.com/package/@asafarim/themeswitch',
+            },
+            {
+              label: 'Dropdown Menu',
+              href: 'https://www.npmjs.com/package/@asafarim/dd-menu',
+            },
+            {
+              label: 'React Privacy Consent',
+              href: 'https://www.npmjs.com/package/@asafarim/react-privacy-consent',
+            },
+            {
+              label: 'Markdown Utils',
+              href: 'https://www.npmjs.com/package/@asafarim/markdown-utils',
+            },
+            {
+              label: 'Sidebar',
+              href: 'https://www.npmjs.com/package/@asafarim/sidebar',
+            },
+            {
+              label: 'Display Code',
+              href: 'https://www.npmjs.com/package/@asafarim/display-code',
+            },
+            {
+              label: 'Markdown Explorer Viewer',
+              href: 'https://www.npmjs.com/package/@asafarim/markdown-explorer-viewer',
+            },
+            {
+              label: 'Project Card',
+              href: 'https://www.npmjs.com/package/@asafarim/project-card',
+            },
+            {
+              label: 'Paginated Project Grid',
+              href: 'https://www.npmjs.com/package/@asafarim/paginated-project-grid',
+            },
+            {
+              label: 'View All Packages',
+              href: 'https://www.npmjs.com/~asafarim.be?activeTab=packages',
+            },
+          ],
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'NPM Packages',
+        },
+        {
+          type: 'dropdown',
+          position: 'left',
+          label: 'Current Projects',
+          items: [
+            {
+              label: 'Pharmacy Management System',
+              href: 'https://github.com/AliSafari-IT/igs-pharma',
+            },
+            {
+              label: 'ASafariM Bibliography',
+              href: 'https://github.com/AliSafari-IT/asafarim-bibliography',
+            }
+          ],
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
