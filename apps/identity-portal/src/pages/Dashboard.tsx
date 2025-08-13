@@ -58,6 +58,8 @@ export const Dashboard = () => {
             <div className="action-buttons">
               <button className="btn-secondary">Edit Profile</button>
               <button className="btn-secondary">Change Password</button>
+              {/* Click to go to blog app */}
+              <button className="btn-secondary" onClick={() => window.location.href = 'http://blog.asafarim.local:3000'}>Blog</button>
             </div>
           </div>
         </div>

@@ -111,6 +111,7 @@ export const identityService = {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
       
@@ -133,6 +134,7 @@ export const identityService = {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
       
@@ -201,6 +203,7 @@ export const identityService = {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ refreshToken })
     });
     
@@ -217,10 +220,11 @@ export const identityService = {
         await fetch(`${API_BASE_URL}/auth/logout`, {
           method: 'POST',
           headers: getAuthHeader(),
+          credentials: 'include',
           body: JSON.stringify({ refreshToken })
         });
       } catch (error) {
-        console.error('Error during logout:', error);
+        console.error('Logout API call error:', error);
       }
     }
     

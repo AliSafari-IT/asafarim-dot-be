@@ -9,6 +9,6 @@ export default defineConfig({
     port: 5177,
   },
   define: {
-    'import.meta.env.VITE_IDENTITY_API_URL': JSON.stringify('http://localhost:5190')
+    'import.meta.env.VITE_IDENTITY_API_URL': JSON.stringify('http://api.asafarim.local:5190')
   }
 })

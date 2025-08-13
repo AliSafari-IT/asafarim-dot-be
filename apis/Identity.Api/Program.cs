@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -252,8 +253,10 @@ app.MapGet(
         {
             if (!ctx.User.Identity?.IsAuthenticated ?? true)
                 return Results.Unauthorized();
-            var sub = ctx.User.FindFirst("sub")?.Value;
-            if (sub is null)
+            // Prefer NameIdentifier (mapped by default), fallback to raw "sub"
+            var sub = ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                      ?? ctx.User.FindFirst("sub")?.Value;
+            if (string.IsNullOrWhiteSpace(sub))
                 return Results.Unauthorized();
             var user = await users.FindByIdAsync(sub);
             return user is null
