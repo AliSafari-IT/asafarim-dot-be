@@ -195,12 +195,12 @@ export default function Contact() {
               
               <div>
                 <h3 className="text-lg font-semibold mb-1">Location</h3>
-                <p>Silicon Valley, California</p>
+                <p>Kermt, België</p>
               </div>
               
               <div>
                 <h3 className="text-lg font-semibold mb-1">Working Hours</h3>
-                <p>Monday - Friday: 9AM - 5PM PST</p>
+                <p>Monday - Friday: 9AM - 5PM</p>
               </div>
             </div>
           </div>

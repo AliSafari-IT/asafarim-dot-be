@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ThemeToggle } from "@asafarim/react-themes";
 import { HeaderContainer } from "@asafarim/shared-ui-react";
-import "./Navbar.css";
 
 const BREAKPOINT = 768;
 
@@ -62,7 +61,7 @@ export default function Navbar() {
               <div className="nav-right">
                 {/* Theme toggle in header (hidden on mobile when menu is open) */}
                 <div className={`theme-in-header ${open ? "is-hidden" : ""}`}>
-                  <ThemeToggle showLabels={false} />
+                  <ThemeToggle showLabels={false} style={{ backgroundColor: "transparent" , border: "none", cursor: "pointer"}}/>
                 </div>
 
                 {/* Hamburger (mobile only) */}
@@ -87,7 +86,7 @@ export default function Navbar() {
             <div className="mobile-inner">
               <Links vertical />
               <div className="theme-in-menu">
-                <ThemeToggle showLabels={false} />
+                <ThemeToggle showLabels={false} style={{ backgroundColor: "transparent" , border: "none", cursor: "pointer"}} />
               </div>
             </div>
           </div>

@@ -1,5 +1,8 @@
 @import "@asafarim/react-themes/styles.css";
 @import "./css/message.css";
+@import "./css/pages.css";
+@import "./css/App.css";
+@import "./css/Navbar.css";
 
 /* Modern CSS Reset */
 *, *::before, *::after {
