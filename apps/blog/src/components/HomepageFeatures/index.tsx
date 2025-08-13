@@ -2,6 +2,7 @@ import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
+import React, {useEffect, useState} from 'react';
 
 type FeatureItem = {
   title: string;
@@ -56,16 +57,37 @@ function Feature({title, Svg, description}: FeatureItem) {
   );
 }
 
-export default function HomepageFeatures(): ReactNode {
+
+export default function HomepageFeatures(): React.ReactNode {
+  const [me, setMe] = useState<{ id: string; email: string; userName: string } | null>(null);
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const res = await fetch('http://api.asafarim.local:5190/auth/me', {
+          method: 'GET',
+          credentials: 'include', // send cookies
+        });
+        if (res.status === 401) {
+          const returnUrl = encodeURIComponent(window.location.href);
+          window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${returnUrl}`;
+          return;
+        }
+        if (!res.ok) throw new Error(`auth/me failed: ${res.status}`);
+        const data = await res.json();
+        setMe({ id: data.id, email: data.email, userName: data.userName });
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    check();
+  }, []);
+
+  // Use [me](cci:1://file:///d:/repos/asafarim-dot-be/apps/blog/src/pages/index.tsx:2:0-15:1) to conditionally render UI
   return (
-    <section className={styles.features}>
-      <div className="container">
-        <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
-          ))}
-        </div>
-      </div>
+    <section>
+      {me ? <div>Welcome, {me.userName || me.email}</div> : <div>Checking session...</div>}
+      {/* existing content */}
     </section>
   );
 }
