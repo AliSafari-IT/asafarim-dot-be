@@ -3,21 +3,23 @@
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
-    "predev": "kill-port 3000 4200 5173 5174 5175",
+    "predev": "kill-port 3000 4200 5173 5174 5175 5177",
     "dev:web": "pnpm --filter @asafarim/web start",
     "dev:core": "pnpm --filter @asafarim/core-app start",
     "dev:ai": "pnpm --filter @asafarim/ai-ui start",
     "dev:jobs": "pnpm --filter @asafarim/jobs-ui start",
     "dev:blog": "pnpm --filter @asafarim/blog start",
+    "dev:identity-portal": "pnpm --filter @asafarim/identity-portal start",
     "dev:identity": "dotnet watch --project apis/Identity.Api/Identity.Api.csproj",
     "dev:aiapi": "dotnet watch --project apis/Ai.Api/Ai.Api.csproj",
-    "dev": "concurrently -n web,blog,core,ai,jobs -c \"blue,magenta,cyan,green,yellow\" \"pnpm dev:web\" \"pnpm dev:blog\" \"pnpm dev:core\" \"pnpm dev:ai\" \"pnpm dev:jobs\"",
+    "dev": "concurrently -n web,blog,core,ai,jobs,identity-portal -c \"blue,magenta,cyan,green,yellow,orange\" \"pnpm dev:web\" \"pnpm dev:blog\" \"pnpm dev:core\" \"pnpm dev:ai\" \"pnpm dev:jobs\" \"pnpm dev:identity-portal\"",
     "api:ai": "dotnet run --project apis/Ai.Api/Ai.Api.csproj",
     "api:identity": "dotnet run --project apis/Identity.Api/Identity.Api.csproj",
     "api:core": "dotnet run --project apis/Core.Api/Core.Api.csproj",
     "preapi": "kill-port 5000 5001 5101 5102 5054",
     "api": "concurrently -n ai,identity,core -c \"blue,magenta,yellow\" \"pnpm api:ai\" \"pnpm api:identity\" \"pnpm api:core\"",
-    "app": "concurrently \"pnpm dev\" \"pnpm api\""
+    "app": "concurrently \"pnpm dev\" \"pnpm api\"",
+    "app:identity": "concurrently \"pnpm dev:identity\" \"pnpm api:identity\""
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
