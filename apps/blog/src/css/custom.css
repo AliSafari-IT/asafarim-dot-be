@@ -28,3 +28,14 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+
+.hero__title { color: rgb(var(--color-fg)); }
+.hero__subtitle { color: rgb(var(--color-muted)); }
+.button--primary { background: rgb(var(--color-brand-500)); border-radius: var(--radius-xl); }
+
+.text-fg        { color: rgb(var(--color-fg)); }
+.text-muted     { color: rgb(var(--color-muted)); }
+.bg-brand-50    { background: rgb(var(--color-brand-50)); }
+.bg-brand-500   { background: rgb(var(--color-brand-500)); }
+.rounded-xl     { border-radius: var(--radius-xl); }
