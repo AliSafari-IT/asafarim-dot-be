@@ -1,14 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 :root {
-  --global-font-family: Verdana, sans-serif;
+  --global-font-family: 'Inter', sans-serif;
   --global-line-height: 1.5;
   --global-font-size: 0.85rem;
   --global-text-color: #222;
-  --global-primary-title-size: 2rem;
-  --global-secondary-title-size: 1.5rem;
-  --global-tertiary-title-size: 1.25rem;
-  --global-quaternary-title-size: 1rem;
-  --global-quinary-title-size: 0.875rem;
-  --global-senary-title-size: 0.75rem;
+  --global-primary-title-size: 2.25rem;
+  --global-secondary-title-size: 1.75rem;
+  --global-tertiary-title-size: 1.5rem;
+  --global-quaternary-title-size: 1.25rem;
+  --global-quinary-title-size: 1rem;
+  --global-senary-title-size: 0.875rem;
 
   --global-color-primary: #88498f;
   --global-color-secondary: #779fa1;
