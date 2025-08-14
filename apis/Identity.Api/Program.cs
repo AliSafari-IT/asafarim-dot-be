@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Identity.Api;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -5,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -239,11 +239,30 @@ app.MapPost(
 
 app.MapPost(
     "/auth/logout",
-    (HttpResponse res) =>
+    (HttpResponse res, IOptions<AuthOptions> authOptions) =>
     {
-        res.Cookies.Delete("atk");
-        res.Cookies.Delete("rtk");
-        return Results.Ok();
+        var opts = authOptions.Value;
+        
+        // Delete cookies with the same options used when creating them
+        res.Cookies.Delete("atk", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Lax,
+            Domain = opts.CookieDomain,
+            Path = "/"
+        });
+        
+        res.Cookies.Delete("rtk", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Lax,
+            Domain = opts.CookieDomain,
+            Path = "/"
+        });
+        
+        return Results.Ok(new { message = "Logged out successfully" });
     }
 );
 
@@ -255,7 +274,7 @@ app.MapGet(
                 return Results.Unauthorized();
             // Prefer NameIdentifier (mapped by default), fallback to raw "sub"
             var sub = ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                      ?? ctx.User.FindFirst("sub")?.Value;
+                ?? ctx.User.FindFirst("sub")?.Value;
             if (string.IsNullOrWhiteSpace(sub))
                 return Results.Unauthorized();
             var user = await users.FindByIdAsync(sub);

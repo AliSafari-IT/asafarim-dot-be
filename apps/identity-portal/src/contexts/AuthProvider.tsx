@@ -23,9 +23,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Error during logout:', error);
     } finally {
       // Clear auth state regardless of API response
+      // Remove items one by one to ensure storage events are triggered properly
+      // This ensures other apps can detect the logout
       localStorage.removeItem('auth_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user_info');
+      
+      // Dispatch a custom event for local listeners
+      window.dispatchEvent(new Event('auth-signout'));
+      
       setUser(null);
       setIsLoading(false);
     }
@@ -96,34 +102,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [logout, refreshAuthToken]);
 
   // Login user
-  const login = useCallback(async (data: LoginRequest) => {
+  const login = useCallback(async (data: LoginRequest): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     
     try {
       const authResponse = await identityService.login(data);
       handleAuthSuccess(authResponse);
+      return true;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to login';
       setError(errorMessage);
-      throw error;
+      return false;
     } finally {
       setIsLoading(false);
     }
   }, [handleAuthSuccess]);
 
   // Register new user
-  const register = useCallback(async (data: RegisterRequest) => {
+  const register = useCallback(async (data: RegisterRequest): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     
     try {
       const authResponse = await identityService.register(data);
       handleAuthSuccess(authResponse);
+      return true;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to register';
       setError(errorMessage);
-      throw error;
+      return false;
     } finally {
       setIsLoading(false);
     }

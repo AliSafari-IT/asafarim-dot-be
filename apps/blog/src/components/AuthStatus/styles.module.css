@@ -1,0 +1,29 @@
+.authStatus {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: var(--ifm-color-emphasis-100);
+  margin: 1rem 0;
+}
+
+.statusText {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.signOutButton {
+  background-color: var(--ifm-color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.signOutButton:hover {
+  background-color: var(--ifm-color-primary-dark);
+}

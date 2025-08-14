@@ -10,7 +10,7 @@ import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <ThemeProvider>
+    <ThemeProvider defaultMode='dark' storageKey='asafarim-theme-mode' persistMode={true}>
       <AuthProvider>
         <Router>
         <Routes>

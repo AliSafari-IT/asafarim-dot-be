@@ -57,9 +57,16 @@ function Feature({title, Svg, description}: FeatureItem) {
   );
 }
 
-
 export default function HomepageFeatures(): React.ReactNode {
   const [me, setMe] = useState<{ id: string; email: string; userName: string } | null>(null);
+
+
+  const handleLogout = () => {
+    // Clear local state
+    setMe(null);
+    // Redirect to identity portal logout
+    window.location.href = 'http://identity.asafarim.local:5177/logout';
+  };
 
   useEffect(() => {
     const check = async () => {
@@ -80,14 +87,50 @@ export default function HomepageFeatures(): React.ReactNode {
         console.error(e);
       }
     };
-    check();
+    const cookies = document.cookie;
+    console.log("cookies", cookies);
+    if (!cookies) {
+      check();
+    }
   }, []);
 
-  // Use [me](cci:1://file:///d:/repos/asafarim-dot-be/apps/blog/src/pages/index.tsx:2:0-15:1) to conditionally render UI
   return (
-    <section>
-      {me ? <div>Welcome, {me.userName || me.email}</div> : <div>Checking session...</div>}
-      {/* existing content */}
+    <section className={styles.features}>
+      <div className="container">
+        {me ? (
+          <div className="text--center margin-bottom--xl">
+            <Heading as="h1">Welcome, {me.userName || me.email}</Heading>
+            <button 
+              onClick={handleLogout}
+              style={{
+                marginTop: '1rem',
+                padding: '0.5rem 1rem',
+                backgroundColor: '#fa4d56',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          <div className="text--center margin-bottom--xl">
+            <p>Checking session...</p>
+          </div>
+        )}
+        <div className="row">
+          {FeatureList.map((props, idx) => {
+            // Use key on the wrapper element, not passed to the component
+            return (
+              <React.Fragment key={idx}>
+                <Feature title={props.title} Svg={props.Svg} description={props.description} />
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 }

@@ -217,22 +217,92 @@ export const identityService = {
     const refreshToken = localStorage.getItem('refresh_token');
     if (refreshToken) {
       try {
-        await fetch(`${API_BASE_URL}/auth/logout`, {
+        // Make logout request to the server
+        // The 'credentials: include' option ensures cookies are sent with the request
+        const response = await fetch(`${API_BASE_URL}/auth/logout`, {
           method: 'POST',
           headers: getAuthHeader(),
           credentials: 'include',
           body: JSON.stringify({ refreshToken })
         });
+        
+        console.log('Logout API response status:', response.status);
+        
+        // If the server didn't handle cookie clearing or there was an error
+        if (!response.ok) {
+          console.warn('Server logout may not have cleared cookies properly');
+          // Attempt to clear cookies manually
+          clearAllCookies();
+        }
       } catch (error) {
         console.error('Logout API call error:', error);
+        // Attempt to clear cookies manually on error
+        clearAllCookies();
+      } finally {
+        // Clear local storage regardless of API response
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_info');
+        
+        // Dispatch event for cross-app synchronization
+        window.dispatchEvent(new Event('auth-signout'));
       }
+    } else {
+      // Even if no refresh token, try to clear cookies
+      clearAllCookies();
     }
-    
-    // Clear local storage regardless of API response
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user_info');
   }
 };
+
+/**
+ * Helper function to clear all cookies
+ * Note: This can only clear cookies that aren't HttpOnly and are on the same domain
+ */
+function clearAllCookies(): void {
+  // Get all cookies
+  const cookies = document.cookie.split(';');
+  
+  // For each cookie, set its expiration date to a past date
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf('=');
+    const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+    
+    // Skip empty cookie names
+    if (!name) continue;
+    
+    // Get the current hostname and extract domain parts
+    const hostname = window.location.hostname;
+    const domainParts = hostname.split('.');
+    
+    // Try with different domain combinations
+    if (domainParts.length >= 2) {
+      // Try with root domain (.asafarim.local)
+      const rootDomain = `.${domainParts.slice(-2).join('.')}`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${rootDomain}`;
+      console.log(`Attempted to clear cookie with root domain: ${name} (domain=${rootDomain})`);
+    }
+    
+    // Try with exact hostname
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${hostname}`;
+    
+    // Try with no domain specification (current domain only)
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    
+    // Try with no path
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    
+    console.log(`Attempted to clear cookie: ${name}`);
+  }
+  
+  // Specifically target the auth cookies with the known domain
+  const knownCookies = ['atk', 'rtk'];
+  const rootDomain = '.asafarim.local'; // This should match the domain in the backend
+  
+  knownCookies.forEach(name => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${rootDomain}`;
+    console.log(`Attempted to clear known cookie: ${name} with domain=${rootDomain}`);
+  });
+}
 
 export default identityService;

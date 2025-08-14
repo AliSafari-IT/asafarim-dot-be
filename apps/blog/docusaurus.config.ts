@@ -127,7 +127,7 @@ const config: Config = {
               href: 'https://www.npmjs.com/~asafarim.be?activeTab=packages',
             },
           ],
-          sidebarId: 'tutorialSidebar',
+          sidebarid: 'tutorialSidebar',
           position: 'left',
           label: 'NPM Packages',
         },
