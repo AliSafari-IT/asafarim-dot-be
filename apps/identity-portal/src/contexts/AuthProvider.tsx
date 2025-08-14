@@ -78,21 +78,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
           // Parse stored user info
           const userInfo = JSON.parse(storedUser) as UserInfo;
-          setUser(userInfo);
+          setUser(userInfo); // Set user immediately from localStorage to prevent flicker
           
-          // Optionally validate the token with the server
-          // This could be done by calling getProfile() to verify the token is still valid
+          // Validate the token with the server
           try {
+            // First try to get the profile with the current token
+            console.log('Validating token by fetching user profile...');
             const profile = await identityService.getProfile();
+            console.log('Token is valid, user profile retrieved:', profile);
             setUser(profile); // Update with latest user info
-          } catch {
+          } catch (profileError) {
+            console.log('Profile fetch failed, attempting token refresh...', profileError);
+            
             // Token might be expired, try to refresh
-            await refreshAuthToken();
+            try {
+              const refreshSuccess = await refreshAuthToken();
+              console.log('Token refresh result:', refreshSuccess ? 'success' : 'failed');
+              
+              if (!refreshSuccess) {
+                // If refresh failed but we still have localStorage data, keep the user logged in
+                // This prevents logout on temporary API issues
+                console.log('Keeping user session active despite refresh failure');
+              }
+            } catch (refreshError) {
+              console.error('Token refresh failed:', refreshError);
+              // Don't logout immediately on refresh failure
+              // This allows the app to work offline or when API is temporarily down
+            }
           }
         } catch (error) {
           console.error('Failed to restore authentication state:', error);
-          await logout(); // Clear invalid auth state
+          // Only logout if we can't parse the stored user data
+          await logout();
         }
+      } else {
+        console.log('No stored authentication found');
       }
       
       setIsLoading(false);

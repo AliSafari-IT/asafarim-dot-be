@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useNotification } from '../hooks/useNotification';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -19,6 +20,7 @@ export const ProtectedRoute = ({
 }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  const { addNotification } = useNotification();
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -37,6 +39,13 @@ export const ProtectedRoute = ({
 
   // If authentication is not required but user is authenticated, redirect to dashboard
   if (!requireAuth && isAuthenticated) {
+    // Show notification when redirecting from login page to dashboard
+    if (location.pathname === '/login') {
+      // Use setTimeout to ensure notification is shown after navigation
+      setTimeout(() => {
+        addNotification('You are already signed in. Redirecting to dashboard...', 'info', 5000);
+      }, 100);
+    }
     return <Navigate to="/dashboard" replace />;
   }
 

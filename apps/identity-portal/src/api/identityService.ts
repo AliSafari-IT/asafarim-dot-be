@@ -176,11 +176,25 @@ export const identityService = {
    * Get current user profile
    */
   async getProfile(): Promise<UserInfo> {
-    const response = await fetch(`${API_BASE_URL}/users/me`, {
-      headers: getAuthHeader()
-    });
-    
-    return handleResponse<UserInfo>(response);
+    console.log('Fetching user profile...');
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
+        headers: getAuthHeader(),
+        credentials: 'include'  // Important: include cookies in the request
+      });
+      
+      console.log('Profile fetch response status:', response.status);
+      
+      if (!response.ok) {
+        console.error('Profile fetch failed with status:', response.status);
+        throw new Error(`Profile fetch failed: ${response.status} ${response.statusText}`);
+      }
+      
+      return handleResponse<UserInfo>(response);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      throw error;
+    }
   },
   
   /**
@@ -200,14 +214,27 @@ export const identityService = {
    * Refresh the authentication token
    */
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ refreshToken })
-    });
-    
-    return handleResponse<AuthResponse>(response);
+    console.log('Attempting to refresh token...');
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',  // Important: include cookies in the request
+        body: JSON.stringify({ refreshToken })
+      });
+      
+      console.log('Refresh token response status:', response.status);
+      
+      if (!response.ok) {
+        console.error('Refresh token failed with status:', response.status);
+        throw new Error(`Refresh token failed: ${response.status} ${response.statusText}`);
+      }
+      
+      return handleResponse<AuthResponse>(response);
+    } catch (error) {
+      console.error('Error during token refresh:', error);
+      throw error;
+    }
   },
   
   /**
