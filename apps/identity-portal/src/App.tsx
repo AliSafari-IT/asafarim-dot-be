@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from '@asafarim/react-themes';
@@ -11,8 +12,58 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 
 function App() {
+  // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
+  useEffect(() => {
+    const THEME_KEY = 'asafarim-theme';
+    const COOKIE_NAME = 'asafarim_theme';
+
+    const getCookie = (name: string) =>
+      document.cookie
+        .split(';')
+        .map(c => c.trim())
+        .find(c => c.startsWith(name + '='))
+        ?.split('=')[1];
+
+    // On load: if cookie has a theme, seed localStorage so ThemeProvider picks it up
+    const cookieTheme = getCookie(COOKIE_NAME);
+    if (cookieTheme) {
+      localStorage.setItem(THEME_KEY, cookieTheme);
+    }
+
+    let last = localStorage.getItem(THEME_KEY) || cookieTheme || 'dark';
+
+    const writeCookie = (value: string) => {
+      document.cookie = `${COOKIE_NAME}=${value}; domain=.asafarim.local; path=/; max-age=31536000; samesite=lax`;
+    };
+
+    // Keep cookie in sync when local theme changes
+    const interval = setInterval(() => {
+      const current = localStorage.getItem(THEME_KEY);
+      if (current && current !== last) {
+        last = current;
+        writeCookie(current);
+      }
+    }, 1000);
+
+    // When tab becomes visible, pull latest from cookie (sync across subdomains)
+    const onVis = () => {
+      if (!document.hidden) {
+        const v = getCookie(COOKIE_NAME);
+        if (v && v !== localStorage.getItem(THEME_KEY)) {
+          localStorage.setItem(THEME_KEY, v);
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, []);
+
   return (
-    <ThemeProvider defaultMode='dark' storageKey='asafarim-theme-mode' persistMode={true}>
+    <ThemeProvider defaultMode='dark' storageKey='asafarim-theme' persistMode={true}>
       <NotificationProvider>
         <AuthProvider>
           <Router>

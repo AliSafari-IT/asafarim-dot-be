@@ -17,6 +17,10 @@
     "react-router-dom": "^7.8.0"
   },
   "devDependencies": {
+    "@asafarim/react-privacy-consent": "^1.7.2",
+    "@asafarim/react-themes": "^1.6.1",
+    "@asafarim/shared": "^1.7.3",
+    "@asafarim/shared-ui-react": "workspace:*",
     "@eslint/js": "^9.33.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
@@ -27,8 +31,6 @@
     "globals": "^16.3.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2",
-    "@asafarim/react-themes": "^1.6.1",
-    "@asafarim/shared-ui-react": "workspace:*"
+    "vite": "^7.1.2"
   }
 }
