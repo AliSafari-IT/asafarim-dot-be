@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useEffect } from 'react';
 import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import { ThemeProvider } from '@asafarim/react-themes';
 import NotificationProvider from './contexts/NotificationProvider';
 import NotificationContainer from './components/Notifications/NotificationContainer';
 
@@ -64,7 +63,6 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider defaultMode='dark' storageKey='asafarim-theme' persistMode={true}>
       <NotificationProvider>
         <AuthProvider>
           <Router>
@@ -110,7 +108,6 @@ function App() {
           </Router>
         </AuthProvider>
       </NotificationProvider>
-    </ThemeProvider>
   );
 }
 

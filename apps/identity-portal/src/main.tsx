@@ -8,8 +8,8 @@ import '@asafarim/react-themes/styles.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider defaultTheme='light'>
-    <App />
+    <ThemeProvider defaultMode='light' storageKey='asafarim-theme' persistMode={true}>
+      <App />
     </ThemeProvider>
   </StrictMode>,
 )
