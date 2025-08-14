@@ -10,6 +10,7 @@ import NotificationContainer from './components/Notifications/NotificationContai
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import SyncLogout from './pages/SyncLogout';
 
 function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
@@ -96,6 +97,9 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
+
+              {/* Logout sync endpoint (not protected) */}
+              <Route path="/sync-logout" element={<SyncLogout />} />
               
               {/* Redirect root to login */}
               <Route path="/" element={<Navigate to="/login" replace />} />

@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Blog | ASafariM',
+  title: 'ASafariM Blog',
   tagline: 'Sharing my thoughts and experiences',
   favicon: 'img/favicon.ico',
 

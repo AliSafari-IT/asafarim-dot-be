@@ -56,11 +56,35 @@ export const getUserInfo = async () => {
 export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
   if (typeof window === 'undefined') return; // SSR check
   
-  // Clear authentication data
+  // Clear authentication data from local storage and cookies
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(USER_INFO_KEY);
-  
+  document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
+  document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
+  document.cookie = 'user_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
+
+  // Best-effort: also clear identity portal storage via hidden iframe (cross-subdomain)
+  // This prevents the identity app from thinking the user is still signed in when navigating there next.
+  const syncLogout = async () => new Promise<void>((resolve) => {
+    try {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = 'http://identity.asafarim.local:5177/sync-logout';
+      const cleanup = () => {
+        try { iframe.remove(); } catch {}
+        resolve();
+      };
+      iframe.onload = cleanup;
+      document.body.appendChild(iframe);
+      // Fallback in case onload doesn't fire
+      setTimeout(cleanup, 1500);
+    } catch {
+      resolve();
+    }
+  });
+  await syncLogout();
+
   // call logout endpoint
   await fetch('http://api.asafarim.local:5190/auth/logout', {
     method: 'POST',
@@ -74,6 +98,11 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
   if (redirectUrl) {
     window.location.href = redirectUrl;
   }
+};
+
+export const handleSignIn = async (redirectUrl?: string): Promise<void> => {
+  if (typeof window === 'undefined') return; // SSR check
+  window.location.href = redirectUrl || 'http://blog.asafarim.local:3000';
 };
 
 /**
@@ -112,5 +141,6 @@ export default {
   isAuthenticated,
   getUserInfo,
   handleSignOut,
+  handleSignIn,
   setupAuthSyncListener,
 };
