@@ -29,9 +29,9 @@ export const LoginForm = () => {
       if (success) {
         // Show success notification
         console.log('Login successful! Redirecting to dashboard...');
+        // get returnUrl from query params
         const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
         window.location.href = returnUrl || '/dashboard';
-        // Redirect happens automatically via the useEffect in the Login component
       }
     } catch {
       // Error is handled by the auth context

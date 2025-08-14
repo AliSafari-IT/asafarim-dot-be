@@ -96,14 +96,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               console.log('Token refresh result:', refreshSuccess ? 'success' : 'failed');
               
               if (!refreshSuccess) {
-                // If refresh failed but we still have localStorage data, keep the user logged in
-                // This prevents logout on temporary API issues
                 console.log('Keeping user session active despite refresh failure');
               }
             } catch (refreshError) {
-              console.error('Token refresh failed:', refreshError);
-              // Don't logout immediately on refresh failure
-              // This allows the app to work offline or when API is temporarily down
+              console.warn('Token refresh failed; keeping local session to avoid redirect loop:', refreshError);
+              // Intentionally do not logout here to prevent redirect loops
             }
           }
         } catch (error) {

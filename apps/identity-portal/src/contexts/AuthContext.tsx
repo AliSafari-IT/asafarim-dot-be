@@ -39,9 +39,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           try {
             const profile = await identityService.getProfile();
             setUser(profile); // Update with latest user info
-          } catch {
-            // Token might be expired, try to refresh
-            await refreshAuthToken();
+          } catch (err) {
+            console.warn('Profile fetch failed, will attempt to refresh token but keep session:', err);
+            try {
+              await refreshAuthToken();
+            } catch (refreshErr) {
+              console.warn('Token refresh failed; keeping local session to avoid redirect loop:', refreshErr);
+              // Intentionally do not logout here to prevent redirect loops
+            }
           }
         } catch (error) {
           console.error("Failed to restore authentication state:", error);

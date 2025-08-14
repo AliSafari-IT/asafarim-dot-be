@@ -178,7 +178,7 @@ export const identityService = {
   async getProfile(): Promise<UserInfo> {
     console.log('Fetching user profile...');
     try {
-      const response = await fetch(`${API_BASE_URL}/users/me`, {
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
         headers: getAuthHeader(),
         credentials: 'include'  // Important: include cookies in the request
       });
