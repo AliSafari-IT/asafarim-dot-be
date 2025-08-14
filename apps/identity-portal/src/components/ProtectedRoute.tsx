@@ -6,6 +6,7 @@ import { useNotification } from '../hooks/useNotification';
 interface ProtectedRouteProps {
   children: ReactNode;
   requireAuth?: boolean;
+  redirectTo?: string;
 }
 
 /**
@@ -16,7 +17,8 @@ interface ProtectedRouteProps {
  */
 export const ProtectedRoute = ({ 
   children, 
-  requireAuth = true 
+  requireAuth = true,
+  redirectTo = '/dashboard'
 }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
@@ -43,10 +45,10 @@ export const ProtectedRoute = ({
     if (location.pathname === '/login') {
       // Use setTimeout to ensure notification is shown after navigation
       setTimeout(() => {
-        addNotification('You are already signed in. Redirecting to dashboard...', 'info', 5000);
+        addNotification(`You are signed in. Redirecting to ${redirectTo}`, 'info', 5000);
       }, 100);
     }
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={redirectTo} replace />;
   }
 
   // Render children if conditions are met

@@ -17,25 +17,38 @@ builder.Services.Configure<AuthOptions>(authSection.Exists() ? authSection : jwt
 var authOpts = new AuthOptions();
 authSection.Bind(authOpts);
 jwtFallbackSection.Bind(authOpts); // fallback will override only provided fields
+
 // Ensure sensible defaults if configuration is missing or partial
 // HMAC-SHA256 requires a sufficiently long symmetric key (>= 256 bits). Enforce a strong fallback.
 const string FallbackJwtKey = "dev-secret-key-please-change-32-bytes-min-length-aaaa"; // 48+ chars
-if (string.IsNullOrWhiteSpace(authOpts.Key) || authOpts.Key.Length < 32) authOpts.Key = FallbackJwtKey;
-if (string.IsNullOrWhiteSpace(authOpts.Issuer)) authOpts.Issuer = "asafarim-identity";
-if (string.IsNullOrWhiteSpace(authOpts.Audience)) authOpts.Audience = "asafarim-clients";
-if (authOpts.AccessMinutes <= 0) authOpts.AccessMinutes = 60;
-if (authOpts.RefreshDays <= 0) authOpts.RefreshDays = 7;
-if (string.IsNullOrWhiteSpace(authOpts.CookieDomain)) authOpts.CookieDomain = ".asafarim.local";
+if (string.IsNullOrWhiteSpace(authOpts.Key) || authOpts.Key.Length < 32)
+    authOpts.Key = FallbackJwtKey;
+if (string.IsNullOrWhiteSpace(authOpts.Issuer))
+    authOpts.Issuer = "asafarim-identity";
+if (string.IsNullOrWhiteSpace(authOpts.Audience))
+    authOpts.Audience = "asafarim-clients";
+if (authOpts.AccessMinutes <= 0)
+    authOpts.AccessMinutes = 60;
+if (authOpts.RefreshDays <= 0)
+    authOpts.RefreshDays = 7;
+if (string.IsNullOrWhiteSpace(authOpts.CookieDomain))
+    authOpts.CookieDomain = ".asafarim.local";
 
 // Also enforce defaults for injected options
 builder.Services.PostConfigure<AuthOptions>(opts =>
 {
-    if (string.IsNullOrWhiteSpace(opts.Key) || opts.Key.Length < 32) opts.Key = FallbackJwtKey;
-    if (string.IsNullOrWhiteSpace(opts.Issuer)) opts.Issuer = "asafarim-identity";
-    if (string.IsNullOrWhiteSpace(opts.Audience)) opts.Audience = "asafarim-clients";
-    if (opts.AccessMinutes <= 0) opts.AccessMinutes = 60;
-    if (opts.RefreshDays <= 0) opts.RefreshDays = 7;
-    if (string.IsNullOrWhiteSpace(opts.CookieDomain)) opts.CookieDomain = ".asafarim.local";
+    if (string.IsNullOrWhiteSpace(opts.Key) || opts.Key.Length < 32)
+        opts.Key = FallbackJwtKey;
+    if (string.IsNullOrWhiteSpace(opts.Issuer))
+        opts.Issuer = "asafarim-identity";
+    if (string.IsNullOrWhiteSpace(opts.Audience))
+        opts.Audience = "asafarim-clients";
+    if (opts.AccessMinutes <= 0)
+        opts.AccessMinutes = 60;
+    if (opts.RefreshDays <= 0)
+        opts.RefreshDays = 7;
+    if (string.IsNullOrWhiteSpace(opts.CookieDomain))
+        opts.CookieDomain = ".asafarim.local";
 });
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -242,26 +255,32 @@ app.MapPost(
     (HttpResponse res, IOptions<AuthOptions> authOptions) =>
     {
         var opts = authOptions.Value;
-        
+
         // Delete cookies with the same options used when creating them
-        res.Cookies.Delete("atk", new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = false,
-            SameSite = SameSiteMode.Lax,
-            Domain = opts.CookieDomain,
-            Path = "/"
-        });
-        
-        res.Cookies.Delete("rtk", new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = false,
-            SameSite = SameSiteMode.Lax,
-            Domain = opts.CookieDomain,
-            Path = "/"
-        });
-        
+        res.Cookies.Delete(
+            "atk",
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Domain = opts.CookieDomain,
+                Path = "/",
+            }
+        );
+
+        res.Cookies.Delete(
+            "rtk",
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Domain = opts.CookieDomain,
+                Path = "/",
+            }
+        );
+
         return Results.Ok(new { message = "Logged out successfully" });
     }
 );
@@ -273,7 +292,8 @@ app.MapGet(
             if (!ctx.User.Identity?.IsAuthenticated ?? true)
                 return Results.Unauthorized();
             // Prefer NameIdentifier (mapped by default), fallback to raw "sub"
-            var sub = ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            var sub =
+                ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                 ?? ctx.User.FindFirst("sub")?.Value;
             if (string.IsNullOrWhiteSpace(sub))
                 return Results.Unauthorized();
@@ -284,4 +304,13 @@ app.MapGet(
         }
     )
     .RequireAuthorization();
+
+app.MapGet(
+    "/auth/is-authenticated",
+    (HttpContext ctx) =>
+    {
+        return Results.Ok(new { isAuthenticated = ctx.User.Identity?.IsAuthenticated ?? false });
+    }
+);
+
 app.Run();

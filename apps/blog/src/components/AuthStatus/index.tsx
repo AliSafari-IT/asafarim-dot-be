@@ -9,16 +9,22 @@ import styles from './styles.module.css';
  * a sign-out button if the user is authenticated.
  */
 export default function AuthStatus(): React.ReactElement {
-  const { isAuthenticated, user, loading, signOut } = useAuth();
-
+  const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
   if (loading) {
     return <div className={styles.authStatus}>Loading authentication status...</div>;
   }
 
   if (!isAuthenticated) {
+    const redirectTo = window.location.href;
     return (
       <div className={styles.authStatus}>
         <span className={styles.statusText}>Not signed in</span>
+        <button
+          className={styles.signInButton}
+          onClick={() => signIn(redirectTo)}
+        >
+          Sign In
+        </button>
       </div>
     );
   }
@@ -26,9 +32,9 @@ export default function AuthStatus(): React.ReactElement {
   return (
     <div className={styles.authStatus}>
       <span className={styles.statusText}>
-        Signed in as {user?.email || 'User'}
+        Welcome {user?.email || 'User'}!
       </span>
-      <button 
+      <button
         className={styles.signOutButton}
         onClick={() => signOut()}
       >

@@ -14,10 +14,10 @@ export function useAuth() {
 
   // Initialize auth state
   useEffect(() => {
-    const checkAuth = () => {
-      const authStatus = isAuthenticated();
+    const checkAuth = async () => {
+      const authStatus = await isAuthenticated();
       setAuthenticated(authStatus);
-      setUser(authStatus ? getUserInfo() : null);
+      setUser(authStatus ? await getUserInfo() : null);
       setLoading(false);
     };
 
@@ -46,17 +46,23 @@ export function useAuth() {
   }, []);
 
   // Sign out function
-  const signOut = useCallback((redirectUrl?: string) => {
-    handleSignOut(redirectUrl);
+  const signOut = useCallback(async (redirectUrl?: string) => {
+    await handleSignOut(redirectUrl);
     setAuthenticated(false);
     setUser(null);
+  }, []);
+
+  const signIn = useCallback(async (redirectUrl?: string) => {
+    const returnUrl = encodeURIComponent(redirectUrl || window.location.href);
+    window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${returnUrl}`;
   }, []);
 
   return {
     isAuthenticated: authenticated,
     user,
     loading,
-    signOut
+    signOut,
+    signIn,
   };
 }
 

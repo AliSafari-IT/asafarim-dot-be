@@ -15,7 +15,7 @@
 
 .signOutButton {
   background-color: var(--ifm-color-primary);
-  color: white;
+  color: var(--ifm-color-emphasis-100);
   border: none;
   border-radius: 4px;
   padding: 0.5rem 1rem;
@@ -26,4 +26,15 @@
 
 .signOutButton:hover {
   background-color: var(--ifm-color-primary-dark);
+}
+
+.signInButton {
+  background-color: var(--ifm-color-emphasis-100);
+  color: var(--ifm-color-primary-dark);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }

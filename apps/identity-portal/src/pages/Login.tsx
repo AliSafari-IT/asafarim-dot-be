@@ -7,13 +7,14 @@ import { useAuth } from '../hooks/useAuth';
 export const Login = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   
   // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate(returnUrl || '/dashboard');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, returnUrl]);
 
   return (
     <AuthLayout 

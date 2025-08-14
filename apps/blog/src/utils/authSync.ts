@@ -14,27 +14,38 @@ const USER_INFO_KEY = 'user_info';
  * Checks if the user is currently authenticated
  * @returns boolean indicating if the user is authenticated
  */
-export const isAuthenticated = (): boolean => {
+export const isAuthenticated = async (): Promise<boolean> => {
   if (typeof window === 'undefined') return false; // SSR check
-  return !!localStorage.getItem(AUTH_TOKEN_KEY);
+  const check = async () => {
+  const res = await fetch('http://api.asafarim.local:5190/auth/me', {
+    method: 'GET',
+    credentials: 'include', // send cookies
+  });
+  console.log("isAuthenticated authSync", res.status);
+  if (res.status === 401) {
+    return false;
+  }
+  return true;
+  }
+  return await check();
 };
 
 /**
  * Gets the current user information
  * @returns User info object or null if not authenticated
  */
-export const getUserInfo = () => {
+export const getUserInfo = async () => {
   if (typeof window === 'undefined') return null; // SSR check
-  
-  const userInfoString = localStorage.getItem(USER_INFO_KEY);
-  if (!userInfoString) return null;
-  
-  try {
-    return JSON.parse(userInfoString);
-  } catch (error) {
-    console.error('Failed to parse user info:', error);
+  if (!(await isAuthenticated())) return null;
+  const res = await fetch('http://api.asafarim.local:5190/auth/me', {
+    method: 'GET',
+    credentials: 'include', // send cookies
+  });
+  if (res.status === 401) {
     return null;
   }
+  const userInfo = await res.json();
+  return userInfo;
 };
 
 /**
@@ -42,7 +53,7 @@ export const getUserInfo = () => {
  * Removes authentication data and optionally redirects
  * @param redirectUrl Optional URL to redirect to after sign-out
  */
-export const handleSignOut = (redirectUrl?: string): void => {
+export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
   if (typeof window === 'undefined') return; // SSR check
   
   // Clear authentication data
@@ -50,6 +61,12 @@ export const handleSignOut = (redirectUrl?: string): void => {
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(USER_INFO_KEY);
   
+  // call logout endpoint
+  await fetch('http://api.asafarim.local:5190/auth/logout', {
+    method: 'POST',
+    credentials: 'include', // send cookies
+  });
+
   // Trigger custom event for other components to react to
   window.dispatchEvent(new Event('auth-signout'));
   

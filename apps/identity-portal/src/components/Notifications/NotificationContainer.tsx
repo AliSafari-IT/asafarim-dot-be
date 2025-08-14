@@ -6,9 +6,16 @@ import './Notification.css';
 const NotificationContainer: React.FC = () => {
   const { notifications, removeNotification } = useNotification();
 
+  // remove duplicates
+  const uniqueNotifications = notifications.filter(
+    (notification, index, self) =>
+      index === self.findIndex((t) => t.id === notification.id)
+  );
+
   return (
     <div className="notification-container">
-      {notifications.map((notification) => (
+
+      {uniqueNotifications.map((notification) => (
         <Notification
           key={notification.id}
           notification={notification}

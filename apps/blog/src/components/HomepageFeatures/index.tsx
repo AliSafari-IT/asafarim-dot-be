@@ -1,8 +1,7 @@
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
-import React, {useEffect, useState} from 'react';
 
 type FeatureItem = {
   title: string;
@@ -43,7 +42,7 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, Svg, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
@@ -58,75 +57,18 @@ function Feature({title, Svg, description}: FeatureItem) {
 }
 
 export default function HomepageFeatures(): React.ReactNode {
-  const [me, setMe] = useState<{ id: string; email: string; userName: string } | null>(null);
-
-
-  const handleLogout = () => {
-    // Clear local state
-    setMe(null);
-    // Redirect to identity portal logout
-    window.location.href = 'http://identity.asafarim.local:5177/logout';
-  };
-
-  useEffect(() => {
-    const check = async () => {
-      try {
-        const res = await fetch('http://api.asafarim.local:5190/auth/me', {
-          method: 'GET',
-          credentials: 'include', // send cookies
-        });
-        if (res.status === 401) {
-          const returnUrl = encodeURIComponent(window.location.href);
-          window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${returnUrl}`;
-          return;
-        }
-        if (!res.ok) throw new Error(`auth/me failed: ${res.status}`);
-        const data = await res.json();
-        setMe({ id: data.id, email: data.email, userName: data.userName });
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    const cookies = document.cookie;
-    console.log("cookies", cookies);
-    if (!cookies) {
-      check();
-    }
-  }, []);
-
   return (
     <section className={styles.features}>
       <div className="container">
-        {me ? (
-          <div className="text--center margin-bottom--xl">
-            <Heading as="h1">Welcome, {me.userName || me.email}</Heading>
-            <button 
-              onClick={handleLogout}
-              style={{
-                marginTop: '1rem',
-                padding: '0.5rem 1rem',
-                backgroundColor: '#fa4d56',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Sign Out
-            </button>
-          </div>
-        ) : (
-          <div className="text--center margin-bottom--xl">
-            <p>Checking session...</p>
-          </div>
-        )}
         <div className="row">
           {FeatureList.map((props, idx) => {
-            // Use key on the wrapper element, not passed to the component
             return (
-              <React.Fragment key={idx}>
-                <Feature title={props.title} Svg={props.Svg} description={props.description} />
-              </React.Fragment>
+              <Feature
+                key={idx}
+                title={props.title}
+                Svg={props.Svg}
+                description={props.description}
+              />
             );
           })}
         </div>
