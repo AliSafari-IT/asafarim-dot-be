@@ -1,41 +1,72 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Global CSS overrides for the Blog (Docusaurus)
+ * Aligned with identity-portal design tokens
  */
 
-/* You can override the default Infima variables here. */
+/* Base tokens */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  /* Theme primitives (light) */
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-background: #ffffff;
+  --color-foreground: #1e293b;
+  --color-foreground-muted: #64748b;
+  --color-border: #e2e8f0;
+
+  /* Brand helpers used in components */
+  --color-brand-50: 219, 234, 254;   /* rgb */
+  --color-brand-500: 59, 130, 246;   /* rgb */
+
+  /* Typographic scale */
+  --radius-xl: 16px;
+
+  /* Docusaurus/Infima mapping */
+  --ifm-color-primary: var(--color-primary);
+  --ifm-color-primary-dark: var(--color-primary-dark);
+  --ifm-color-primary-darker: var(--color-primary-dark);
+  --ifm-color-primary-darkest: #1d4ed8;
+  --ifm-color-primary-light: #60a5fa;
+  --ifm-color-primary-lighter: #93c5fd;
+  --ifm-color-primary-lightest: #bfdbfe;
+  --ifm-background-color: var(--color-background);
+  --ifm-font-color-base: var(--color-foreground);
+  --ifm-border-color: var(--color-border);
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* Dark mode mappings */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --color-primary: #60a5fa;
+  --color-primary-dark: #3b82f6;
+  --color-background: #0f172a;
+  --color-foreground: #f8fafc;
+  --color-foreground-muted: #cbd5e1;
+  --color-border: #334155;
+
+  --color-brand-50: 30, 41, 59;
+  --color-brand-500: 96, 165, 250;
+
+  --ifm-color-primary: var(--color-primary);
+  --ifm-color-primary-dark: var(--color-primary-dark);
+  --ifm-color-primary-darker: var(--color-primary-dark);
+  --ifm-color-primary-darkest: #1e40af;
+  --ifm-color-primary-light: #93c5fd;
+  --ifm-color-primary-lighter: #bfdbfe;
+  --ifm-color-primary-lightest: #dbeafe;
+  --ifm-background-color: var(--color-background);
+  --ifm-font-color-base: var(--color-foreground);
+  --ifm-border-color: var(--color-border);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-
-.hero__title { color: rgb(var(--color-fg)); }
-.hero__subtitle { color: rgb(var(--color-muted)); }
+/* Utility hooks for components */
+.hero__title { color: var(--color-foreground); }
+.hero__subtitle { color: var(--color-brand-50); }
 .button--primary { background: rgb(var(--color-brand-500)); border-radius: var(--radius-xl); }
 
-.text-fg        { color: rgb(var(--color-fg)); }
-.text-muted     { color: rgb(var(--color-muted)); }
+.text-fg        { color: var(--color-foreground); }
+.text-muted     { color: var(--color-foreground-muted); }
 .bg-brand-50    { background: rgb(var(--color-brand-50)); }
 .bg-brand-500   { background: rgb(var(--color-brand-500)); }
 .rounded-xl     { border-radius: var(--radius-xl); }
