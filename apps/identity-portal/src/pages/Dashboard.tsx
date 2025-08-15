@@ -63,7 +63,7 @@ export const Dashboard = () => {
 
               <div className="info-group">
                 <label>Roles</label>
-                <p>{user?.roles?.join(', ') || 'User'}</p>
+                <p>{user?.roles?.join(', ') || 'Viewer'}</p>
               </div>
             </div>
           </div>
@@ -86,6 +86,14 @@ export const Dashboard = () => {
               >
                 Edit Profile
               </button>
+              {user?.roles?.includes('Admin') && (
+                <button
+                  className="identity-btn-secondary"
+                  onClick={() => window.location.href = '/admin/users'}
+                >
+                  Admin: Manage Users
+                </button>
+              )}
               <button
                 className="identity-btn-secondary"
                 disabled={busy}

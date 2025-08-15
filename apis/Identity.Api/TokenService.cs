@@ -7,7 +7,7 @@ namespace Identity.Api;
 
 public static class TokenService
 {
-    public static string CreateAccessToken(AppUser user, AuthOptions opts)
+    public static string CreateAccessToken(AppUser user, IEnumerable<string> roles, AuthOptions opts)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(opts.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -18,6 +18,13 @@ public static class TokenService
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email ?? "")
         };
+        if (roles != null)
+        {
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+        }
         var token = new JwtSecurityToken(
             issuer: opts.Issuer,
             audience: opts.Audience,

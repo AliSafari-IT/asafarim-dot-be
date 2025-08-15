@@ -183,7 +183,8 @@ app.MapPost(
             // Extra safety in case options are not bound or hot-reload left stale state
             opts.Key = "dev-secret-key-please-change";
         }
-        var access = TokenService.CreateAccessToken(user, opts);
+        var roleNames = await users.GetRolesAsync(user);
+        var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
         var refresh = Guid.NewGuid().ToString("N");
         SetAuthCookies(res, access, refresh, opts);
 
@@ -226,7 +227,8 @@ app.MapPost(
             return Results.Unauthorized();
 
         var opts = authOptions.Value;
-        var access = TokenService.CreateAccessToken(user, opts);
+        var roleNamesLogin = await users.GetRolesAsync(user);
+        var access = TokenService.CreateAccessToken(user, roleNamesLogin.ToArray(), opts);
         var refresh = Guid.NewGuid().ToString("N"); // stub: store/rotate in DB for real usage
         SetAuthCookies(res, access, refresh, opts);
 
@@ -285,6 +287,7 @@ app.MapPost(
     }
 );
 
+// Get current user info including roles
 app.MapGet(
         "/auth/me",
         async (HttpContext ctx, UserManager<AppUser> users) =>
@@ -298,9 +301,12 @@ app.MapGet(
             if (string.IsNullOrWhiteSpace(sub))
                 return Results.Unauthorized();
             var user = await users.FindByIdAsync(sub);
-            return user is null
-                ? Results.Unauthorized()
-                : Results.Ok(new MeResponse(user.Id.ToString(), user.Email, user.UserName));
+            if (user is null)
+                return Results.Unauthorized();
+            var roleNames = await users.GetRolesAsync(user);
+            return Results.Ok(
+                new MeResponse(user.Id.ToString(), user.Email, user.UserName, roleNames.ToArray())
+                );
         }
     )
     .RequireAuthorization();
@@ -332,7 +338,8 @@ app.MapPut(
                     result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description })
                 );
 
-            return Results.Ok(new MeResponse(user.Id.ToString(), user.Email, user.UserName));
+            var rolesNow = await users.GetRolesAsync(user);
+            return Results.Ok(new MeResponse(user.Id.ToString(), user.Email, user.UserName, rolesNow.ToArray()));
         }
     )
     .RequireAuthorization();
@@ -380,11 +387,153 @@ app.MapPost(
     .RequireAuthorization();
 
 app.MapGet(
-    "/auth/is-authenticated",
-    (HttpContext ctx) =>
-    {
-        return Results.Ok(new { isAuthenticated = ctx.User.Identity?.IsAuthenticated ?? false });
-    }
-);
+        "/admin/users",
+        async (UserManager<AppUser> users, RoleManager<IdentityRole<Guid>> roles) =>
+        {
+            var allUsers = users.Users.ToList();
+            var roleNames = roles.Roles.ToDictionary(r => r.Id, r => r.Name);
+            var result = new List<AdminUserDto>();
+            foreach (var u in allUsers)
+            {
+                // Roles for ASP.NET Core IdentityCore without navigation requires manager
+                var names = (await users.GetRolesAsync(u)).ToArray();
+                result.Add(new AdminUserDto(u.Id.ToString(), u.Email, u.UserName, names));
+            }
+            return Results.Ok(result);
+        }
+    )
+    .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+app.MapGet(
+        "/admin/roles",
+        (RoleManager<IdentityRole<Guid>> roleMgr) =>
+            Results.Ok(roleMgr.Roles.Select(r => new { id = r.Id, name = r.Name }))
+    )
+    .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+// Get single user by id
+app.MapGet(
+        "/admin/users/{id:guid}",
+        async (Guid id, UserManager<AppUser> users) =>
+        {
+            var user = await users.FindByIdAsync(id.ToString());
+            if (user is null)
+                return Results.NotFound();
+            var names = (await users.GetRolesAsync(user)).ToArray();
+            return Results.Ok(
+                new AdminUserDto(user.Id.ToString(), user.Email, user.UserName, names)
+            );
+        }
+    )
+    .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+app.MapPost(
+        "/admin/users",
+        async (AdminUserUpsert req, UserManager<AppUser> users) =>
+        {
+            var user = new AppUser
+            {
+                Id = Guid.NewGuid(),
+                Email = req.Email,
+                UserName = req.UserName ?? req.Email,
+            };
+            var result = await users.CreateAsync(
+                user,
+                req.Password ?? Guid.NewGuid().ToString("N") + "Aa1!"
+            );
+            if (!result.Succeeded)
+                return Results.ValidationProblem(
+                    result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description })
+                );
+            return Results.Ok(new { id = user.Id });
+        }
+    )
+    .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+app.MapPut(
+        "/admin/users/{id:guid}",
+        async (Guid id, AdminUserUpsert req, UserManager<AppUser> users) =>
+        {
+            var user = await users.FindByIdAsync(id.ToString());
+            if (user is null)
+                return Results.NotFound();
+            if (!string.IsNullOrWhiteSpace(req.Email))
+                user.Email = req.Email;
+            if (!string.IsNullOrWhiteSpace(req.UserName))
+                user.UserName = req.UserName;
+            var result = await users.UpdateAsync(user);
+            if (!result.Succeeded)
+                return Results.ValidationProblem(
+                    result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description })
+                );
+            return Results.Ok();
+        }
+    )
+    .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+app.MapDelete(
+        "/admin/users/{id:guid}",
+        async (Guid id, UserManager<AppUser> users) =>
+        {
+            var user = await users.FindByIdAsync(id.ToString());
+            if (user is null)
+                return Results.NotFound();
+            var result = await users.DeleteAsync(user);
+            if (!result.Succeeded)
+                return Results.ValidationProblem(
+                    result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description })
+                );
+            return Results.Ok();
+        }
+    )
+    .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+app.MapPost(
+        "/admin/users/{id:guid}/roles",
+        async (
+            Guid id,
+            SetUserRolesRequest req,
+            UserManager<AppUser> users,
+            RoleManager<IdentityRole<Guid>> roleMgr
+        ) =>
+        {
+            var user = await users.FindByIdAsync(id.ToString());
+            if (user is null)
+                return Results.NotFound();
+            var current = await users.GetRolesAsync(user);
+            var target = req.Roles?.Distinct().ToArray() ?? Array.Empty<string>();
+            var toRemove = current.Where(r => !target.Contains(r)).ToArray();
+            var toAdd = target.Where(r => !current.Contains(r)).ToArray();
+            if (toRemove.Length > 0)
+                await users.RemoveFromRolesAsync(user, toRemove);
+            if (toAdd.Length > 0)
+            {
+                foreach (var role in toAdd)
+                {
+                    if (!await roleMgr.RoleExistsAsync(role))
+                        return Results.BadRequest(
+                            new { message = $"Role '{role}' does not exist" }
+                        );
+                }
+                await users.AddToRolesAsync(user, toAdd);
+            }
+            return Results.Ok();
+        }
+    )
+    .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+// Get roles for a specific user (GET)
+app.MapGet(
+        "/admin/users/{id:guid}/roles",
+        async (Guid id, UserManager<AppUser> users) =>
+        {
+            var user = await users.FindByIdAsync(id.ToString());
+            if (user is null)
+                return Results.NotFound();
+            var roles = await users.GetRolesAsync(user);
+            return Results.Ok(roles);
+        }
+    )
+    .RequireAuthorization(policy => policy.RequireRole("Admin"));
 
 app.Run();

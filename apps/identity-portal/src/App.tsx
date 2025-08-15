@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import SyncLogout from './pages/SyncLogout';
+import AdminUsers from './pages/AdminUsers';
 
 function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
@@ -94,6 +95,16 @@ function App() {
                     <Dashboard />
                   </ProtectedRoute>
                 } 
+              />
+
+              {/* Admin users management */}
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute>
+                    <AdminUsers />
+                  </ProtectedRoute>
+                }
               />
 
               {/* Logout sync endpoint (not protected) */}
