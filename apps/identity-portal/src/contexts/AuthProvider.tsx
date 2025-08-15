@@ -28,6 +28,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user_info');
+      document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=asafarim.local';
+      document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=asafarim.local';
+      document.cookie = 'user_info=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=asafarim.local';
       
       // Dispatch a custom event for local listeners
       window.dispatchEvent(new Event('auth-signout'));

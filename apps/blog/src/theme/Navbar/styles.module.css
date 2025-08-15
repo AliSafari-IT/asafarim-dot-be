@@ -1,7 +1,0 @@
-.authStatusContainer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 1rem;
-  background-color: var(--ifm-navbar-background-color);
-  border-bottom: 1px solid var(--ifm-color-emphasis-200);
-}

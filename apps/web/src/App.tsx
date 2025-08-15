@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { LayoutContainer, FooterContainer } from "@asafarim/shared-ui-react";
 import Navbar from "./components/Navbar";
 import { ThemeProvider } from "@asafarim/react-themes";
+import Root from "./theme/Root";
 
 export default function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
@@ -58,13 +59,15 @@ export default function App() {
       storageKey="asafarim-theme"
       persistMode={true}
     >
-      <LayoutContainer>
-        <Navbar />
-        <main className="container flex-1 overflow-x-hidden" >
-          <Outlet />
-        </main>
-        <FooterContainer />
-      </LayoutContainer>
+      <Root>
+        <LayoutContainer>
+          <Navbar />
+          <main className="container flex-1 overflow-x-hidden" >
+            <Outlet />
+          </main>
+          <FooterContainer />
+        </LayoutContainer>
+      </Root>
     </ThemeProvider>
   );
 }

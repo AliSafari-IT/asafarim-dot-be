@@ -1,14 +1,21 @@
 import { ThemeToggle } from '@asafarim/react-themes';
 import { useAuth } from '../hooks/useAuth';
 import '../css/dashboard.css';
+import { useEffect } from 'react';
 
 export const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     // Redirect will happen via protected route
   };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      window.location.href = 'http://identity.asafarim.local:5177/login';
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className="identity-dashboard-container">
@@ -64,7 +71,9 @@ export const Dashboard = () => {
               <button className="identity-btn-secondary">Edit Profile</button>
               <button className="identity-btn-secondary">Change Password</button>
               {/* Click to go to blog app */}
-              <button className="identity-btn-secondary" onClick={() => window.location.href = 'http://blog.asafarim.local:3000'}>Blog</button>
+              <button className="identity-btn-secondary" onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')}>Blog</button>
+              {/* Click to go to web app in new tab */}
+              <button className="identity-btn-secondary" onClick={() => window.open('http://web.asafarim.local:5175', '_blank')}>Web App</button>
             </div>
           </div>
         </div>

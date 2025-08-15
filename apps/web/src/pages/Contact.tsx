@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { submitContactForm, initEmailJS } from '../api/contactService';
+import { useAuth } from '@asafarim/shared-ui-react';
 
 interface FormState {
   name: string;
@@ -16,9 +17,16 @@ interface FormStatus {
 }
 
 export default function Contact() {
+  const { user } = useAuth();
+  const [email, setEmail] = useState(user?.email || '');
+  useEffect(() => {
+    setEmail(user?.email || '');    
+  }, [user]);
+  console.log("email", email);
+
   const [formData, setFormData] = useState<FormState>({
     name: '',
-    email: '',
+    email: email,
     subject: 'Website Contact',
     message: ''
   });
@@ -53,6 +61,8 @@ export default function Contact() {
       success: false
     });
 
+    formData.name = email + " <" + (formData.name +  ' reply to: ' + formData.email) + ">";
+
     try {
       const response = await submitContactForm(formData);
       
@@ -67,7 +77,7 @@ export default function Contact() {
         // Reset form after successful submission
         setFormData({
           name: '',
-          email: '',
+          email: email,
           subject: 'Website Contact',
           message: ''
         });
@@ -128,7 +138,7 @@ export default function Contact() {
                     id="email" 
                     name="email" 
                     className="form-input" 
-                    value={formData.email}
+                    value={formData.email || email}
                     onChange={handleChange}
                     required 
                   />

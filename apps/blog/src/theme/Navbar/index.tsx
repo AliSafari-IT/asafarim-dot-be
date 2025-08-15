@@ -1,7 +1,6 @@
 import React from 'react';
 import OriginalNavbar from '@theme-original/Navbar';
-import AuthStatus from '../../components/AuthStatus';
-import styles from './styles.module.css';
+import { AuthStatus, useAuth } from '@asafarim/shared-ui-react';
 
 /**
  * Custom Navbar component
@@ -10,12 +9,23 @@ import styles from './styles.module.css';
  * for displaying authentication status and sign-out functionality.
  */
 export default function Navbar(props): React.ReactElement {
+  const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
   return (
     <>
       <OriginalNavbar {...props} />
-      <div className={styles.authStatusContainer}>
-        <AuthStatus />
-      </div>
+      <AuthStatus
+        isAuthenticated={isAuthenticated}
+        user={user}
+        loading={loading}
+        onSignIn={(returnUrl) => signIn(returnUrl)}
+        onSignOut={() => signOut()}
+        labels={{
+          notSignedIn: 'Not signed in',
+          signIn: 'Sign In',
+          signOut: 'Sign Out',
+          welcome: (email?: string) => `Welcome ${email ?? 'User'}!`,
+        }}
+      />
     </>
   );
 }

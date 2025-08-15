@@ -1,0 +1,46 @@
+@import './theme-variables.css';
+
+.authStatusContainer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 1rem;
+    background-color: var(--ifm-navbar-background-color);
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  }
+  
+  .authStatusContainer button {
+    background-color: var(--ifm-color-primary);
+    color: var(--ifm-color-primary-inverse);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+
+  .authStatusContainer button:hover {
+    background-color: var(--ifm-color-primary-dark);
+  }
+
+  .authStatusContainer button:active {
+    background-color: var(--ifm-color-primary-darker);
+  }
+  
+  .authStatusContainer button:focus {
+    outline: none;
+  }
+  
+  .authStatusContainer button:focus-visible {
+    outline: 2px solid var(--ifm-color-primary);
+  }
+  
+  
+  .authStatusContainer button:disabled {
+    background-color: var(--ifm-color-primary-light);
+    cursor: not-allowed;
+  }
+  
+  .authStatusContainer button:disabled:hover {
+    background-color: var(--ifm-color-primary-light);
+  }
+  
+  

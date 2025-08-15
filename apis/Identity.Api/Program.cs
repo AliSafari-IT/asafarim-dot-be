@@ -94,9 +94,9 @@ builder.Services.AddAuthorization();
 
 var allowedOrigins = new[]
 {
-    "http://web.asafarim.local:5173",
+    "http://web.asafarim.local:5175",
     "http://app.asafarim.local:5174",
-    "http://ai.asafarim.local:5175",
+    "http://ai.asafarim.local:5173",
     "http://jobs.asafarim.local:4200",
     "http://blog.asafarim.local:3000",
     "http://identity.asafarim.local:5177",
