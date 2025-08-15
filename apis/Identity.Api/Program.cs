@@ -305,6 +305,80 @@ app.MapGet(
     )
     .RequireAuthorization();
 
+// Update basic profile fields (email, username)
+app.MapPut(
+        "/users/me",
+        async (HttpContext ctx, UserManager<AppUser> users, UpdateProfileRequest req) =>
+        {
+            if (!ctx.User.Identity?.IsAuthenticated ?? true)
+                return Results.Unauthorized();
+            var sub =
+                ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? ctx.User.FindFirst("sub")?.Value;
+            if (string.IsNullOrWhiteSpace(sub))
+                return Results.Unauthorized();
+            var user = await users.FindByIdAsync(sub);
+            if (user is null)
+                return Results.Unauthorized();
+
+            if (!string.IsNullOrWhiteSpace(req.Email))
+                user.Email = req.Email;
+            if (!string.IsNullOrWhiteSpace(req.UserName))
+                user.UserName = req.UserName;
+
+            var result = await users.UpdateAsync(user);
+            if (!result.Succeeded)
+                return Results.ValidationProblem(
+                    result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description })
+                );
+
+            return Results.Ok(new MeResponse(user.Id.ToString(), user.Email, user.UserName));
+        }
+    )
+    .RequireAuthorization();
+
+// Change password
+app.MapPost(
+        "/users/change-password",
+        async (HttpContext ctx, UserManager<AppUser> users, ChangePasswordRequest req) =>
+        {
+            if (!ctx.User.Identity?.IsAuthenticated ?? true)
+                return Results.Unauthorized();
+            if (
+                string.IsNullOrWhiteSpace(req.NewPassword)
+                || req.NewPassword != req.ConfirmPassword
+            )
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        ["Password"] = new[] { "Passwords do not match" },
+                    }
+                );
+
+            var sub =
+                ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? ctx.User.FindFirst("sub")?.Value;
+            if (string.IsNullOrWhiteSpace(sub))
+                return Results.Unauthorized();
+            var user = await users.FindByIdAsync(sub);
+            if (user is null)
+                return Results.Unauthorized();
+
+            var result = await users.ChangePasswordAsync(
+                user,
+                req.CurrentPassword,
+                req.NewPassword
+            );
+            if (!result.Succeeded)
+                return Results.ValidationProblem(
+                    result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description })
+                );
+
+            return Results.Ok(new { message = "Password changed successfully" });
+        }
+    )
+    .RequireAuthorization();
+
 app.MapGet(
     "/auth/is-authenticated",
     (HttpContext ctx) =>

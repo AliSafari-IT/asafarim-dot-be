@@ -44,6 +44,17 @@ export interface UserInfo {
   roles: string[];
 }
 
+export interface UpdateProfileRequest {
+  email?: string;
+  userName?: string;
+}
+
+export interface ChangePasswordRequestBody {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;
@@ -203,11 +214,23 @@ export const identityService = {
   async updateProfile(data: Partial<UserInfo>): Promise<UserInfo> {
     const response = await fetch(`${API_BASE_URL}/users/me`, {
       method: 'PUT',
-      headers: getAuthHeader(),
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(data)
     });
     
     return handleResponse<UserInfo>(response);
+  },
+
+  /** Change password */
+  async changePassword(data: ChangePasswordRequestBody): Promise<{ message: string }> {
+    const response = await fetch(`${API_BASE_URL}/users/change-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(data)
+    });
+    return handleResponse<{ message: string }>(response);
   },
   
   /**

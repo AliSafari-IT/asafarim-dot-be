@@ -5,3 +5,11 @@ public record RegisterRequest(string Email, string Password, string? UserName);
 public record LoginRequest(string Email, string Password);
 
 public record MeResponse(string Id, string? Email, string? UserName);
+
+public record UpdateProfileRequest(string? Email, string? UserName);
+
+public record ChangePasswordRequest(
+    string CurrentPassword,
+    string NewPassword,
+    string ConfirmPassword
+);

@@ -1,10 +1,13 @@
 import { ThemeToggle } from '@asafarim/react-themes';
 import { useAuth } from '../hooks/useAuth';
+import identityService from '../api/identityService';
+import { useState } from 'react';
 import '../css/dashboard.css';
 import { useEffect } from 'react';
 
 export const Dashboard = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const [busy, setBusy] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -68,8 +71,40 @@ export const Dashboard = () => {
           <div className="identity-actions-section">
             <h3 className="identity-actions-section-title">Account Actions</h3>
             <div className="identity-action-buttons">
-              <button className="identity-btn-secondary">Edit Profile</button>
-              <button className="identity-btn-secondary">Change Password</button>
+              <button
+                className="identity-btn-secondary"
+                disabled={busy}
+                onClick={async () => {
+                  const email = prompt('New email', user?.email ?? '');
+                  if (email === null) return;
+                  setBusy(true);
+                  try {
+                    await identityService.updateProfile({ email });
+                    window.location.reload();
+                  } finally { setBusy(false); }
+                }}
+              >
+                Edit Profile
+              </button>
+              <button
+                className="identity-btn-secondary"
+                disabled={busy}
+                onClick={async () => {
+                  const currentPassword = prompt('Current password') ?? '';
+                  const newPassword = prompt('New password') ?? '';
+                  const confirmPassword = prompt('Confirm new password') ?? '';
+                  if (!currentPassword || !newPassword) return;
+                  setBusy(true);
+                  try {
+                    await identityService.changePassword({ currentPassword, newPassword, confirmPassword });
+                    alert('Password changed successfully');
+                  } catch (e:any) {
+                    alert(e?.message ?? 'Failed to change password');
+                  } finally { setBusy(false); }
+                }}
+              >
+                Change Password
+              </button>
               {/* Click to go to blog app */}
               <button className="identity-btn-secondary" onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')}>Blog</button>
               {/* Click to go to web app in new tab */}
