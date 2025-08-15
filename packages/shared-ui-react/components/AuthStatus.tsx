@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/use-auth.css';
+import '../styles/theme-variables.css';
 
 export interface AuthStatusProps {
   isAuthenticated: boolean;

@@ -1,10 +1,11 @@
 {
   "name": "@asafarim/shared-ui-react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "files": [
     "components",
+    "styles",
     "package.json",
     "tsconfig.json"
   ],
@@ -16,7 +17,8 @@
   },
   "exports": {
     ".": "./index.ts",
-    "./components/*": "./components/*"
+    "./components/*": "./components/*",
+    "./styles/*": "./styles/*"
   },
   "typesVersions": {
     "*": {
