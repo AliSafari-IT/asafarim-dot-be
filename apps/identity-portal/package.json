@@ -1,7 +1,7 @@
 {
   "name": "@asafarim/identity-portal",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,7 +19,7 @@
   "devDependencies": {
     "@asafarim/react-privacy-consent": "^1.7.2",
     "@asafarim/react-themes": "^1.6.1",
-    "@asafarim/shared": "^1.7.3",
+    "@asafarim/shared": "^1.7.4",
     "@asafarim/shared-ui-react": "workspace:*",
     "@eslint/js": "^9.33.0",
     "@types/react": "^19.1.10",

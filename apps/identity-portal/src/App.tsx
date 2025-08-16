@@ -8,9 +8,10 @@ import NotificationContainer from './components/Notifications/NotificationContai
 // Pages
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
 import SyncLogout from './pages/SyncLogout';
-import AdminUsers from './pages/AdminUsers';
+import UserProfilePage from './pages/UserProfilePage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import DashboardPage from './pages/DashboardPage';
 
 function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
@@ -92,7 +93,7 @@ function App() {
                 path="/dashboard" 
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <DashboardPage />
                   </ProtectedRoute>
                 } 
               />
@@ -102,7 +103,17 @@ function App() {
                 path="/admin/users"
                 element={
                   <ProtectedRoute>
-                    <AdminUsers />
+                    <AdminUsersPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Admin user profile */}
+              <Route
+                path="/admin/user-profile"
+                element={
+                  <ProtectedRoute>
+                    <UserProfilePage />
                   </ProtectedRoute>
                 }
               />
