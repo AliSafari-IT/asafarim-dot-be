@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { ToastProvider, Toaster } from '@asafarim/toast';
+import '@asafarim/toast/styles.css';
 import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotificationProvider from './contexts/NotificationProvider';
@@ -65,11 +67,13 @@ function App() {
   }, []);
 
   return (
-      <NotificationProvider>
-        <AuthProvider>
-          <Router>
-            <NotificationContainer />
-            <Routes>
+      <ToastProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <Router>
+              <NotificationContainer />
+              <Toaster />
+              <Routes>
               {/* Public routes (accessible when not logged in) */}
               <Route 
                 path="/login" 
@@ -126,10 +130,11 @@ function App() {
               
               {/* Catch all other routes and redirect to login */}
               <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-          </Router>
-        </AuthProvider>
-      </NotificationProvider>
+              </Routes>
+            </Router>
+          </AuthProvider>
+        </NotificationProvider>
+      </ToastProvider>
   );
 }
 

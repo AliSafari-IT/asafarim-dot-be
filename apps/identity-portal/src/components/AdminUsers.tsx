@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useToast } from '@asafarim/toast';
 import './admin-components.css';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
@@ -7,6 +8,7 @@ export default function AdminUsers() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     const load = async () => {
@@ -25,27 +27,44 @@ export default function AdminUsers() {
   }, []);
 
   const saveUser = async (u: AdminUser) => {
-    await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5190'}/admin/users/${u.id}`, {
+    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5190'}/admin/users/${u.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ email: u.email, userName: u.userName })
     });
+    if (!res.ok) {
+      const message = (await res.text()) || 'Failed to save user';
+      throw new Error(message);
+    }
   };
 
   const setUserRoles = async (u: AdminUser, nextRoles: string[]) => {
-    await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5190'}/admin/users/${u.id}/roles`, {
+    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5190'}/admin/users/${u.id}/roles`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ roles: nextRoles })
     });
+    if (!res.ok) {
+      const message = (await res.text()) || 'Failed to update roles';
+      throw new Error(message);
+    }
   };
 
   const persistUserFields = async (userId: string) => {
     const current = users.find(x => x.id === userId);
     if (!current) return;
-    await saveUser(current);
+    try {
+      await saveUser(current);
+      toast.success('User updated', {
+        description: 'Profile fields saved successfully',
+        durationMs: 4000
+      });
+    } catch (err) {
+      const description = err instanceof Error ? err.message : 'Unknown error';
+      toast.error('Failed to update user', { description, durationMs: 6000 });
+    }
   };
 
   if (loading) return <div className="admin-loading">Loading users and roles...</div>;
@@ -101,7 +120,16 @@ export default function AdminUsers() {
                             onClick={async () => {
                               const next = u.roles.filter(r => r !== role);
                               setUsers(prev => prev.map(x => x.id === u.id ? { ...x, roles: next } : x));
-                              await setUserRoles(u, next);
+                              try {
+                                await setUserRoles(u, next);
+                                toast.success('Role removed', {
+                                  description: `${role} removed from user`,
+                                  durationMs: 3500
+                                });
+                              } catch (err) {
+                                const description = err instanceof Error ? err.message : 'Unknown error';
+                                toast.error('Failed to update roles', { description, durationMs: 6000 });
+                              }
                             }}
                             aria-label={`Remove ${role} role`}
                             title={`Remove ${role} role`}
@@ -123,7 +151,16 @@ export default function AdminUsers() {
                           onClick={async () => {
                             const next = Array.from(new Set([...u.roles, r]));
                             setUsers(prev => prev.map(x => x.id === u.id ? { ...x, roles: next } : x));
-                            await setUserRoles(u, next);
+                            try {
+                              await setUserRoles(u, next);
+                              toast.success('Role added', {
+                                description: `${r} added to user`,
+                                durationMs: 3500
+                              });
+                            } catch (err) {
+                              const description = err instanceof Error ? err.message : 'Unknown error';
+                              toast.error('Failed to update roles', { description, durationMs: 6000 });
+                            }
                           }}
                           aria-label={`Add ${r} role`}
                           title={`Add ${r} role`}
