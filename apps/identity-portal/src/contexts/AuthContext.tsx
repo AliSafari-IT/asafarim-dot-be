@@ -4,6 +4,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+
 import {
   identityService,
   type AuthResponse,
@@ -11,6 +12,7 @@ import {
   type RegisterRequest,
   type UserInfo,
 } from "../api/identityService";
+
 import { AuthContextCreated } from "./AuthContextCreated";
 
 interface AuthProviderProps {

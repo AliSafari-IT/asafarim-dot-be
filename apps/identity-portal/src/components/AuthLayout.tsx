@@ -18,13 +18,11 @@ const userMenuItems = [
   { label: 'Sign Up', value: '/register' },
   { label: 'Blog', value: '//blog.asafarim.local:3000' },
   { label: 'Web App', value: '//web.asafarim.local:5175' },
-  { label: 'Dashboard', value: '/dashboard' },
-  { label: 'Admin Users', value: '/admin/users' },
-  { label: 'User Profile', value: '/admin/user-profile' }
+  { label: 'Dashboard', value: '/dashboard' }
 ];
 
 export const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname; // e.g. '/admin/users'
@@ -32,6 +30,20 @@ export const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
   const [menuItems, setMenuItems] = useState<{ label: string; value: string }[]>(userMenuItems);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+
+  useEffect(() => {
+    if (user?.roles?.some(role => role === 'Admin' || role === 'SuperAdmin' || role === 'admin' || role === 'superadmin')) {
+      const adminMenuItems = [
+        { label: 'Admin Users', value: '/admin/users' },
+        { label: 'User Profile', value: '/admin/user-profile' }
+      ];
+      // add admin menu items to the beginning of the menu items
+      setMenuItems([...adminMenuItems, ...userMenuItems.filter(item => !adminMenuItems.some(adminItem => adminItem.value === item.value))]);
+    } else {
+      setMenuItems(userMenuItems);
+    }
+  }, [ user ]);
 
   const handleLogout = async () => {
     await logout();

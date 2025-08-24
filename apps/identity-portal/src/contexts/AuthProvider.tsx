@@ -162,6 +162,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null);
   }, []);
 
+  // Update user profile
+  const updateUser = useCallback((userData: Partial<UserInfo>) => {
+    setUser(prevUser => prevUser ? { ...prevUser, ...userData } : null);
+  }, []);
+
+  // Reload user profile
+  const reloadProfile = useCallback(async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      const updatedUser = await identityService.getProfile();
+      setUser(updatedUser);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to reload profile';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
   return (
     <AuthContextCreated.Provider
       value={{
@@ -169,6 +190,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isAuthenticated: !!user,
         isLoading,
         error,
+        updateUser,
+        reloadProfile,
         login,
         register,
         logout,

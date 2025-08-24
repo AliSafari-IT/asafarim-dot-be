@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './admin-components.css';
 import { useAuth } from '../hooks/useAuth';
+import { useParams } from 'react-router-dom';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
@@ -8,6 +9,7 @@ const API = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5190';
 
 export default function UserProfile() {
   const { user } = useAuth();
+  const { id: routeUserId } = useParams<{ id?: string }>();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
@@ -33,12 +35,18 @@ export default function UserProfile() {
       setUsers(filteredUsers);
       setRoles(r.map((x: { name: string }) => x.name));
 
-      // Default select current user if available, otherwise first in list
-      const current = filteredUsers.find(x => x.email === user?.email || x.id === user?.id) || filteredUsers[0];
+      // Select by route param if provided (admin flow), otherwise current user, otherwise first
+      let current: AdminUser | undefined;
+      if (routeUserId) {
+        current = filteredUsers.find(x => x.id === routeUserId);
+      }
+      if (!current) {
+        current = filteredUsers.find(x => x.email === user?.email || x.id === user?.id) || filteredUsers[0];
+      }
       if (current) selectUser(current);
     };
     void load();
-  }, [user]);
+  }, [user, routeUserId]);
 
   const selectUser = (u: AdminUser) => {
     setSelectedId(u.id);

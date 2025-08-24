@@ -130,6 +130,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/admin/user-profile/:id"
+                element={
+                  <ProtectedRoute>
+                    <UserProfilePage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Logout sync endpoint (not protected) */}
               <Route path="/sync-logout" element={<SyncLogout />} />

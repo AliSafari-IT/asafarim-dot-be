@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useToast } from '@asafarim/toast';
 import './admin-components.css';
+import { useNavigate } from 'react-router-dom';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
@@ -9,6 +10,7 @@ export default function AdminUsers() {
   const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
@@ -86,6 +88,7 @@ export default function AdminUsers() {
                 <th>Email Address</th>
                 <th>Username</th>
                 <th>Assigned Roles</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -177,6 +180,19 @@ export default function AdminUsers() {
                         <span className="available-roles-empty">All roles assigned</span>
                       )}
                     </div>
+                  </td>
+                  <td>
+                    {/* TODO: Add a button to edit the user detaileds such as name, email, phone, etc. */}
+                    <button className="admin-table-button"
+                      onClick={() => {
+                        // TODO: Take the current user and pass it to the UserProfile component
+                        navigate(`/admin/user-profile/${u.id}`);
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="admin-table-button-icon">
+                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
                   </td>
                 </tr>
               ))}
