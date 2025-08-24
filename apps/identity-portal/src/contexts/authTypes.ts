@@ -9,4 +9,6 @@ export interface AuthContextType {
   register: (data: RegisterRequest) => Promise<boolean>;
   logout: () => Promise<void>;
   clearError: () => void;
+  updateUser: (next: UserInfo) => void;
+  reloadProfile: () => Promise<void>;
 }

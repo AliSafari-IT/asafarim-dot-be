@@ -72,6 +72,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(user);
     setError(null);
   }, []);
+  const updateUser = useCallback((next: UserInfo) => {
+    setUser(next);
+    localStorage.setItem("user_info", JSON.stringify(next));
+  }, []);
+
+  const reloadProfile = useCallback(async () => {
+    try {
+      const profile = await identityService.getProfile();
+      updateUser(profile);
+    } catch (err) {
+      console.warn('Failed to reload profile:', err);
+    }
+  }, [updateUser]);
+
 
   // Refresh authentication token
   const refreshAuthToken = useCallback(async () => {
@@ -172,6 +186,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         register,
         logout,
         clearError,
+        updateUser,
+        reloadProfile,
       }}
     >
       {children}

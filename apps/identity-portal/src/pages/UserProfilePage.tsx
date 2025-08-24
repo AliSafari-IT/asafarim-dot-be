@@ -7,11 +7,11 @@ import UserProfile from '../components/UserProfile';
 import { useAuth } from '../hooks/useAuth';
 
 export const UserProfilePage = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   
-  // Redirect to dashboard if already authenticated
+  // Redirect unauthenticated users to login
   useEffect(() => {
     if (!isAuthenticated) {
       navigate(returnUrl || '/login');
@@ -20,8 +20,8 @@ export const UserProfilePage = () => {
 
   return (
     <AuthLayout 
-      title="User Profile" 
-      subtitle="Manage your profile"
+      title={(user?.roles || []).includes('Admin') ? 'Admin: User Profile' : 'My Profile'} 
+      subtitle={(user?.roles || []).includes('Admin') ? 'Manage individual user accounts and permissions' : 'Manage your profile'}
     >
       <UserProfile />
     </AuthLayout>

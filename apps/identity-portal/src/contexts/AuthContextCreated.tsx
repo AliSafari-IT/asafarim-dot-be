@@ -12,4 +12,6 @@ export const AuthContextCreated = createContext<AuthContextType>({
     register: async () => false,
     logout: async () => { },
     clearError: () => { },
+    updateUser: () => { },
+    reloadProfile: async () => { },
 });

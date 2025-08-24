@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import './admin-components.css';
+import { useAuth } from '../hooks/useAuth';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
 const API = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5190';
 
 export default function UserProfile() {
+  const { user } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
@@ -22,12 +24,21 @@ export default function UserProfile() {
       ]);
       const u = await uRes.json();
       const r = await rRes.json();
-      setUsers(u);
+      const allUsers: AdminUser[] = u;
+
+      // If not admin, restrict the list to the current user only
+      const isAdmin = (user?.roles || []).includes('Admin');
+      const filteredUsers = isAdmin ? allUsers : allUsers.filter(x => x.email === user?.email || x.id === user?.id);
+
+      setUsers(filteredUsers);
       setRoles(r.map((x: { name: string }) => x.name));
-      if (u.length) selectUser(u[0]);
+
+      // Default select current user if available, otherwise first in list
+      const current = filteredUsers.find(x => x.email === user?.email || x.id === user?.id) || filteredUsers[0];
+      if (current) selectUser(current);
     };
     void load();
-  }, []);
+  }, [user]);
 
   const selectUser = (u: AdminUser) => {
     setSelectedId(u.id);
@@ -48,25 +59,31 @@ export default function UserProfile() {
         credentials: 'include',
         body: JSON.stringify({ email, userName }),
       });
-      await fetch(`${API}/admin/users/${selectedId}/roles`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ roles: userRoles }),
-      });
+      // Only admins can change roles. If non-admin, skip roles update.
+      const isAdmin = (user?.roles || []).includes('Admin');
+      if (isAdmin) {
+        await fetch(`${API}/admin/users/${selectedId}/roles`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ roles: userRoles }),
+        });
+      }
       alert('User updated');
     } finally {
       setBusy(false);
     }
   };
 
+  const isAdmin = (user?.roles || []).includes('Admin');
+
   return (
     <div className="admin-user-profile-container">
       <div className="admin-user-profile-card">
         {/* Premium Header */}
         <div className="admin-form-header">
-          <h1 className="admin-form-title">Admin: User Profile</h1>
-          <p className="admin-form-subtitle">Manage individual user accounts and permissions</p>
+          <h1 className="admin-form-title">{isAdmin ? 'Admin: User Profile' : 'My Profile'}</h1>
+          <p className="admin-form-subtitle">{isAdmin ? 'Manage individual user accounts and permissions' : 'Update your personal information'}</p>
         </div>
 
         {/* Form Body */}
@@ -81,6 +98,7 @@ export default function UserProfile() {
                   const u = users.find(x => x.id === e.target.value);
                   if (u) selectUser(u);
                 }}
+                disabled={(user?.roles || []).includes('Admin') ? false : true}
               >
                 {users.map(u => (
                   <option key={u.id} value={u.id}>
@@ -119,6 +137,7 @@ export default function UserProfile() {
                 multiple
                 value={userRoles}
                 onChange={e => setUserRoles(Array.from(e.target.selectedOptions).map(o => o.value))}
+                disabled={(user?.roles || []).includes('Admin') ? false : true}
               >
                 {roles.map(r => (
                   <option key={r} value={r}>

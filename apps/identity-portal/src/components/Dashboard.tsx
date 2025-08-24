@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import './dashboard.css';
 
 export const Dashboard = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, reloadProfile } = useAuth();
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -12,6 +12,18 @@ export const Dashboard = () => {
       window.location.href = 'http://identity.asafarim.local:5177/login';
     }
   }, [isAuthenticated]);
+
+  // Reload profile when tab becomes visible and once on mount to ensure fresh data
+  useEffect(() => {
+    void reloadProfile();
+    const onVis = () => {
+      if (!document.hidden) {
+        void reloadProfile();
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, [reloadProfile]);
 
   return (
     <div className="dashboard-content">
@@ -40,6 +52,13 @@ export const Dashboard = () => {
                   disabled 
                   readOnly
                 />
+                <label className="input-label">Username</label>
+                <input 
+                  className="profile-input" 
+                  value={user?.userName || ''} 
+                  disabled 
+                  readOnly
+                />
               </div>
               <div className="input-group">
                 <label className="input-label">Assigned Roles</label>
@@ -57,34 +76,13 @@ export const Dashboard = () => {
           <section className="actions-section">
             <h2 className="section-title">Quick Actions</h2>
             <div className="action-grid">
-              {user?.roles?.includes('Admin') ? (
-                <button
-                  className="action-button btn-primary"
-                  onClick={() => (window.location.href = '/admin/user-profile')}
-                >
-                  <span className="icon">👤</span>
-                  Edit Profile
-                </button>
-              ) : (
-                <button
-                  className="action-button btn-primary"
-                  disabled={busy}
-                  onClick={async () => {
-                    const email = prompt('New email', user?.email ?? '');
-                    if (email === null) return;
-                    setBusy(true);
-                    try {
-                      await identityService.updateProfile({ email });
-                      window.location.reload();
-                    } finally {
-                      setBusy(false);
-                    }
-                  }}
-                >
-                  <span className="icon">✏️</span>
-                  Edit Profile
-                </button>
-              )}
+              <button
+                className="action-button btn-primary"
+                onClick={() => (window.location.href = (user?.roles || []).some(role => role === 'Admin' || role === 'SuperAdmin' || role === 'admin' || role === 'superadmin') ? '/admin/user-profile' : '/me')}
+              >
+                <span className="icon">👤</span>
+                Edit Profile
+              </button>
 
               <button
                 className="action-button btn-danger"
