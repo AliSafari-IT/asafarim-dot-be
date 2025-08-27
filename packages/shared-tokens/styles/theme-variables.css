@@ -26,6 +26,7 @@
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
   --color-neutral: #3b82f6;
+  --color-sky-variant: #8fb6f5;
 
   --color-primary-rgb: 59, 130, 246;
   --color-primary-dark-rgb: 37, 99, 235;
@@ -140,6 +141,8 @@
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
   --color-neutral: #3b82f6;
+  --color-sky-variant-dark: #1867e7;
+  --color-sky-variant: var(--color-sky-variant-dark);
 
   --color-brand-50: 30, 41, 59;
   --color-brand-500: 96, 165, 250;

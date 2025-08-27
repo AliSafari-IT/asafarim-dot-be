@@ -1,0 +1,12 @@
+.footer {
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-content {
+    /*  w-full max-w-6xl mx-auto px-4 py-3 text-center */
+    width: 100%;
+    max-width: 6xl;
+    margin: 0 auto;
+    padding: 1rem;
+    text-align: center;
+}

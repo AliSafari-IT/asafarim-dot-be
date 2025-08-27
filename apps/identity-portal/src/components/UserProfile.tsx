@@ -96,16 +96,9 @@ export default function UserProfile() {
     }
   };
 
-  const isAdmin = (user?.roles || []).includes('Admin');
-
   return (
     <div className="admin-user-profile-container">
       <div className="admin-user-profile-card">
-        {/* Premium Header */}
-        <div className="admin-form-header">
-          <h1 className="admin-form-title">{isAdmin ? 'Admin: User Profile' : 'My Profile'}</h1>
-          <p className="admin-form-subtitle">{isAdmin ? 'Manage individual user accounts and permissions' : 'Update your personal information'}</p>
-        </div>
 
         {/* Form Body */}
         <div className="admin-form-body">

@@ -5,7 +5,7 @@
   "type": "module",
   "files": [
     "components",
-    "styles",
+    "index.css",
     "package.json",
     "tsconfig.json"
   ],
@@ -18,7 +18,8 @@
   "exports": {
     ".": "./index.ts",
     "./components/*": "./components/*",
-    "./styles/*": "./styles/*"
+    "./styles/*": "./styles/*",
+    "./index.css": "./index.css"
   },
   "typesVersions": {
     "*": {

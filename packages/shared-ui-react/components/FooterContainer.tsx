@@ -1,10 +1,12 @@
-import React, { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react';
+import './footer.css';
+
 export default function FooterContainer({children}: PropsWithChildren) {
     return (
-      <footer className="border-t w-full">
+      <footer className="footer">
         {children}
         {!children && (
-          <div className="w-full max-w-6xl mx-auto px-4 py-3 text-center">
+          <div className="footer-content">
             {new Date().getFullYear()} ASafariM — All rights reserved.
           </div>
         )}

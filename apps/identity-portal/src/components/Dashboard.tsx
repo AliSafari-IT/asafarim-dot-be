@@ -13,129 +13,97 @@ export const Dashboard = () => {
     }
   }, [isAuthenticated]);
 
-  // Reload profile when tab becomes visible and once on mount to ensure fresh data
+  // Refresh profile on mount and when tab becomes visible
   useEffect(() => {
     void reloadProfile();
     const onVis = () => {
-      if (!document.hidden) {
-        void reloadProfile();
-      }
+      if (!document.hidden) void reloadProfile();
     };
     document.addEventListener('visibilitychange', onVis);
     return () => document.removeEventListener('visibilitychange', onVis);
   }, [reloadProfile]);
 
+  const roles = (user?.roles || ['Viewer']).join(', ');
+
   return (
-    <div className="dashboard-content">
-      <div className="dashboard-card">
-        {/* Premium Header Section */}
-        <div className="dashboard-header">
-          <div className="dashboard-welcome">
-            <h1 className="dashboard-title" data-text="Welcome back!">
-              Welcome back!
-            </h1>
-            <p className="dashboard-subtitle">{user?.firstName || user?.email}</p>
+    <div className="dash">
+      <header className="dash-header">
+        <div className="dash-header-inner">
+          <h1 className="dash-title">Dashboard</h1>
+          <p className="dash-subtitle">{user?.firstName || user?.email}</p>
+        </div>
+      </header>
+
+      <main className="dash-main">
+        <section className="dash-grid">
+          <article className="card">
+            <h2 className="card-title">Account</h2>
+            <div className="field">
+              <label>Email</label>
+              <input className="field-input" value={user?.email || ''} readOnly />
+            </div>
+            <div className="field">
+              <label>Username</label>
+              <input className="field-input" value={user?.userName || ''} readOnly />
+            </div>
+          </article>
+
+          <article className="card">
+            <h2 className="card-title">Access</h2>
+            <div className="field">
+              <label>Roles</label>
+              <input className="field-input" value={roles} readOnly />
+            </div>
+          </article>
+        </section>
+
+        <section className="card actions">
+          <h2 className="card-title">Actions</h2>
+          <div className="actions-row">
+            <button
+              className="btn btn-primary"
+              onClick={() => (window.location.href = (user?.roles || []).some(r => /^(admin|superadmin)$/i.test(r)) ? '/admin/user-profile' : '/me')}
+            >
+              Edit profile
+            </button>
+
+            <button
+              className="btn btn-outline"
+              disabled={busy}
+              onClick={async () => {
+                const currentPassword = prompt('Current password') ?? '';
+                const newPassword = prompt('New password') ?? '';
+                const confirmPassword = prompt('Confirm new password') ?? '';
+                if (!currentPassword || !newPassword) return;
+                setBusy(true);
+                try {
+                  await identityService.changePassword({ currentPassword, newPassword, confirmPassword });
+                  alert('Password changed successfully');
+                } catch (e: unknown) {
+                  alert((e as Error)?.message ?? 'Failed to change password');
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              Change password
+            </button>
+
+            {(user?.roles || []).some(r => /^(admin|superadmin)$/i.test(r)) && (
+              <button className="btn" onClick={() => (window.location.href = '/admin/users')}>
+                Manage users
+              </button>
+            )}
+
+            <button className="btn" onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')}>
+              Open blog
+            </button>
+            <button className="btn" onClick={() => window.open('http://web.asafarim.local:5175', '_blank')}>
+              Web portal
+            </button>
           </div>
-        </div>
-
-        {/* Body Content */}
-        <div className="dashboard-body">
-          {/* Profile Information */}
-          <section className="profile-section">
-            <h2 className="section-title">Profile Information</h2>
-            <div className="profile-grid">
-              <div className="input-group">
-                <label className="input-label">Email Address</label>
-                <input 
-                  className="profile-input" 
-                  value={user?.email || ''} 
-                  disabled 
-                  readOnly
-                />
-                <label className="input-label">Username</label>
-                <input 
-                  className="profile-input" 
-                  value={user?.userName || ''} 
-                  disabled 
-                  readOnly
-                />
-              </div>
-              <div className="input-group">
-                <label className="input-label">Assigned Roles</label>
-                <input 
-                  className="profile-input" 
-                  value={(user?.roles || ['Viewer']).join(' • ')} 
-                  disabled 
-                  readOnly
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Quick Actions */}
-          <section className="actions-section">
-            <h2 className="section-title">Quick Actions</h2>
-            <div className="action-grid">
-              <button
-                className="action-button btn-primary"
-                onClick={() => (window.location.href = (user?.roles || []).some(role => role === 'Admin' || role === 'SuperAdmin' || role === 'admin' || role === 'superadmin') ? '/admin/user-profile' : '/me')}
-              >
-                <span className="icon">👤</span>
-                Edit Profile
-              </button>
-
-              <button
-                className="action-button btn-danger"
-                disabled={busy}
-                onClick={async () => {
-                  const currentPassword = prompt('Current password') ?? '';
-                  const newPassword = prompt('New password') ?? '';
-                  const confirmPassword = prompt('Confirm new password') ?? '';
-                  if (!currentPassword || !newPassword) return;
-                  setBusy(true);
-                  try {
-                    await identityService.changePassword({ currentPassword, newPassword, confirmPassword });
-                    alert('Password changed successfully');
-                  } catch (e: unknown) {
-                    alert((e as Error)?.message ?? 'Failed to change password');
-                  } finally {
-                    setBusy(false);
-                  }
-                }}
-              >
-                <span className="icon">🔒</span>
-                Change Password
-              </button>
-
-              {user?.roles?.includes('Admin') && (
-                <button
-                  className="action-button btn-admin"
-                  onClick={() => (window.location.href = '/admin/users')}
-                >
-                  <span className="icon">⚙️</span>
-                  Manage Users
-                </button>
-              )}
-
-              <button 
-                className="action-button btn-external" 
-                onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')}
-              >
-                <span className="icon">📝</span>
-                Visit Blog
-              </button>
-
-              <button 
-                className="action-button btn-external" 
-                onClick={() => window.open('http://web.asafarim.local:5175', '_blank')}
-              >
-                <span className="icon">🌐</span>
-                Web Portal
-              </button>
-            </div>
-          </section>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };

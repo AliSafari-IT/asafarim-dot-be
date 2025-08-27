@@ -535,3 +535,142 @@
     border: 2px solid currentColor;
   }
 }
+
+/* --- Neutral, professional dashboard styles --- */
+.dash {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.dash-header {
+  border-bottom: 1px solid var(--color-border);
+  padding: 16px 0;
+}
+
+.dash-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+.dash-subtitle {
+  margin: 4px 0 0 0;
+  color: var(--color-foreground);
+  opacity: 0.75;
+  font-size: 0.95rem;
+}
+
+.dash-main {
+  padding-top: 24px;
+  display: grid;
+  gap: 24px;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.02);
+  overflow: hidden; /* keep focus ring within */
+}
+
+[data-theme="dark"] .card {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.card-title {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.field label {
+  font-size: 0.8rem;
+  color: var(--color-foreground);
+  opacity: 0.8;
+}
+
+.field-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-foreground);
+  box-sizing: border-box;
+  display: block;
+  max-width: 100%;
+  min-height: 40px;
+}
+
+.actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-foreground);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--color-sky-variant);
+}
+
+[data-theme="dark"] .btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.95);
+}
+
+.btn-outline {
+  background: transparent;
+}
+
+/* Input focus style that doesn't spill outside the card */
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary) 25%, transparent);
+}

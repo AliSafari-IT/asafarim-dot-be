@@ -6,6 +6,7 @@ import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotificationProvider from './contexts/NotificationProvider';
 import NotificationContainer from './components/Notifications/NotificationContainer';
+import Navbar from './components/Navbar';
 
 // Pages
 import Login from './pages/Login';
@@ -74,6 +75,7 @@ function App() {
             <Router>
               <NotificationContainer />
               <Toaster />
+              <Navbar />
               <Routes>
               {/* Public routes (accessible when not logged in) */}
               <Route 

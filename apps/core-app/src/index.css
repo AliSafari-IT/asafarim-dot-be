@@ -1,4 +1,4 @@
-@import url("@asafarim/shared-ui-react/styles/theme-variables.css");
+@import url("@asafarim/shared-ui-react/index.css");
 
 body {
   margin: 0;

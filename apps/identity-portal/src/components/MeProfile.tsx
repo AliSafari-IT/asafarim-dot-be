@@ -17,7 +17,7 @@ export default function MeProfile() {
       const profile = await identityService.getProfile();
       setMe(profile);
       setEmail(profile.email || '');
-      setUserName((profile as any).userName || '');
+      setUserName((profile as unknown as { userName: string }).userName || '');
     };
     void load();
   }, []);
@@ -38,12 +38,6 @@ export default function MeProfile() {
   return (
     <div className="admin-user-profile-container">
       <div className="admin-user-profile-card">
-        {/* Header */}
-        <div className="admin-form-header">
-          <h1 className="admin-form-title">My Profile</h1>
-          <p className="admin-form-subtitle">Update your personal information</p>
-        </div>
-
         {/* Form Body */}
         <div className="admin-form-body">
           <div className="admin-form-grid">

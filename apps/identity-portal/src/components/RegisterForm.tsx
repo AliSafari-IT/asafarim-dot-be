@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import "./auth-layout.css";
 
 export const RegisterForm = () => {
   const { register, error, clearError, isLoading } = useAuth();

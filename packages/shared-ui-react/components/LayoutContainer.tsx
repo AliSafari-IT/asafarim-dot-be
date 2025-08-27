@@ -1,5 +1,5 @@
 // LayoutContainer.tsx responsive and themeable
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { type PropsWithChildren, useEffect } from 'react';
 
 export default function LayoutContainer({
   children,

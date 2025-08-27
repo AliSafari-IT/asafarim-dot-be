@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthStatus from '../AuthStatus';
 import { ThemeToggle } from '@asafarim/react-themes';
-import { NavbarProps, NavLinkItem } from './types';
+import type { NavbarProps, NavLinkItem } from './types';
 import './Navbar.css';
 
 const defaultRenderLink = (link: NavLinkItem, isMobile = false) => {
