@@ -21,6 +21,11 @@
   --color-foreground: #1e293b;
   --color-foreground-muted: #64748b;
   --color-border: #e2e8f0;
+  --color-canceled: #ef4444;
+  --color-success: #22c55d;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+  --color-neutral: #3b82f6;
 
   --color-primary-rgb: 59, 130, 246;
   --color-primary-dark-rgb: 37, 99, 235;
@@ -129,6 +134,11 @@
   --color-foreground: #f8fafc;
   --color-foreground-muted: #cbd5e1;
   --color-border: #334155;
+  --color-canceled: #ef4444;
+  --color-success: #22c55d;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+  --color-neutral: #3b82f6;
 
   --color-brand-50: 30, 41, 59;
   --color-brand-500: 96, 165, 250;

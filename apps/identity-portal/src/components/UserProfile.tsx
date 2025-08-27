@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './admin-components.css';
 import { useAuth } from '../hooks/useAuth';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
@@ -17,6 +17,8 @@ export default function UserProfile() {
   const [userName, setUserName] = useState('');
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
@@ -96,7 +98,7 @@ export default function UserProfile() {
 
         {/* Form Body */}
         <div className="admin-form-body">
-          <div className="admin-form-grid">
+          <div className="admin-form-grid admin-form-grid-improved">
             <div className="admin-form-group">
               <label className="admin-form-label">Select User</label>
               <select
@@ -138,24 +140,34 @@ export default function UserProfile() {
               />
             </div>
 
-            <div className="admin-form-group">
+            <div className="admin-form-group admin-roles-section">
               <label className="admin-form-label">User Roles</label>
-              <select
-                className="admin-form-select"
-                multiple
-                value={userRoles}
-                onChange={e => setUserRoles(Array.from(e.target.selectedOptions).map(o => o.value))}
-                disabled={(user?.roles || []).includes('Admin') ? false : true}
-              >
-                {roles.map(r => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
+              <div className="admin-roles-grid">
+                {roles.map(role => (
+                  <label key={role} className="admin-role-checkbox-item">
+                    <input
+                      type="checkbox"
+                      className="admin-role-checkbox"
+                      checked={userRoles.includes(role)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setUserRoles([...userRoles, role]);
+                        } else {
+                          setUserRoles(userRoles.filter(r => r !== role));
+                        }
+                      }}
+                      disabled={!(user?.roles || []).includes('Admin')}
+                    />
+                    <span className="admin-role-checkbox-label">{role}</span>
+                  </label>
                 ))}
-              </select>
+              </div>
             </div>
 
-            <div className="admin-form-group">
+            <div className="admin-form-actions">
+              <button className="admin-cancel-button" onClick={() => navigate('/dashboard')}>
+                Cancel and Return to Dashboard
+              </button>
               <button 
                 className="admin-save-button" 
                 disabled={busy || !selectedId} 

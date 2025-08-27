@@ -45,8 +45,125 @@
 
 .admin-form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; max-width: 560px; margin: 0 auto; }
 
+.admin-form-grid-improved {
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 640px;
+}
+
+@media (min-width: 768px) {
+  .admin-form-grid-improved {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2rem;
+  }
+  
+  .admin-roles-section {
+    grid-column: 1 / -1;
+  }
+  
+  .admin-form-actions {
+    grid-column: 1 / -1;
+  }
+}
+
 .admin-form-group {
   position: relative;
+}
+
+.admin-roles-section {
+  margin-top: 0.5rem;
+}
+
+.admin-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .admin-roles-grid {
+  background: rgba(30, 41, 59, 0.3);
+  border-color: rgba(71, 85, 105, 0.4);
+}
+
+.admin-role-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+[data-theme="dark"] .admin-role-checkbox-item {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(71, 85, 105, 0.3);
+}
+
+.admin-role-checkbox-item:hover {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.05);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-role-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.admin-role-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-role-checkbox-item:has(.admin-role-checkbox:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-role-checkbox-item:has(.admin-role-checkbox:disabled):hover {
+  transform: none;
+  border-color: var(--color-border);
+  background: var(--color-background);
+  box-shadow: none;
+}
+
+.admin-role-checkbox-label {
+  font-weight: 500;
+  color: var(--color-foreground);
+  user-select: none;
+}
+
+.admin-form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+@media (max-width: 480px) {
+  .admin-form-actions {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .admin-roles-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
 }
 
 .admin-form-label { display: block; font-weight: 600; font-size: 0.8rem; color: var(--color-foreground-muted); margin-bottom: 0.35rem; }
@@ -78,8 +195,44 @@
   color: white;
 }
 
-.admin-save-button { padding: 0.9rem 1.1rem; background: var(--color-primary); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background-color .2s ease, transform .15s ease; width: 100%; }
+.admin-save-button { 
+  padding: 0.9rem 1.1rem; 
+  background: var(--color-primary); 
+  color: white; 
+  border: none; 
+  border-radius: 10px; 
+  font-weight: 600; 
+  font-size: 0.95rem; 
+  cursor: pointer; 
+  transition: background-color .2s ease, transform .15s ease; 
+  width: 100%; 
+  position: relative;
+  overflow: hidden;
+}
 
+.admin-cancel-button { 
+  padding: 0.9rem 1.1rem; 
+  background: var(--color-surface); 
+  color: var(--color-foreground-muted); 
+  border: 1px solid var(--color-border); 
+  border-radius: 10px; 
+  font-weight: 600; 
+  font-size: 0.95rem; 
+  cursor: pointer; 
+  transition: all .2s ease; 
+  width: 100%; 
+}
+
+[data-theme="dark"] .admin-cancel-button {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(71, 85, 105, 0.4);
+}
+
+.admin-cancel-button:hover {
+  background: var(--color-border);
+  color: var(--color-foreground);
+  transform: translateY(-1px);
+}
 .admin-save-button::before {
   content: '';
   position: absolute;
@@ -93,6 +246,10 @@
 
 .admin-save-button:hover::before {
   left: 100%;
+}
+
+.admin-save-button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
 }
 
 .admin-save-button:hover:not(:disabled) { transform: translateY(-1px); }
