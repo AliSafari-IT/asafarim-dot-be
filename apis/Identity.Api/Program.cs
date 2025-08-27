@@ -306,7 +306,7 @@ app.MapGet(
             var roleNames = await users.GetRolesAsync(user);
             return Results.Ok(
                 new MeResponse(user.Id.ToString(), user.Email, user.UserName, roleNames.ToArray())
-                );
+            );
         }
     )
     .RequireAuthorization();
@@ -339,7 +339,9 @@ app.MapPut(
                 );
 
             var rolesNow = await users.GetRolesAsync(user);
-            return Results.Ok(new MeResponse(user.Id.ToString(), user.Email, user.UserName, rolesNow.ToArray()));
+            return Results.Ok(
+                new MeResponse(user.Id.ToString(), user.Email, user.UserName, rolesNow.ToArray())
+            );
         }
     )
     .RequireAuthorization();

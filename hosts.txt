@@ -1,0 +1,9 @@
+# Add these lines to your hosts file (C:\Windows\System32\drivers\etc\hosts)
+# You'll need to run Notepad as administrator to edit the hosts file
+
+127.0.0.1 web.asafarim.local
+127.0.0.1 ai.asafarim.local
+127.0.0.1 identity.asafarim.local
+127.0.0.1 blog.asafarim.local
+127.0.0.1 jobs.asafarim.local
+127.0.0.1 asafarim.local

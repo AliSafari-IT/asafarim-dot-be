@@ -16,6 +16,7 @@
     "api:ai": "dotnet run --project apis/Ai.Api/Ai.Api.csproj",
     "api:identity": "dotnet run --project apis/Identity.Api/Identity.Api.csproj",
     "api:core": "dotnet run --project apis/Core.Api/Core.Api.csproj",
+    "api:core:build": "dotnet build apis/Core.Api/Core.Api.csproj",
     "preapi": "kill-port 5000 5001 5101 5102 5054",
     "api": "concurrently -n ai,identity,core -c \"blue,magenta,yellow\" \"pnpm api:ai\" \"pnpm api:identity\" \"pnpm api:core\"",
     "app": "concurrently \"pnpm dev\" \"pnpm api\"",
