@@ -1,18 +1,17 @@
-
 /**
  * Global CSS overrides for the Blog (Docusaurus)
  * Aligned with identity-portal design tokens
  */
 
 /* Base tokens */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100..900&display=swap");
 
 :root {
-  --global-font-family-base: 'Inter', sans-serif;
-  --global-font-family-monospace: 'Montserrat', sans-serif;
-  --global-font-family-headings: 'Roboto', sans-serif;
+  --global-font-family-base: "Inter", sans-serif;
+  --global-font-family-monospace: "Montserrat", sans-serif;
+  --global-font-family-headings: "Roboto", sans-serif;
 
   /* Theme primitives (light) */
   --color-primary: #3b82f6;
@@ -36,8 +35,8 @@
   --color-border-rgb: 226, 232, 240;
 
   /* Brand helpers used in components */
-  --color-brand-50: 219, 234, 254;   /* rgb */
-  --color-brand-500: 59, 130, 246;   /* rgb */
+  --color-brand-50: 219, 234, 254; /* rgb */
+  --color-brand-500: 59, 130, 246; /* rgb */
 
   /* Typographic scale */
   --radius-xl: 16px;
@@ -62,7 +61,7 @@
   --global-font-weight-regular: 400;
   --global-font-weight-light: 300;
   --global-font-weight-thin: 100;
-  
+
   --global-font-size-xs: 0.75rem;
   --global-font-size-sm: 0.875rem;
   --global-font-size-md: 1rem;
@@ -102,9 +101,12 @@
   --global-border-width-4xl: 32px;
 
   --global-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --global-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --global-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --global-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --global-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --global-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --global-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
   --global-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   --global-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 
@@ -128,7 +130,7 @@
 }
 
 /* Dark mode mappings */
-[data-theme='dark'],
+[data-theme="dark"],
 .dark {
   --color-primary: #60a5fa;
   --color-primary-dark: #3b82f6;
@@ -158,13 +160,19 @@
   --ifm-font-color-base: var(--color-foreground);
   --ifm-border-color: var(--color-border);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
 }
 
 body {
   font-family: var(--global-font-family-base);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--global-font-family-headings);
 }
 
@@ -188,32 +196,59 @@ select {
 button {
   font-family: var(--global-font-family-base);
 }
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   font-family: var(--global-font-family-base);
 }
-input:focus-visible, textarea:focus-visible, select:focus-visible {
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
   font-family: var(--global-font-family-base);
 }
-input:focus-visible, textarea:focus-visible, select:focus-visible {
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
   font-family: var(--global-font-family-base);
 }
-input:focus-visible, textarea:focus-visible, select:focus-visible {
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
   font-family: var(--global-font-family-base);
 }
-input:focus-visible, textarea:focus-visible, select:focus-visible {
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
   font-family: var(--global-font-family-base);
 }
 
 /* Utility hooks for components */
-.hero__title { color: var(--color-foreground); }
-.hero__subtitle { color: var(--color-brand-50); }
-.button--primary { background: rgb(var(--color-brand-500)); border-radius: var(--radius-xl); }
+.hero__title {
+  color: var(--color-foreground);
+}
+.hero__subtitle {
+  color: var(--color-brand-50);
+}
+.button--primary {
+  background: rgb(var(--color-brand-500));
+  border-radius: var(--radius-xl);
+}
 
-.text-fg        { color: var(--color-foreground); }
-.text-muted     { color: var(--color-foreground-muted); }
-.bg-brand-50    { background: rgb(var(--color-brand-50)); }
-.bg-brand-500   { background: rgb(var(--color-brand-500)); }
-.rounded-xl     { border-radius: var(--radius-xl); }
+.text-fg {
+  color: var(--color-foreground);
+}
+.text-muted {
+  color: var(--color-foreground-muted);
+}
+.bg-brand-50 {
+  background: rgb(var(--color-brand-50));
+}
+.bg-brand-500 {
+  background: rgb(var(--color-brand-500));
+}
+.rounded-xl {
+  border-radius: var(--radius-xl);
+}
 
 .authStatusContainer {
   display: flex;
@@ -248,7 +283,6 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   outline: 2px solid var(--ifm-color-primary);
 }
 
-
 .authStatusContainer button:disabled {
   background-color: var(--ifm-color-primary-light);
   cursor: not-allowed;
@@ -257,4 +291,3 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 .authStatusContainer button:disabled:hover {
   background-color: var(--ifm-color-primary-light);
 }
-

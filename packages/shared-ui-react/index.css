@@ -3,3 +3,5 @@
 /* Component styles re-exported for convenience */
 @import url("./components/Navbar/Navbar.css");
 @import url("./components/footer.css");
+@import url("./components/header.css");
+

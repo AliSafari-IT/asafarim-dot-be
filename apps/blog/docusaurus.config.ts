@@ -36,29 +36,77 @@ const config: Config = {
 
   presets: [
     [
-      "classic",
+      '@docusaurus/preset-classic',
       {
+        pages: {
+          path: 'src/pages',
+          routeBasePath: '',
+          include: ['**/*.{js,jsx,ts,tsx,md,mdx}'],
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+          ],
+          mdxPageComponent: '@theme/MDXPage',
+          remarkPlugins: [require('./my-remark-plugin')],
+          rehypePlugins: [],
+          beforeDefaultRemarkPlugins: [],
+          beforeDefaultRehypePlugins: [],
+        },
         docs: {
           sidebarPath: "./sidebars.ts",
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+            "https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/apps/blog",
         },
         blog: {
+          path: 'blog',
+          // Simple use-case: string editUrl
+          // editUrl: 'https://github.com/facebook/docusaurus/edit/main/website/',
+          // Advanced use-case: functional editUrl
+          editUrl: ({locale, blogDirPath, blogPath, permalink}) =>
+            `https://github.com/AliSafari-IT/asafarim-dot-be/edit/main/apps/blog/${blogDirPath}/${blogPath}`,
+          editLocalizedFiles: false,
+          blogTitle: 'Blog title',
+          blogDescription: 'Blog',
+          blogSidebarCount: 5,
+          blogSidebarTitle: 'All our posts',
+          routeBasePath: 'blog',
+          include: ['**/*.{md,mdx}'],
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+          ],
+          postsPerPage: 10,
+          blogListComponent: '@theme/BlogListPage',
+          blogPostComponent: '@theme/BlogPostPage',
+          blogTagsListComponent: '@theme/BlogTagsListPage',
+          blogTagsPostsComponent: '@theme/BlogTagsPostsPage',
+          remarkPlugins: [require('./my-remark-plugin')],
+          rehypePlugins: [],
+          beforeDefaultRemarkPlugins: [],
+          beforeDefaultRehypePlugins: [],
+          truncateMarker: /<!--\s*(truncate)\s*-->/,
           showReadingTime: true,
           feedOptions: {
-            type: ["rss", "atom"],
-            xslt: true,
+            type: ['rss', 'atom', 'json'],
+            title: 'ASafariM Blog',
+            description: 'Sharing my thoughts and experiences',
+            copyright: 'Copyright © ' + new Date().getFullYear() + ' ASafariM',
+            language: undefined,
+            createFeedItems: async (params) => {
+              const {blogPosts, defaultCreateFeedItems, ...rest} = params;
+              return defaultCreateFeedItems({
+                // keep only the 10 most recent blog posts in the feed
+                blogPosts: blogPosts.filter((item, index) => index < 10),
+                ...rest,
+              });
+            },
           },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-          // Useful options to enforce blogging best practices
-          onInlineTags: "warn",
-          onInlineAuthors: "warn",
-          onUntruncatedBlogPosts: "warn",
         },
         theme: {
           customCss: "./src/css/custom.css",
@@ -169,15 +217,15 @@ const config: Config = {
           items: [
             {
               label: "Stack Overflow",
-              href: "https://stackoverflow.com/questions/tagged/docusaurus",
+              href: "https://stackoverflow.com/users/10703628/ali-safari",
             },
             {
               label: "Discord",
-              href: "https://discordapp.com/invite/docusaurus",
+              href: "https://discord.com/invite/ali-safari",
             },
             {
               label: "X",
-              href: "https://x.com/docusaurus",
+              href: "https://x.com/asafarim",
             },
           ],
         },
@@ -190,12 +238,12 @@ const config: Config = {
             },
             {
               label: "GitHub",
-              href: "https://github.com/facebook/docusaurus",
+              href: "https://github.com/AliSafari-IT/asafarim-dot-be",
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} ASafariM, Inc. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

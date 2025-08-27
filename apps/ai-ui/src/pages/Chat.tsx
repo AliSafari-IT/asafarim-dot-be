@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api } from '../api'
+import "./Chat.css"
 
 export default function Chat() {
   const [prompt, setPrompt] = useState('')
@@ -11,13 +12,14 @@ export default function Chat() {
   }
 
   return (
-    <div>
-      <h1>Aptly – Chat (stub)</h1>
-      <input value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Ask something" style={{ width: '100%' }} />
-      <div style={{ marginTop: 8 }}>
+    <div className="ai-ui-container">
+      <h1 className="ai-ui-title">Chat (stub)</h1>
+      <input value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Ask something" 
+      className="ai-ui-input" />
+      <div className="ai-ui-buttons">
         <button onClick={send}>Send</button>
       </div>
-      {answer && <pre style={{ marginTop: 12 }}>{answer}</pre>}
+      {answer && <pre className="ai-ui-cover-letter">{answer}</pre>}
     </div>
   )
 }

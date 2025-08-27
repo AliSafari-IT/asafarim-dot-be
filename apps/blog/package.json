@@ -16,10 +16,11 @@
     "typecheck": "tsc"
   },
   "peerDependencies": {
-    "@asafarim/shared-ui-react": "workspace:*",
-    "@asafarim/shared-tokens": "workspace:*"
+    "@asafarim/shared-tokens": "workspace:*",
+    "@asafarim/shared-ui-react": "workspace:*"
   },
   "dependencies": {
+    "@asafarim/react-themes": "^1.6.1",
     "@docusaurus/core": "3.8.1",
     "@docusaurus/preset-classic": "3.8.1",
     "@mdx-js/react": "^3.0.0",

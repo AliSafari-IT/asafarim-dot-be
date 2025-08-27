@@ -1,0 +1,161 @@
+/* Blog-specific navbar styles */
+.blog-navbar {
+  --navbar-height: 60px;
+  --navbar-padding: 1rem;
+  --navbar-bg: var(--ifm-navbar-background-color);
+  --navbar-text: var(--ifm-navbar-link-color);
+  --navbar-text-hover: var(--ifm-navbar-link-hover-color);
+  --navbar-active: var(--ifm-color-primary);
+  --navbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Override shared navbar styles for Docusaurus */
+.blog-navbar .nav-root {
+  background: var(--navbar-bg);
+  box-shadow: var(--navbar-shadow);
+  height: var(--navbar-height);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background-color var(--ifm-transition-fast) ease;
+}
+
+.blog-navbar .nav-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--ifm-navbar-padding-horizontal);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.blog-navbar .nav-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.blog-navbar .nav-center {
+  display: flex;
+  align-items: center;
+  margin: 0 auto 0 0;
+  padding-left: 2rem;
+}
+
+/* Brand styles */
+.blog-navbar .brand {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: var(--navbar-text);
+  text-decoration: none;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  margin-right: 2rem;
+}
+
+.blog-navbar .brand__logo {
+  height: 2rem;
+  margin-right: 0.5rem;
+}
+
+/* Navigation links */
+.blog-navbar .nav-link {
+  color: var(--navbar-text);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--ifm-global-radius);
+  transition: color var(--ifm-transition-fast) ease,
+              background-color var(--ifm-transition-fast) ease;
+}
+
+.blog-navbar .nav-link:hover {
+  color: var(--navbar-text-hover);
+  background-color: var(--ifm-color-emphasis-200);
+}
+
+.blog-navbar .nav-link--active {
+  color: var(--navbar-active);
+  font-weight: 600;
+}
+
+/* Mobile menu styles */
+@media (max-width: 996px) {
+  .blog-navbar .nav-center {
+    display: none;
+  }
+  
+  .blog-navbar .nav-list--vertical {
+    padding: 1rem 0;
+  }
+  
+  .blog-navbar .nav-link--mobile {
+    display: block;
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 997px) {
+  .blog-navbar .nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+  }
+  
+  .blog-navbar .nav-list {
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+/* Theme toggle adjustments */
+.blog-navbar .theme-toggle {
+  margin-left: 1rem;
+}
+
+/* Auth status styles */
+.blog-navbar .auth-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.blog-navbar .auth-button {
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.blog-navbar .auth-button--signin {
+  background-color: var(--ifm-color-primary);
+  color: white;
+  border: 1px solid var(--ifm-color-primary);
+}
+
+.blog-navbar .auth-button--signin:hover {
+  background-color: var(--ifm-color-primary-dark);
+  border-color: var(--ifm-color-primary-dark);
+}
+
+.blog-navbar .auth-button--signout {
+  background: transparent;
+  color: var(--ifm-color-emphasis-700);
+  border: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.blog-navbar .auth-button--signout:hover {
+  background: var(--ifm-color-emphasis-100);
+  border-color: var(--ifm-color-emphasis-500);
+}

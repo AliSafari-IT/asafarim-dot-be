@@ -1,35 +1,24 @@
-/* Use central theme variables */
-@import url("@asafarim/shared-tokens/index.css");
+@import url("@asafarim/shared-ui-react/index.css");
 
-body {
-  margin: 0;
-  padding: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  color: var(--color-foreground);
-  background-color: var(--color-background);
-  font-family: var(--global-font-family-base);
+:root {
+  
+  /* Footer light mode */
+  --footer-bg: #f8fafc;
+  --footer-text: #475569;
+  --footer-text-hover: #1e293b;
+  --footer-divider: #e2e8f0;
+  --footer-link-hover: #2563eb;
+  --footer-social-hover: #2563eb;
+  --footer-padding: 2rem 1.5rem;
+  --footer-max-width: 1200px;
+  --footer-link-spacing: 0.75rem;
+  --footer-section-gap: 1.5rem;
 }
 
-/* Mobile view */
-@media (max-width: 1024px) {
-  :root {
-    --global-primary-title-size: 1.5rem;
-    --global-secondary-title-size: 1.25rem;
-    --global-tertiary-title-size: 1rem;
-    --global-quaternary-title-size: 0.875rem;
-    --global-quinary-title-size: 0.75rem;
-    --global-senary-title-size: 0.625rem;
-  }
-}
-
-@media (max-width: 768px) {
-  :root {
-    --global-primary-title-size: 1.25rem;
-    --global-secondary-title-size: 1.125rem;
-    --global-tertiary-title-size: 1.125rem;
-    --global-quaternary-title-size: 1rem;
-    --global-quinary-title-size: 0.875rem;
-    --global-senary-title-size: 0.75rem;
-  }
+/* Dark mode support */
+[data-theme='dark'] {
+  --footer-bg: #0f172a;
+  --footer-text: rgba(255, 255, 255, 0.7);
+  --footer-text-hover: #ffffff;
+  --footer-divider: rgba(255, 255, 255, 0.1);
 }

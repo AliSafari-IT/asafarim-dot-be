@@ -20,6 +20,9 @@
     ]
   },
   "private": true,
+  "peerDependencies": {
+    "@asafarim/shared-ui-react": "workspace:*"
+  },
   "dependencies": {
     "@angular/common": "^20.1.0",
     "@angular/compiler": "^20.1.0",

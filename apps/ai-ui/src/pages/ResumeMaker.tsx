@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@asafarim/shared-ui-react';
 import { coreApi } from '../api';
+import "./ResumeMaker.css";
 
 type FunctionalResumeResponse = {
   userId: string;
@@ -66,15 +67,15 @@ export default function ResumeMaker() {
   if (!loading && !isAuthenticated) {
     const goTo = typeof window !== 'undefined' ? window.location.href : undefined;
     return (
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: 16 }}>
-        <h1>Functional Resume Maker (MVP)</h1>
-        <p style={{ marginTop: 8 }}>
+      <div className="ai-ui-container">
+        <h1 className="ai-ui-title">Functional Resume Maker (MVP)</h1>
+        <p className="ai-ui-cover-letter">
           Create a concise, skills-first CV with AI. To continue, please sign in or create an account.
         </p>
-        <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-          <button onClick={() => signIn(goTo)}>Sign in</button>
+        <div className="ai-ui-buttons">
+          <button onClick={() => signIn(goTo)} className="ai-ui-button">Sign in</button>
           <a href={`http://identity.asafarim.local:5177/register?returnUrl=${encodeURIComponent(goTo || '')}`}>
-            <button>Register</button>
+            <button className="ai-ui-button">Register</button>
           </a>
         </div>
       </div>
@@ -82,51 +83,51 @@ export default function ResumeMaker() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 16 }}>
-      <h1>Functional Resume Maker (MVP)</h1>
-      <div style={{ display: 'grid', gap: 8 }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button onClick={prefillFromAccount} disabled={!isAuthenticated || loading}>
+    <div className="ai-ui-container">
+      <h1 className="ai-ui-title">Functional Resume Maker (MVP)</h1>
+      <div className="ai-ui-cover-letter">
+        <div className="ai-ui-buttons">
+          <button onClick={prefillFromAccount} disabled={!isAuthenticated || loading} className="ai-ui-button">
             Fill from account
           </button>
         </div>
-        <input placeholder="Name" value={name} onChange={e => setName(e.target.value)} />
-        <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-        <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} />
-        <textarea rows={3} placeholder="Professional summary" value={summary} onChange={e => setSummary(e.target.value)} />
-        <input placeholder="Skills (comma-separated)" value={skills} onChange={e => setSkills(e.target.value)} />
-        <textarea rows={6} placeholder="Paste detailed CV (optional)" value={detailedCv} onChange={e => setDetailedCv(e.target.value)} />
-        <button onClick={generate} disabled={busy || !isAuthenticated}>
+        <input placeholder="Name" value={name} onChange={e => setName(e.target.value)} className="ai-ui-input" />
+        <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="ai-ui-input" />
+        <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} className="ai-ui-input" />
+        <textarea rows={3} placeholder="Professional summary" value={summary} onChange={e => setSummary(e.target.value)} className="ai-ui-input" />
+        <input placeholder="Skills (comma-separated)" value={skills} onChange={e => setSkills(e.target.value)} className="ai-ui-input" />
+        <textarea rows={6} placeholder="Paste detailed CV (optional)" value={detailedCv} onChange={e => setDetailedCv(e.target.value)} className="ai-ui-input" />
+        <button onClick={generate} disabled={busy || !isAuthenticated} className="ai-ui-button">
           {busy ? 'Generating...' : 'Generate Functional Resume'}
         </button>
       </div>
 
       {resp && (
-        <div style={{ marginTop: 16 }}>
-          <h2>Preview</h2>
-          <p><strong>{resp.name}</strong> • {resp.email}{resp.phone ? ` • ${resp.phone}` : ''}</p>
-          <p>{resp.summary}</p>
-          <h3>Core Skills</h3>
-          <ul>{resp.skills.map(s => <li key={s}>{s}</li>)}</ul>
+        <div className="ai-ui-cover-letter">
+          <h2 className="ai-ui-cover-letter-title">Preview</h2>
+          <p className="ai-ui-cover-letter-name"><strong>{resp.name}</strong> • {resp.email}{resp.phone ? ` • ${resp.phone}` : ''}</p>
+          <p className="ai-ui-cover-letter-summary">{resp.summary}</p>
+          <h3 className="ai-ui-cover-letter-title">Core Skills</h3>
+          <ul className="ai-ui-cover-letter-list">{resp.skills.map(s => <li key={s}>{s}</li>)}</ul>
           {!!resp.projects.length && (<>
-            <h3>Projects</h3>
-            <ul>{resp.projects.map((p, idx) => <li key={idx}><strong>{p.title}</strong> — {p.description}</li>)}</ul>
+            <h3 className="ai-ui-cover-letter-title">Projects</h3>
+            <ul className="ai-ui-cover-letter-list">{resp.projects.map((p, idx) => <li key={idx}><strong>{p.title}</strong> — {p.description}</li>)}</ul>
           </>)}
           {!!resp.achievements.length && (<>
-            <h3>Achievements</h3>
-            <ul>{resp.achievements.map((a, idx) => <li key={idx}>{a}</li>)}</ul>
+            <h3 className="ai-ui-cover-letter-title">Achievements</h3>
+            <ul className="ai-ui-cover-letter-list">{resp.achievements.map((a, idx) => <li key={idx}>{a}</li>)}</ul>
           </>)}
         </div>
       )}
 
       {raw && (
-        <div style={{ marginTop: 16 }}>
-          <h2>Raw</h2>
+        <div className="ai-ui-cover-letter">
+          <h2 className="ai-ui-cover-letter-title">Raw</h2>
           <textarea
             readOnly
             rows={10}
             value={raw}
-            style={{ width: '100%', fontFamily: 'monospace' }}
+            className="ai-ui-cover-letter-textarea"
           />
         </div>
       )}

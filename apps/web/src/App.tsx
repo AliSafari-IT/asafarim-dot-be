@@ -8,22 +8,22 @@ import Root from "./theme/Root";
 export default function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
   useEffect(() => {
-    const THEME_KEY = 'asafarim-theme';
-    const COOKIE_NAME = 'asafarim_theme';
+    const THEME_KEY = "asafarim-theme";
+    const COOKIE_NAME = "asafarim_theme";
 
     const getCookie = (name: string) =>
       document.cookie
-        .split(';')
-        .map(c => c.trim())
-        .find(c => c.startsWith(name + '='))
-        ?.split('=')[1];
+        .split(";")
+        .map((c) => c.trim())
+        .find((c) => c.startsWith(name + "="))
+        ?.split("=")[1];
 
     const cookieTheme = getCookie(COOKIE_NAME);
     if (cookieTheme) {
       localStorage.setItem(THEME_KEY, cookieTheme);
     }
 
-    let last = localStorage.getItem(THEME_KEY) || cookieTheme || 'dark';
+    let last = localStorage.getItem(THEME_KEY) || cookieTheme || "dark";
 
     const writeCookie = (value: string) => {
       document.cookie = `${COOKIE_NAME}=${value}; domain=.asafarim.local; path=/; max-age=31536000; samesite=lax`;
@@ -45,11 +45,11 @@ export default function App() {
         }
       }
     };
-    document.addEventListener('visibilitychange', onVis);
+    document.addEventListener("visibilitychange", onVis);
 
     return () => {
       clearInterval(interval);
-      document.removeEventListener('visibilitychange', onVis);
+      document.removeEventListener("visibilitychange", onVis);
     };
   }, []);
 
@@ -60,12 +60,12 @@ export default function App() {
       persistMode={true}
     >
       <Root>
-        <LayoutContainer>
-          <Navbar />
-          <main className="container flex-1 overflow-x-hidden" >
-            <Outlet />
-          </main>
-          <FooterContainer />
+        <LayoutContainer
+          footer={<FooterContainer key={"main footer"} />}
+          header={<Navbar key={"main header"} />}
+          title="Web Portal"
+        >
+          <Outlet />
         </LayoutContainer>
       </Root>
     </ThemeProvider>

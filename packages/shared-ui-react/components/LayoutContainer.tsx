@@ -1,5 +1,5 @@
 // LayoutContainer.tsx responsive and themeable
-import { type PropsWithChildren, useEffect } from 'react';
+import { type PropsWithChildren, useEffect, useState } from "react";
 
 export default function LayoutContainer({
   children,
@@ -11,20 +11,19 @@ export default function LayoutContainer({
   header?: React.ReactNode;
   footer?: React.ReactNode;
 }>) {
+  const [ layoutTitle, setLayoutTitle] = useState<string | undefined>(undefined);
 
-    useEffect(() => {
-        if (title) {
-            document.title = title + " - ASafariM";
-        }
-    }, [title]);
+  useEffect(() => {
+    if (title) {
+      document.title = title || "ASafariM";
+    }
+  }, [title]);
 
   return (
-    <div className="w-full min-h-screen flex flex-col overflow-x-hidden" >
+    <>
       {header}
-      <main role="main" className="flex-grow w-full max-w-full">
-        {children}
-      </main>
+      {children}
       {footer}
-    </div>
+    </>
   );
 }
