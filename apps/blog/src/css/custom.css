@@ -1,4 +1,4 @@
-@import url("@asafarim/shared-ui-react/styles/theme-variables.css");
+@import url("@asafarim/shared-tokens/index.css");
 /* Use central theme variables */
 body {
   margin: 0;

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/theme-variables.css';
+import '@asafarim/shared-tokens/index.css';
 
 export interface AuthStatusProps {
   isAuthenticated: boolean;
@@ -34,7 +34,7 @@ export default function AuthStatus(props: AuthStatusProps) {
   } = props;
 
   const t = {
-    notSignedIn: labels?.notSignedIn ?? 'Not signed in',
+    notSignedIn: labels?.notSignedIn ?? 'Not signed in!',
     signIn: labels?.signIn ?? 'Sign In',
     signOut: labels?.signOut ?? 'Sign Out',
     welcome: labels?.welcome ?? ((email?: string) => `Welcome ${email ?? 'User'}!`),

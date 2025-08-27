@@ -1,7 +1,7 @@
 {
   "name": "@asafarim/identity-portal",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,6 +10,10 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "@asafarim/shared-tokens": "workspace:*",
+    "@asafarim/shared-ui-react": "workspace:*"
   },
   "dependencies": {
     "@asafarim/toast": "1.2.0",
@@ -21,7 +25,6 @@
     "@asafarim/react-privacy-consent": "^1.7.2",
     "@asafarim/react-themes": "^1.6.1",
     "@asafarim/shared": "^1.7.4",
-    "@asafarim/shared-ui-react": "workspace:*",
     "@eslint/js": "^9.33.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",

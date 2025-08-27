@@ -30,7 +30,8 @@
   },
   "peerDependencies": {
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "@asafarim/shared-tokens": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.1.9",

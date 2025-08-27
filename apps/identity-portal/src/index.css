@@ -1,5 +1,5 @@
 /* Use central theme variables */
-@import url("@asafarim/shared-ui-react/styles/theme-variables.css");
+@import url("@asafarim/shared-tokens/index.css");
 
 body {
   margin: 0;

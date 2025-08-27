@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ThemeToggle } from "@asafarim/react-themes";
-import { AuthStatus, HeaderContainer, useAuth } from "@asafarim/shared-ui-react";
+import {
+  AuthStatus,
+  HeaderContainer,
+  useAuth,
+} from "@asafarim/shared-ui-react";
 
 const BREAKPOINT = 768;
+const MOBILE_MENU_BREAKPOINT = 520;
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
+  // current window width
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   // Close the mobile menu if we jump to desktop layout
   useEffect(() => {
     const onResize = () => {
+      setWindowWidth(window.innerWidth);
       if (window.innerWidth >= BREAKPOINT) setOpen(false);
     };
     window.addEventListener("resize", onResize);
@@ -19,11 +27,16 @@ export default function Navbar() {
   }, []);
 
   const Links = ({ vertical = false }: { vertical?: boolean }) => (
-    <ul className={vertical ? "nav-list nav-list--vertical" : "nav-list"} role="list">
+    <ul
+      className={vertical ? "nav-list nav-list--vertical" : "nav-list"}
+      role="list"
+    >
       <li>
         <NavLink
           to="/about"
-          className={({ isActive }) => (isActive ? "nav-link nav-link--active" : "nav-link")}
+          className={({ isActive }) =>
+            isActive ? "nav-link nav-link--active" : "nav-link"
+          }
           onClick={() => setOpen(false)}
         >
           About
@@ -32,7 +45,9 @@ export default function Navbar() {
       <li>
         <NavLink
           to="/contact"
-          className={({ isActive }) => (isActive ? "nav-link nav-link--active" : "nav-link")}
+          className={({ isActive }) =>
+            isActive ? "nav-link nav-link--active" : "nav-link"
+          }
           onClick={() => setOpen(false)}
         >
           Contact
@@ -61,20 +76,28 @@ export default function Navbar() {
               {/* Right: theme + hamburger */}
               <div className="nav-right">
                 {/* Theme toggle in header (hidden on mobile when menu is open) */}
-                <div className={`theme-in-header ${open ? "is-hidden" : ""}`}>
-                  <ThemeToggle showLabels={false} style={{ backgroundColor: "transparent", border: "none", cursor: "pointer" }} />                  
-                </div>
-                <AuthStatus
+                {windowWidth >= MOBILE_MENU_BREAKPOINT && (
+                  <AuthStatus
                     isAuthenticated={isAuthenticated}
                     user={user}
                     loading={loading}
                     labels={{
-                      notSignedIn: ""                     
+                      notSignedIn: "Not signed in!",
                     }}
                     onSignIn={(returnUrl) => signIn(returnUrl)}
                     onSignOut={() => signOut()}
                   />
-
+                )}
+                <div className={`theme-in-header ${open ? "is-hidden" : ""}`}>
+                  <ThemeToggle
+                    showLabels={false}
+                    style={{
+                      backgroundColor: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  />
+                </div>
                 {/* Hamburger (mobile only) */}
                 <button
                   className="hamburger"
@@ -97,7 +120,26 @@ export default function Navbar() {
             <div className="mobile-inner">
               <Links vertical />
               <div className="theme-in-menu">
-                <ThemeToggle showLabels={false} style={{ backgroundColor: "transparent", border: "none", cursor: "pointer" }} />
+                <ThemeToggle
+                  showLabels={false}
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                />
+                {windowWidth < MOBILE_MENU_BREAKPOINT && (
+                  <AuthStatus
+                    isAuthenticated={isAuthenticated}
+                    user={user}
+                    loading={loading}
+                    labels={{
+                      notSignedIn: "",
+                    }}
+                    onSignIn={(returnUrl) => signIn(returnUrl)}
+                    onSignOut={() => signOut()}
+                  />
+                )}
               </div>
             </div>
           </div>

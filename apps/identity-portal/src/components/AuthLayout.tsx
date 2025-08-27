@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { ThemeToggle } from "@asafarim/react-themes";
 import "./auth-layout.css";
+import { AuthStatus } from "@asafarim/shared-ui-react";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -22,7 +23,7 @@ const userMenuItems = [
 ];
 
 export const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
-  const { logout, user } = useAuth();
+  const { isAuthenticated, user, logout} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname; // e.g. '/admin/users'
@@ -58,11 +59,6 @@ export const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
       setMenuItems(userMenuItems);
     }
   }, [user]);
-
-  const handleLogout = async () => {
-    await logout();
-    // Redirect will happen via protected route
-  };
 
   useEffect(() => {
     // Keep all items so the control can resolve and show the current label reliably
@@ -112,13 +108,17 @@ export const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
             <span>ASafariM Identity</span>
           </Link>
           <div className="user-profile-actions">
-            <button
-              onClick={handleLogout}
-              className="identity-btn-logout"
-              style={{ border: "none", backgroundColor: "transparent" }}
-            >
-              Sign Out
-            </button>
+            <AuthStatus
+              isAuthenticated={isAuthenticated}
+              user={user}
+              onSignOut={async () => await logout()}
+              labels={{
+                notSignedIn: "Not signed in",
+                signIn: "Sign In",
+                signOut: "Sign Out",
+                welcome: (email?: string) => `Welcome ${email ?? "User"}!`,
+              }}
+            />
             <ThemeToggle
               size="lg"
               style={{

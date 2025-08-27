@@ -15,6 +15,10 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc"
   },
+  "peerDependencies": {
+    "@asafarim/shared-ui-react": "workspace:*",
+    "@asafarim/shared-tokens": "workspace:*"
+  },
   "dependencies": {
     "@docusaurus/core": "3.8.1",
     "@docusaurus/preset-classic": "3.8.1",
@@ -25,7 +29,6 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@asafarim/shared-ui-react": "file:../../packages/shared-ui-react",
     "@docusaurus/module-type-aliases": "3.8.1",
     "@docusaurus/tsconfig": "3.8.1",
     "@docusaurus/types": "3.8.1",
