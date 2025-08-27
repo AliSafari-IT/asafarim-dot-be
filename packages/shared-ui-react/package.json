@@ -29,13 +29,16 @@
     }
   },
   "peerDependencies": {
+    "@asafarim/shared-tokens": "workspace:*",
     "react": ">=18",
-    "react-dom": ">=18",
-    "@asafarim/shared-tokens": "workspace:*"
+    "react-dom": ">=18"
   },
   "devDependencies": {
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "typescript": "~5.8.3"
+  },
+  "dependencies": {
+    "@asafarim/react-themes": "^1.6.1"
   }
 }
