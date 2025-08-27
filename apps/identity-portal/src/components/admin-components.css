@@ -375,7 +375,19 @@
   color: white;
 }
 
-.admin-table-button { padding: 0.5rem 0.9rem; background: var(--color-primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background-color .2s ease, transform .15s ease; }
+.admin-table-button { 
+  padding: 0.5rem 0.9rem; 
+  background: var(--color-primary); 
+  color: white; 
+  border: none; 
+  border-radius: 8px; 
+  font-weight: 600; 
+  font-size: 0.85rem; 
+  cursor: pointer; 
+  transition: background-color .2s ease, transform .15s ease; 
+  position: relative;
+  overflow: hidden;
+}
 
 .admin-table-button::before {
   content: '';

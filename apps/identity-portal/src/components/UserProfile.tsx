@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './admin-components.css';
 import { useAuth } from '../hooks/useAuth';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useToast } from '@asafarim/toast';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
@@ -17,6 +18,7 @@ export default function UserProfile() {
   const [userName, setUserName] = useState('');
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
 
   const navigate = useNavigate();
 
@@ -79,7 +81,16 @@ export default function UserProfile() {
           body: JSON.stringify({ roles: userRoles }),
         });
       }
-      alert('User updated');
+      toast.success('User updated successfully', {
+        description: 'Profile information has been saved',
+        durationMs: 4000
+      });
+    } catch (err) {
+      const description = err instanceof Error ? err.message : 'Unknown error occurred';
+      toast.error('Failed to update user', { 
+        description, 
+        durationMs: 6000 
+      });
     } finally {
       setBusy(false);
     }
