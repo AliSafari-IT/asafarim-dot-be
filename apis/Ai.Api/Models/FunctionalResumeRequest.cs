@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Api.Models;
+namespace Ai.Api.Models;
 
 public sealed class FunctionalResumeRequest
 {

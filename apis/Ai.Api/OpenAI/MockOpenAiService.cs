@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Core.Api.OpenAI;
+namespace Ai.Api.OpenAI;
 
 /// <summary>
 /// Mock implementation of OpenAI service for development and testing
@@ -13,6 +13,15 @@ public class MockOpenAiService : IOpenAiService
     public MockOpenAiService(ILogger<MockOpenAiService> logger)
     {
         _logger = logger;
+    }
+
+    public Task<string> ChatAsync(
+        string systemPrompt,
+        string userPrompt,
+        CancellationToken ct = default
+    )
+    {
+        return CompleteAsync(systemPrompt, userPrompt, ct);
     }
 
     public Task<string> CompleteAsync(
@@ -59,15 +68,15 @@ public class MockOpenAiService : IOpenAiService
                         "Secure checkout",
                         "Inventory management",
                         "User authentication",
-                    }
-                }
+                    },
+                },
             },
             achievements = new[]
             {
                 "Successfully delivered projects on time and within budget",
                 "Improved system performance by 40%",
                 "Recognized for excellence in team collaboration",
-            }
+            },
         };
 
         string jsonResponse = JsonSerializer.Serialize(

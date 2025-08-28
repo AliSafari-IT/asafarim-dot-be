@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { api } from '../api'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import "./Chat.css"
 
 export default function Chat() {
@@ -19,7 +21,11 @@ export default function Chat() {
       <div className="ai-ui-buttons">
         <button onClick={send}>Send</button>
       </div>
-      {answer && <pre className="ai-ui-cover-letter">{answer}</pre>}
+      {answer && (
+        <div className="ai-ui-markdown">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{answer}</ReactMarkdown>
+        </div>
+      )}
     </div>
   )
 }

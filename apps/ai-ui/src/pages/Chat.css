@@ -43,3 +43,47 @@
 .ai-ui-cover-letter {
     margin-top: 12px;
 }
+
+/* Markdown output styling */
+.ai-ui-markdown {
+    margin-top: 16px;
+    text-align: left;
+    max-width: 48rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+.ai-ui-markdown h1,
+.ai-ui-markdown h2,
+.ai-ui-markdown h3,
+.ai-ui-markdown h4 {
+    margin: 1em 0 0.5em;
+}
+.ai-ui-markdown p {
+    margin: 0.5em 0;
+}
+.ai-ui-markdown ul,
+.ai-ui-markdown ol {
+    padding-left: 1.25rem;
+    margin: 0.5em 0;
+}
+.ai-ui-markdown a {
+    color: var(--color-info);
+    text-decoration: underline;
+}
+.ai-ui-markdown code {
+    background: var(--color-muted, #f4f4f5);
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.ai-ui-markdown pre {
+    background: var(--color-muted, rgba(15, 23, 42, 0.05));
+    padding: 0.75rem;
+    overflow: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.ai-ui-markdown pre code {
+    background: transparent;
+    padding: 0;
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@asafarim/core-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "predev": "kill-port 5102",
+    "dev": "dotnet watch run --project Core.Api.csproj",
+    "start": "dotnet run --project Core.Api.csproj",
+    "build": "dotnet build Core.Api.csproj",
+    "preapi": "kill-port 5102",
+    "api": "dotnet watch run"
+  },
+  "devDependencies": {
+    "kill-port": "^2.0.1"
+  },
+  "keywords": [],
+  "author": "ASafariM",
+  "license": "ISC",
+  "packageManager": "pnpm@10.14.0"
+}

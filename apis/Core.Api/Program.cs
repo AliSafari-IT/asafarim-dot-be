@@ -1,6 +1,5 @@
 using System.Text;
 using Core.Api;
-using Core.Api.OpenAI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -28,15 +27,7 @@ builder.Services.AddCors(opts =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-// Use mock OpenAI service for development to avoid API key requirements
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddSingleton<IOpenAiService, MockOpenAiService>();
-}
-else
-{
-    builder.Services.AddOpenAi(builder.Configuration);
-}
+
 
 // Add database context if connection string is available
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

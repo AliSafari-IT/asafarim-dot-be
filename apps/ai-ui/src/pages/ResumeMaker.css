@@ -56,3 +56,45 @@
     height: 200px;
     margin-top: 1rem;
 }
+
+/* Resume preview styles */
+.resume-root {
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background: white;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.resume-header {
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+    padding-bottom: .5rem;
+}
+.resume-name {
+    margin: 0 0 .25rem 0;
+    font-size: 1.75rem;
+}
+.resume-contact {
+    color: #475569;
+}
+.resume-list {
+    margin: .25rem 0 0 0;
+    padding-left: 1.25rem;
+}
+.resume-bullets {
+    padding-left: 1.25rem;
+}
+.resume-project { margin-bottom: .5rem; }
+.resume-project-title { font-weight: 600; }
+.resume-project-desc { color: #334155; }
+.two-col { columns: 2; column-gap: 2rem; }
+
+/* Print styles */
+@media print {
+  .ai-ui-buttons, .ai-ui-input, textarea { display: none !important; }
+  .resume-root { border: none; box-shadow: none; max-width: 100%; padding: 0; }
+}

@@ -101,6 +101,9 @@ export const Dashboard = () => {
             <button className="btn" onClick={() => window.open('http://web.asafarim.local:5175', '_blank')}>
               Web portal
             </button>
+            <button className="btn" onClick={() => window.open('http://ai.asafarim.local:5173', '_blank')}>
+              AI portal
+            </button>
           </div>
         </section>
       </main>

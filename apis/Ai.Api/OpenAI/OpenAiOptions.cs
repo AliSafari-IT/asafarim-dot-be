@@ -1,4 +1,4 @@
-namespace Core.Api.OpenAI;
+namespace Ai.Api.OpenAI;
 
 public sealed class OpenAiOptions
 {
@@ -7,4 +7,5 @@ public sealed class OpenAiOptions
     public string Model { get; set; } = "gpt-4o-mini";
     public double Temperature { get; set; } = 0.7;
     public int MaxTokens { get; set; } = 2000;
+    public string? Organization { get; set; }
 }
