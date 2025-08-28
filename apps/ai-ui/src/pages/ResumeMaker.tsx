@@ -235,21 +235,45 @@ ${`
   return (
     <div className="ai-ui-container">
       <h1 className="ai-ui-title">Functional Resume Maker (MVP)</h1>
-      <div className="ai-ui-cover-letter">
-        <div className="ai-ui-buttons">
-          <button onClick={prefillFromAccount} disabled={!isAuthenticated || loading} className="ai-ui-button">
-            Fill from account
+      <div className="ai-ui-cover-letter form-card">
+        <div className="form-header">
+          <div className="ai-ui-buttons">
+            <button onClick={prefillFromAccount} disabled={!isAuthenticated || loading} className="ai-ui-button">
+              Fill from account
+            </button>
+          </div>
+        </div>
+        <div className="form-grid">
+          <div className="form-field">
+            <label htmlFor="name">Full name</label>
+            <input id="name" placeholder="Jane Doe" value={name} onChange={e => setName(e.target.value)} className="ai-ui-input" />
+          </div>
+          <div className="form-field">
+            <label htmlFor="email">Email</label>
+            <input id="email" placeholder="jane@example.com" value={email} onChange={e => setEmail(e.target.value)} className="ai-ui-input" />
+          </div>
+          <div className="form-field">
+            <label htmlFor="phone">Phone</label>
+            <input id="phone" placeholder="+1 555 123 4567" value={phone} onChange={e => setPhone(e.target.value)} className="ai-ui-input" />
+          </div>
+          <div className="form-field form-col-2">
+            <label htmlFor="summary">Professional summary</label>
+            <textarea id="summary" rows={3} placeholder="Short, compelling summary" value={summary} onChange={e => setSummary(e.target.value)} className="ai-ui-input" />
+          </div>
+          <div className="form-field form-col-2">
+            <label htmlFor="skills">Core skills (comma-separated)</label>
+            <input id="skills" placeholder="React, TypeScript, .NET, PostgreSQL" value={skills} onChange={e => setSkills(e.target.value)} className="ai-ui-input" />
+          </div>
+          <div className="form-field form-col-2">
+            <label htmlFor="cv">Detailed CV (optional)</label>
+            <textarea id="cv" rows={6} placeholder="Paste your detailed CV content" value={detailedCv} onChange={e => setDetailedCv(e.target.value)} className="ai-ui-input" />
+          </div>
+        </div>
+        <div className="form-actions">
+          <button onClick={generate} disabled={busy || !isAuthenticated} className="ai-ui-button">
+            {busy ? 'Generating...' : 'Generate Functional Resume'}
           </button>
         </div>
-        <input placeholder="Name" value={name} onChange={e => setName(e.target.value)} className="ai-ui-input" />
-        <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="ai-ui-input" />
-        <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} className="ai-ui-input" />
-        <textarea rows={3} placeholder="Professional summary" value={summary} onChange={e => setSummary(e.target.value)} className="ai-ui-input" />
-        <input placeholder="Skills (comma-separated)" value={skills} onChange={e => setSkills(e.target.value)} className="ai-ui-input" />
-        <textarea rows={6} placeholder="Paste detailed CV (optional)" value={detailedCv} onChange={e => setDetailedCv(e.target.value)} className="ai-ui-input" />
-        <button onClick={generate} disabled={busy || !isAuthenticated} className="ai-ui-button">
-          {busy ? 'Generating...' : 'Generate Functional Resume'}
-        </button>
       </div>
 
       {resp && (

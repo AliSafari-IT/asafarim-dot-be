@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Ai.Api.Models;
 using Ai.Api.OpenAI;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +19,61 @@ public sealed class ResumeController : ControllerBase
         _logger = logger;
         _ai = ai;
     }
+
+// Helper methods
+static string ExtractJson(string content)
+{
+    if (string.IsNullOrWhiteSpace(content)) return "{}";
+    var trimmed = content.Trim();
+
+    // Remove code fences like ```json ... ```
+    if (trimmed.StartsWith("```"))
+    {
+        var firstNewline = trimmed.IndexOf('\n');
+        if (firstNewline >= 0)
+        {
+            trimmed = trimmed[(firstNewline + 1)..].Trim();
+        }
+        if (trimmed.EndsWith("```"))
+        {
+            var lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
+            if (lastFence >= 0)
+            {
+                trimmed = trimmed[..lastFence].Trim();
+            }
+        }
+    }
+
+    // Try full parse
+    if (TryParseJson(trimmed, out var strict)) return strict!;
+
+    // Fallback: take substring between first '{' and last '}'
+    var start = trimmed.IndexOf('{');
+    var end = trimmed.LastIndexOf('}');
+    if (start >= 0 && end > start)
+    {
+        var candidate = trimmed.Substring(start, end - start + 1).Trim();
+        if (TryParseJson(candidate, out strict)) return strict!;
+    }
+
+    // Last resort: return original trimmed
+    return trimmed;
+}
+
+static bool TryParseJson(string text, out string? strict)
+{
+    try
+    {
+        using var doc = JsonDocument.Parse(text);
+        strict = text;
+        return true;
+    }
+    catch
+    {
+        strict = null;
+        return false;
+    }
+}
 
     // GET /resume/health - simple health check endpoint to test API connectivity
     [HttpGet("health")]
@@ -45,7 +101,7 @@ public sealed class ResumeController : ControllerBase
         //     return Unauthorized();
 
         var systemPrompt =
-            "You are an expert resume writer. Produce a concise functional resume in JSON with keys: name, email, phone, summary, skills[], projects[{title, description, highlights[]}], achievements[].";
+            "You are an expert resume writer. Respond with STRICT JSON ONLY (no code fences, no explanations). The JSON must match this shape: { name: string, email: string, phone?: string, summary: string, skills: string[], projects: [{ title: string, description?: string, highlights?: string[] }], achievements: string[] }. Keep content concise and professional.";
         var userPrompt =
             $@"Candidate:
 Name: {req.Name}
@@ -80,12 +136,15 @@ Detailed CV: {req.DetailedCv ?? "(not provided)"}";
             return StatusCode(500, new { error = "Unexpected server error" });
         }
 
+        // Ensure we return strict JSON: strip fences, extract JSON object, and validate
+        var json = ExtractJson(content);
         _logger.LogInformation(
-            "AI resume generated for {UserId} with {SkillCount} skills",
+            "AI resume generated for {UserId} with {SkillCount} skills. Strict JSON length: {Len}",
             sub,
-            req.Skills?.Count ?? 0
+            req.Skills?.Count ?? 0,
+            json?.Length ?? 0
         );
-        return Ok(new { userId = sub, raw = content });
+        return Ok(new { userId = sub, raw = json });
     }
 
     // Real chat endpoint using OpenAI Chat Completions
