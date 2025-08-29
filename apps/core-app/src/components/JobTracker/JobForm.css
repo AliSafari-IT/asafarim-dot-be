@@ -1,0 +1,215 @@
+.job-form-container {
+  background-color: var(--card-bg, var(--color-background));
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-md, 8px);
+  box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05));
+  padding: 20px;
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.job-form-container h2 {
+  margin-top: 0;
+  color: var(--card-text-color, var(--color-foreground));
+  margin-bottom: 20px;
+}
+
+.job-form {
+  display: grid;
+  grid-gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: var(--global-font-weight-medium, 500);
+  color: var(--color-foreground-muted);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px;
+  border: 1px solid var(--input-border-color, var(--card-border-color, var(--color-border)));
+  border-radius: var(--global-border-radius-sm, 4px);
+  font-size: var(--global-font-size-md, 16px);
+  background-color: var(--input-bg, var(--card-bg, var(--color-background)));
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb, 59, 130, 246), 0.2);
+}
+
+/* Placeholder & disabled states */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--color-foreground-muted);
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Select-specific tweaks */
+.form-group select {
+  color: var(--card-text-color, var(--color-foreground));
+  background-color: var(--input-bg, var(--card-bg, var(--color-background)));
+}
+
+/* Option styling (browser support varies) */
+.form-group select option {
+  background-color: var(--input-bg, var(--color-background));
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+/* Enhance option states (support varies by browser) */
+.form-group select option:hover {
+  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.18);
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.form-group select option:checked {
+  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.25);
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.form-group select optgroup {
+  background-color: var(--input-bg, var(--color-background));
+  color: var(--color-foreground-muted);
+}
+
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+  border-color: var(--color-canceled);
+}
+
+.error-message {
+  color: var(--color-canceled);
+  font-size: var(--global-font-size-sm, 14px);
+  margin-top: 5px;
+}
+
+.submit-error {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: rgba(239, 68, 68, 0.12);
+  border-radius: var(--global-border-radius-sm, 4px);
+  color: var(--color-canceled);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Custom select (themed) */
+.custom-select {
+  position: relative;
+}
+
+.custom-select[data-disabled] {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.custom-select__button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--input-border-color, var(--card-border-color, var(--color-border)));
+  border-radius: var(--global-border-radius-sm, 4px);
+  background-color: var(--input-bg, var(--card-bg, var(--color-background)));
+  color: var(--card-text-color, var(--color-foreground));
+  cursor: pointer;
+}
+
+.custom-select__button:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb, 59, 130, 246), 0.2);
+}
+
+.custom-select__chevron {
+  opacity: 0.7;
+}
+
+.custom-select__list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  /* Use near-opaque bg to avoid transparency bleed in dark */
+  background-color: rgba(var(--color-background-rgb, 255, 255, 255), 0.98);
+  color: var(--card-text-color, var(--color-foreground));
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-sm, 4px);
+  box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05));
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: var(--global-z-index-6, 600);
+}
+
+.custom-select__option {
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.custom-select__option:hover {
+  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.14);
+}
+
+.custom-select__option.is-selected {
+  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.22);
+  font-weight: var(--global-font-weight-medium, 500);
+}
+
+.cancel-btn,
+.save-btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: var(--global-border-radius-sm, 4px);
+  cursor: pointer;
+  font-weight: var(--global-font-weight-medium, 500);
+  transition: background-color var(--global-transition-fast, 0.2s ease);
+}
+
+.cancel-btn {
+  background-color: var(--color-border);
+  color: var(--color-foreground);
+}
+
+.cancel-btn:hover {
+  background-color: #cbd5e1;
+}
+
+.save-btn {
+  background-color: var(--color-primary);
+  color: var(--ifm-color-primary-inverse, #fff);
+}
+
+.save-btn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.save-btn:disabled,
+.cancel-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

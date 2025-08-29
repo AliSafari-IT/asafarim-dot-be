@@ -1,0 +1,80 @@
+.job-list {
+  background-color: var(--card-bg, var(--color-background));
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-md, 8px);
+  box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05));
+  padding: 20px;
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.job-list h2 {
+  margin-top: 0;
+  color: var(--card-text-color, var(--color-foreground));
+  font-weight: var(--global-font-weight-bold, 700);
+  margin-bottom: 20px;
+}
+
+.job-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.job-list th,
+.job-list td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--card-border-color, var(--color-border));
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.job-list th {
+  font-weight: 600;
+  color: var(--card-text-color, var(--color-foreground));
+  background-color: var(--input-bg, rgba(0,0,0,0.02));
+}
+
+.job-list tr:hover {
+  background-color: rgba(var(--color-foreground-rgb, 30, 41, 59), 0.03);
+}
+
+.edit-btn,
+.delete-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: var(--global-border-radius-sm, 4px);
+  cursor: pointer;
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.edit-btn {
+  background-color: var(--color-primary);
+  color: var(--ifm-color-primary-inverse, #fff);
+}
+
+.edit-btn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.delete-btn {
+  background-color: var(--color-canceled);
+  color: #fff;
+}
+
+.delete-btn:hover {
+  filter: brightness(0.9);
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-foreground-muted);
+}
+
+.error {
+  color: var(--color-canceled);
+  padding: 10px;
+  background-color: rgba(239, 68, 68, 0.12);
+  border-radius: var(--global-border-radius-sm, 4px);
+  margin-bottom: 15px;
+}

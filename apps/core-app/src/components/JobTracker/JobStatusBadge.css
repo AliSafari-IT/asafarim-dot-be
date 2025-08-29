@@ -1,0 +1,30 @@
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: var(--global-border-radius-md, 8px);
+  font-size: var(--global-font-size-xs, 12px);
+  font-weight: var(--global-font-weight-medium, 500);
+  text-transform: uppercase;
+}
+
+.status-applied {
+  background-color: rgba(var(--color-info-rgb, 59, 130, 246), 0.1);
+  color: var(--color-info, #3b82f6);
+}
+
+.status-interview {
+  background-color: rgba(var(--color-warning-rgb, 245, 158, 11), 0.1);
+  color: var(--color-warning, #f59e0b);
+}
+
+.status-offer {
+  background-color: rgba(var(--color-success-rgb, 34, 197, 93), 0.1);
+  color: var(--color-success, #22c55d);
+}
+
+.status-rejected {
+  background-color: rgba(var(--color-canceled-rgb, 239, 68, 68), 0.1);
+  color: var(--color-canceled, #ef4444);
+}
+
+/* Dark theme overrides are handled automatically by the theme variables */

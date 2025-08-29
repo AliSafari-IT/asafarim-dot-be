@@ -1,6 +1,41 @@
-# React + TypeScript + Vite
+# Core App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This application provides core functionality for the ASafariM platform, built with React, TypeScript, and Vite.
+
+## Features
+
+### Job Tracker
+
+The Job Tracker feature allows users to manage their job applications with the following capabilities:
+
+- View all job applications in a table format
+- Add new job applications with company, role, status, and other details
+- Edit existing job applications
+- Delete job applications
+- Track application status (Applied, Interview, Offer, Rejected)
+
+#### Components
+
+- `JobTracker`: Main container component that manages state between list and form views
+- `JobList`: Displays all job applications in a table with actions
+- `JobForm`: Form for adding and editing job applications
+- `JobStatusBadge`: Visual indicator for application status
+
+#### API Integration
+
+The Job Tracker connects to the Core.Api backend with the following endpoints:
+
+- `GET /api/JobApplications`: Fetch all job applications
+- `GET /api/JobApplications/{id}`: Fetch a specific job application
+- `POST /api/JobApplications`: Create a new job application
+- `PUT /api/JobApplications/{id}`: Update an existing job application
+- `DELETE /api/JobApplications/{id}`: Delete a job application
+
+#### Setup and Configuration
+
+1. Ensure Core.Api is running on port 5102
+2. The frontend expects the API at `http://localhost:5102/api/JobApplications`
+3. CORS is configured to allow requests from `http://core.asafarim.local:5174` and `http://localhost:5174`
 
 Currently, two official plugins are available:
 

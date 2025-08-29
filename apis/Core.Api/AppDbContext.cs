@@ -1,3 +1,4 @@
+using Core.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Api;
@@ -8,12 +9,29 @@ public class AppDbContext : DbContext
         : base(options) { }
 
     // Add your DbSet properties here as needed
-    // Example: public DbSet<Contact> Contacts { get; set; }
+    public DbSet<JobApplication> JobApplications { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configure your entity relationships and constraints here
+        // Configure JobApplication entity for Jobs database
+        modelBuilder.Entity<JobApplication>(entity =>
+        {
+            entity.HasKey(j => j.Id);
+            entity.ToTable("JobApplications", "public"); // Specify schema
+            
+            entity.Property(j => j.Status)
+                .HasMaxLength(50)
+                .IsRequired();
+                
+            entity.Property(j => j.Company)
+                .HasMaxLength(100)
+                .IsRequired();
+                
+            entity.Property(j => j.Role)
+                .HasMaxLength(100)
+                .IsRequired();
+        });
     }
 }

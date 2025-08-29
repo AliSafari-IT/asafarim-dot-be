@@ -41,6 +41,15 @@
   /* Typographic scale */
   --radius-xl: 16px;
 
+  /* Card */
+  --card-bg: var(--color-background);
+  --card-text-color: var(--color-foreground);
+  --card-border-color: var(--color-border);
+
+  /* Form inputs */
+  --input-bg: #ffffff;
+  --input-border-color: var(--color-border);
+
   /* Docusaurus/Infima mapping */
   --ifm-color-primary: var(--color-primary);
   --ifm-color-primary-dark: var(--color-primary-dark);
@@ -130,6 +139,12 @@
 }
 
 /* Dark mode mappings */
+/* Apply to root as well to ensure native controls adopt dark palette */
+:root[data-theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+html.dark,
+body.dark,
 [data-theme="dark"],
 .dark {
   --color-primary: #60a5fa;
@@ -145,6 +160,23 @@
   --color-neutral: #3b82f6;
   --color-sky-variant-dark: #1867e7;
   --color-sky-variant: var(--color-sky-variant-dark);
+
+  /* Hint browsers to render native controls in dark palette */
+  color-scheme: dark;
+  accent-color: var(--color-primary);
+
+  /* RGB overrides for computed colors in dark */
+  --color-background-rgb: 15, 23, 42; /* slate-900 */
+  --color-foreground-rgb: 248, 250, 252; /* slate-50 */
+
+  /* Elevated surfaces in dark for separation */
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --card-text-color: var(--color-foreground);
+  --card-border-color: #475569;
+
+  /* Inputs slightly more elevated than cards */
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-border-color: #64748b;
 
   --color-brand-50: 30, 41, 59;
   --color-brand-500: 96, 165, 250;

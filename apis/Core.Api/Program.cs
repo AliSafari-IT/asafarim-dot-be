@@ -14,6 +14,8 @@ string[] allowedOrigins =
     "http://web.asafarim.local:5175",
     "http://ai.asafarim.local:5173",
     "http://identity.asafarim.local:5177",
+    "http://core.asafarim.local:5174",
+    "http://localhost:5174",
 };
 
 builder.Services.AddCors(opts =>
@@ -28,13 +30,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-// Add database context if connection string is available
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (!string.IsNullOrEmpty(connectionString))
+// Add database context using Jobs connection string for job tracking
+var jobsConnectionString = builder.Configuration.GetConnectionString("JobsConnection");
+if (!string.IsNullOrEmpty(jobsConnectionString))
 {
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(connectionString));
+    builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(jobsConnectionString));
 }
 else
 {
