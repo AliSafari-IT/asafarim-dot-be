@@ -18,10 +18,6 @@ public class JobApplicationsController : ControllerBase
     {
         _context = context;
         _logger = logger;
-
-        _logger.LogInformation(
-            "JobApplicationsController initialized with Jobs database connection"
-        );
     }
 
     [HttpGet]
@@ -46,6 +42,14 @@ public class JobApplicationsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<JobApplicationDto>> GetById(Guid id)
     {
+        _logger.LogInformation(
+            "GetById called with ID: {Id} from IP: {IP}, UserAgent: {UserAgent}, Path: {Path}",
+            id,
+            HttpContext.Connection.RemoteIpAddress,
+            HttpContext.Request.Headers.UserAgent.ToString(),
+            HttpContext.Request.Path
+        );
+
         var application = await _context.JobApplications.FindAsync(id);
 
         if (application == null)

@@ -1,0 +1,619 @@
+.timeline-container {
+  background-color: var(--card-bg, var(--color-background));
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-md, 8px);
+  padding: 24px;
+  margin-top: 24px;
+}
+
+/* Progress Overview */
+.timeline-overview {
+  margin-bottom: 32px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border-radius: var(--global-border-radius-md, 8px);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.overview-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.progress-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress-percentage {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.progress-label {
+  font-size: 12px;
+  color: var(--color-foreground-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.overall-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+/* Timeline Stages */
+.timeline-stages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.timeline-stage {
+  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-sm, 6px);
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.timeline-stage:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-stage.completed {
+  border-color: var(--color-success);
+  background-color: rgba(34, 197, 93, 0.05);
+}
+
+.stage-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.stage-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.stage-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stage-name {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.stage-description {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: var(--color-foreground-muted);
+  line-height: 1.4;
+}
+
+.stage-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage-progress-bar {
+  flex: 1;
+  height: 6px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.stage-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.stage-progress-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-foreground-muted);
+  min-width: 30px;
+  text-align: right;
+}
+
+/* Milestones Section */
+.milestones-section {
+  border-top: 1px solid var(--card-border-color, var(--color-border));
+  padding-top: 24px;
+}
+
+.milestones-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.milestones-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.add-milestone-btn {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--global-border-radius-sm, 4px);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.add-milestone-btn:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Add Milestone Form */
+.add-milestone-form {
+  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-sm, 6px);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.milestone-type-select,
+.milestone-date-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-sm, 4px);
+  background-color: var(--card-bg, var(--color-background));
+  color: var(--card-text-color, var(--color-foreground));
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.save-btn,
+.cancel-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: var(--global-border-radius-sm, 4px);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.save-btn {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.cancel-btn {
+  background-color: var(--color-border);
+  color: var(--color-foreground);
+}
+
+.cancel-btn:hover {
+  background-color: var(--color-foreground-muted);
+}
+
+/* Milestones List */
+.milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.no-milestones {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-foreground-muted);
+  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
+  border: 1px dashed var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-sm, 6px);
+}
+
+.milestone-item {
+  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-sm, 6px);
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.milestone-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.milestone-item.completed {
+  border-left: 4px solid var(--color-success);
+  background-color: rgba(34, 197, 93, 0.02);
+}
+
+.milestone-item.overdue {
+  border-left: 4px solid var(--color-warning);
+  background-color: rgba(245, 158, 11, 0.02);
+}
+
+.milestone-item.cancelled {
+  border-left: 4px solid var(--color-canceled);
+  background-color: rgba(239, 68, 68, 0.02);
+  opacity: 0.7;
+}
+
+.milestone-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.milestone-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.milestone-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.milestone-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.milestone-text {
+  font-weight: 600;
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.milestone-date {
+  font-size: 12px;
+  color: var(--color-foreground-muted);
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.milestone-description {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-foreground-muted);
+  line-height: 1.4;
+}
+
+.milestone-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.toggle-btn,
+.edit-btn,
+.delete-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-btn {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--color-foreground-muted);
+}
+
+.toggle-btn.completed {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.1);
+}
+
+.edit-btn {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.delete-btn {
+  background-color: var(--color-canceled);
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: var(--color-canceled-dark);
+}
+
+.milestone-notes,
+.milestone-attachments {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: var(--global-border-radius-sm, 4px);
+  font-size: 13px;
+  color: var(--color-foreground-muted);
+}
+
+.attachments-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.attachment-tag {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Milestone Modal */
+.milestone-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.milestone-modal {
+  background-color: var(--card-bg, var(--color-background));
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-md, 8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--card-border-color, var(--color-border));
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--color-foreground-muted);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--color-foreground);
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--card-text-color, var(--color-foreground));
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--card-border-color, var(--color-border));
+  border-radius: var(--global-border-radius-sm, 4px);
+  background-color: var(--card-bg, var(--color-background));
+  color: var(--card-text-color, var(--color-foreground));
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 20px 24px;
+  border-top: 1px solid var(--card-border-color, var(--color-border));
+}
+
+.modal-actions .save-btn,
+.modal-actions .cancel-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .timeline-container {
+    padding: 16px;
+  }
+  
+  .timeline-stages {
+    grid-template-columns: 1fr;
+  }
+  
+  .overview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .milestone-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .milestone-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .milestone-actions {
+    align-self: flex-end;
+  }
+  
+  .milestone-modal {
+    margin: 20px;
+    max-width: calc(100vw - 40px);
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-overview {
+    padding: 16px;
+  }
+  
+  .overview-header h3 {
+    font-size: 18px;
+  }
+  
+  .progress-percentage {
+    font-size: 20px;
+  }
+  
+  .stage-name {
+    font-size: 14px;
+  }
+  
+  .stage-description {
+    font-size: 12px;
+  }
+  
+  .milestones-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .add-milestone-btn {
+    width: 100%;
+  }
+}

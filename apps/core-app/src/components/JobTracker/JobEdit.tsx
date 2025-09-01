@@ -41,7 +41,7 @@ const JobEdit = () => {
     };
 
     loadJob();
-  }, [jobId, addNotification, toast]);
+  }, [jobId]);
 
   const handleSave = () => {
     // JobForm handles the save internally, we just navigate back

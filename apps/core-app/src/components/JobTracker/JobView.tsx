@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchJobApplicationById } from '../../api/jobService';
+import { fetchMilestonesByJob, createMilestone, updateMilestone, deleteMilestone } from '../../api/timelineService';
 import { useNotifications } from '../../contexts/useNotifications';
 import { useToast } from '@asafarim/toast';
 import JobStatusBadge from './JobStatusBadge';
+import Timeline from './Timeline';
 import type { JobApplication } from '../../types/jobTypes';
+import type { TimelineMilestone } from '../../types/timelineTypes';
 import './JobView.css';
 
 const JobView = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
   const [job, setJob] = useState<JobApplication | null>(null);
+  const [milestones, setMilestones] = useState<TimelineMilestone[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { addNotification } = useNotifications();
@@ -29,6 +33,15 @@ const JobView = () => {
         setError(null);
         const jobData = await fetchJobApplicationById(jobId);
         setJob(jobData);
+        
+        // Load milestones from backend
+        try {
+          const milestonesData = await fetchMilestonesByJob(jobId);
+          setMilestones(milestonesData);
+        } catch (error) {
+          console.warn('Failed to load milestones, starting with empty timeline:', error);
+          setMilestones([]);
+        }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load job application';
         setError(errorMessage);
@@ -41,7 +54,7 @@ const JobView = () => {
     };
 
     loadJob();
-  }, [jobId, addNotification, toast]);
+  }, [jobId]);
 
   const handleBack = () => {
     navigate('/jobs');
@@ -50,6 +63,43 @@ const JobView = () => {
   const handleEdit = () => {
     if (job) {
       navigate(`/jobs/${job.id}/edit`);
+    }
+  };
+
+  // Timeline management functions
+  const handleMilestoneUpdate = async (milestone: TimelineMilestone) => {
+    try {
+      await updateMilestone(milestone.id, milestone);
+      setMilestones(prev => prev.map(m => m.id === milestone.id ? milestone : m));
+      toast.success('Milestone updated successfully');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update milestone';
+      toast.error(errorMessage);
+      addNotification('error', `Failed to update milestone: ${errorMessage}`);
+    }
+  };
+
+  const handleMilestoneAdd = async (milestone: Omit<TimelineMilestone, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const newMilestone = await createMilestone(milestone);
+      setMilestones(prev => [...prev, newMilestone]);
+      toast.success('Milestone added successfully');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add milestone';
+      toast.error(errorMessage);
+      addNotification('error', `Failed to add milestone: ${errorMessage}`);
+    }
+  };
+
+  const handleMilestoneDelete = async (milestoneId: string) => {
+    try {
+      await deleteMilestone(milestoneId);
+      setMilestones(prev => prev.filter(m => m.id !== milestoneId));
+      toast.success('Milestone deleted successfully');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete milestone';
+      toast.error(errorMessage);
+      addNotification('error', `Failed to delete milestone: ${errorMessage}`);
     }
   };
 
@@ -160,47 +210,14 @@ const JobView = () => {
               </div>
             )}
 
-            <div className="detail-section">
-              <h3>Timeline</h3>
-              <div className="timeline">
-                <div className="timeline-item">
-                  <div className="timeline-marker"></div>
-                  <div className="timeline-content">
-                    <div className="timeline-title">Application Submitted</div>
-                    <div className="timeline-date">
-                      {new Date(job.appliedDate).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-                {job.status === 'Interview' && (
-                  <div className="timeline-item">
-                    <div className="timeline-marker active"></div>
-                    <div className="timeline-content">
-                      <div className="timeline-title">Interview Stage</div>
-                      <div className="timeline-date">Current Status</div>
-                    </div>
-                  </div>
-                )}
-                {job.status === 'Offer' && (
-                  <div className="timeline-item">
-                    <div className="timeline-marker success"></div>
-                    <div className="timeline-content">
-                      <div className="timeline-title">Offer Received</div>
-                      <div className="timeline-date">Current Status</div>
-                    </div>
-                  </div>
-                )}
-                {job.status === 'Rejected' && (
-                  <div className="timeline-item">
-                    <div className="timeline-marker rejected"></div>
-                    <div className="timeline-content">
-                      <div className="timeline-title">Application Rejected</div>
-                      <div className="timeline-date">Current Status</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            {/* Enhanced Timeline Component */}
+            <Timeline
+              job={job}
+              milestones={milestones}
+              onMilestoneUpdate={handleMilestoneUpdate}
+              onMilestoneAdd={handleMilestoneAdd}
+              onMilestoneDelete={handleMilestoneDelete}
+            />
           </div>
         </div>
       </div>
