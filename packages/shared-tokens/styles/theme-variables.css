@@ -42,18 +42,18 @@
   --radius-xl: 16px;
 
   /* Card */
-  --card-bg: var(--color-background);
+  --card-bg: rgba(247, 247, 247, 0.993);
   --card-text-color: var(--color-foreground);
   --card-border-color: var(--color-border);
 
   /* Form inputs */
-  --input-bg: #ffffff;
+  --input-bg: rgba(253, 242, 242, 0.733);
   --input-border-color: var(--color-border);
 
   /* Docusaurus/Infima mapping */
   --ifm-color-primary: var(--color-primary);
-  --ifm-color-primary-dark: var(--color-primary-dark);
-  --ifm-color-primary-darker: var(--color-primary-dark);
+  --ifm-color-primary-dark: #2563eb;
+  --ifm-color-primary-darker: #2a5be2;
   --ifm-color-primary-darkest: #1d4ed8;
   --ifm-color-primary-light: #60a5fa;
   --ifm-color-primary-lighter: #93c5fd;
@@ -175,7 +175,7 @@ body.dark,
   --card-border-color: #475569;
 
   /* Inputs slightly more elevated than cards */
-  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-bg: rgba(255, 255, 255, 0);
   --input-border-color: #64748b;
 
   --color-brand-50: 30, 41, 59;

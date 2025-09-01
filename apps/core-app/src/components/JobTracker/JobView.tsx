@@ -159,7 +159,17 @@ const JobView = () => {
         <div className="job-view-card">
           <div className="job-header">
             <div className="job-title-section">
-              <h1 className="job-company">{job.company}</h1>
+              <div className="title-with-edit">
+                <h1 className="job-company">{job.company}</h1>
+                <button 
+                  className="edit-icon-btn"
+                  onClick={handleEdit}
+                  title="Edit Job Application"
+                  aria-label="Edit Job Application"
+                >
+                  ✏️
+                </button>
+              </div>
               <h2 className="job-role">{job.role}</h2>
             </div>
             <div className="job-status-section">
@@ -169,7 +179,17 @@ const JobView = () => {
 
           <div className="job-details">
             <div className="detail-section">
-              <h3>Application Details</h3>
+              <div className="section-header-with-edit">
+                <h3>Application Details</h3>
+                <button 
+                  className="edit-icon-btn small"
+                  onClick={handleEdit}
+                  title="Edit Job Application"
+                  aria-label="Edit Job Application"
+                >
+                  ✏️
+                </button>
+              </div>
               <div className="detail-grid">
                 <div className="detail-item">
                   <span className="detail-label">Company:</span>

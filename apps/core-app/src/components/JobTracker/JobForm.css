@@ -3,10 +3,11 @@
   border: 1px solid var(--card-border-color, var(--color-border));
   border-radius: var(--global-border-radius-md, 8px);
   box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05));
-  padding: 20px;
+  padding: 32px;
   color: var(--card-text-color, var(--color-foreground));
   margin: 0 auto;
-  max-width: 100%;
+  width: 100%;
+  max-width: 800px;
   box-sizing: border-box;
 }
 
@@ -18,11 +19,10 @@
 
 .job-form {
   display: grid;
-  grid-gap: 20px;
+  grid-gap: 24px;
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 16px;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -83,24 +83,135 @@
 
 /* Option styling (browser support varies) */
 .form-group select option {
-  background-color: var(--input-bg, var(--color-background));
-  color: var(--card-text-color, var(--color-foreground));
+  background-color: var(--card-bg, var(--color-background)) !important;
+  color: var(--card-text-color, var(--color-foreground)) !important;
+  padding: 8px 12px;
+  border: none;
 }
 
 /* Enhance option states (support varies by browser) */
 .form-group select option:hover {
-  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.18);
-  color: var(--card-text-color, var(--color-foreground));
+  background-color: var(--color-primary) !important;
+  color: var(--ifm-color-primary-inverse, #fff) !important;
 }
 
 .form-group select option:checked {
-  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.25);
-  color: var(--card-text-color, var(--color-foreground));
+  background-color: var(--color-primary) !important;
+  color: var(--ifm-color-primary-inverse, #fff) !important;
 }
 
 .form-group select optgroup {
-  background-color: var(--input-bg, var(--color-background));
-  color: var(--color-foreground-muted);
+  background-color: var(--card-bg, var(--color-background)) !important;
+  color: var(--color-foreground-muted) !important;
+  font-weight: bold;
+  padding: 8px 0;
+}
+
+/* Ensure select dropdown has proper background */
+.form-group select {
+  background-color: var(--card-bg, var(--color-background)) !important;
+  color: var(--card-text-color, var(--color-foreground)) !important;
+  z-index: 1000;
+}
+
+/* Force dropdown background to be solid */
+.form-group select:focus {
+  background-color: var(--card-bg, var(--color-background)) !important;
+}
+
+/* Additional dropdown styling to prevent transparency */
+.form-group select {
+  position: relative;
+  z-index: 1000;
+}
+
+/* Ensure dropdown options are above other elements */
+.form-group select option {
+  position: relative;
+  z-index: 1001;
+}
+
+/* Force solid background for all select states */
+.form-group select,
+.form-group select:focus,
+.form-group select:hover,
+.form-group select:active {
+  background-color: var(--card-bg, var(--color-background)) !important;
+  background-image: none !important;
+}
+
+/* Dark mode specific fixes for dropdown transparency */
+@media (prefers-color-scheme: dark) {
+  .form-group select {
+    background-color: var(--card-bg, #1f2937) !important;
+    color: var(--card-text-color, #ffffff) !important;
+  }
+  
+  .form-group select option {
+    background-color: var(--card-bg, #1f2937) !important;
+    color: var(--card-text-color, #ffffff) !important;
+    border: none !important;
+  }
+  
+  .form-group select option:hover {
+    background-color: var(--color-primary, #3b82f6) !important;
+    color: #ffffff !important;
+  }
+  
+  .form-group select option:checked {
+    background-color: var(--color-primary, #3b82f6) !important;
+    color: #ffffff !important;
+  }
+}
+
+/* Additional dark mode fixes using CSS custom properties */
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group select option {
+  background-color: var(--card-bg, #1f2937) !important;
+  color: var(--card-text-color, #ffffff) !important;
+}
+
+[data-theme="dark"] .form-group select option:hover {
+  background-color: var(--color-primary, #3b82f6) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .form-group select option:checked {
+  background-color: var(--color-primary, #3b82f6) !important;
+  color: #ffffff !important;
+}
+
+/* Universal fixes for all themes to prevent transparency */
+.form-group select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-clip: padding-box !important;
+  backdrop-filter: none !important;
+}
+
+.form-group select option {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-clip: padding-box !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Force solid backgrounds with fallbacks */
+.form-group select,
+.form-group select option {
+  background: var(--card-bg, #ffffff) !important;
+  background-color: var(--card-bg, #ffffff) !important;
+}
+
+/* Dark theme override */
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group select option {
+  background: var(--card-bg, #1f2937) !important;
+  background-color: var(--card-bg, #1f2937) !important;
 }
 
 .form-group input.error,
@@ -141,15 +252,16 @@
 /* Responsive styles */
 @media (max-width: 768px) {
   .job-form-container {
-    padding: 16px;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
+    padding: 20px;
+    border-radius: var(--global-border-radius-md, 8px);
+    border: 1px solid var(--card-border-color, var(--color-border));
+    box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05));
+    margin: 0 16px;
   }
   
   .job-form {
     padding: 0;
-    grid-gap: 16px;
+    grid-gap: 20px;
   }
   
   .form-actions {
@@ -184,6 +296,24 @@
   .form-group select {
     background-image: none;
     padding-right: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-form-container {
+    padding: 16px;
+    margin: 0 12px;
+  }
+  
+  .job-form {
+    grid-gap: 16px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px;
+    font-size: 16px; /* Prevent zoom on iOS */
   }
 }
 
@@ -226,8 +356,8 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  /* Use near-opaque bg to avoid transparency bleed in dark */
-  background-color: var(--card-bg, var(--color-background));
+  /* Force solid background to prevent transparency */
+  background-color: var(--card-bg, var(--color-background)) !important;
   color: var(--card-text-color, var(--color-foreground));
   border: 1px solid var(--card-border-color, var(--color-border));
   border-radius: var(--global-border-radius-sm, 4px);
@@ -235,20 +365,67 @@
   max-height: 240px;
   overflow-y: auto;
   z-index: var(--global-z-index-6, 600);
+  /* Ensure solid background */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .custom-select__option {
   padding: 10px 12px;
   cursor: pointer;
+  /* Force solid background for each option */
+  background-color: var(--card-bg, var(--color-background)) !important;
+  color: var(--card-text-color, var(--color-foreground)) !important;
+  border: none !important;
+  /* Prevent transparency */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .custom-select__option:hover {
-  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.14);
+  background-color: var(--color-primary) !important;
+  color: var(--ifm-color-primary-inverse, #ffffff) !important;
 }
 
 .custom-select__option.is-selected {
-  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.22);
-  font-weight: var(--global-font-weight-medium, 500);
+  background-color: var(--color-primary) !important;
+  color: var(--ifm-color-primary-inverse, #ffffff) !important;
+}
+
+/* Dark mode specific fixes for custom select */
+@media (prefers-color-scheme: dark) {
+  .custom-select__list {
+    background-color: var(--card-bg, #1f2937) !important;
+    border-color: var(--card-border-color, #475569) !important;
+  }
+  
+  .custom-select__option {
+    background-color: var(--card-bg, #1f2937) !important;
+    color: var(--card-text-color, #ffffff) !important;
+  }
+  
+  .custom-select__option:hover {
+    background-color: var(--color-primary, #60a5fa) !important;
+    color: #ffffff !important;
+  }
+  
+  .custom-select__option.is-selected {
+    background-color: var(--color-primary, #60a5fa) !important;
+    color: #ffffff !important;
+  }
+}
+
+/* Theme-aware custom select fixes */
+[data-theme="dark"] .custom-select__list,
+[data-theme="dark"] .custom-select__option {
+  background-color: var(--card-bg, #1f2937) !important;
+  color: var(--card-text-color, #ffffff) !important;
+}
+
+[data-theme="dark"] .custom-select__option:hover,
+[data-theme="dark"] .custom-select__option.is-selected {
+  background-color: var(--color-primary, #60a5fa) !important;
+  color: #ffffff !important;
 }
 
 .cancel-btn,

@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { JobApplication, JobStatus } from '../../types/jobTypes';
 import { fetchJobApplications, deleteJobApplication } from '../../api/jobService';
-import { useNotifications } from '../../contexts/useNotifications';
 import { useToast } from '@asafarim/toast';
 import JobStatusBadge from './JobStatusBadge';
 import './JobList.css';
@@ -15,8 +14,6 @@ const JobList = ({ onAdd }: JobListProps) => {
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { addNotification } = useNotifications();
-  const notifiedRef = useRef(false);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -31,28 +28,15 @@ const JobList = ({ onAdd }: JobListProps) => {
       setError(null);
       const data = await fetchJobApplications();
       setJobs(data);
-
-      if (!notifiedRef.current) {
-        if (data.length === 0) {
-          addNotification('info', 'No job applications found. Add your first one!');
-        } else {
-          addNotification('info', `Loaded ${data.length} job applications`);
-        }
-        notifiedRef.current = true;
-      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load job applications';
       setError(errorMessage);
       console.error('Job list error:', err);
       toast.error(errorMessage);
-      if (!notifiedRef.current) {
-        addNotification('error', `Failed to load job applications: ${errorMessage}`);
-        notifiedRef.current = true;
-      }
     } finally {
       setLoading(false);
     }
-  }, [addNotification, toast]);
+  }, [toast]);
 
   useEffect(() => {
     loadJobs();
@@ -64,12 +48,10 @@ const JobList = ({ onAdd }: JobListProps) => {
         await deleteJobApplication(id);
         setJobs(prev => prev.filter(job => job.id !== id));
         toast.success('Job application deleted successfully');
-        addNotification('success', 'Job application deleted successfully');
       } catch (err) {
         setError('Failed to delete job application');
         console.error(err);
         toast.error('Failed to delete job application');
-        addNotification('error', 'Failed to delete job application. Please try again.');
       }
     }
   };
@@ -78,11 +60,11 @@ const JobList = ({ onAdd }: JobListProps) => {
   const visibleJobs = useMemo(() => {
     const term = search.trim().toLowerCase();
     let list = jobs;
-    
+
     if (statusFilter !== 'All') {
       list = list.filter(j => j.status === statusFilter);
     }
-    
+
     if (term) {
       list = list.filter(j =>
         j.company.toLowerCase().includes(term) ||
@@ -91,7 +73,7 @@ const JobList = ({ onAdd }: JobListProps) => {
     }
 
     // Sort by most recent applied date first
-    return [...list].sort((a, b) => 
+    return [...list].sort((a, b) =>
       new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime()
     );
   }, [jobs, search, statusFilter]);
@@ -107,7 +89,7 @@ const JobList = ({ onAdd }: JobListProps) => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="job-list">
@@ -187,15 +169,15 @@ const JobList = ({ onAdd }: JobListProps) => {
                   {new Date(job.appliedDate).toLocaleDateString()}
                 </div>
                 <div className="job-actions">
-                  <button 
-                    className="view-btn" 
+                  <button
+                    className="view-btn"
                     onClick={() => navigate(`/jobs/${job.id}/view`)}
                     aria-label={`View ${job.role} at ${job.company}`}
                   >
                     View
                   </button>
-                  <button 
-                    className="edit-btn" 
+                  <button
+                    className="edit-btn"
                     onClick={() => navigate(`/jobs/${job.id}/edit`)}
                     aria-label={`Edit ${job.role} at ${job.company}`}
                   >
