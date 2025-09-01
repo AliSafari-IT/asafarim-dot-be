@@ -78,9 +78,8 @@ const AnalyticsDashboard: React.FC = () => {
           <div className="metric-value">{analytics.averageTimeToOffer} days</div>
           <div className="metric-label">Avg Time to Offer</div>
         </div>
-        
         <div className="metric-card">
-          <div className="metric-value">{analytics.milestoneCompletionRate}%</div>
+          <div className="metric-value">{analytics.milestoneCompletionRate || 0}%</div>
           <div className="metric-label">Milestone Completion</div>
         </div>
       </div>

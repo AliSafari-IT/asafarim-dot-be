@@ -12,6 +12,7 @@ import NotificationContainer from './components/Notifications/NotificationContai
 import './App.css'
 import JobEdit from './components/JobTracker/JobEdit'
 import JobView from './components/JobTracker/JobView'
+import CoreAppHome from './pages/CoreAppHome'
 
 function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
@@ -79,11 +80,8 @@ function App() {
                 title="Core App"
               >
             <Routes>
-              <Route path="/" element={
-                <div className="home-content">
-                  <h1>Core App</h1>
-                  <p>Welcome to the Core Application</p>
-                </div>
+              <Route path='/' element={
+                <CoreAppHome />
               } />
               <Route path="/jobs" element={<JobTracker />} />
               <Route path="/jobs/:jobId/edit" element={<JobEdit />} />

@@ -16,6 +16,7 @@
   /* Theme primitives (light) */
   --color-primary: #3b82f6;
   --color-primary-dark: #2563eb;
+  --color-primary-hover: #5c8cf5;
   --color-background: #ffffff;
   --color-foreground: #1e293b;
   --color-foreground-muted: #64748b;
@@ -94,6 +95,11 @@
   --global-spacing-unit-6x: 6rem;
   --global-spacing-unit-7x: 7rem;
 
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
   --global-border-radius-sm: 4px;
   --global-border-radius-md: 8px;
   --global-border-radius-lg: 16px;
@@ -150,6 +156,9 @@ body.dark,
 .dark {
   --color-primary: #60a5fa;
   --color-primary-dark: #3b82f6;
+  --color-primary-hover: #5c8cf5;
+  --color-primary-active: #4882fd;
+  --color-primary-disabled: #4882fd;
   --color-background: #0f172a;
   --color-foreground: #f8fafc;
   --color-foreground-muted: #cbd5e1;
@@ -194,7 +203,6 @@ body.dark,
   --ifm-font-color-base: var(--color-foreground);
   --ifm-border-color: var(--color-border);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
-
 }
 
 body {

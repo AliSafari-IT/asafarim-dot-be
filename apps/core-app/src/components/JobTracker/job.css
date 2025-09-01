@@ -37,6 +37,32 @@
     outline-offset: 2px;
   }
 
+  .job-tracker-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .show-analytics-btn {
+    background-color: var(--color-primary);
+    color: var(--ifm-color-primary-inverse, #fff);
+    border: 1px solid transparent;
+    padding: 10px 14px;
+    border-radius: var(--global-border-radius-sm, 4px);
+  }
+  .show-analytics-btn:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-0.5px);
+  }
+  .show-analytics-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .show-analytics-btn:focus-visible {
+    outline: 2px solid var(--color-primary-dark);
+    outline-offset: 2px;
+  }
+
   .status-badge {
     display: inline-block;
     padding: 4px 8px;

@@ -3,11 +3,13 @@ import JobList from './JobList';
 import JobForm from './JobForm';
 import type { JobApplication } from '../../types/jobTypes';
 import './job.css';
+import AnalyticsDashboard from './AnalyticsDashboard';
 
 const JobTracker = () => {
   const [selectedJob, setSelectedJob] = useState<JobApplication | undefined>(undefined);
   const [isFormVisible, setIsFormVisible] = useState(false);
-
+  // Add a state for showing analytics
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const handleAddNew = () => {
     setSelectedJob(undefined);
     setIsFormVisible(true);
@@ -34,11 +36,24 @@ const JobTracker = () => {
         </button>
       </div>
 
-      {isFormVisible ? (
-        <JobForm job={selectedJob} onSave={handleSave} onCancel={handleCancel} />
-      ) : (
-        <JobList onAdd={handleAddNew} />
-      )}
+      <div className="job-tracker-content">
+        <button onClick={() => setShowAnalytics(!showAnalytics)} className="show-analytics-btn">
+          {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
+        </button>
+        <div>
+          {showAnalytics ? (
+            <AnalyticsDashboard />
+          ) : (
+            <div>
+              {isFormVisible ? (
+                <JobForm job={selectedJob} onSave={handleSave} onCancel={handleCancel} />
+              ) : (
+                <JobList onAdd={handleAddNew} />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

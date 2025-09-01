@@ -57,4 +57,22 @@ export interface TimelineAnalytics {
   mostResponsiveCompanies: string[];
   averageResponseTime: number;
   interviewSuccessRate: number;
+  totalMilestones: number;
+  completedMilestones: number;
+  milestoneCompletionRate: number;
+}
+
+// JobSearchInsights
+export interface JobSearchInsights {
+  jobApplicationId: string;
+  company: string;
+  role: string;
+  appliedDate: string;
+  status: string;
+  daysSinceApplication: number;
+  milestonesCount: number;
+  completedMilestonesCount: number;
+  progressPercentage: number;
+  lastMilestoneDate?: string;
+  nextRecommendedAction?: string;
 }
