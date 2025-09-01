@@ -1,5 +1,5 @@
 import type { JobStatus } from '../../types/jobTypes';
-import './JobStatusBadge.css';
+import './job.css';
 
 interface JobStatusBadgeProps {
   status: JobStatus;

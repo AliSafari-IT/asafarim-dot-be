@@ -2,7 +2,7 @@ import { useState } from 'react';
 import JobList from './JobList';
 import JobForm from './JobForm';
 import type { JobApplication } from '../../types/jobTypes';
-import './JobTracker.css';
+import './job.css';
 
 const JobTracker = () => {
   const [selectedJob, setSelectedJob] = useState<JobApplication | undefined>(undefined);

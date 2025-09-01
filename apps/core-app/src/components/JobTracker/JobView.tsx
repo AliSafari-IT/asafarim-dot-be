@@ -8,7 +8,7 @@ import JobStatusBadge from './JobStatusBadge';
 import Timeline from './Timeline';
 import type { JobApplication } from '../../types/jobTypes';
 import type { TimelineMilestone } from '../../types/timelineTypes';
-import './JobView.css';
+import './job.css';
 
 const JobView = () => {
   const { jobId } = useParams<{ jobId: string }>();

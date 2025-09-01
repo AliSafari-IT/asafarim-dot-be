@@ -4,7 +4,7 @@ import type { JobApplication, JobStatus } from '../../types/jobTypes';
 import { fetchJobApplications, deleteJobApplication } from '../../api/jobService';
 import { useToast } from '@asafarim/toast';
 import JobStatusBadge from './JobStatusBadge';
-import './JobList.css';
+import './job.css';
 
 interface JobListProps {
   onAdd: () => void;

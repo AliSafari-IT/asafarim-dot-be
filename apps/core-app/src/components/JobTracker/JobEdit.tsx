@@ -5,7 +5,7 @@ import { useNotifications } from '../../contexts/useNotifications';
 import { useToast } from '@asafarim/toast';
 import JobForm from './JobForm';
 import type { JobApplication } from '../../types/jobTypes';
-import './JobEdit.css';
+import './job.css';
 
 const JobEdit = () => {
   const { jobId } = useParams<{ jobId: string }>();

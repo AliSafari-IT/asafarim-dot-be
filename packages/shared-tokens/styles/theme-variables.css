@@ -58,6 +58,7 @@
   --ifm-color-primary-light: #60a5fa;
   --ifm-color-primary-lighter: #93c5fd;
   --ifm-color-primary-lightest: #bfdbfe;
+  --ifm-color-primary-inverse: #ffffff;
   --ifm-background-color: var(--color-background);
   --ifm-font-color-base: var(--color-foreground);
   --ifm-border-color: var(--color-border);
@@ -189,6 +190,7 @@ body.dark,
   --ifm-color-primary-lighter: #bfdbfe;
   --ifm-color-primary-lightest: #dbeafe;
   --ifm-background-color: var(--color-background);
+  --ifm-color-primary-inverse: #030303;
   --ifm-font-color-base: var(--color-foreground);
   --ifm-border-color: var(--color-border);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
