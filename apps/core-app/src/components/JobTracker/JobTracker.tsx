@@ -13,10 +13,7 @@ const JobTracker = () => {
     setIsFormVisible(true);
   };
 
-  const handleEdit = (job: JobApplication) => {
-    setSelectedJob(job);
-    setIsFormVisible(true);
-  };
+
 
   const handleSave = () => {
     setIsFormVisible(false);
@@ -40,7 +37,7 @@ const JobTracker = () => {
       {isFormVisible ? (
         <JobForm job={selectedJob} onSave={handleSave} onCancel={handleCancel} />
       ) : (
-        <JobList onEdit={handleEdit} />
+        <JobList onAdd={handleAddNew} />
       )}
     </div>
   );

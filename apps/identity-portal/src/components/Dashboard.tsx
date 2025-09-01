@@ -104,6 +104,9 @@ export const Dashboard = () => {
             <button className="btn" onClick={() => window.open('http://ai.asafarim.local:5173', '_blank')}>
               AI portal
             </button>
+            <button className="btn" onClick={() => window.open('http://core.asafarim.local:5174', '_blank')}>
+              Core portal
+            </button>
           </div>
         </section>
       </main>

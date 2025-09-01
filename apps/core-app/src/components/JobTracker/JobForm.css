@@ -5,6 +5,9 @@
   box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05));
   padding: 20px;
   color: var(--card-text-color, var(--color-foreground));
+  margin: 0 auto;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .job-form-container h2 {
@@ -16,6 +19,11 @@
 .job-form {
   display: grid;
   grid-gap: 20px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 .form-group {
@@ -32,12 +40,18 @@
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 10px;
+  padding: 12px;
   border: 1px solid var(--input-border-color, var(--card-border-color, var(--color-border)));
   border-radius: var(--global-border-radius-sm, 4px);
   font-size: var(--global-font-size-md, 16px);
   background-color: var(--input-bg, var(--card-bg, var(--color-background)));
   color: var(--card-text-color, var(--color-foreground));
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  min-height: 44px; /* Better touch target */
 }
 
 .form-group input:focus,
@@ -113,7 +127,64 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 20px;
+  padding: 16px 0;
+  position: sticky;
+  bottom: 0;
+  background: var(--card-bg, var(--color-background));
+  z-index: 10;
+  border-top: 1px solid var(--card-border-color, var(--color-border));
+  margin: 20px -20px -20px;
+  padding: 16px 20px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .job-form-container {
+    padding: 16px;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  
+  .job-form {
+    padding: 0;
+    grid-gap: 16px;
+  }
+  
+  .form-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 12px 16px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    background: var(--color-background);
+    border-top: 1px solid var(--color-border);
+  }
+  
+  .form-actions button {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .job-form-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+  
+  .form-group label {
+    font-size: 0.9rem;
+  }
+  
+  /* Hide native select dropdown arrow on mobile */
+  .form-group select {
+    background-image: none;
+    padding-right: 12px;
+  }
 }
 
 /* Custom select (themed) */
@@ -156,7 +227,7 @@
   left: 0;
   right: 0;
   /* Use near-opaque bg to avoid transparency bleed in dark */
-  background-color: rgba(var(--color-background-rgb, 255, 255, 255), 0.98);
+  background-color: var(--card-bg, var(--color-background));
   color: var(--card-text-color, var(--color-foreground));
   border: 1px solid var(--card-border-color, var(--color-border));
   border-radius: var(--global-border-radius-sm, 4px);

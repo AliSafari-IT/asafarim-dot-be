@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { LayoutContainer, FooterContainer, Navbar } from '@asafarim/shared-ui-react'
+import { LayoutContainer, FooterContainer } from '@asafarim/shared-ui-react'
+import Navbar from './components/Navbar'
 import { ThemeProvider } from '@asafarim/react-themes'
 import { ToastProvider, Toaster } from '@asafarim/toast'
 import '@asafarim/toast/styles.css'
@@ -9,6 +10,8 @@ import Root from './theme/Root'
 import NotificationProvider from './contexts/NotificationProvider'
 import NotificationContainer from './components/Notifications/NotificationContainer'
 import './App.css'
+import JobEdit from './components/JobTracker/JobEdit'
+import JobView from './components/JobTracker/JobView'
 
 function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
@@ -58,11 +61,6 @@ function App() {
     };
   }, []);
 
-  const navLinks = [
-    { label: 'Home', to: '/' },
-    { label: 'Job Tracker', to: '/jobs' }
-  ];
-
   return (
     <ToastProvider>
       <NotificationProvider>
@@ -77,11 +75,7 @@ function App() {
               <Toaster />
               <LayoutContainer
                 footer={<FooterContainer key={"main footer"} />}
-                header={<Navbar 
-                  key={"main header"} 
-                  links={navLinks}
-                  brand={{ text: 'Core App' }}
-                />}
+                header={<Navbar key={"main header"} />}
                 title="Core App"
               >
             <Routes>
@@ -92,6 +86,8 @@ function App() {
                 </div>
               } />
               <Route path="/jobs" element={<JobTracker />} />
+              <Route path="/jobs/:jobId/edit" element={<JobEdit />} />
+              <Route path="/jobs/:jobId/view" element={<JobView />} />
             </Routes>
               </LayoutContainer>
             </Root>

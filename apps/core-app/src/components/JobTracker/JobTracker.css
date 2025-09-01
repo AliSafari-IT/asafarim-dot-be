@@ -11,22 +11,28 @@
   margin-bottom: 20px;
 }
 
+.job-tracker-header h1 {
+  color: var(--card-text-color, var(--color-foreground));
+  margin: 0;
+}
+
 .add-job-btn {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
+  background-color: var(--color-primary);
+  color: var(--ifm-color-primary-inverse, #fff);
+  border: 1px solid transparent;
+  padding: 10px 14px;
+  border-radius: var(--global-border-radius-sm, 4px);
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
+  font-weight: var(--global-font-weight-medium, 500);
+  transition: background-color 120ms ease, transform 80ms ease, filter 120ms ease;
 }
 
 .add-job-btn:hover {
-  background-color: #45a049;
+  background-color: var(--color-primary-dark);
+  transform: translateY(-0.5px);
 }
 
-h1 {
-  color: #333;
-  margin: 0;
+.add-job-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
