@@ -13,6 +13,7 @@ import './App.css'
 import JobEdit from './components/JobTracker/JobEdit'
 import JobView from './components/JobTracker/JobView'
 import CoreAppHome from './pages/CoreAppHome'
+import NotFound from '../../../packages/shared-ui-react/components/NotFound/NotFound'
 
 function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
@@ -86,6 +87,8 @@ function App() {
               <Route path="/jobs" element={<JobTracker />} />
               <Route path="/jobs/:jobId/edit" element={<JobEdit />} />
               <Route path="/jobs/:jobId/view" element={<JobView />} />
+              {/* Catch-all route for 404 errors */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
               </LayoutContainer>
             </Root>

@@ -7,6 +7,9 @@ export { default as LayoutContainer } from "./components/LayoutContainer";
 export { default as AuthStatus } from "./components/AuthStatus";
 export type { AuthStatusProps } from "./components/AuthStatus";
 
+// Not Found
+export { default as NotFound } from "./components/NotFound/NotFound";
+
 // Navigation
 export { default as Navbar } from "./components/Navbar/Navbar";
 export type { NavbarProps, NavLinkItem } from "./components/Navbar/types";
