@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { api } from '../api';
 import "./JobTools.css";
+import { useAuth } from '@asafarim/shared-ui-react';
 
-type ExtractResp = { 
-  title: string; 
-  mustHave: string[]; 
-  niceToHave: string[]; 
-  keywords: string[] 
+type ExtractResp = {
+  title: string;
+  mustHave: string[];
+  niceToHave: string[];
+  keywords: string[]
 }
 
 type LoadingState = 'idle' | 'extracting' | 'scoring' | 'generating';
@@ -19,6 +20,7 @@ export default function JobTools() {
   const [letter, setLetter] = useState<string>('');
   const [loading, setLoading] = useState<LoadingState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated, loading: authLoading, signIn } = useAuth();
 
   const resetState = () => {
     setExtracted(null);
@@ -38,13 +40,13 @@ export default function JobTools() {
       setError('Please enter a job description');
       return;
     }
-    
+
     try {
       setLoading('extracting');
       resetState();
-      const data = await api<ExtractResp>('/extract/job', { 
-        method: 'POST', 
-        body: JSON.stringify({ text }) 
+      const data = await api<ExtractResp>('/extract/job', {
+        method: 'POST',
+        body: JSON.stringify({ text })
       });
       setExtracted(data);
     } catch (err) {
@@ -56,18 +58,18 @@ export default function JobTools() {
 
   async function doScore() {
     if (!extracted) return;
-    
+
     try {
       setLoading('scoring');
       const candidateSkills = skills.split(',').map((s) => s.trim()).filter(Boolean);
       const data = await api<{ score: number }>(
         '/score/match',
-        { 
-          method: 'POST', 
-          body: JSON.stringify({ 
-            candidateSkills, 
-            jobSkills: extracted.mustHave 
-          }) 
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            candidateSkills,
+            jobSkills: extracted.mustHave
+          })
         },
       );
       setScore(Math.round(data.score * 100));
@@ -80,20 +82,20 @@ export default function JobTools() {
 
   async function doLetter() {
     if (!extracted) return;
-    
+
     try {
       setLoading('generating');
       const highlights = skills.split(',').map((s) => s.trim()).filter(Boolean);
       const data = await api<{ letter: string }>(
         '/generate/cover-letter',
-        { 
-          method: 'POST', 
-          body: JSON.stringify({ 
-            jobTitle: extracted.title, 
-            company: 'Sample Co', 
-            highlights, 
-            tone: 'concise' 
-          }) 
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            jobTitle: extracted.title,
+            company: 'Sample Co',
+            highlights,
+            tone: 'concise'
+          })
         },
       );
       setLetter(data.letter);
@@ -106,6 +108,25 @@ export default function JobTools() {
 
   const isLoading = (type: LoadingState) => loading === type;
   const isDisabled = (type: LoadingState) => loading !== 'idle' && loading !== type;
+
+  // Unauthenticated experience: intro and prompt to login/register
+  if (!authLoading && !isAuthenticated) {
+    const goTo = typeof window !== 'undefined' ? window.location.href : undefined;
+    return (
+      <div className="job-tools">
+        <h1>Job Application Assistant</h1>
+        <p className="ai-ui-cover-letter">
+          Paste a job description and analyze how well you match the requirements. To continue, please sign in or create an account.
+        </p>
+        <div className="ai-ui-buttons">
+          <button onClick={() => signIn(goTo)} className="ai-ui-button">Sign in</button>
+          <a href={`http://identity.asafarim.local:5177/register?returnUrl=${encodeURIComponent(goTo || '')}`}>
+            <button className="ai-ui-button">Register</button>
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="job-tools">
@@ -133,7 +154,7 @@ export default function JobTools() {
           </div>
 
           <div className="action-buttons">
-            <button 
+            <button
               onClick={doExtract}
               disabled={!text.trim() || isDisabled('extracting')}
               className={`btn btn-primary ${isLoading('extracting') ? 'loading' : ''}`}
@@ -147,7 +168,7 @@ export default function JobTools() {
           <div className="form-group">
             <label htmlFor="skills" className="form-label">
               Your Skills
-              <span className="hint">(comma-separated)</span>
+              <span className="hint">(comma-separated): include Must-Have skills from Job Details if applicable, then re-calculate match score</span>
             </label>
             <input
               id="skills"
@@ -161,14 +182,14 @@ export default function JobTools() {
           </div>
 
           <div className="action-buttons">
-            <button 
+            <button
               onClick={doScore}
               disabled={!extracted || isDisabled('scoring')}
               className={`btn btn-secondary ${isLoading('scoring') ? 'loading' : ''}`}
             >
               {isLoading('scoring') ? 'Calculating...' : 'Calculate Match'}
             </button>
-            <button 
+            <button
               onClick={doLetter}
               disabled={!extracted || isDisabled('generating')}
               className={`btn btn-secondary ${isLoading('generating') ? 'loading' : ''}`}
@@ -195,9 +216,9 @@ export default function JobTools() {
                 <span className="score-value">{score}%</span>
               </div>
               <p className="score-description">
-                {score > 70 
+                {score > 70
                   ? 'Excellent match! You meet most of the requirements.'
-                  : score > 40 
+                  : score > 40
                     ? 'Moderate match. Consider highlighting your transferable skills.'
                     : 'Low match. You might want to look for roles that better align with your skills.'
                 }
@@ -246,7 +267,7 @@ export default function JobTools() {
           <section className="cover-letter-section">
             <div className="section-header">
               <h2>Generated Cover Letter</h2>
-              <button 
+              <button
                 onClick={() => navigator.clipboard.writeText(letter)}
                 className="btn btn-text"
               >

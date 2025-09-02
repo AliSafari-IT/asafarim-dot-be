@@ -20,60 +20,63 @@ public sealed class ResumeController : ControllerBase
         _ai = ai;
     }
 
-// Helper methods
-static string ExtractJson(string content)
-{
-    if (string.IsNullOrWhiteSpace(content)) return "{}";
-    var trimmed = content.Trim();
-
-    // Remove code fences like ```json ... ```
-    if (trimmed.StartsWith("```"))
+    // Helper methods
+    static string ExtractJson(string content)
     {
-        var firstNewline = trimmed.IndexOf('\n');
-        if (firstNewline >= 0)
+        if (string.IsNullOrWhiteSpace(content))
+            return "{}";
+        var trimmed = content.Trim();
+
+        // Remove code fences like ```json ... ```
+        if (trimmed.StartsWith("```"))
         {
-            trimmed = trimmed[(firstNewline + 1)..].Trim();
-        }
-        if (trimmed.EndsWith("```"))
-        {
-            var lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
-            if (lastFence >= 0)
+            var firstNewline = trimmed.IndexOf('\n');
+            if (firstNewline >= 0)
             {
-                trimmed = trimmed[..lastFence].Trim();
+                trimmed = trimmed[(firstNewline + 1)..].Trim();
+            }
+            if (trimmed.EndsWith("```"))
+            {
+                var lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
+                if (lastFence >= 0)
+                {
+                    trimmed = trimmed[..lastFence].Trim();
+                }
             }
         }
+
+        // Try full parse
+        if (TryParseJson(trimmed, out var strict))
+            return strict!;
+
+        // Fallback: take substring between first '{' and last '}'
+        var start = trimmed.IndexOf('{');
+        var end = trimmed.LastIndexOf('}');
+        if (start >= 0 && end > start)
+        {
+            var candidate = trimmed.Substring(start, end - start + 1).Trim();
+            if (TryParseJson(candidate, out strict))
+                return strict!;
+        }
+
+        // Last resort: return original trimmed
+        return trimmed;
     }
 
-    // Try full parse
-    if (TryParseJson(trimmed, out var strict)) return strict!;
-
-    // Fallback: take substring between first '{' and last '}'
-    var start = trimmed.IndexOf('{');
-    var end = trimmed.LastIndexOf('}');
-    if (start >= 0 && end > start)
+    static bool TryParseJson(string text, out string? strict)
     {
-        var candidate = trimmed.Substring(start, end - start + 1).Trim();
-        if (TryParseJson(candidate, out strict)) return strict!;
+        try
+        {
+            using var doc = JsonDocument.Parse(text);
+            strict = text;
+            return true;
+        }
+        catch
+        {
+            strict = null;
+            return false;
+        }
     }
-
-    // Last resort: return original trimmed
-    return trimmed;
-}
-
-static bool TryParseJson(string text, out string? strict)
-{
-    try
-    {
-        using var doc = JsonDocument.Parse(text);
-        strict = text;
-        return true;
-    }
-    catch
-    {
-        strict = null;
-        return false;
-    }
-}
 
     // GET /resume/health - simple health check endpoint to test API connectivity
     [HttpGet("health")]
@@ -86,7 +89,10 @@ static bool TryParseJson(string text, out string? strict)
     [HttpPost("functional")]
     // Temporarily disabled for testing
     // [Authorize]
-    public async Task<IActionResult> GenerateFunctional([FromBody] FunctionalResumeRequest req, CancellationToken ct)
+    public async Task<IActionResult> GenerateFunctional(
+        [FromBody] FunctionalResumeRequest req,
+        CancellationToken ct
+    )
     {
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
@@ -118,8 +124,16 @@ Detailed CV: {req.DetailedCv ?? "(not provided)"}";
         }
         catch (OpenAiUpstreamException ex)
         {
-            _logger.LogError(ex, "OpenAI upstream error generating resume for {UserId}: {Status}", sub, ex.StatusCode);
-            return StatusCode(ex.StatusCode, new { error = "OpenAI request failed", details = ex.Body });
+            _logger.LogError(
+                ex,
+                "OpenAI upstream error generating resume for {UserId}: {Status}",
+                sub,
+                ex.StatusCode
+            );
+            return StatusCode(
+                ex.StatusCode,
+                new { error = "OpenAI request failed", details = ex.Body }
+            );
         }
         catch (HttpRequestException ex)
         {
