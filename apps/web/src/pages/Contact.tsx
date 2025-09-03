@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { submitContactForm, initEmailJS } from '../api/contactService';
-import { useAuth } from '@asafarim/shared-ui-react';
+import { useAuth, useNotifications } from '@asafarim/shared-ui-react';
 
 interface FormState {
   name: string;
@@ -18,11 +18,12 @@ interface FormStatus {
 
 export default function Contact() {
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
   const [email, setEmail] = useState(user?.email || '');
+  
   useEffect(() => {
     setEmail(user?.email || '');    
   }, [user]);
-  console.log("email", email);
 
   const [formData, setFormData] = useState<FormState>({
     name: '',
@@ -67,6 +68,9 @@ export default function Contact() {
       const response = await submitContactForm(formData);
       
       if (response.status === 200) {
+        // Show success notification
+        addNotification('success', 'Thank you for your message! We\'ve received your inquiry and will get back to you soon.');
+        
         setStatus({
           submitting: false,
           submitted: true,
@@ -85,6 +89,9 @@ export default function Contact() {
         throw new Error('Failed to send message');
       }
     } catch (error) {
+      // Show error notification
+      addNotification('error', error instanceof Error ? error.message : 'An unexpected error occurred');
+      
       setStatus({
         submitting: false,
         submitted: true,
@@ -106,18 +113,7 @@ export default function Contact() {
           <div className="p-4 bg-background shadow-sm rounded-lg">
             <h2 className="text-primary mb-4">Send a Message</h2>
             
-            {status.success ? (
-              <div className="message message-success">
-                <div className="message-header">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="message-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                  <h3 className="message-title">Thank you for your message!</h3>
-                </div>
-                <p className="message-content">We've received your inquiry and will get back to you soon.</p>
-              </div>
-            ) : (
-              <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
+            <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-sm">
                   <label htmlFor="name" className="form-label">Name</label>
                   <input 
@@ -170,20 +166,6 @@ export default function Contact() {
                   ></textarea>
                 </div>
                 
-                {status.error && (
-                  <div className="message message-error">
-                    <div className="message-header">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="message-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="8" x2="12" y2="12" />
-                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                      </svg>
-                      <p className="message-title">Error</p>
-                    </div>
-                    <p className="message-content">{status.error}</p>
-                  </div>
-                )}
-                
                 <button 
                   type="submit" 
                   className="btn-submit" 
@@ -192,7 +174,6 @@ export default function Contact() {
                   {status.submitting ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
-            )}
           </div>
           
           <div className="p-4 bg-background shadow-sm rounded-lg">

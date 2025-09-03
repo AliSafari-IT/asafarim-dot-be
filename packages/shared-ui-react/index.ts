@@ -15,6 +15,19 @@ export { default as NotFound } from "./components/NotFound/NotFound";
 export { default as Navbar } from "./components/Navbar/Navbar";
 export type { NavbarProps, NavLinkItem } from "./components/Navbar/types";
 
+// Theme
+export { default as ThemeProvider } from "./contexts/ThemeProvider";
+export type { ThemeProviderProps } from "./contexts/ThemeProvider";
+
+// Notifications
+export { default as NotificationProvider } from "./contexts/NotificationProvider";
+export { NotificationContext } from "./contexts/NotificationProvider/notificationContext";
+export type { NotificationType, Notification } from "./contexts/NotificationProvider/notificationContext";
+export { default as useNotifications } from "./hooks/useNotifications";
+// Export both default and named export for NotificationContainer
+export { default as NotificationContainer, NotificationContainer as NotificationContainerComponent } from "./components/Notifications/NotificationContainer";
+export type { NotificationContainerProps } from "./components/Notifications/NotificationContainer";
+
 // Hooks
 export { default as useAuth } from "./hooks/useAuth";
 export type { UseAuthOptions, UseAuthResult } from "./hooks/useAuth";

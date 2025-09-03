@@ -1,19 +1,22 @@
 import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { LayoutContainer, FooterContainer } from '@asafarim/shared-ui-react'
+import { 
+  LayoutContainer, 
+  FooterContainer, 
+  ThemeProvider,
+  NotificationProvider,
+  NotificationContainer,
+  NotFound
+} from '@asafarim/shared-ui-react'
 import Navbar from './components/Navbar'
-import { ThemeProvider } from '@asafarim/react-themes'
 import { ToastProvider, Toaster } from '@asafarim/toast'
 import '@asafarim/toast/styles.css'
 import JobTracker from './components/JobTracker/JobTracker'
 import Root from './theme/Root'
-import NotificationProvider from './contexts/NotificationProvider'
-import NotificationContainer from './components/Notifications/NotificationContainer'
 import './App.css'
 import JobEdit from './components/JobTracker/JobEdit'
 import JobView from './components/JobTracker/JobView'
 import CoreAppHome from './pages/CoreAppHome'
-import NotFound from '../../../packages/shared-ui-react/components/NotFound/NotFound'
 
 function App() {
   // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
@@ -65,7 +68,7 @@ function App() {
 
   return (
     <ToastProvider>
-      <NotificationProvider>
+      <NotificationProvider autoRemoveTimeout={5000}>
         <Router>
           <ThemeProvider
             defaultMode="dark"
@@ -73,7 +76,7 @@ function App() {
             persistMode={true}
           >
             <Root>
-              <NotificationContainer />
+              <NotificationContainer position="top-right" />
               <Toaster />
               <LayoutContainer
                 footer={<FooterContainer key={"main footer"} />}

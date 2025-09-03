@@ -1,8 +1,12 @@
 import { Outlet } from "react-router-dom";
 import { useEffect } from "react";
-import { LayoutContainer, FooterContainer } from "@asafarim/shared-ui-react";
+import { 
+  FooterContainer, 
+  ThemeProvider,
+  LayoutContainer,
+  NotificationContainer
+} from "@asafarim/shared-ui-react";
 import Navbar from "./components/Navbar";
-import { ThemeProvider } from "@asafarim/react-themes";
 import Root from "./theme/Root";
 
 export default function App() {
@@ -60,6 +64,7 @@ export default function App() {
       persistMode={true}
     >
       <Root>
+        <NotificationContainer position="top-right" />
         <LayoutContainer
           footer={<FooterContainer key={"main footer"} />}
           header={<Navbar key={"main header"} />}
