@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { TimelineMilestone, TimelineStage, MilestoneType } from '../../types/timelineTypes';
 import type { JobApplication } from '../../types/jobTypes';
 import './Timeline.css';
+import { Button } from '@asafarim/shared-ui-react';
 
 interface TimelineProps {
   job: JobApplication;
@@ -68,16 +69,16 @@ const Timeline: React.FC<TimelineProps> = ({
   ], []);
 
   function calculateStageProgress(stageMilestones: MilestoneType[]): number {
-    const stageMilestoneIds = stageMilestones.map(type => 
+    const stageMilestoneIds = stageMilestones.map(type =>
       milestones.find(m => m.type === type)?.id
     ).filter(Boolean);
-    
+
     if (stageMilestoneIds.length === 0) return 0;
-    
-    const completedCount = stageMilestoneIds.filter(id => 
+
+    const completedCount = stageMilestoneIds.filter(id =>
       milestones.find(m => m.id === id)?.isCompleted
     ).length;
-    
+
     return Math.round((completedCount / stageMilestoneIds.length) * 100);
   }
 
@@ -147,8 +148,8 @@ const Timeline: React.FC<TimelineProps> = ({
           </div>
         </div>
         <div className="overall-progress-bar">
-          <div 
-            className="progress-fill" 
+          <div
+            className="progress-fill"
             style={{ width: `${overallProgress}%` }}
           ></div>
         </div>
@@ -167,8 +168,8 @@ const Timeline: React.FC<TimelineProps> = ({
                 <p className="stage-description">{stage.description}</p>
                 <div className="stage-progress">
                   <div className="stage-progress-bar">
-                    <div 
-                      className="stage-progress-fill" 
+                    <div
+                      className="stage-progress-fill"
                       style={{ width: `${stage.progress}%`, backgroundColor: stage.color }}
                     ></div>
                   </div>
@@ -184,23 +185,23 @@ const Timeline: React.FC<TimelineProps> = ({
       <div className="milestones-section">
         <div className="milestones-header">
           <h3>Milestones & Events</h3>
-          <button 
-            className="add-milestone-btn"
+          <Button
+            variant="info"
             onClick={() => {
               setIsAddingMilestone(true);
               setNewMilestoneDate(new Date().toISOString().split('T')[0]); // Reset to today's date when opening form
             }}
           >
             + Add Milestone
-          </button>
+          </Button>
         </div>
 
         {/* Add Milestone Form */}
         {isAddingMilestone && (
           <div className="add-milestone-form">
             <div className="form-row">
-              <select 
-                value={newMilestoneType} 
+              <select
+                value={newMilestoneType}
                 onChange={(e) => setNewMilestoneType(e.target.value as MilestoneType)}
                 className="milestone-type-select"
               >
@@ -218,16 +219,16 @@ const Timeline: React.FC<TimelineProps> = ({
                 <option value="application_rejected">🚫 Application Rejected</option>
                 <option value="custom">⭐ Custom Milestone</option>
               </select>
-              <input 
-                type="date" 
+              <input
+                type="date"
                 className="milestone-date-input"
                 value={newMilestoneDate}
                 onChange={(e) => setNewMilestoneDate(e.target.value)}
               />
             </div>
             <div className="form-actions">
-              <button onClick={handleAddMilestone} className="save-btn">Add</button>
-              <button onClick={() => setIsAddingMilestone(false)} className="cancel-btn">Cancel</button>
+              <Button onClick={handleAddMilestone} variant="success">Add</Button>
+              <Button onClick={() => setIsAddingMilestone(false)} variant="danger">Cancel</Button>
             </div>
           </div>
         )}
@@ -242,8 +243,8 @@ const Timeline: React.FC<TimelineProps> = ({
             milestones
               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
               .map((milestone) => (
-                <div 
-                  key={milestone.id} 
+                <div
+                  key={milestone.id}
                   className={`milestone-item ${milestone.isCompleted ? 'completed' : ''} ${milestone.status}`}
                 >
                   <div className="milestone-header">
@@ -262,36 +263,36 @@ const Timeline: React.FC<TimelineProps> = ({
                       )}
                     </div>
                     <div className="milestone-actions">
-                      <button
-                        className={`toggle-btn ${milestone.isCompleted ? 'completed' : ''}`}
+                      <Button
+                        variant="ghost"
+                        className={` ${milestone.isCompleted ? 'completed' : ''}`}
                         onClick={() => handleMilestoneToggle(milestone)}
                         title={milestone.isCompleted ? 'Mark as pending' : 'Mark as completed'}
                       >
                         {milestone.isCompleted ? '✅' : '⭕'}
-                      </button>
-                      <button
-                        className="edit-btn"
+                      </Button>
+                      <Button
+                        variant="ghost"
                         onClick={() => setSelectedMilestone(milestone)}
                         title="Edit milestone"
                       >
                         ✏️
-                      </button>
-                      <button
-                        className="delete-btn"
+                      </Button>
+                      <Button
+                        variant="ghost"
                         onClick={() => onMilestoneDelete(milestone.id)}
                         title="Delete milestone"
-                      >
-                        🗑️
-                      </button>
+                        children={<span>🗑️</span>}
+                      />
                     </div>
                   </div>
-                  
+
                   {milestone.notes && (
                     <div className="milestone-notes">
                       <strong>Notes:</strong> {milestone.notes}
                     </div>
                   )}
-                  
+
                   {milestone.attachments && milestone.attachments.trim() !== '' && (
                     <div className="milestone-attachments">
                       <strong>Attachments:</strong>
@@ -367,18 +368,18 @@ const Timeline: React.FC<TimelineProps> = ({
               </div>
             </div>
             <div className="modal-actions">
-              <button 
+              <Button
                 onClick={() => {
                   onMilestoneUpdate(selectedMilestone);
                   setSelectedMilestone(null);
-                }} 
-                className="save-btn"
+                }}
+                variant="success"
               >
                 Save Changes
-              </button>
-              <button onClick={() => setSelectedMilestone(null)} className="cancel-btn">
+              </Button>
+              <Button onClick={() => setSelectedMilestone(null)} variant='danger'>
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </div>

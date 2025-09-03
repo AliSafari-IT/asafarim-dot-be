@@ -1,7 +1,7 @@
 /* App Home Page */
 import './CoreAppHome.css';
 import './CoreAppHome.css';
-import { useAuth } from '@asafarim/shared-ui-react';
+import { Button, useAuth } from '@asafarim/shared-ui-react';
 
 export default function CoreAppHome() {
     const auth = useAuth();
@@ -12,13 +12,36 @@ export default function CoreAppHome() {
             {auth.isAuthenticated ? (
                 <>
                     <div className='core-app-home-actions'>
-                        <button className='core-app-home-action-button' onClick={() => window.open('http://core.asafarim.local:5174/jobs', '_blank')}>Jobs</button>
-                        <button className='core-app-home-action-button' onClick={() => window.open('http://ai.asafarim.local:5173', '_blank')}>AI</button>
-                        <button className='core-app-home-action-button' onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')}>Blog</button>
+                        <Button className='core-app-home-action-button'
+                            onClick={() => window.open('http://core.asafarim.local:5174/jobs', '_blank')}
+                            variant="primary"
+                            size="lg"
+                            rounded
+                            rightIcon="💼"
+                        >Jobs</Button>
+                        <Button className='core-app-home-action-button'
+                            onClick={() => window.open('http://ai.asafarim.local:5173', '_blank')}
+                            variant="primary"
+                            size="lg"
+                            rounded
+                            rightIcon="🤖"
+                        >AI</Button>
+                        <Button className='core-app-home-action-button'
+                            onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')}
+                            variant="primary"
+                            size="lg"
+                            rounded
+                            rightIcon="📝"
+                        >Blog</Button>
                     </div>
                 </>
             ) : (
-                <button className='core-app-home-action-button' onClick={() => auth.signIn()}>Login</button>
+                <Button onClick={() => auth.signIn()}
+                    variant="primary"
+                    size="lg"
+                    rounded
+                    rightIcon="🔒"
+                >Login</Button>
             )}
         </div>
     );

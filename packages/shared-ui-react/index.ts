@@ -2,6 +2,7 @@
 export { default as FooterContainer } from "./components/FooterContainer";
 export { default as HeaderContainer } from "./components/HeaderContainer";
 export { default as LayoutContainer } from "./components/LayoutContainer";
+export { Button } from "./components/Button";
 
 // Auth
 export { default as AuthStatus } from "./components/AuthStatus";

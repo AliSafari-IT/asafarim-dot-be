@@ -1,17 +1,17 @@
 .timeline-container {
-  background-color: var(--card-bg, var(--color-background));
-  border: 1px solid var(--card-border-color, var(--color-border));
-  border-radius: var(--global-border-radius-md, 8px);
-  padding: 24px;
-  margin-top: 24px;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--global-border-radius-md);
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
 }
 
 /* Progress Overview */
 .timeline-overview {
-  margin-bottom: 32px;
-  padding: 20px;
+  margin-bottom: var(--spacing-2xl);
+  padding: var(--spacing-lg);
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-  border-radius: var(--global-border-radius-md, 8px);
+  border-radius: var(--global-border-radius-md);
   border: 1px solid rgba(59, 130, 246, 0.1);
 }
 
@@ -19,31 +19,31 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-md);
 }
 
 .overview-header h3 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--card-text-color, var(--color-foreground));
+  font-size: var(--global-font-size-xl);
+  font-weight: var(--global-font-weight-semibold);
+  color: var(--color-foreground);
 }
 
 .progress-stats {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: var(--spacing-xs);
 }
 
 .progress-percentage {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: var(--global-font-size-2xl);
+  font-weight: var(--global-font-weight-bold);
   color: var(--color-primary);
 }
 
 .progress-label {
-  font-size: 12px;
+  font-size: var(--global-font-size-xs);
   color: var(--color-foreground-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -51,16 +51,16 @@
 
 .overall-progress-bar {
   width: 100%;
-  height: 8px;
+  height: var(--spacing-sm);
   background-color: rgba(59, 130, 246, 0.1);
-  border-radius: 4px;
+  border-radius: var(--global-border-radius-sm);
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  border-radius: 4px;
+  border-radius: var(--global-border-radius-sm);
   transition: width 0.6s ease;
 }
 
@@ -68,21 +68,21 @@
 .timeline-stages {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .timeline-stage {
-  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
-  border: 1px solid var(--card-border-color, var(--color-border));
-  border-radius: var(--global-border-radius-sm, 6px);
-  padding: 16px;
-  transition: all 0.2s ease;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--global-border-radius-sm);
+  padding: var(--spacing-md);
+  transition: all var(--global-transition-fast) ease;
 }
 
 .timeline-stage:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--global-shadow-md);
 }
 
 .timeline-stage.completed {
@@ -93,7 +93,7 @@
 .stage-header {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--spacing-md);
 }
 
 .stage-indicator {
@@ -434,19 +434,19 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 20px;
+  z-index: var(--global-z-index-3);
+  padding: var(--spacing-lg);
 }
 
 .milestone-modal {
-  background-color: var(--card-bg, var(--color-background));
-  border: 1px solid var(--card-border-color, var(--color-border));
-  border-radius: var(--global-border-radius-md, 8px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--global-border-radius-lg);
+  box-shadow: var(--global-shadow-xl);
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
@@ -457,64 +457,65 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--card-border-color, var(--color-border));
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .modal-header h3 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--card-text-color, var(--color-foreground));
+  font-size: var(--global-font-size-lg);
+  font-weight: var(--global-font-weight-semibold);
+  color: var(--color-foreground);
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: var(--global-font-size-2xl);
   cursor: pointer;
   color: var(--color-foreground-muted);
   padding: 0;
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: all var(--global-transition-fast) ease;
 }
 
 .close-btn:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--bg-secondary);
   color: var(--color-foreground);
 }
 
 .modal-content {
-  padding: 24px;
+  padding: var(--spacing-xl);
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-md);
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: var(--card-text-color, var(--color-foreground));
+  margin-bottom: var(--spacing-xs);
+  font-weight: var(--global-font-weight-medium);
+  color: var(--color-foreground);
+  font-size: var(--global-font-size-sm);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--card-border-color, var(--color-border));
-  border-radius: var(--global-border-radius-sm, 4px);
-  background-color: var(--card-bg, var(--color-background));
-  color: var(--card-text-color, var(--color-foreground));
-  font-size: 14px;
-  transition: border-color 0.2s ease;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--global-border-radius-sm);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-size: var(--global-font-size-sm);
+  transition: all var(--global-transition-fast) ease;
 }
 
 .form-group input:focus,
@@ -522,7 +523,7 @@
 .form-group textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb, 59, 130, 246), 0.2);
 }
 
 .form-group textarea {
@@ -532,17 +533,103 @@
 
 .modal-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
   justify-content: flex-end;
-  padding: 20px 24px;
-  border-top: 1px solid var(--card-border-color, var(--color-border));
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--color-border);
 }
 
 .modal-actions .save-btn,
 .modal-actions .cancel-btn {
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--global-font-size-sm);
+  font-weight: var(--global-font-weight-medium);
+  border: none;
+  border-radius: var(--global-border-radius-sm);
+  cursor: pointer;
+  transition: all var(--global-transition-fast) ease;
+}
+
+.modal-actions .save-btn {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.modal-actions .save-btn:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.modal-actions .cancel-btn {
+  background-color: var(--color-border);
+  color: var(--color-foreground);
+}
+
+.modal-actions .cancel-btn:hover {
+  background-color: var(--bg-secondary);
+}
+
+/* Ensure modal displays properly in dark theme */
+@media (prefers-color-scheme: dark) {
+  .milestone-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .milestone-modal {
+    background-color: var(--color-background);
+    border-color: var(--color-border);
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border-color: var(--color-border);
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+/* Theme-aware modal fixes */
+[data-theme="dark"] .milestone-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .milestone-modal {
+  background-color: var(--color-background);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border-color: var(--color-border);
+}
+
+/* Additional class-based dark mode detection */
+.theme-dark .milestone-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.theme-dark .milestone-modal {
+  background-color: var(--color-background);
+  border-color: var(--color-border);
+}
+
+.theme-dark .form-group input,
+.theme-dark .form-group select,
+.theme-dark .form-group textarea {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border-color: var(--color-border);
 }
 
 /* Responsive Design */
