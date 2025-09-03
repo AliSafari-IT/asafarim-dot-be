@@ -86,6 +86,41 @@ public class MockOpenAiService : IOpenAiService
         return Task.FromResult(jsonResponse);
     }
 
+    public Task<string> GetChatCompletionAsync(
+        List<string> conversationHistory,
+        CancellationToken ct = default
+    )
+    {
+        _logger.LogInformation(
+            "Mock OpenAI service called with conversation history: {ConversationHistory}",
+            string.Join(" | ", conversationHistory)
+        );
+
+        // Extract the last user message
+        var lastUserMessage = conversationHistory.LastOrDefault(m => m.StartsWith("user:"));
+        if (string.IsNullOrEmpty(lastUserMessage))
+            return Task.FromResult(
+                "I'm sorry, I couldn't understand your message. Could you please try again?"
+            );
+
+        var userPrompt = lastUserMessage.Replace("user:", "").Trim();
+
+        // Create a mock response for career advice
+        var mockResponses = new[]
+        {
+            "Based on your question, I'd recommend focusing on building a strong portfolio and networking with professionals in your field.",
+            "For career advancement, consider taking on leadership roles and continuous learning through courses and certifications.",
+            "When preparing for interviews, practice common questions and have specific examples ready from your experience.",
+            "For job searching, leverage LinkedIn, attend industry events, and reach out to your professional network.",
+            "Remember to tailor your resume and cover letter for each position you apply to.",
+        };
+
+        var random = new Random();
+        var response = mockResponses[random.Next(mockResponses.Length)];
+
+        return Task.FromResult(response);
+    }
+
     private string ExtractField(string text, string fieldName)
     {
         int startIndex = text.IndexOf(fieldName);

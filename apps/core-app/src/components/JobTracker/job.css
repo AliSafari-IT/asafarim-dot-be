@@ -1,35 +1,38 @@
 .job-tracker-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: var(--spacing-lg);
   }
   
   .job-tracker-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-lg);
   }
   
   .job-tracker-header h1 {
-    color: var(--card-text-color, var(--color-foreground));
+    color: var(--color-foreground);
     margin: 0;
+    font-size: var(--global-font-size-2xl);
+    font-weight: var(--global-font-weight-bold);
   }
   
   .add-job-btn {
     background-color: var(--color-primary);
-    color: var(--ifm-color-primary-inverse, #fff);
+    color: white;
     border: 1px solid transparent;
-    padding: 10px 14px;
-    border-radius: var(--global-border-radius-sm, 4px);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--global-border-radius-sm);
     cursor: pointer;
-    font-weight: var(--global-font-weight-medium, 500);
-    transition: background-color 120ms ease, transform 80ms ease, filter 120ms ease;
+    font-weight: var(--global-font-weight-medium);
+    transition: all var(--global-transition-fast) ease;
   }
   
   .add-job-btn:hover {
     background-color: var(--color-primary-dark);
     transform: translateY(-0.5px);
+    box-shadow: var(--global-shadow-sm);
   }
   
   .add-job-btn:focus-visible {
@@ -40,120 +43,122 @@
   .job-tracker-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--spacing-lg);
   }
 
   .show-analytics-btn {
     background-color: var(--color-primary);
-    color: var(--ifm-color-primary-inverse, #fff);
+    color: white;
     border: 1px solid transparent;
-    padding: 10px 14px;
-    border-radius: var(--global-border-radius-sm, 4px);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--global-border-radius-sm);
+    cursor: pointer;
+    font-weight: var(--global-font-weight-medium);
+    transition: all var(--global-transition-fast) ease;
   }
+  
   .show-analytics-btn:hover {
     background-color: var(--color-primary-dark);
     transform: translateY(-0.5px);
+    box-shadow: var(--global-shadow-sm);
   }
+  
   .show-analytics-btn:focus-visible {
     outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-  .show-analytics-btn:focus-visible {
-    outline: 2px solid var(--color-primary-dark);
     outline-offset: 2px;
   }
 
   .status-badge {
     display: inline-block;
-    padding: 4px 8px;
-    border-radius: var(--global-border-radius-md, 8px);
-    font-size: var(--global-font-size-xs, 12px);
-    font-weight: var(--global-font-weight-medium, 500);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--global-border-radius-md);
+    font-size: var(--global-font-size-xs);
+    font-weight: var(--global-font-weight-medium);
     text-transform: uppercase;
   }
   
   .status-applied {
     background-color: rgba(var(--color-info-rgb, 59, 130, 246), 0.1);
-    color: var(--color-info, #3b82f6);
+    color: var(--color-info);
   }
   
   .status-interview {
     background-color: rgba(var(--color-warning-rgb, 245, 158, 11), 0.1);
-    color: var(--color-warning, #f59e0b);
+    color: var(--color-warning);
   }
   
   .status-offer {
     background-color: rgba(var(--color-success-rgb, 34, 197, 93), 0.1);
-    color: var(--color-success, #22c55d);
+    color: var(--color-success);
   }
   
   .status-rejected {
     background-color: rgba(var(--color-canceled-rgb, 239, 68, 68), 0.1);
-    color: var(--color-canceled, #ef4444);
+    color: var(--color-canceled);
   }
   
   
 .job-edit {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 20px;
+    padding: var(--spacing-lg);
   }
   
   .job-edit-header {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--card-border-color, var(--color-border));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
   }
   
   .job-edit-header h1 {
     margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--card-text-color, var(--color-foreground));
+    font-size: var(--global-font-size-2xl);
+    font-weight: var(--global-font-weight-bold);
+    color: var(--color-foreground);
   }
   
   .back-btn {
     background: none;
-    border: 1px solid var(--card-border-color, var(--color-border));
-    color: var(--card-text-color, var(--color-foreground));
-    padding: 8px 16px;
-    border-radius: var(--global-border-radius-sm, 4px);
+    border: 1px solid var(--color-border);
+    color: var(--color-foreground);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--global-border-radius-sm);
     cursor: pointer;
-    font-size: 14px;
-    transition: all 120ms ease;
+    font-size: var(--global-font-size-sm);
+    transition: all var(--global-transition-fast) ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-sm);
     align-self: flex-start;
   }
   
   .back-btn:hover {
-    background-color: var(--card-border-color, var(--color-border));
+    background-color: var(--color-border);
     transform: translateY(-1px);
   }
   
   .job-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 12px 16px;
-    background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
-    border: 1px solid var(--card-border-color, var(--color-border));
-    border-radius: var(--global-border-radius-sm, 6px);
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md) var(--spacing-md);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--global-border-radius-sm);
     border-left: 4px solid var(--color-primary);
   }
   
   .company-name {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--card-text-color, var(--color-foreground));
+    font-size: var(--global-font-size-lg);
+    font-weight: var(--global-font-weight-semibold);
+    color: var(--color-foreground);
   }
   
   .role-name {
-    font-size: 16px;
+    font-size: var(--global-font-size-md);
     color: var(--color-foreground-muted);
   }
   
@@ -166,11 +171,11 @@
   .loading,
   .error {
     text-align: center;
-    padding: 40px;
-    background-color: var(--card-bg, var(--color-background));
-    border: 1px solid var(--card-border-color, var(--color-border));
-    border-radius: var(--global-border-radius-md, 8px);
-    margin-top: 20px;
+    padding: var(--spacing-2xl);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--global-border-radius-md);
+    margin-top: var(--spacing-lg);
   }
   
   .loading {
@@ -186,40 +191,40 @@
   /* Responsive Design */
   @media (max-width: 768px) {
     .job-edit {
-      padding: 16px;
+      padding: var(--spacing-md);
     }
     
     .job-edit-header h1 {
-      font-size: 24px;
+      font-size: var(--global-font-size-xl);
     }
     
     .company-name {
-      font-size: 16px;
+      font-size: var(--global-font-size-md);
     }
     
     .role-name {
-      font-size: 14px;
+      font-size: var(--global-font-size-sm);
     }
   }
   
   @media (max-width: 480px) {
     .job-edit-header h1 {
-      font-size: 20px;
+      font-size: var(--global-font-size-lg);
     }
     
     .back-btn {
-      font-size: 13px;
-      padding: 6px 12px;
+      font-size: var(--global-font-size-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
     }
   }
 
   .job-form-container {
-    background-color: var(--card-bg, var(--color-background));
-    border: 1px solid var(--card-border-color, var(--color-border));
-    border-radius: var(--global-border-radius-md, 8px);
-    box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05));
-    padding: 32px;
-    color: var(--card-text-color, var(--color-foreground));
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--global-border-radius-md);
+    box-shadow: var(--global-shadow-lg);
+    padding: var(--spacing-2xl);
+    color: var(--color-foreground);
     margin: 0 auto;
     width: 100%;
     max-width: 800px;
@@ -228,13 +233,15 @@
   
   .job-form-container h2 {
     margin-top: 0;
-    color: var(--card-text-color, var(--color-foreground));
-    margin-bottom: 20px;
+    color: var(--color-foreground);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--global-font-size-xl);
+    font-weight: var(--global-font-weight-bold);
   }
   
   .job-form {
     display: grid;
-    grid-gap: 24px;
+    grid-gap: var(--spacing-xl);
     width: 100%;
     margin: 0;
     padding: 0;
@@ -243,46 +250,46 @@
   
   .error-message {
     color: var(--color-canceled);
-    font-size: var(--global-font-size-sm, 14px);
-    margin-top: 5px;
+    font-size: var(--global-font-size-sm);
+    margin-top: var(--spacing-xs);
   }
   
   .submit-error {
-    margin-bottom: 15px;
-    padding: 10px;
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
     background-color: rgba(239, 68, 68, 0.12);
-    border-radius: var(--global-border-radius-sm, 4px);
+    border-radius: var(--global-border-radius-sm);
     color: var(--color-canceled);
   }
   
   .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-    padding: 16px 0;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
     position: sticky;
     bottom: 0;
-    background: var(--card-bg, var(--color-background));
-    z-index: 10;
-    border-top: 1px solid var(--card-border-color, var(--color-border));
-    margin: 20px -20px -20px;
-    padding: 16px 20px;
+    background: var(--color-background);
+    z-index: var(--global-z-index-1);
+    border-top: 1px solid var(--color-border);
+    margin: var(--spacing-lg) calc(-1 * var(--spacing-lg)) calc(-1 * var(--spacing-lg));
+    padding: var(--spacing-md) var(--spacing-lg);
   }
   
   /* Responsive styles */
   @media (max-width: 768px) {
     .job-form-container {
-      padding: 20px;
-      border-radius: var(--global-border-radius-md, 8px);
-      border: 1px solid var(--card-border-color, var(--color-border));
-      box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05));
-      margin: 0 16px;
+      padding: var(--spacing-lg);
+      border-radius: var(--global-border-radius-md);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--global-shadow-lg);
+      margin: 0 var(--spacing-md);
     }
     
     .job-form {
       padding: 0;
-      grid-gap: 20px;
+      grid-gap: var(--spacing-lg);
     }
     
     .form-actions {
@@ -291,8 +298,8 @@
       right: 0;
       bottom: 0;
       margin: 0;
-      padding: 12px 16px;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      padding: var(--spacing-md) var(--spacing-md);
+      box-shadow: var(--global-shadow-md);
       justify-content: space-between;
       background: var(--color-background);
       border-top: 1px solid var(--color-border);

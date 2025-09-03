@@ -17,7 +17,7 @@
 .home-title {
   font-size: 3rem;
   font-weight: 800;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

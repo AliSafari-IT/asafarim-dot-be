@@ -142,7 +142,7 @@ const JobView = () => {
     );
   }
 
-  return (
+    return (
     <div className="job-view">
       <div className="job-view-header">
         <button className="back-btn" onClick={handleBack}>
@@ -241,8 +241,8 @@ const JobView = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default JobView;

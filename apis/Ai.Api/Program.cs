@@ -1,4 +1,7 @@
+using Ai.Api.Data;
 using Ai.Api.OpenAI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,21 @@ var openAiModel = openAi["Model"] ?? "gpt-3.5-turbo";
 var openAiTemperature = double.TryParse(openAi["Temperature"], out var t) ? t : 0.7;
 var openAiMaxTokens = int.TryParse(openAi["MaxTokens"], out var mt) ? mt : 512;
 var useMockOnFailure = bool.TryParse(openAi["UseMockOnFailure"], out var umf) ? umf : true;
+
+// Add Authentication and Authorization
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(
+        JwtBearerDefaults.AuthenticationScheme,
+        options =>
+        {
+            options.Authority = "http://identity.asafarim.local:5190";
+            options.RequireHttpsMetadata = false;
+            options.Audience = "asafarim.be";
+        }
+    );
+
+builder.Services.AddAuthorization();
 
 // CORS for the AI UI app
 builder.Services.AddCors(opts =>
@@ -41,19 +59,27 @@ builder.Services.AddHttpClient(
     }
 );
 
-
 // Host on 5103
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(5103);
 });
 
+// Add database context
+builder.Services.AddDbContext<SharedDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("SharedConnection"))
+);
+
 // Register OpenAI service
-builder.Services.AddOpenAi(builder.Configuration);
+builder.Services.AddScoped<IOpenAiService, OpenAiService>();
+builder.Services.Configure<OpenAiOptions>(builder.Configuration.GetSection("OpenAI"));
 
 var app = builder.Build();
 
 app.UseCors("frontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
@@ -61,6 +87,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-
 
 app.Run();

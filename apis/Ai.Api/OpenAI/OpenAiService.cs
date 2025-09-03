@@ -14,6 +14,8 @@ public interface IOpenAiService
     );
 
     Task<string> ChatAsync(string systemPrompt, string userPrompt, CancellationToken ct = default);
+
+    Task<string> GetChatCompletionAsync(List<string> conversationHistory, CancellationToken ct = default);
 }
 
 internal sealed class OpenAiUpstreamException : Exception
@@ -46,6 +48,26 @@ internal sealed class OpenAiService(HttpClient http, OpenAiOptions opts) : IOpen
     )
     {
         return CompleteAsync(systemPrompt, userPrompt, ct);
+    }
+
+    public async Task<string> GetChatCompletionAsync(List<string> conversationHistory, CancellationToken ct = default)
+    {
+        if (conversationHistory == null || !conversationHistory.Any())
+            return "I'm sorry, I don't have any context to work with. Could you please provide a message?";
+
+        // Extract the last user message
+        var lastUserMessage = conversationHistory.LastOrDefault(m => m.StartsWith("user:"));
+        if (string.IsNullOrEmpty(lastUserMessage))
+            return "I'm sorry, I couldn't understand your message. Could you please try again?";
+
+        var userPrompt = lastUserMessage.Replace("user:", "").Trim();
+        
+        // Create a system prompt based on the conversation context
+        var systemPrompt = "You are a helpful AI career assistant. You help users with career advice, interview tips, job search guidance, and professional development. " +
+                          "Use the conversation history to provide contextually relevant and helpful responses. " +
+                          "Be professional, encouraging, and provide actionable advice when possible.";
+
+        return await ChatAsync(systemPrompt, userPrompt, ct);
     }
 
     public async Task<string> CompleteAsync(
