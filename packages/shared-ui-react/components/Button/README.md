@@ -4,7 +4,7 @@ A versatile, accessible button component with multiple variants, sizes, and stat
 
 ## Features
 
-- 🎨 **8 Variants**: primary, secondary, success, warning, danger, info, ghost, outline
+- 🎨 **10 Variants**: primary, secondary, success, warning, danger, info, ghost, outline, link, brand
 - 📏 **5 Sizes**: xs, sm, md, lg, xl
 - 🔄 **Loading State**: Built-in loading spinner with disabled interaction
 - 🎯 **Icon Support**: Left and/or right icons
@@ -40,7 +40,11 @@ function MyComponent() {
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `'primary' \| 'secondary' \| 'success' \| 'warning' \| 'danger' \| 'info' \| 'ghost' \| 'outline'` | `'primary'` | Visual style variant |
+| `variant` | `'primary' \| 'secondary' \| 'success' \| 'warning' \| 'danger' \| 'info' \| 'ghost' \| 'outline' \| 'link' \| 'brand'` | `'primary'` | Visual style variant |
+| `to` | `string` | `undefined` | Internal route path (for React Router) |
+| `href` | `string` | `undefined` | External URL for links |
+| `target` | `string` | `undefined` | Link target (e.g., "_blank") |
+| `rel` | `string` | `undefined` | Link rel attribute (e.g., "noopener noreferrer") |
 | `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Button size |
 | `isLoading` | `boolean` | `false` | Shows loading spinner |
 | `leftIcon` | `React.ReactNode` | `undefined` | Icon on the left side |
@@ -100,6 +104,20 @@ Transparent button that shows background on hover.
 ```
 Button with outline border that fills on hover.
 
+### Link
+```tsx
+<Button variant="link">Link Style Button</Button>
+<Button variant="link" to="/dashboard">Internal Link</Button>
+<Button variant="link" href="https://example.com" target="_blank">External Link</Button>
+```
+Text-only button that looks like a link with underline decoration. When using `to` or `href` props, it automatically renders as an anchor tag for proper navigation.
+
+### Brand
+```tsx
+<Button variant="brand">Brand Action</Button>
+```
+Premium button with gradient background and shimmer effect on hover.
+
 ## Sizes
 
 ```tsx
@@ -153,6 +171,33 @@ Button is visually disabled and cannot be interacted with.
 <Button rounded>Rounded Button</Button>
 ```
 
+## Link Behavior
+
+When using `variant="link"` with navigation props, the button automatically renders as an anchor tag:
+
+### Internal Navigation
+```tsx
+<Button variant="link" to="/dashboard">
+  Go to Dashboard
+</Button>
+```
+
+### External Links
+```tsx
+<Button variant="link" href="https://docs.example.com" target="_blank">
+  View Documentation
+</Button>
+```
+
+### With Icons
+```tsx
+<Button variant="link" to="/profile" leftIcon="👤">
+  Edit Profile
+</Button>
+```
+
+**Note**: The `to` prop is intended for React Router navigation, while `href` is for external URLs. Both will render the button as an anchor tag with proper link behavior.
+
 ## Examples
 
 ### Form Actions
@@ -171,6 +216,26 @@ Button is visually disabled and cannot be interacted with.
 ```tsx
 <Button variant="ghost" leftIcon="🏠" size="lg">
   Go Home
+</Button>
+```
+
+### Link Actions
+```tsx
+<Button variant="link" leftIcon="🔗">
+  View Documentation
+</Button>
+<Button variant="link" to="/settings" leftIcon="⚙️">
+  Settings
+</Button>
+<Button variant="link" href="https://github.com" target="_blank" leftIcon="📚">
+  GitHub Repository
+</Button>
+```
+
+### Brand Actions
+```tsx
+<Button variant="brand" leftIcon="⭐" size="lg">
+  Get Started
 </Button>
 ```
 
@@ -226,7 +291,7 @@ This ensures consistent theming across your entire application and automatic ada
 The component uses BEM methodology for CSS classes:
 
 - `.btn` - Base button class
-- `.btn--{variant}` - Variant modifier (e.g., `.btn--primary`)
+- `.btn--{variant}` - Variant modifier (e.g., `.btn--primary`, `.btn--link`, `.btn--brand`)
 - `.btn--{size}` - Size modifier (e.g., `.btn--lg`)
 - `.btn--loading` - Loading state
 - `.btn--disabled` - Disabled state

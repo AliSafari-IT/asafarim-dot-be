@@ -44,6 +44,11 @@
   --color-foreground-muted-rgb: 100, 116, 139;
   --color-border-rgb: 226, 232, 240;
 
+  --color-brand-50: #f2fbff;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-900: #0b3b56;
+
   --primary-color: #3b82f6;
   --primary-hover: #2563eb;
   --secondary-color: #64748b;
@@ -73,9 +78,6 @@
   --color-brand-50: 219, 234, 254; /* rgb */
   --color-brand-500: 59, 130, 246; /* rgb */
 
-  /* Typographic scale */
-  --radius-xl: 16px;
-
   /* Card */
   --card-text-color: var(--color-foreground);
   --card-border-color: var(--color-border);
@@ -102,9 +104,42 @@
   --ifm-color-primary-lighter: #93c5fd;
   --ifm-color-primary-lightest: #bfdbfe;
   --ifm-color-primary-inverse: #ffffff;
+  --ifm-color-primary-accent: #8fb6f5;
+  --ifm-color-primary-accent-dark: #1867e7;
+  --ifm-color-primary-accent-darker: #1867e7;
+  --ifm-color-primary-accent-darkest: #1867e7;
+  --ifm-color-primary-accent-light: #8fb6f5;
+  --ifm-color-primary-accent-lighter: #8fb6f5;
+  --ifm-color-primary-accent-lightest: #8fb6f5;
+  --ifm-color-primary-accent-inverse: #ffffff;
+  --ifm-color-emphasis-50: #f8fafc;
+  --ifm-color-emphasis-100: #f1f5f9;
+  --ifm-color-emphasis-200: #e2e8f0;
+  --ifm-color-emphasis-300: #cbd5e1;
+  --ifm-color-emphasis-400: #94a3b8;
+  --ifm-color-emphasis-500: #64748b;
+  --ifm-color-emphasis-600: #475569;
+  --ifm-color-emphasis-700: #334155;
+  --ifm-color-emphasis-800: #1e293b;
+  --ifm-color-emphasis-900: #1e293b;
+
+  --ifm-color-link: #3b82f6;
+  --ifm-color-link-inverse: #ffffff;
+
   --ifm-background-color: var(--color-background);
   --ifm-font-color-base: var(--color-foreground);
   --ifm-border-color: var(--color-border);
+  --ifm-code-font-size: 95%;
+  --ifm-navbar-height: 60px;
+  --ifm-navbar-padding-horizontal: 1rem;
+  --ifm-navbar-background-color: var(--color-background);
+  --ifm-navbar-link-color: var(--color-foreground);
+  --ifm-navbar-link-hover-color: var(--color-primary);
+  --ifm-navbar-link-active-color: var(--color-primary);
+  --ifm-navbar-link-active-background-color: var(--color-primary-lightest);
+  --ifm-navbar-link-active-border-color: var(--color-primary-light);
+  --ifm-navbar-link-active-border-width: 1px;
+  --ifm-transition-fast: 0.2s ease;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
 
@@ -197,6 +232,7 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   
   
+  /* Typographic scale */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
@@ -292,10 +328,38 @@ body.dark,
   --ifm-color-primary-light: #93c5fd;
   --ifm-color-primary-lighter: #bfdbfe;
   --ifm-color-primary-lightest: #dbeafe;
+  --ifm-color-primary-accent: #8fb6f5;
+  --ifm-color-primary-accent-dark: #1867e7;
+  --ifm-color-primary-accent-darker: #1867e7;
+  --ifm-color-primary-accent-darkest: #1867e7;
+  --ifm-color-primary-accent-light: #8fb6f5;
+  --ifm-color-primary-accent-lighter: #8fb6f5;
+  --ifm-color-primary-accent-lightest: #8fb6f5;
+  --ifm-color-primary-accent-inverse: #ffffff;
+  --ifm-color-emphasis-50: var(--ifm-color-emphasis-50);
+  --ifm-color-emphasis-100: var(--ifm-color-emphasis-100);
+  --ifm-color-emphasis-200: var(--ifm-color-emphasis-200);
+  --ifm-color-emphasis-300: var(--ifm-color-emphasis-300);
+  --ifm-color-emphasis-400: var(--ifm-color-emphasis-400);
+  --ifm-color-emphasis-500: var(--ifm-color-emphasis-500);
+  --ifm-color-emphasis-600: var(--ifm-color-emphasis-600);
+  --ifm-color-emphasis-700: var(--ifm-color-emphasis-700);
+  --ifm-color-emphasis-800: var(--ifm-color-emphasis-800);
+  --ifm-color-emphasis-900: var(--ifm-color-emphasis-900);
   --ifm-background-color: var(--color-background);
   --ifm-color-primary-inverse: #030303;
   --ifm-font-color-base: var(--color-foreground);
   --ifm-border-color: var(--color-border);
+  --ifm-code-font-size: 95%;
+  --ifm-navbar-height: 60px;
+  --ifm-navbar-padding-horizontal: 1rem;
+  --ifm-navbar-background-color: var(--color-background);
+  --ifm-navbar-link-color: var(--color-foreground);
+  --ifm-navbar-link-hover-color: var(--color-primary);
+  --ifm-navbar-link-active-color: var(--color-primary);
+  --ifm-navbar-link-active-background-color: var(--color-primary-lightest);
+  --ifm-navbar-link-active-border-color: var(--color-primary-light);
+  --ifm-navbar-link-active-border-width: 1px;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 

@@ -363,6 +363,14 @@ body {
     border-color: var(--color-border-hover);
     background-color: var(--color-background-alt);
   }
+
+  .btn-link {
+    background-color: transparent;
+    color: var(--ifm-color-link-inverse);
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+  }
   
   .feature-card {
     border: 1px solid var(--color-border);

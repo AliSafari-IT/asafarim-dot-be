@@ -3,19 +3,36 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs, 0.5rem);
+  gap: var(--global-spacing-xs);
+  padding: var(--global-spacing-sm) var(--global-spacing-md);
   border: none;
-  border-radius: var(--global-border-radius-md);
-  font-family: var(--global-font-family-base);
-  font-weight: var(--global-font-weight-medium);
+  border-radius: var(--global-border-radius-sm);
+  font-family: inherit;
+  font-size: var(--global-font-size-sm);
+  font-weight: 500;
+  line-height: 1;
   text-decoration: none;
   cursor: pointer;
-  transition: all var(--global-transition-fast) ease;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
   user-select: none;
   white-space: nowrap;
-  line-height: 1;
+}
+
+/* Test rule for real-time sync demonstration */
+.test-sync-demo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.test-sync-demo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 /* Button Sizes */
@@ -125,7 +142,7 @@
 }
 
 .btn--danger:hover:not(:disabled) {
-  background-color: #dc2626;
+  background-color: var(--color-canceled, #dc2626);
   transform: translateY(-1px);
   box-shadow: var(--global-shadow-md);
 }
@@ -183,6 +200,73 @@
 
 .btn--outline:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.btn--link {
+  background-color: transparent;
+  color: var(--ifm-color-link-inverse);
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+/* When link variant is used as actual link element */
+a.btn--link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+.btn--link:hover:not(:disabled) {
+  color: var(--color-brand-900);
+  text-decoration-thickness: 2px;
+  background-color: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn--link:active:not(:disabled) {
+  color: var(--color-primary-dark);
+}
+
+.btn--brand {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  border: none;
+  box-shadow: var(--global-shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--brand::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn--brand:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--global-shadow-lg);
+}
+
+.btn--brand:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.btn--brand:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--global-shadow-md);
 }
 
 /* Button States */

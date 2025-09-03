@@ -8,6 +8,7 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 import HomepageFeatures from '../components/HomepageFeatures';
 import Root from '../theme/Root';
+import { Button } from '@asafarim/shared-ui-react';
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
@@ -19,11 +20,12 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
+          <Button
+            variant="link"
+            size="lg"
             to="/docs/intro">
             Technical Documentation and more
-          </Link>
+          </Button>
         </div>
       </div>
     </header>
