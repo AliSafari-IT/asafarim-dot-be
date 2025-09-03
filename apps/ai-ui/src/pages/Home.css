@@ -1,4 +1,4 @@
-.home-container {
+.ai-ui-home-container {
   min-height: calc(100vh - 200px);
   display: flex;
   flex-direction: column;
@@ -6,7 +6,6 @@
   justify-content: center;
   padding: var(--spacing-2xl) var(--spacing-md);
   text-align: center;
-  background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-surface) 100%);
 }
 
 .home-header {

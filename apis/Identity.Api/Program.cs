@@ -97,15 +97,24 @@ var allowedOrigins = new[]
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5174",
+    "http://localhost:5175",
     "http://localhost:4200",
     "http://localhost:5177",
     "http://asafarim.local",
     "http://ai.asafarim.local:5173",
+    "http://ai.asafarim.local",
+    "http://core.asafarim.local",
+    "http://jobs.asafarim.local",
+    "http://blog.asafarim.local",
+    "http://identity.asafarim.local",
+    "http://identity.asafarim.local:5177",
+    "http://web.asafarim.local:5175",
+    "http://web.asafarim.local",
     "http://core.asafarim.local:5174",
     "http://jobs.asafarim.local:4200",
     "http://blog.asafarim.local:3000",
-    "http://identity.asafarim.local:5177",
-    "http://core.asafarim.local:5174"
+    "http://core.asafarim.local:5174",
+    "http://web.asafarim.local:5175"
 };
 
 builder.Services.AddCors(opt =>

@@ -40,7 +40,7 @@ const item = {
 
 export default function Home() {
   return (
-    <div className="home-container">
+    <div className="ai-ui-home-container">
       <motion.div 
         className="home-header"
         initial={{ opacity: 0, y: -20 }}
