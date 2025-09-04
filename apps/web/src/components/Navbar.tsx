@@ -7,6 +7,7 @@ import { NavLink } from "react-router-dom";
 const navLinks: NavLinkItem[] = [
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
+  { to: "http://ai.asafarim.local:5173", label: "AI Tools", external: true },
 ];
 
 // Custom render function for React Router links

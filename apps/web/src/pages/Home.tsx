@@ -17,7 +17,7 @@ export default function Home() {
             Shared design tokens ensure consistent UI. SSO via cookies on{" "}
             <code>.asafarim.be</code>.
           </p>
-
+          
           <div className="flex flex-wrap gap-md mt-4">
             <a 
               href="/about"

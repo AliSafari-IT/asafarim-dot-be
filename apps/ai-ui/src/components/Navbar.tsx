@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 
 // Define your navigation links
 const navLinks: NavLinkItem[] = [
+  { to: "/", label: "AI Tools" },
   { to: "http://web.asafarim.local:5175/about", label: "About" },
   { to: "http://web.asafarim.local:5175/contact", label: "Contact" },
 ];
@@ -60,7 +61,7 @@ export default function Navbar() {
           notSignedIn: "Not signed in!",
           signIn: "Sign In",
           signOut: "Sign Out",
-          welcome: (email?: string) => `Welcome ${email || 'User'}!`
+          welcome: (email?: string) => `Welcome ${user?.username ||email || 'User'}!`
         }
       }}
       renderLink={renderLink}
