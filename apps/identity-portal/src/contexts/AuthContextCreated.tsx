@@ -14,4 +14,5 @@ export const AuthContextCreated = createContext<AuthContextType>({
     clearError: () => { },
     updateUser: () => { },
     reloadProfile: async () => { },
+    forceSignOut: () => { }, // Force sign out without API call
 });

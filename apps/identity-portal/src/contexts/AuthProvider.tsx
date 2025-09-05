@@ -183,6 +183,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [user]);
 
+  // Force sign out without API call (for cross-app sync)
+  const forceSignOut = useCallback(() => {
+    // Clear local state
+    setUser(null);
+    setIsLoading(false);
+    setError(null);
+    
+    // Clear local storage
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_info');
+    
+    // Clear cookies
+    document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.asafarim.local';
+    document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.asafarim.local';
+    document.cookie = 'user_info=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.asafarim.local';
+    
+    console.log('Force sign out completed');
+  }, []);
+
   return (
     <AuthContextCreated.Provider
       value={{
@@ -196,6 +216,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         register,
         logout,
         clearError,
+        forceSignOut,
       }}
     >
       {children}

@@ -11,4 +11,5 @@ export interface AuthContextType {
   clearError: () => void;
   updateUser: (next: UserInfo) => void;
   reloadProfile: () => Promise<void>;
+  forceSignOut: () => void; // Force sign out without API call, for cross-app sync
 }

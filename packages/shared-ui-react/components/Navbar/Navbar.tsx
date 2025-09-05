@@ -48,8 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   renderBrand = defaultRenderBrand,
 }) => {
   // Compute a package-relative default logo so consumers don't need to host it
-  const packageDefaultLogo = new URL('../../public/logo.svg', import.meta.url).href;
-  const effectiveBrand = brand ?? { text: 'ASafariM', logo: packageDefaultLogo, href: '/' };
+  const effectiveBrand = brand;
   const [open, setOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -86,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="nav-wrap">
         <div className="nav-row">
           {/* Left: brand */}
-          {renderBrand(effectiveBrand)}
+          {renderBrand({logo: brand?.logo, text: `${brand?.text}`, href: `${brand?.href}`})}
 
           {/* Center: links (desktop only) */}
           <div className="nav-center">

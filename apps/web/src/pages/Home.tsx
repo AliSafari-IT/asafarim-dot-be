@@ -45,7 +45,7 @@ export default function Home() {
           <Feature
             title="Jobs Tracker"
             desc="Track applications and interviews. Angular UI + .NET Jobs API."
-            href="/contact"
+            href="/jobs"
           />
           <Feature
             title="Blog & Docs"

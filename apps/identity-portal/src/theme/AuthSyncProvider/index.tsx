@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { setupAuthSyncListener } from '../../utils/authSync';
+import { useAuth } from '../../hooks/useAuth';
 
 /**
  * AuthSyncProvider component
@@ -9,22 +10,32 @@ import { setupAuthSyncListener } from '../../utils/authSync';
  * It handles sign-out events from other apps like identity-portal.
  */
 export default function AuthSyncProvider({ children }: { children: React.ReactNode }): React.ReactElement {
+  const { forceSignOut } = useAuth();
+
   useEffect(() => {
-    // Set up auth sync listener
+    // Set up auth sync listener for cross-app auth events
     const cleanup = setupAuthSyncListener(() => {
-      // Handle sign-out event from other apps
       console.log('Sign-out detected from another app');
       
-      // You can add additional logic here if needed
-      // For example, showing a notification or redirecting
+      // Force local auth state to be cleared
+      forceSignOut();
       
-      // If you need to refresh the page to update UI state
-      window.location.reload();
+      // For protected routes, redirect to login
+      const isProtectedRoute = window.location.pathname.includes('/dashboard') || 
+                              window.location.pathname.includes('/admin') || 
+                              window.location.pathname.includes('/me');
+      
+      if (isProtectedRoute) {
+        window.location.href = '/login';
+      } else {
+        // Just refresh the page to update UI state
+        window.location.reload();
+      }
     });
     
     // Clean up listener when component unmounts
     return cleanup;
-  }, []);
+  }, [forceSignOut]);
   
   // Simply render children - this is a context provider with no UI
   return <>{children}</>;

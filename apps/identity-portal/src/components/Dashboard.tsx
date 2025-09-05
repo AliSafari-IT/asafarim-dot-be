@@ -1,28 +1,22 @@
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@asafarim/shared-ui-react';
 import { useEffect, useState } from 'react';
 import './dashboard.css';
 import { Button } from '@asafarim/shared-ui-react';
 import ChangePasswordModal from './ChangePasswordModal';
 
 export const Dashboard = () => {
-  const { isAuthenticated, user, reloadProfile } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      window.location.href = 'http://identity.asafarim.local:5177/login';
+    // first clear the auth leftover tokens from local storage      
+    if (!isAuthenticated && !loading) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('refresh_token');
+      // then redirect to login
+      window.location.href = '/login';      
     }
-  }, [isAuthenticated]);
-
-  // Refresh profile on mount and when tab becomes visible
-  useEffect(() => {
-    void reloadProfile();
-    const onVis = () => {
-      if (!document.hidden) void reloadProfile();
-    };
-    document.addEventListener('visibilitychange', onVis);
-    return () => document.removeEventListener('visibilitychange', onVis);
-  }, [reloadProfile]);
+  }, [isAuthenticated, loading]);
 
   const roles = (user?.roles || ['Viewer']).join(', ');
 
@@ -62,7 +56,7 @@ export const Dashboard = () => {
           <h2 className="card-title">Actions</h2>
           <div className="actions-row">
             <Button
-              onClick={() => (window.location.href = (user?.roles || []).some(r => /^(admin|superadmin)$/i.test(r)) ? '/admin/user-profile' : '/me')}
+              onClick={() => (window.location.href = (user?.roles || []).some((r: string) => /^(admin|superadmin)$/i.test(r)) ? '/admin/user-profile' : '/me')}
               variant="success"
             >
               Edit profile
@@ -75,7 +69,7 @@ export const Dashboard = () => {
               Change password
             </Button>
 
-            {(user?.roles || []).some(r => /^(admin|superadmin)$/i.test(r)) && (
+            {(user?.roles || []).some((r: string) => /^(admin|superadmin)$/i.test(r)) && (
               <Button onClick={() => (window.location.href = '/admin/users')} variant="info">
                 Manage users
               </Button>

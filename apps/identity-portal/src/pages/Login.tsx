@@ -1,20 +1,18 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 import LoginForm from '../components/LoginForm';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@asafarim/shared-ui-react';
 
 export const Login = () => {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+  const { isAuthenticated, loading } = useAuth();
   const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   
   // Redirect to dashboard if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(returnUrl || '/dashboard');
+    if (isAuthenticated && !loading) {
+      window.location.href = returnUrl || '/dashboard';
     }
-  }, [isAuthenticated, navigate, returnUrl]);
+  }, [isAuthenticated, returnUrl, loading]);
 
   return (
     <AuthLayout 

@@ -1,6 +1,6 @@
 import React from 'react';
-import AuthSyncProvider from '../AuthSyncProvider';
 import { ThemeProvider } from '@asafarim/react-themes';
+import { AuthSyncProvider } from '@asafarim/shared-ui-react';
 
 /**
  * Custom Root component for Docusaurus

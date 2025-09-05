@@ -1,5 +1,5 @@
-import React from 'react';
-import '@asafarim/shared-tokens/index.css';
+import React from "react";
+import CentralSignOut from "./Auth/CentralSignOut";
 
 export interface AuthStatusProps {
   isAuthenticated: boolean;
@@ -28,22 +28,30 @@ export default function AuthStatus(props: AuthStatusProps) {
     loading,
     onSignIn,
     onSignOut,
-    className = 'authStatusContainer',
+    className = "authStatusContainer",
     style,
     labels,
   } = props;
 
   const t = {
-    notSignedIn: labels?.notSignedIn ?? 'Not signed in!',
-    signIn: labels?.signIn ?? 'Sign In',
-    signOut: labels?.signOut ?? 'Sign Out',
-    welcome: labels?.welcome ?? ((email?: string) => `Welcome ${email ?? 'User'}!`),
+    notSignedIn: labels?.notSignedIn ?? "Not signed in!",
+    signIn: labels?.signIn ?? "Sign In",
+    signOut: labels?.signOut ?? "Sign Out",
+    welcome:
+      labels?.welcome ?? ((email?: string) => `Welcome ${email ?? "User"}!`),
   };
 
-  if (loading) return <div className={className} style={style}>Loading authentication status...</div>;
+  const redirectTo =
+    typeof window !== "undefined" ? window.location.href : undefined;
+
+  if (loading)
+    return (
+      <div className={className} style={style}>
+        Loading authentication status...
+      </div>
+    );
 
   if (!isAuthenticated) {
-    const redirectTo = typeof window !== 'undefined' ? window.location.href : undefined;
     return (
       <div className={className} style={style}>
         <span style={{ marginRight: 8 }}>{t.notSignedIn}</span>
@@ -55,9 +63,9 @@ export default function AuthStatus(props: AuthStatusProps) {
   return (
     <div className={className} style={style}>
       <span style={{ marginRight: 8 }}>{t.welcome(user?.email)}</span>
-      <button onClick={onSignOut}>{t.signOut}</button>
+      <CentralSignOut onSignOut={onSignOut}>
+        {t.signOut}
+      </CentralSignOut>
     </div>
   );
 }
-
-

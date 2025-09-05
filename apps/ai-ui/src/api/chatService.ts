@@ -1,7 +1,6 @@
 import { api } from '../api';
 import type { 
   ChatSession, 
-  ChatMessage, 
   CreateChatSessionDto, 
   UpdateChatSessionDto, 
   SendMessageDto, 

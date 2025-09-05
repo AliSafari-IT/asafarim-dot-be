@@ -2,18 +2,18 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 import RegisterForm from '../components/RegisterForm';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@asafarim/shared-ui-react';
 
 export const Register = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   
   // Redirect to dashboard if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !loading) {
       navigate('/dashboard');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, loading]);
 
   return (
     <AuthLayout 

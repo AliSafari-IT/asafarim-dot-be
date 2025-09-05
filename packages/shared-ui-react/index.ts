@@ -7,6 +7,7 @@ export { Button } from "./components/Button";
 // Auth
 export { default as AuthStatus } from "./components/AuthStatus";
 export type { AuthStatusProps } from "./components/AuthStatus";
+export { AuthSyncProvider } from "./contexts/AuthProvider";
 
 // Not Found
 export { default as NotFound } from "./components/NotFound/NotFound";

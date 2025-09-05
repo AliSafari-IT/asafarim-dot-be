@@ -1,27 +1,12 @@
 @import url("@asafarim/shared-ui-react/index.css");
-@import "./css/message.css";
-@import "./css/pages.css";
-@import "./css/Navbar.css";
 
-:root {
-  
-  /* Footer light mode */
-  --footer-bg: #f8fafc;
-  --footer-text: #475569;
-  --footer-text-hover: #1e293b;
-  --footer-divider: #e2e8f0;
-  --footer-link-hover: #2563eb;
-  --footer-social-hover: #2563eb;
-  --footer-padding: 2rem 1.5rem;
-  --footer-max-width: 1200px;
-  --footer-link-spacing: 0.75rem;
-  --footer-section-gap: 1.5rem;
+.container { max-width: 1120px; margin: 0 auto; padding: 2rem 1rem; }
+.hero {
+  border-radius: var(--radius-xl);
+  background: rgb(var(--color-brand-50) / 0.6);
+  padding: 1.5rem;
+  border: 1px solid rgba(0,0,0,.08);
 }
-
-/* Dark mode support */
-[data-theme='dark'] {
-  --footer-bg: #0f172a;
-  --footer-text: rgba(255, 255, 255, 0.7);
-  --footer-text-hover: #ffffff;
-  --footer-divider: rgba(255, 255, 255, 0.1);
+@media (prefers-color-scheme: dark) {
+  .hero { background: rgb(var(--color-brand-900) / 0.25); border-color: rgba(255,255,255,.08); }
 }
