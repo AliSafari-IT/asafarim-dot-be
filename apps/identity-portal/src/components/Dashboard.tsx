@@ -1,11 +1,12 @@
 import { useAuth } from '../hooks/useAuth';
-import identityService from '../api/identityService';
 import { useEffect, useState } from 'react';
 import './dashboard.css';
+import { Button } from '@asafarim/shared-ui-react';
+import ChangePasswordModal from './ChangePasswordModal';
 
 export const Dashboard = () => {
   const { isAuthenticated, user, reloadProfile } = useAuth();
-  const [busy, setBusy] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -60,56 +61,47 @@ export const Dashboard = () => {
         <section className="card actions">
           <h2 className="card-title">Actions</h2>
           <div className="actions-row">
-            <button
-              className="btn btn-primary"
+            <Button
               onClick={() => (window.location.href = (user?.roles || []).some(r => /^(admin|superadmin)$/i.test(r)) ? '/admin/user-profile' : '/me')}
+              variant="success"
             >
               Edit profile
-            </button>
+            </Button>
 
-            <button
-              className="btn btn-outline"
-              disabled={busy}
-              onClick={async () => {
-                const currentPassword = prompt('Current password') ?? '';
-                const newPassword = prompt('New password') ?? '';
-                const confirmPassword = prompt('Confirm new password') ?? '';
-                if (!currentPassword || !newPassword) return;
-                setBusy(true);
-                try {
-                  await identityService.changePassword({ currentPassword, newPassword, confirmPassword });
-                  alert('Password changed successfully');
-                } catch (e: unknown) {
-                  alert((e as Error)?.message ?? 'Failed to change password');
-                } finally {
-                  setBusy(false);
-                }
-              }}
+            <Button
+              onClick={() => setIsPasswordModalOpen(true)}
+              variant="warning"
             >
               Change password
-            </button>
+            </Button>
 
             {(user?.roles || []).some(r => /^(admin|superadmin)$/i.test(r)) && (
-              <button className="btn" onClick={() => (window.location.href = '/admin/users')}>
+              <Button onClick={() => (window.location.href = '/admin/users')} variant="info">
                 Manage users
-              </button>
+              </Button>
             )}
 
-            <button className="btn" onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')}>
+            <Button onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')} variant="info">
               Open blog
-            </button>
-            <button className="btn" onClick={() => window.open('http://web.asafarim.local:5175', '_blank')}>
+            </Button>
+            <Button onClick={() => window.open('http://web.asafarim.local:5175', '_blank')} variant="info">
               Web portal
-            </button>
-            <button className="btn" onClick={() => window.open('http://ai.asafarim.local:5173', '_blank')}>
+            </Button>
+            <Button onClick={() => window.open('http://ai.asafarim.local:5173', '_blank')} variant="info">
               AI portal
-            </button>
-            <button className="btn" onClick={() => window.open('http://core.asafarim.local:5174', '_blank')}>
+            </Button>
+            <Button onClick={() => window.open('http://core.asafarim.local:5174', '_blank')} variant="info">
               Core portal
-            </button>
+            </Button>
           </div>
         </section>
       </main>
+      
+      {/* Password Change Modal */}
+      <ChangePasswordModal 
+        isOpen={isPasswordModalOpen} 
+        onClose={() => setIsPasswordModalOpen(false)} 
+      />
     </div>
   );
 };
