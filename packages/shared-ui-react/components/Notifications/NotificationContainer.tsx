@@ -69,4 +69,4 @@ export const NotificationContainer: React.FC<NotificationContainerProps> = ({
   );
 };
 
-export default NotificationContainer;
+// Only use named export

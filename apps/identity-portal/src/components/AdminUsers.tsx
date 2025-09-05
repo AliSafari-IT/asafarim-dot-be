@@ -73,7 +73,6 @@ export default function AdminUsers() {
 
   return (
     <div className="admin-users-container">
-      <div className="admin-users-card">
         {/* Premium Header */}
         <div className="admin-users-header">
           <h1 className="admin-users-title">Admin: User Management</h1>
@@ -200,7 +199,6 @@ export default function AdminUsers() {
           </table>
         </div>
       </div>
-    </div>
   );
 }
 

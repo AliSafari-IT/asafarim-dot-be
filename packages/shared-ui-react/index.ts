@@ -24,8 +24,7 @@ export { default as NotificationProvider } from "./contexts/NotificationProvider
 export { NotificationContext } from "./contexts/NotificationProvider/notificationContext";
 export type { NotificationType, Notification } from "./contexts/NotificationProvider/notificationContext";
 export { default as useNotifications } from "./hooks/useNotifications";
-// Export both default and named export for NotificationContainer
-export { default as NotificationContainer, NotificationContainer as NotificationContainerComponent } from "./components/Notifications/NotificationContainer";
+export { NotificationContainer } from "./components/Notifications/NotificationContainer";
 export type { NotificationContainerProps } from "./components/Notifications/NotificationContainer";
 
 // Hooks

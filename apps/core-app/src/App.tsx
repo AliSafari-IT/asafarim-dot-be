@@ -4,9 +4,9 @@ import {
   LayoutContainer, 
   FooterContainer, 
   ThemeProvider,
-  NotificationProvider,
+  NotFound,
   NotificationContainer,
-  NotFound
+  NotificationProvider
 } from '@asafarim/shared-ui-react'
 import Navbar from './components/Navbar'
 import { ToastProvider, Toaster } from '@asafarim/toast'

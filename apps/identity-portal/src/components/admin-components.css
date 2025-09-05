@@ -6,21 +6,6 @@
   max-width: none;
 }
 
-[data-theme]:root {}
-.admin-user-profile-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  padding: 0;
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-[data-theme="dark"] .admin-user-profile-card {
-  background: var(--color-background);
-  border: 1px solid rgba(71, 85, 105, 0.45);
-}
-
 .admin-form-header {
   background: transparent;
   color: var(--color-foreground);
@@ -274,8 +259,6 @@
 
 .admin-users-header::before { display: none; }
 
-.admin-users-title { font-size: 1.5rem; font-weight: 700; margin: 0; }
-
 .admin-users-subtitle { font-size: 0.875rem; margin: 0.25rem 0 0; color: var(--color-foreground-muted); }
 
 .admin-users-body { padding: 1.25rem; overflow-x: auto; }
@@ -290,12 +273,11 @@
   box-shadow: var(--shadow-sm);
 }
 
-[data-theme="dark"] .admin-users-table { background: rgba(17, 24, 39, 0.6); }
 
-.admin-users-table thead th {
+.admin-users-table th {
   position: sticky;
   top: 0;
-  background: var(--color-surface);
+  background: var(--bg-row);
   backdrop-filter: blur(6px);
   padding: 0.75rem 0.9rem;
   font-weight: 700;
@@ -305,8 +287,8 @@
   text-align: left;
   z-index: 1;
 }
-.admin-users-table thead th:first-child { border-top-left-radius: 12px; }
-.admin-users-table thead th:last-child { border-top-right-radius: 12px; }
+.admin-users-table th:first-child { border-top-left-radius: 12px; }
+.admin-users-table th:last-child { border-top-right-radius: 12px; }
 
 .admin-users-table th:first-child {
   border-top-left-radius: 16px;
@@ -418,7 +400,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.35rem 0.6rem;
-  background: var(--color-surface);
+  background: var(--bg-tertiary);
   border: 1px dashed var(--color-border);
   color: var(--color-foreground);
   border-radius: 999px;

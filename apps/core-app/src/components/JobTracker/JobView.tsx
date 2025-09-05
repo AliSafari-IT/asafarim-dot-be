@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchJobApplicationById } from '../../api/jobService';
 import { fetchMilestonesByJob, createMilestone, updateMilestone, deleteMilestone } from '../../api/timelineService';
-import { useNotifications } from '../../contexts/useNotifications';
+import { useNotifications } from '@asafarim/shared-ui-react';
 import { useToast } from '@asafarim/toast';
 import JobStatusBadge from './JobStatusBadge';
 import Timeline from './Timeline';

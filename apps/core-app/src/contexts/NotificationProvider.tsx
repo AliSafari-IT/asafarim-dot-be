@@ -4,19 +4,20 @@ import { NotificationContext, type NotificationType, type Notification } from '.
 
 interface NotificationProviderProps {
   children: ReactNode;
+  autoRemoveTimeout?: number;
 }
 
-const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
+const NotificationProvider: React.FC<NotificationProviderProps> = ({ children, autoRemoveTimeout = 5000 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = (type: NotificationType, message: string) => {
     const id = Date.now().toString();
     setNotifications((prev) => [...prev, { id, type, message }]);
     
-    // Auto-remove after 5 seconds
+    // Auto-remove after specified timeout
     setTimeout(() => {
       removeNotification(id);
-    }, 5000);
+    }, autoRemoveTimeout);
   };
 
   const removeNotification = (id: string) => {
