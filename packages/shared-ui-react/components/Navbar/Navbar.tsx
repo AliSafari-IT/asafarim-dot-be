@@ -32,14 +32,14 @@ const defaultRenderLink = (link: NavLinkItem, isMobile = false) => {
 
 const defaultRenderBrand = (brand: { logo?: string; text: string; href?: string }) => (
   <a href={brand.href || '/'} className="brand" aria-label="Home">
-    {brand.logo && <img src={brand.logo} alt="" className="brand__logo" />}
+    {brand.logo && <img src={brand.logo} alt="logo" className="brand__logo" />}
     <span className="brand__text">{brand.text}</span>
   </a>
 );
 
 export const Navbar: React.FC<NavbarProps> = ({
-  links,
-  brand = { text: 'ASafariM' },
+  localLinks: links,
+  brand,
   breakpoint = 768,
   mobileMenuBreakpoint = 520,
   className = '',
@@ -47,6 +47,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   renderLink = defaultRenderLink,
   renderBrand = defaultRenderBrand,
 }) => {
+  // Compute a package-relative default logo so consumers don't need to host it
+  const packageDefaultLogo = new URL('../../public/logo.svg', import.meta.url).href;
+  const effectiveBrand = brand ?? { text: 'ASafariM', logo: packageDefaultLogo, href: '/' };
   const [open, setOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -83,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="nav-wrap">
         <div className="nav-row">
           {/* Left: brand */}
-          {renderBrand(brand)}
+          {renderBrand(effectiveBrand)}
 
           {/* Center: links (desktop only) */}
           <div className="nav-center">

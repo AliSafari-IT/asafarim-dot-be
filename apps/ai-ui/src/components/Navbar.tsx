@@ -1,11 +1,10 @@
-import { Navbar as SharedNavbar } from "@asafarim/shared-ui-react";
+import { CentralNavbar } from "@asafarim/shared-ui-react";
 import { useAuth } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink } from "react-router-dom";
 
 // Define your navigation links
 const navLinks: NavLinkItem[] = [
-  { to: "/", label: "AI Tools" },
   { to: "http://web.asafarim.local:5175/about", label: "About" },
   { to: "http://web.asafarim.local:5175/contact", label: "Contact" },
 ];
@@ -44,8 +43,8 @@ export default function Navbar() {
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
 
   return (
-    <SharedNavbar
-      links={navLinks}
+    <CentralNavbar
+      localLinks={navLinks}
       brand={{
         logo: "/logo.svg",
         text: "ASafariM",

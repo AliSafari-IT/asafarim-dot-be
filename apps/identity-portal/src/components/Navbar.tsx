@@ -1,4 +1,4 @@
-import { Navbar as SharedNavbar, useAuth } from "@asafarim/shared-ui-react";
+import { CentralNavbar, useAuth } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink } from "react-router-dom";
 
@@ -45,8 +45,8 @@ export default function Navbar() {
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
 
   return (
-    <SharedNavbar
-      links={navLinks}
+    <CentralNavbar
+      localLinks={navLinks}
       brand={{
         logo: "/logo.svg",
         text: "Identity Portal",

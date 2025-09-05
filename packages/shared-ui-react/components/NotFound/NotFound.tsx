@@ -1,5 +1,4 @@
 /* Awesome 404 Not Found Component */
-import React from 'react';
 import './NotFound.css';
 
 export default function NotFound() {

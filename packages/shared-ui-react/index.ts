@@ -13,7 +13,9 @@ export { default as NotFound } from "./components/NotFound/NotFound";
 
 // Navigation
 export { default as Navbar } from "./components/Navbar/Navbar";
+export { default as CentralNavbar } from "./components/Navbar/CentralNavbar";
 export type { NavbarProps, NavLinkItem } from "./components/Navbar/types";
+export { appRegistry, appLinkGroups, getAppById, getCurrentAppId } from "./components/Navbar/appRegistry";
 
 // Theme
 export { default as ThemeProvider } from "./contexts/ThemeProvider";

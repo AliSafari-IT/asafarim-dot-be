@@ -1,13 +1,10 @@
-import { Navbar as SharedNavbar } from "@asafarim/shared-ui-react";
+import { CentralNavbar } from "@asafarim/shared-ui-react";
 import { useAuth } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink } from "react-router-dom";
 
 // Define your navigation links
 const navLinks: NavLinkItem[] = [
-  { to: "http://ai.asafarim.local:5173", label: "AI Tools", external: true },
-  { to: "http://core.asafarim.local:5174/jobs", label: "Job Applications", external: true },
-  
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
@@ -20,19 +17,21 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
         href={link.to}
         target="_blank"
         rel="noopener noreferrer"
-        className={`nav-link ${isMobile ? 'nav-link--mobile' : ''}`}
+        className={`nav-link ${isMobile ? "nav-link--mobile" : ""}`}
       >
         {link.icon && <span className="nav-link__icon">{link.icon}</span>}
         {link.label}
       </a>
     );
   }
-  
+
   return (
     <NavLink
       to={link.to}
-      className={({ isActive }) => 
-        `nav-link ${isMobile ? 'nav-link--mobile' : ''} ${isActive ? 'nav-link--active' : ''}`
+      className={({ isActive }) =>
+        `nav-link ${isMobile ? "nav-link--mobile" : ""} ${
+          isActive ? "nav-link--active" : ""
+        }`
       }
       end={link.to === "/"} // Only match exactly for home link
     >
@@ -46,12 +45,12 @@ export default function Navbar() {
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
 
   return (
-    <SharedNavbar
-      links={navLinks}
+    <CentralNavbar
+      localLinks={navLinks}
       brand={{
         logo: "/logo.svg",
         text: "ASafariM",
-        href: "/"
+        href: "/dashboard",
       }}
       auth={{
         isAuthenticated,
@@ -63,12 +62,12 @@ export default function Navbar() {
           notSignedIn: "Not signed in!",
           signIn: "Sign In",
           signOut: "Sign Out",
-          welcome: (email?: string) => `Welcome ${email || 'User'}!`
-        }
+          welcome: (email?: string) => `Welcome ${email || "User"}!`,
+        },
       }}
       renderLink={renderLink}
       breakpoint={768}
-      mobileMenuBreakpoint={520}
+      mobileMenuBreakpoint={520}      
     />
   );
 }

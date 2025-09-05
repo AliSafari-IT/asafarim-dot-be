@@ -9,9 +9,20 @@ export interface NavLinkItem {
 
 export interface NavbarProps {
   /**
+ * Current application ID (will be auto-detected if not provided)
+ */
+  appId?: string;
+
+  /**
+   * Whether to show the app switcher dropdown
+   * @default true
+   */
+  showAppSwitcher?: boolean;
+
+  /**
    * Array of navigation links to display in the navbar
    */
-  links: NavLinkItem[];
+  localLinks: NavLinkItem[];
   /**
    * Brand/logo to display on the left side
    */

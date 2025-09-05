@@ -1,33 +1,33 @@
-import { useState, useEffect } from 'react';
-import { Navbar as SharedNavbar, useAuth } from '@asafarim/shared-ui-react';
-import type { NavLinkItem } from '@asafarim/shared-ui-react';
-import { NavLink, useLocation } from 'react-router-dom';
-import './Navbar.css';
+import { useState, useEffect } from "react";
+import { CentralNavbar, useAuth } from "@asafarim/shared-ui-react";
+import type { NavLinkItem } from "@asafarim/shared-ui-react";
+import { NavLink, useLocation } from "react-router-dom";
+import "./Navbar.css";
 
 // Define your navigation links with optional icons and accessibility labels
 const navLinks: NavLinkItem[] = [
-  { 
-    to: '/', 
-    label: 'Home'
-    },
-  { 
-    to: '/jobs', 
-    label: 'Job Tracker'
-    },
-  { 
-    to: 'http://web.asafarim.local:5175/about', 
-    label: 'About'
-    },
-  { 
-    to: 'http://web.asafarim.local:5175/contact', 
-    label: 'Contact',
+  {
+    to: "/",
+    label: "Home",
+  },
+  {
+    to: "/jobs",
+    label: "Job Tracker",
+  },
+  {
+    to: "http://web.asafarim.local:5175/about",
+    label: "About",
+  },
+  {
+    to: "http://web.asafarim.local:5175/contact",
+    label: "Contact",
   },
 ];
 
 // Custom render function for React Router links with better accessibility
 const renderLink = (link: NavLinkItem, isMobile = false) => {
-  const baseClasses = `nav-link ${isMobile ? 'nav-link--mobile' : ''}`;
-  const activeClass = 'nav-link--active';
+  const baseClasses = `nav-link ${isMobile ? "nav-link--mobile" : ""}`;
+  const activeClass = "nav-link--active";
   const icon = link.icon && (
     <span className="nav-link__icon" aria-hidden="true">
       {link.icon}
@@ -41,22 +41,22 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
         target="_blank"
         rel="noopener noreferrer"
         className={baseClasses}
-        aria-label={ link.label}
+        aria-label={link.label}
       >
         {icon}
         {link.label}
       </a>
     );
   }
-  
+
   return (
     <NavLink
       to={link.to}
-      className={({ isActive }) => 
-        `${baseClasses} ${isActive ? activeClass : ''}`
+      className={({ isActive }) =>
+        `${baseClasses} ${isActive ? activeClass : ""}`
       }
-      end={link.to === '/'}
-      aria-label={ link.label}
+      end={link.to === "/"}
+      aria-label={link.label}
     >
       {icon}
       {link.label}
@@ -91,17 +91,19 @@ export default function Navbar() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
 
   return (
-    <header 
-      className={`app-header ${scrolled ? 'scrolled' : ''} ${isOpen ? 'mobile-menu-open' : ''}`}
+    <header
+      className={`app-header ${scrolled ? "scrolled" : ""} ${
+        isOpen ? "mobile-menu-open" : ""
+      }`}
       role="banner"
     >
-      <SharedNavbar
-        links={navLinks}
+      <CentralNavbar
+        localLinks={navLinks}
         brand={{
           logo: "/logo.svg",
           text: "ASafariM Core App",
@@ -117,7 +119,7 @@ export default function Navbar() {
             notSignedIn: "Not signed in!",
             signIn: "Sign In",
             signOut: "Sign Out",
-            welcome: (email?: string) => `Welcome, ${email || 'User'}!`,
+            welcome: (email?: string) => `Welcome, ${email || "User"}!`,
           },
         }}
         renderLink={renderLink}

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { ThemeProvider as BaseThemeProvider } from '@asafarim/react-themes';
 
 export interface ThemeProviderProps {

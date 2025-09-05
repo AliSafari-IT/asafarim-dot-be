@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar as SharedNavbar, useAuth } from "@asafarim/shared-ui-react";
+import { CentralNavbar, useAuth } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { useLocation } from "@docusaurus/router";
 import OriginalNavbar from "@theme-original/Navbar";
@@ -57,8 +57,9 @@ export default function NavbarWrapper(props): React.ReactElement {
 
   return (
     <>
-      <SharedNavbar
-        links={navLinks}
+      <CentralNavbar
+        localLinks={navLinks}
+        showAppSwitcher={true}
         brand={{
           text: siteConfig.title,
           href: "/",
