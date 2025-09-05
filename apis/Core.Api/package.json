@@ -9,7 +9,7 @@
     "start": "dotnet run --project Core.Api.csproj",
     "build": "dotnet build Core.Api.csproj",
     "preapi": "kill-port 5102",
-    "api": "dotnet watch run"
+    "api": "dotnet watch run --project Core.Api.csproj --no-hot-reload"
   },
   "devDependencies": {
     "kill-port": "^2.0.1"

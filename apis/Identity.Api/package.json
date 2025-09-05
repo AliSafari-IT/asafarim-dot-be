@@ -9,7 +9,7 @@
     "start": "dotnet run --project Identity.Api.csproj",
     "build": "dotnet build Identity.Api.csproj",
     "preapi": "kill-port 5101",
-    "api": "dotnet watch run --project Identity.Api.csproj"
+    "api": "dotnet watch run --project Identity.Api.csproj --no-hot-reload"
   },
   "devDependencies": {
     "kill-port": "^2.0.1"
