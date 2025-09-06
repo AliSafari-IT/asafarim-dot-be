@@ -34,7 +34,7 @@ export default function AuthStatus(props: AuthStatusProps) {
     labels,
   } = props;
 
-  const isMobile = window.innerWidth < 768;
+  const isMobile = typeof window !== "undefined" ? window.innerWidth < 768 : false;
 
   const t = {
     notSignedIn: labels?.notSignedIn ?? "Not signed in!",

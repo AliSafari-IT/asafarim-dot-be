@@ -15,7 +15,7 @@ export const CentralSignOut = ({
   onSignOut
 }: CentralSignOutProps) => {
   const { signOut } = useAuth();
-  const isMobile = window.innerWidth < 768;
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
 
   const handleSignOut = useCallback(async () => {
     try {
