@@ -177,6 +177,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null);
   }, []);
 
+  // Force sign out without calling API (used for cross-app sync events)
+  const forceSignOut = useCallback(() => {
+    try {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("user_info");
+    } catch (e) {
+      console.warn('forceSignOut localStorage cleanup failed', e);
+    }
+    setUser(null);
+    setIsLoading(false);
+    setError(null);
+  }, []);
+
   return (
     <AuthContextCreated.Provider
       value={{
@@ -190,6 +204,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         clearError,
         updateUser,
         reloadProfile,
+        forceSignOut,
       }}
     >
       {children}
