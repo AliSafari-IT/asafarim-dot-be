@@ -12,6 +12,7 @@ const defaultRenderLink = (link: NavLinkItem, isMobile = false) => {
         target="_blank"
         rel="noopener noreferrer"
         className={`nav-link ${isMobile ? 'nav-link--mobile' : ''}`}
+        data-nav-link="true"
       >
         {link.icon && <span className="nav-link__icon">{link.icon}</span>}
         {link.label}
@@ -23,6 +24,8 @@ const defaultRenderLink = (link: NavLinkItem, isMobile = false) => {
     <a
       href={link.to}
       className={`nav-link ${isMobile ? 'nav-link--mobile' : ''}`}
+      data-nav-link="true"
+      {...(link.to === '#' ? { 'data-keep-menu-open': 'true' } : {})}
     >
       {link.icon && <span className="nav-link__icon">{link.icon}</span>}
       {link.label}
@@ -70,7 +73,20 @@ export const Navbar: React.FC<NavbarProps> = ({
       role="list"
     >
       {links.map((link, index) => (
-        <li key={index} onClick={() => setOpen(false)}>
+        <li
+          key={index}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            // If the click originated from a dropdown toggle or an element that wants the menu to stay open, do nothing
+            if (target.closest('[data-keep-menu-open]')) return;
+
+            // Only close when an actual nav link (anchor) was clicked and it is not a placeholder '#'
+            const anchor = target.closest('a');
+            const href = anchor?.getAttribute('href') || '';
+            const isRealNav = !!anchor && href !== '#' && href !== '';
+            if (isRealNav) setOpen(false);
+          }}
+        >
           {renderLink(link, vertical)}
         </li>
       ))}

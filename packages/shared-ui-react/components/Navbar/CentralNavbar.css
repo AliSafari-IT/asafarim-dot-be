@@ -121,15 +121,15 @@
   color: var(--app-switcher-description);
 }
 
-/* Mobile adjustments */
+/* Mobile adjustments: keep dropdown under the trigger, not as a bottom sheet */
 @media (max-width: 768px) {
   .app-switcher-dropdown {
-    position: fixed;
-    top: auto;
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    width: calc(100% - 32px);
+    position: absolute;   /* stay anchored to the button container */
+    top: calc(100% + 8px);
+    left: 0;
+    right: auto;
+    bottom: auto;
+    width: min(92vw, 360px); /* responsive width but not full screen */
     max-width: none;
     margin-top: 0;
   }
