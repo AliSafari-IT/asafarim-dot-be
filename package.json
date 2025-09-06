@@ -1,6 +1,6 @@
 {
   "name": "asafarim-dot-be",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
@@ -17,11 +17,20 @@
     "dev": "concurrently -n web,blog,core,ai,jobs,identity-portal -c \"blue,magenta,cyan,green,yellow,orange\" \"pnpm dev:web\" \"pnpm dev:blog\" \"pnpm dev:core\" \"pnpm dev:ai\" \"pnpm dev:jobs\" \"pnpm dev:identity-portal\"",
     "api:ai": "pnpm --filter @asafarim/ai-api api",
     "api:identity": "pnpm --filter @asafarim/identity-api api",
-    "api:core": "pnpm --filter @asafim/core-api api",
+    "api:ai:build": "dotnet build apis/Ai.Api/Ai.Api.csproj",
+    "api:identity:build": "dotnet build apis/Identity.Api/Identity.Api.csproj",
     "api:core:build": "dotnet build apis/Core.Api/Core.Api.csproj",
+    "api:build": "concurrently -n ai,identity,core -c \"blue,magenta,yellow\" \"pnpm api:ai:build\" \"pnpm api:identity:build\" \"pnpm api:core:build\"",
     "preapi": "kill-port 5000 5001 5101 5102 5103 5054",
     "api": "concurrently -n ai,identity,core -c \"blue,magenta,yellow\" \"pnpm api:ai\" \"pnpm api:identity\" \"pnpm api:core\"",
     "app": "pnpm rm:nm && pnpm i && concurrently \"pnpm dev\" \"pnpm api\"",
+    "app:ai:build": "pnpm --filter @asafarim/ai-ui build",
+    "app:core:build": "pnpm --filter @asafarim/core-app build",
+    "app:jobs:build": "pnpm --filter @asafarim/jobs-ui build",
+    "app:identity-portal:build": "pnpm --filter @asafarim/identity-portal build",
+    "app:blog:build": "pnpm --filter @asafarim/blog build",
+    "app:web:build": "pnpm --filter @asafarim/web build",
+    "app:build": "pnpm rm:nm && pnpm i && concurrently \"pnpm app:ai:build\" \"pnpm app:core:build\" \"pnpm app:jobs:build\" \"pnpm app:identity-portal:build\" \"pnpm app:blog:build\" \"pnpm app:web:build\"",
     "app:identity": "concurrently \"pnpm dev:identity\" \"pnpm api:identity\""
   },
   "devDependencies": {
