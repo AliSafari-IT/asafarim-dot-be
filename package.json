@@ -31,7 +31,8 @@
     "app:blog:build": "pnpm --filter @asafarim/blog build",
     "app:web:build": "pnpm --filter @asafarim/web build",
     "app:build": "pnpm rm:nm && pnpm i && concurrently \"pnpm app:ai:build\" \"pnpm app:core:build\" \"pnpm app:jobs:build\" \"pnpm app:identity-portal:build\" \"pnpm app:blog:build\" \"pnpm app:web:build\"",
-    "app:identity": "concurrently \"pnpm dev:identity\" \"pnpm api:identity\""
+    "app:identity": "concurrently \"pnpm dev:identity\" \"pnpm api:identity\"",
+    "deploy": "bash scripts/deploy.sh"
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
