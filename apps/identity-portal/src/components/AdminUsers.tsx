@@ -72,11 +72,11 @@ export default function AdminUsers() {
   if (loading) return <div className="admin-loading">Loading users and roles...</div>;
 
   return (
-    <div className="admin-users-container">
+    <div className="container">
         {/* Premium Header */}
-        <div className="admin-users-header">
-          <h1 className="admin-users-title">Admin: User Management</h1>
-          <p className="admin-users-subtitle">Manage all user accounts, roles, and permissions</p>
+        <div className="hero">
+          <h1 className="hero__title">Admin: User Management</h1>
+          <p className="hero__subtitle">Manage all user accounts, roles, and permissions</p>
         </div>
 
         {/* Table Body */}

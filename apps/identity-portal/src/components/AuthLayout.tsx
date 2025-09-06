@@ -4,7 +4,7 @@ import "./auth-layout.css";
 
 interface AuthLayoutProps {
   children: ReactNode;
-  title: string;
+  title?: string;
   subtitle?: string;
 }
 

@@ -104,14 +104,14 @@ export default function Contact() {
   return (
     <section className="section">
       <div className="container">
-        <h1 className="mb-4">Contact Us</h1>
+        <h1 className="mb-4 text-2xl font-bold text-phosphor">Contact Us</h1>
         <p className="text-lg mb-8">
           Have questions about our services or want to discuss a project? Reach out to us using the form below.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
           <div className="p-4 bg-background shadow-sm rounded-lg">
-            <h2 className="text-primary mb-4">Send a Message</h2>
+            <h2 className="text-primary mb-4 text-lg font-semibold">Send a Message</h2>
             
             <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-sm">
@@ -177,7 +177,7 @@ export default function Contact() {
           </div>
           
           <div className="p-4 bg-background shadow-sm rounded-lg">
-            <h2 className="text-primary mb-4">Contact Information</h2>
+            <h2 className="text-primary mb-4 text-xl font-semibold">Contact Information</h2>
             <div className="flex flex-col gap-md">
               <div>
                 <h3 className="text-lg font-semibold mb-1">Email</h3>

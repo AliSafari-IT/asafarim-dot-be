@@ -10,7 +10,7 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="text-2xl font-bold mb-4">Build fast. Scale clean. Theme everywhere.</h1>
+          <h1 className="text-2xl font-bold mb-4 text-phosphor">Build fast. Scale clean. Theme everywhere.</h1>
 
           <p className="text-lg text-secondary mb-4" style={{ maxWidth: '42rem' }}>
             React, Angular, and Docusaurus frontends powered by .NET 8+ APIs.
@@ -56,7 +56,7 @@ export default function Home() {
         </div>
 
         <div className="divider mb-8">
-          <h2 className="text-xl font-semibold mb-2">What's inside this monorepo?</h2>
+          <h2 className="text-xl font-semibold mb-2 text-brand">What's inside this monorepo?</h2>
           <ul className="list-disc">
             <li className="mb-1">Shared tokens (CSS variables) for theme parity</li>
             <li className="mb-1">Web, Core, AI (React TS) + Jobs (Angular TS)</li>
@@ -82,7 +82,7 @@ function Feature({
 }) {
   const body = (
     <article className="feature-card p-4">
-      <h3 className="flex items-center gap-sm font-semibold mb-2">
+      <h3 className="flex items-center gap-sm font-semibold mb-2 text-brand">
         <Spark /> {title}
       </h3>
       <p className="text-secondary mb-2" style={{ fontSize: '0.875rem' }}>{desc}</p>

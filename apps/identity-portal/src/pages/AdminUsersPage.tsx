@@ -5,10 +5,7 @@ import AuthLayout from "../components/AuthLayout";
 
 export default function AdminUsersPage() {
   return (
-    <AuthLayout
-      title="Admin Users"
-      subtitle="Manage users"
-    >
+    <AuthLayout>
       <AdminUsers />
     </AuthLayout>
   );
