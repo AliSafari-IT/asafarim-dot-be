@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import AuthStatus from '../AuthStatus';
+import AuthStatus from '../Auth/AuthStatus';
 import { ThemeToggle } from '@asafarim/react-themes';
 import type { NavbarProps, NavLinkItem } from './types';
 import './Navbar.css';
@@ -93,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right: theme + hamburger */}
-          <div className="nav-right">
+          <div className="nav-right align-middle">
             {/* Auth status in header (hidden on mobile when menu is open) */}
             {auth && showAuthInHeader && (
               <AuthStatus

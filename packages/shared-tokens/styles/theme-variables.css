@@ -398,9 +398,7 @@ textarea {
 select {
   font-family: var(--global-font-family-base);
 }
-button {
-  font-family: var(--global-font-family-base);
-}
+
 input:focus,
 textarea:focus,
 select:focus {
@@ -434,10 +432,6 @@ select:focus-visible {
 .hero__subtitle {
   color: var(--color-brand-50);
 }
-.button--primary {
-  background: rgb(var(--color-brand-500));
-  border-radius: var(--radius-xl);
-}
 
 .text-fg {
   color: var(--color-foreground);
@@ -450,9 +444,6 @@ select:focus-visible {
 }
 .bg-brand-500 {
   background: rgb(var(--color-brand-500));
-}
-.rounded-xl {
-  border-radius: var(--radius-xl);
 }
 
 .authStatusContainer {
@@ -562,7 +553,6 @@ article { margin: 2rem 0; }
 .badge-text { font-size: 0.875rem; }
 .form-label { font-size: 0.875rem; }
 .form-input { padding: 0.5rem; border-radius: var(--radius-md); border: 1px solid rgba(0,0,0,.08); }
-.btn { padding: 0.5rem 1rem; border-radius: var(--radius-md); border: 1px solid rgba(0,0,0,.08); }
 .text-2xl { font-size: 2rem; }
 .text-lg { font-size: 1.25rem; }
 .text-secondary { color: var(--color-secondary); }
@@ -627,6 +617,12 @@ article { margin: 2rem 0; }
 
 .bg-background {
   background-color: var(--color-background);
+}
+
+a {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0,0,0,.08);
 }
 
 @media (prefers-color-scheme: dark) {

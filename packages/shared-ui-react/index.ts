@@ -5,8 +5,8 @@ export { default as LayoutContainer } from "./components/LayoutContainer";
 export { Button } from "./components/Button";
 
 // Auth
-export { default as AuthStatus } from "./components/AuthStatus";
-export type { AuthStatusProps } from "./components/AuthStatus";
+export { default as AuthStatus } from "./components/Auth/AuthStatus";
+export type { AuthStatusProps } from "./components/Auth/AuthStatus";
 export { AuthSyncProvider } from "./contexts/AuthProvider";
 
 // Not Found
@@ -33,3 +33,6 @@ export type { NotificationContainerProps } from "./components/Notifications/Noti
 // Hooks
 export { default as useAuth } from "./hooks/useAuth";
 export type { UseAuthOptions, UseAuthResult } from "./hooks/useAuth";
+
+// SVG Icons
+export * from "./svg-icons";

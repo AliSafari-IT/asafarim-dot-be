@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { Button } from '../Button';
+import { SignOut } from '../../svg-icons';
 
 interface CentralSignOutProps {
   children?: React.ReactNode;
@@ -13,6 +15,7 @@ export const CentralSignOut = ({
   onSignOut
 }: CentralSignOutProps) => {
   const { signOut } = useAuth();
+  const isMobile = window.innerWidth < 768;
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -29,13 +32,14 @@ export const CentralSignOut = ({
   }, [signOut, onSignOut]);
 
   return (
-    <button 
+    <Button 
       onClick={handleSignOut}
       className={className}
-      type="button"
+      variant="ghost"
+      rightIcon={<SignOut />}
     >
-      {children}
-    </button>
+      {isMobile ? "" : children}
+    </Button>
   );
 };
 

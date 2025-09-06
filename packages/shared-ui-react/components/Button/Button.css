@@ -204,7 +204,7 @@
 
 .btn--link {
   background-color: transparent;
-  color: var(--ifm-color-link-inverse);
+  color: var(--color-primary);
   border: none;
   padding: 0;
   text-decoration: underline;
@@ -223,7 +223,7 @@ a.btn--link {
 }
 
 .btn--link:hover:not(:disabled) {
-  color: var(--color-brand-900);
+  color: var(--color-phosphor);
   text-decoration-thickness: 2px;
   background-color: transparent;
   transform: none;

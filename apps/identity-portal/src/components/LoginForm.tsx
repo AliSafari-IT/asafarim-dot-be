@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { Arrow, Button, Lock } from "@asafarim/shared-ui-react";
 
 
 export const LoginForm = () => {
@@ -87,9 +88,9 @@ export const LoginForm = () => {
           <label htmlFor="password" className="form-label">
             Password
           </label>
-          <Link to="/forgot-password" className="form-link">
+          <Button to="/forgot-password" variant="link" rightIcon={<Arrow />}>
             Forgot password?
-          </Link>
+          </Button>
         </div>
         <input
           type="password"
@@ -103,19 +104,21 @@ export const LoginForm = () => {
       </div>
 
       <div className="form-group-checkbox">
-        <input
-          type="checkbox"
-          id="rememberMe"
-          name="rememberMe"
-          checked={formData.rememberMe}
-          onChange={handleChange}
-        />
-        <label htmlFor="rememberMe">Remember me</label>
+        <label htmlFor="rememberMe" className="form-label flex items-center gap-sm mb-1">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            name="rememberMe"
+            checked={formData.rememberMe}
+            onChange={handleChange}
+          />
+          Remember me
+        </label>
       </div>
 
-      <button type="submit" className="btn-submit" disabled={isLoading}>
+      <Button disabled={isLoading} rightIcon={<Lock />} variant="success">
         {isLoading ? "Signing in..." : "Sign In"}
-      </button>
+      </Button>
 
       <div className="auth-links">
         <p>

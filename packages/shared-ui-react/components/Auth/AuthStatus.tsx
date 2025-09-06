@@ -1,5 +1,6 @@
 import React from "react";
-import CentralSignOut from "./Auth/CentralSignOut";
+import CentralSignOut from "./CentralSignOut";
+import CentralSignIn from "./CentralSignIn";
 
 export interface AuthStatusProps {
   isAuthenticated: boolean;
@@ -33,6 +34,8 @@ export default function AuthStatus(props: AuthStatusProps) {
     labels,
   } = props;
 
+  const isMobile = window.innerWidth < 768;
+
   const t = {
     notSignedIn: labels?.notSignedIn ?? "Not signed in!",
     signIn: labels?.signIn ?? "Sign In",
@@ -40,9 +43,6 @@ export default function AuthStatus(props: AuthStatusProps) {
     welcome:
       labels?.welcome ?? ((email?: string) => `Welcome ${email ?? "User"}!`),
   };
-
-  const redirectTo =
-    typeof window !== "undefined" ? window.location.href : undefined;
 
   if (loading)
     return (
@@ -53,18 +53,18 @@ export default function AuthStatus(props: AuthStatusProps) {
 
   if (!isAuthenticated) {
     return (
-      <div className={className} style={style}>
+      <div className={className + " align-middle"} style={style}>
         <span style={{ marginRight: 8 }}>{t.notSignedIn}</span>
-        <button onClick={() => onSignIn?.(redirectTo)}>{t.signIn}</button>
+        <CentralSignIn onSignIn={onSignIn}>{isMobile ? "" : t.signIn}</CentralSignIn>
       </div>
     );
   }
 
   return (
-    <div className={className} style={style}>
+    <div className={className + " align-middle"} style={style}>
       <span style={{ marginRight: 8 }}>{t.welcome(user?.email)}</span>
       <CentralSignOut onSignOut={onSignOut}>
-        {t.signOut}
+        {isMobile ? "" : t.signOut}
       </CentralSignOut>
     </div>
   );
