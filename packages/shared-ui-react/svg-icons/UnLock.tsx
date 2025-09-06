@@ -1,4 +1,4 @@
-import { SvgIconProps } from "./svg-types";
+import type { SvgIconProps } from "./svg-types";
 
 function UnLock({ width = 24, height = 24, viewBox = "0 0 24 24", fill = "none", stroke = "currentColor", strokeWidth = 2, strokeLinecap = "round" }: SvgIconProps) {
   return (

@@ -1,4 +1,4 @@
-import { SvgIconProps } from "./svg-types";
+import type { SvgIconProps } from "./svg-types";
 
 function SignIn({
   width = 24,

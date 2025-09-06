@@ -50,8 +50,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   renderLink = defaultRenderLink,
   renderBrand = defaultRenderBrand,
 }) => {
-  // Compute a package-relative default logo so consumers don't need to host it
-  const effectiveBrand = brand;
   const [open, setOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -77,10 +75,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           key={index}
           onClick={(e) => {
             const target = e.target as HTMLElement;
-            // If the click originated from a dropdown toggle or an element that wants the menu to stay open, do nothing
             if (target.closest('[data-keep-menu-open]')) return;
 
-            // Only close when an actual nav link (anchor) was clicked and it is not a placeholder '#'
             const anchor = target.closest('a');
             const href = anchor?.getAttribute('href') || '';
             const isRealNav = !!anchor && href !== '#' && href !== '';
