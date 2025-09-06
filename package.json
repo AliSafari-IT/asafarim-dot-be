@@ -38,7 +38,8 @@
     "kill-port": "^2.0.1"
   },
   "keywords": [],
-  "author": "",
+  "author": "ASafariM",
+  "email": "asafarim.it@gmail.com",
   "license": "ISC",
   "packageManager": "pnpm@10.14.0",
   "dependencies": {
