@@ -95,6 +95,7 @@ builder.Services.AddAuthorization();
 
 var allowedOrigins = new[]
 {
+    // HTTP localhost origins
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5174",
@@ -102,6 +103,8 @@ var allowedOrigins = new[]
     "http://localhost:5176",
     "http://localhost:4200",
     "http://localhost:5177",
+    
+    // HTTP local domain origins
     "http://asafarim.local",
     "http://ai.asafarim.local:5173",
     "http://ai.asafarim.local",
@@ -115,8 +118,24 @@ var allowedOrigins = new[]
     "http://core.asafarim.local:5174",
     "http://jobs.asafarim.local:4200",
     "http://blog.asafarim.local:3000",
-    "http://core.asafarim.local:5174",
-    "http://web.asafarim.local:5175"
+    
+    // HTTPS local domain origins
+    "https://asafarim.local",
+    "https://ai.asafarim.local",
+    "https://core.asafarim.local",
+    "https://jobs.asafarim.local",
+    "https://blog.asafarim.local",
+    "https://identity.asafarim.local",
+    "https://web.asafarim.local",
+    
+    // HTTPS production domain origins
+    "https://asafarim.be",
+    "https://ai.asafarim.be",
+    "https://core.asafarim.be",
+    "https://jobs.asafarim.be",
+    "https://blog.asafarim.be",
+    "https://identity.asafarim.be",
+    "https://web.asafarim.be"
 };
 
 builder.Services.AddCors(opt =>
@@ -128,6 +147,8 @@ builder.Services.AddCors(opt =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Kestrel configuration is now handled through environment variables in the service file
 
 var app = builder.Build();
 

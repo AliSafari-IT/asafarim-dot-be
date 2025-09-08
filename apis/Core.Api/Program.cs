@@ -11,11 +11,22 @@ var builder = WebApplication.CreateBuilder(args);
 // CORS for your web app (add more origins later)
 string[] allowedOrigins =
 {
+    // HTTP origins
     "http://web.asafarim.local:5175",
     "http://ai.asafarim.local:5173",
     "http://identity.asafarim.local:5177",
     "http://core.asafarim.local:5174",
     "http://localhost:5174",
+    // HTTPS origins
+    "https://web.asafarim.local:5175",
+    "https://ai.asafarim.local:5173",
+    "https://identity.asafarim.local:5177",
+    "https://core.asafarim.local:5174",
+    "https://asafarim.be",
+    "https://web.asafarim.be",
+    "https://ai.asafarim.be",
+    "https://core.asafarim.be",
+    "https://identity.asafarim.be"
 };
 
 builder.Services.AddCors(opts =>
@@ -80,11 +91,7 @@ builder
     });
 builder.Services.AddAuthorization();
 
-// Configure Kestrel to listen on core-api.asafarim.local:5102
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(5102); // Listen on all IP addresses on port 5102
-});
+// Kestrel configuration is now handled through environment variables in the service file
 
 var app = builder.Build();
 

@@ -35,15 +35,21 @@ builder.Services.AddCors(opts =>
     opts.AddPolicy(
         "frontend",
         p =>
-            p.WithOrigins("http://ai.asafarim.local:5173")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
+            p.WithOrigins(
+                "http://ai.asafarim.local:5173",
+                "https://ai.asafarim.local:5173",
+                "https://ai.asafarim.be",
+                "https://asafarim.be"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
     );
 });
 
-// Minimal OpenAPI in Dev
-builder.Services.AddOpenApi();
+// Swagger/OpenAPI configuration
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient(
     "openai",
@@ -59,11 +65,7 @@ builder.Services.AddHttpClient(
     }
 );
 
-// Host on 5103
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(5103);
-});
+// Kestrel configuration is now handled through environment variables in the service file
 
 // Add database context
 builder.Services.AddDbContext<SharedDbContext>(options =>
@@ -83,7 +85,8 @@ app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.MapControllers();
