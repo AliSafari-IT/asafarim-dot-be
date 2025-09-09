@@ -104,14 +104,55 @@ fi
 #############################################
 # Install dependencies
 #############################################
-echo "==> Installing workspace dependencies (pnpm i --frozen-lockfile)"
+echo "==> Installing workspace dependencies"
+# First remove node_modules to ensure clean build
+rm -rf "$REPO_DIR/apps/blog/node_modules"
+rm -rf "$REPO_DIR/apps/core-app/node_modules"
+rm -rf "$REPO_DIR/apps/ai-ui/node_modules"
+rm -rf "$REPO_DIR/apps/identity-portal/node_modules"
+rm -rf "$REPO_DIR/apps/jobs-ui/node_modules"
+rm -rf "$REPO_DIR/apps/web/node_modules"
+
 pnpm i --frozen-lockfile
 
 #############################################
 # Build frontend apps
 #############################################
 echo "==> Building frontend apps"
+# First remove build folder to ensure clean build
+rm -rf "$REPO_DIR/apps/blog/build"
+rm -rf "$REPO_DIR/apps/core-app/dist"
+rm -rf "$REPO_DIR/apps/ai-ui/dist"
+rm -rf "$REPO_DIR/apps/identity-portal/dist"
+rm -rf "$REPO_DIR/apps/jobs-ui/dist"
+rm -rf "$REPO_DIR/apps/web/dist"
+
+# Build all apps
 pnpm app:build
+
+# Verify that blog app was built correctly
+echo "==> Verifying blog app build"
+if [ ! -d "$REPO_DIR/apps/blog/build" ]; then
+  echo "ERROR: Blog app build directory not found!"
+  echo "Running specific blog build command..."
+  cd "$REPO_DIR/apps/blog"
+  pnpm build
+  cd "$REPO_DIR"
+fi
+
+#############################################
+# Verify .NET project files
+#############################################
+echo "==> Verifying .NET project files"
+for PROJ in "${!APIS[@]}"; do
+  echo "  - Checking $PROJ"
+  if grep -q "net9.0" "$REPO_DIR/$PROJ"; then
+    echo "    ERROR: $PROJ still contains net9.0 references!"
+    exit 1
+  else
+    echo "    OK: $PROJ is targeting .NET 8.0"
+  fi
+done
 
 #############################################
 # Build/publish .NET APIs
@@ -119,9 +160,22 @@ pnpm app:build
 echo "==> Publishing .NET APIs (Release)"
 for PROJ in "${!APIS[@]}"; do
   OUT_DIR="${APIS[$PROJ]}"
-  echo "  - ${PROJ} -> ${OUT_DIR}"
-  mkdir_p "$OUT_DIR"
-  dotnet publish "$PROJ" -c Release -o "$OUT_DIR"
+  echo "  - Building ${PROJ} to verify it compiles successfully"
+  
+  # First verify the build succeeds
+  if dotnet build "$REPO_DIR/$PROJ" -c Release --no-restore; then
+    # If build succeeded, then remove the current published directory
+    if [ -d "$OUT_DIR" ] && [ -d "$REPO_DIR/$PROJ" ]; then
+      echo "  - Build successful, removing existing $OUT_DIR"
+      rm -rf "$OUT_DIR"
+    fi
+    
+    echo "  - Publishing ${PROJ} -> ${OUT_DIR}"
+    mkdir_p "$OUT_DIR"
+    dotnet publish "$REPO_DIR/$PROJ" -c Release -o "$OUT_DIR"
+  else
+    echo "  - ERROR: Build failed for ${PROJ}, skipping publish to preserve existing deployment"
+  fi
 done
 
 #############################################
@@ -137,6 +191,17 @@ copy_frontend() {
     echo "  - ${name}: ${path} -> ${SITE_ROOT}/apps/${name}"
     mkdir_p "$SITE_ROOT/apps/${name}"
     rsync -a --delete "$path"/ "$SITE_ROOT/apps/${name}"/
+    
+    # Add verification for blog app
+    if [[ "$name" == "blog" ]]; then
+      echo "    Verifying blog app deployment..."
+      if [[ -f "$SITE_ROOT/apps/${name}/index.html" ]]; then
+        echo "    ✓ Blog app index.html found"
+        grep -q "docusaurus" "$SITE_ROOT/apps/${name}/index.html" || echo "    ⚠️ WARNING: Blog app index.html may not be correct Docusaurus content"
+      else
+        echo "    ❌ ERROR: Blog app index.html not found!"
+      fi
+    fi
   else
     echo "  (skip) ${name}: build path not found: ${path}"
   fi
@@ -157,7 +222,29 @@ else
   echo "(info) nginx not installed. Skipping web server reload."
 fi
 
-echo "==> Restarting application services"
+echo "==> Managing application services"
+
+# Check if any services are missing
+missing_services=false
+for svc in "${SERVICES[@]}"; do
+  if ! systemctl list-units --type=service --all | grep -q "^${svc}\.service"; then
+    echo "Service ${svc}.service not found"
+    missing_services=true
+  fi
+done
+
+# If any services are missing, run the install script
+if $missing_services; then
+  echo "Some services are missing. Running install-services.sh to install them..."
+  if [[ -f "$REPO_DIR/scripts/install-services.sh" ]]; then
+    bash "$REPO_DIR/scripts/install-services.sh"
+  else
+    echo "ERROR: install-services.sh not found at $REPO_DIR/scripts/install-services.sh"
+  fi
+fi
+
+# Restart all services
+echo "Restarting application services..."
 for svc in "${SERVICES[@]}"; do
   restart_if_exists "$svc"
 done

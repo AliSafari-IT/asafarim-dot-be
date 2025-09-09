@@ -10,14 +10,23 @@ const AUTH_TOKEN_KEY = 'auth_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const USER_INFO_KEY = 'user_info';
 
+// Environment awareness
+const isBrowser = typeof window !== 'undefined';
+const hostname = isBrowser ? window.location.hostname : '';
+const isProd = isBrowser && (hostname.endsWith('asafarim.be') || window.location.protocol === 'https:');
+const IDENTITY_ORIGIN = isProd ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5177';
+const COOKIE_DOMAIN = isProd ? '.asafarim.be' : '.asafarim.local';
+
 /**
  * Checks if the user is currently authenticated
  * @returns boolean indicating if the user is authenticated
  */
+import { config } from '../config';
+
 export const isAuthenticated = async (): Promise<boolean> => {
   if (typeof window === 'undefined') return false; // SSR check
   const check = async () => {
-  const res = await fetch('http://api.asafarim.local:5190/auth/me', {
+  const res = await fetch(config.authEndpoints.me, {
     method: 'GET',
     credentials: 'include', // send cookies
   });
@@ -37,7 +46,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
 export const getUserInfo = async () => {
   if (typeof window === 'undefined') return null; // SSR check
   if (!(await isAuthenticated())) return null;
-  const res = await fetch('http://api.asafarim.local:5190/auth/me', {
+  const res = await fetch(config.authEndpoints.me, {
     method: 'GET',
     credentials: 'include', // send cookies
   });
@@ -60,9 +69,9 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(USER_INFO_KEY);
-  document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
-  document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
-  document.cookie = 'user_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
+  document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
+  document.cookie = `refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
+  document.cookie = `user_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
 
   // Best-effort: also clear identity portal storage via hidden iframe (cross-subdomain)
   // This prevents the identity app from thinking the user is still signed in when navigating there next.
@@ -70,7 +79,7 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
     try {
       const iframe = document.createElement('iframe');
       iframe.style.display = 'none';
-      iframe.src = 'http://identity.asafarim.local:5177/sync-logout';
+      iframe.src = `${IDENTITY_ORIGIN}/sync-logout`;
       const cleanup = () => {
         try { iframe.remove(); } catch {
             console.log("cleanup iframe", iframe);
@@ -88,7 +97,7 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
   await syncLogout();
 
   // call logout endpoint
-  await fetch('http://api.asafarim.local:5190/auth/logout', {
+  await fetch(config.authEndpoints.logout, {
     method: 'POST',
     credentials: 'include', // send cookies
   });
@@ -103,8 +112,8 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
 };
 
 export const handleSignIn = async (redirectUrl?: string): Promise<void> => {
-  if (typeof window === 'undefined') return; // SSR check
-  window.location.href = redirectUrl || 'http://identity.asafarim.local:5177';
+  if (!isBrowser) return; // SSR check
+  window.location.href = redirectUrl || IDENTITY_ORIGIN;
 };
 
 /**

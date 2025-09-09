@@ -42,17 +42,17 @@ export default function Home() {
           <Feature
             title="Core Apps"
             desc="Users & Projects with clean architecture, typed clients, and SSO."
-            href="/about"
+            href="https://core.asafarim.be"
           />
           <Feature
             title="Jobs Tracker"
             desc="Track applications and interviews. Angular UI + .NET Jobs API."
-            href="/jobs"
+            href="https://core.asafarim.be/jobs"
           />
           <Feature
             title="Blog & Docs"
             desc="Docusaurus TS with shared header/footer and tokens."
-            href="http://blog.asafarim.local:3000/"
+            href="https://blog.asafarim.be/"
             external
           />
         </div>

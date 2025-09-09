@@ -15,7 +15,16 @@
 
   const setCookie = (value: string) => {
     try {
-      document.cookie = `${COOKIE}=${value}; domain=.asafarim.local; path=/; max-age=31536000; samesite=lax`;
+      // Auto-detect if we're in production or development
+      const isProd = window.location.protocol === 'https:' || 
+                     window.location.hostname.endsWith('asafarim.be');
+      
+      // Use the appropriate domain for cookies
+      const domain = isProd ? '.asafarim.be' : '.asafarim.local';
+      
+      // Set domain-wide cookie
+      document.cookie = `${COOKIE}=${value}; domain=${domain}; path=/; max-age=31536000; samesite=lax`;
+      // Also set path-only cookie as fallback
       document.cookie = `${COOKIE}=${value}; path=/; max-age=31536000; samesite=lax`;
     } catch {}
   };

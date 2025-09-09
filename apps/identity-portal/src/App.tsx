@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import { ToastProvider, Toaster } from '@asafarim/toast';
 import '@asafarim/toast/styles.css';
+import { ThemeProvider } from '@asafarim/shared-ui-react';
 import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotificationProvider from './contexts/NotificationProvider';
@@ -18,61 +18,12 @@ import UserProfilePage from './pages/UserProfilePage';
 import MeProfilePage from './pages/MeProfilePage';
 
 function App() {
-  // Cross-app theme sync: mirror theme between localStorage and a root-domain cookie
-  useEffect(() => {
-    const THEME_KEY = 'asafarim-theme';
-    const COOKIE_NAME = 'asafarim_theme';
-
-    const getCookie = (name: string) =>
-      document.cookie
-        .split(';')
-        .map(c => c.trim())
-        .find(c => c.startsWith(name + '='))
-        ?.split('=')[1];
-
-    // On load: if cookie has a theme, seed localStorage so ThemeProvider picks it up
-    const cookieTheme = getCookie(COOKIE_NAME);
-    if (cookieTheme) {
-      localStorage.setItem(THEME_KEY, cookieTheme);
-    }
-
-    let last = localStorage.getItem(THEME_KEY) || cookieTheme || 'dark';
-
-    const writeCookie = (value: string) => {
-      document.cookie = `${COOKIE_NAME}=${value}; domain=.asafarim.local; path=/; max-age=31536000; samesite=lax`;
-    };
-
-    // Keep cookie in sync when local theme changes
-    const interval = setInterval(() => {
-      const current = localStorage.getItem(THEME_KEY);
-      if (current && current !== last) {
-        last = current;
-        writeCookie(current);
-      }
-    }, 1000);
-
-    // When tab becomes visible, pull latest from cookie (sync across subdomains)
-    const onVis = () => {
-      if (!document.hidden) {
-        const v = getCookie(COOKIE_NAME);
-        if (v && v !== localStorage.getItem(THEME_KEY)) {
-          localStorage.setItem(THEME_KEY, v);
-        }
-      }
-    };
-    document.addEventListener('visibilitychange', onVis);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', onVis);
-    };
-  }, []);
-
   return (
-      <ToastProvider>
-        <NotificationProvider>
-          <AuthProvider>
-            <Router>
+      <ThemeProvider defaultMode="dark" storageKey="asafarim-theme" persistMode={true}>
+        <ToastProvider>
+          <NotificationProvider>
+            <AuthProvider>
+              <Router>
               <NotificationContainer />
               <Toaster />
               <Navbar />
@@ -150,10 +101,11 @@ function App() {
               {/* Catch all other routes and redirect to login */}
               <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
-            </Router>
-          </AuthProvider>
-        </NotificationProvider>
-      </ToastProvider>
+              </Router>
+            </AuthProvider>
+          </NotificationProvider>
+        </ToastProvider>
+      </ThemeProvider>
   );
 }
 

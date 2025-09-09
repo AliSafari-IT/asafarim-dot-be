@@ -12,7 +12,8 @@ const navLinks: NavLinkItem[] = [
   { to: "/", label: "Home" },
   { to: "/blog", label: "Blog" },
   { to: "/docs/intro", label: "Docs" },
-  { to: "http://web.asafarim.local:5175/contact", label: "Contact", external: true },
+  { to: "https://www.asafarim.be/contact", label: "Contact", external: true },
+  { to: "https://www.asafarim.be/about", label: "About", external: true },
   // Add more links as needed
 ];
 

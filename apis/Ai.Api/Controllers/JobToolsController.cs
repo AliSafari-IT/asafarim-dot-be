@@ -24,12 +24,13 @@ public sealed class JobToolsController : ControllerBase
         CancellationToken ct
     )
     {
-        if (req is null || string.IsNullOrWhiteSpace(req.Text))
+        var jobText = req?.Text ?? req?.JobDescription ?? string.Empty;
+        if (req is null || string.IsNullOrWhiteSpace(jobText))
             return BadRequest(new { error = "Missing job description text" });
 
         var system =
             "You extract key data from job descriptions. Respond with STRICT JSON ONLY: { title: string, mustHave: string[], niceToHave: string[], keywords: string[] }. Keep arrays concise.";
-        var user = $"Job Description:\n{req.Text}";
+        var user = $"Job Description:\n{jobText}";
         string content;
         try
         {
@@ -141,6 +142,7 @@ Tone: {req.Tone ?? "concise"}";
 public sealed class ExtractJobRequest
 {
     public string Text { get; set; } = string.Empty;
+    public string JobDescription { get; set; } = string.Empty;
 }
 
 public sealed class ExtractJobResponse

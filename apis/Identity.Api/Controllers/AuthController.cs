@@ -70,7 +70,7 @@ public class AuthController : ControllerBase
                     email = user.Email,
                     firstName = req.UserName ?? req.Email,
                     lastName = "",
-                    roles = new string[] { "user" },
+                    roles = roleNames.ToArray(),
                 },
             }
         );
@@ -106,7 +106,7 @@ public class AuthController : ControllerBase
                     email = user.Email,
                     firstName = user.UserName,
                     lastName = "",
-                    roles = new string[] { "user" },
+                    roles = roleNamesLogin.ToArray(),
                 },
             }
         );
@@ -116,6 +116,12 @@ public class AuthController : ControllerBase
     public IActionResult Logout()
     {
         var opts = _authOptions.Value;
+        // Compute cookie security options the same way as in SetAuthCookies
+        var isProdDomain = opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
+        var context = Response.HttpContext;
+        var isHttps = context?.Request?.IsHttps == true;
+        var useSecure = isProdDomain || isHttps;
+        var sameSite = useSecure ? SameSiteMode.None : SameSiteMode.Lax;
 
         // Delete cookies with the same options used when creating them
         Response.Cookies.Delete(
@@ -123,8 +129,8 @@ public class AuthController : ControllerBase
             new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
+                Secure = useSecure,
+                SameSite = sameSite,
                 Domain = opts.CookieDomain,
                 Path = "/",
             }
@@ -135,8 +141,8 @@ public class AuthController : ControllerBase
             new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
+                Secure = useSecure,
+                SameSite = sameSite,
                 Domain = opts.CookieDomain,
                 Path = "/",
             }
@@ -171,14 +177,22 @@ public class AuthController : ControllerBase
         AuthOptions opts
     )
     {
+        // Determine cookie security based on environment/domain
+        // If cookie domain ends with .asafarim.be or the request is HTTPS, use Secure + SameSite=None
+        var isProdDomain = opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
+        var context = res.HttpContext;
+        var isHttps = context?.Request?.IsHttps == true;
+        var useSecure = isProdDomain || isHttps;
+        var sameSite = useSecure ? SameSiteMode.None : SameSiteMode.Lax;
+
         res.Cookies.Append(
             "atk",
             accessToken,
             new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false, // dev (same-site subdomains). set true + SameSite=None in prod
-                SameSite = SameSiteMode.Lax,
+                Secure = useSecure,
+                SameSite = sameSite,
                 Domain = opts.CookieDomain,
                 Path = "/",
                 Expires = DateTimeOffset.UtcNow.AddMinutes(opts.AccessMinutes),
@@ -190,8 +204,8 @@ public class AuthController : ControllerBase
             new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
+                Secure = useSecure,
+                SameSite = sameSite,
                 Domain = opts.CookieDomain,
                 Path = "/",
                 Expires = DateTimeOffset.UtcNow.AddDays(opts.RefreshDays),

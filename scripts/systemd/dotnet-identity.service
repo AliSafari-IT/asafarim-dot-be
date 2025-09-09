@@ -1,0 +1,29 @@
+[Unit]
+Description=ASafariM Identity API (.NET)
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/asafarim-dot-be/apis/identity
+ExecStart=/usr/bin/dotnet /var/www/asafarim-dot-be/apis/identity/Identity.Api.dll
+Restart=always
+RestartSec=5
+SyslogIdentifier=dotnet-identity
+User=www-data
+
+# Environment variables
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+Environment=DOTNET_ENVIRONMENT=Production
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5177
+
+# Load environment variables from file
+EnvironmentFile=/etc/asafarim/env
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

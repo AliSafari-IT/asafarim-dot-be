@@ -34,7 +34,7 @@ const defaultRenderLink = (link: NavLinkItem, isMobile = false) => {
 };
 
 const defaultRenderBrand = (brand: { logo?: string; text: string; href?: string }) => (
-  <a href={brand.href || '/'} className="brand" aria-label="Home">
+  <a href={brand?.href || '/'} className="brand" aria-label="Home">
     {brand.logo && <img src={brand.logo} alt="logo" className="brand__logo" />}
     <span className="brand__text">{brand.text}</span>
   </a>
@@ -97,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="nav-wrap">
         <div className="nav-row">
           {/* Left: brand */}
-          {renderBrand({logo: brand?.logo, text: `${brand?.text}`, href: `${brand?.href}`})}
+          {renderBrand({logo: brand?.logo, text: `${brand?.text}`, href: brand?.href})}
 
           {/* Center: links (desktop only) */}
           <div className="nav-center">

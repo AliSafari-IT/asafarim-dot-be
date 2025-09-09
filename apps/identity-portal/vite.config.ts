@@ -6,11 +6,24 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: 'identity.asafarim.local',
+    host: true, // This allows connections from all network interfaces
     port: 5177,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5177',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      '/auth': {
+        target: 'http://localhost:5177',
+        changeOrigin: true
+      }
+    }
   },
+  // Do not hardcode VITE_IDENTITY_API_URL here; rely on .env files for dev/prod.
+  // Keep only this convenience flag if needed by the app.
   define: {
-    'import.meta.env.VITE_IDENTITY_API_URL': JSON.stringify('http://api.asafarim.local:5190')
+    'import.meta.env.VITE_IS_PRODUCTION': JSON.stringify(process.env.NODE_ENV === 'production')
   },
   resolve: {
     alias: {

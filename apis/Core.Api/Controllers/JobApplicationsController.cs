@@ -20,6 +20,32 @@ public class JobApplicationsController : ControllerBase
         _logger = logger;
     }
 
+    // health check
+    [HttpGet("health")]
+    public IActionResult HealthCheck()
+    {
+        return Ok(new { status = "ok" , version = "1.0.0" , timestamp = DateTime.Now });
+    }
+
+    [HttpGet("analytics")]
+    public async Task<ActionResult<IEnumerable<JobApplicationDto>>> GetAnalytics()
+    {
+        var applications = await _context
+            .JobApplications.OrderByDescending(j => j.AppliedDate)
+            .Select(j => new JobApplicationDto
+            {
+                Id = j.Id,
+                Company = j.Company,
+                Role = j.Role,
+                Status = j.Status,
+                AppliedDate = j.AppliedDate,
+                Notes = j.Notes,
+            })
+            .ToListAsync();
+
+        return Ok(applications);
+    }
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<JobApplicationDto>>> GetAll()
     {

@@ -6,7 +6,7 @@ import { useToast } from '@asafarim/toast';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
-const API = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5190';
+const API = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177';
 
 export default function UserProfile() {
   const { user } = useAuth();

@@ -80,6 +80,7 @@ export const LoginForm = () => {
           onChange={handleChange}
           required
           autoFocus
+          autoComplete="username email"
         />
       </div>
 
@@ -100,6 +101,7 @@ export const LoginForm = () => {
           value={formData.password}
           onChange={handleChange}
           required
+          autoComplete="current-password"
         />
       </div>
 

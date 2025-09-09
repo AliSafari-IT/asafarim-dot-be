@@ -13,43 +13,43 @@ export interface AppLinkGroup {
   groupName: string;
   links: AppInfo[];
 }
-
+// production main domain: asafarim.be
 // Central registry of all applications in the ecosystem
 export const appRegistry: AppInfo[] = [
   {
     id: 'web',
     name: 'Web Portal',
-    url: 'http://web.asafarim.local:5175',
+    url: 'https://asafarim.be',
     description: 'Main web portal'
   },
   {
     id: 'blog',
     name: 'Blog',
-    url: 'http://blog.asafarim.local:3000',
+    url: 'https://blog.asafarim.be',
     description: 'Documentation and blog'
   },
   {
     id: 'ai',
     name: 'AI Tools',
-    url: 'http://ai.asafarim.local:5173',
+    url: 'https://ai.asafarim.be',
     description: 'AI-powered tools and services'
   },
   {
     id: 'core',
     name: 'Core App',
-    url: 'http://core.asafarim.local:5174',
+    url: 'https://core.asafarim.be',
     description: 'Core application features'
   },
   {
     id: 'jobs',
     name: 'Job Applications',
-    url: 'http://core.asafarim.local:5174/jobs',
+    url: 'https://core.asafarim.be/jobs',
     description: 'Job application tracking'
   },
   {
     id: 'identity',
     name: 'Identity Portal',
-    url: 'http://identity.asafarim.local:5177',
+    url: 'https://identity.asafarim.be',
     description: 'User management and authentication'
   }
 ];

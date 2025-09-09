@@ -2,6 +2,7 @@ import { useAuth } from '@asafarim/shared-ui-react';
 import { useEffect, useState } from 'react';
 import './dashboard.css';
 import { Button } from '@asafarim/shared-ui-react';
+import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab } from '../utils/appUrls';
 import ChangePasswordModal from './ChangePasswordModal';
 
 export const Dashboard = () => {
@@ -75,16 +76,16 @@ export const Dashboard = () => {
               </Button>
             )}
 
-            <Button onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')} variant="info">
+            <Button onClick={() => openInNewTab(BLOG_URL)} variant="info">
               Open blog
             </Button>
-            <Button onClick={() => window.open('http://web.asafarim.local:5175', '_blank')} variant="info">
+            <Button onClick={() => openInNewTab(WEB_URL)} variant="info">
               Web portal
             </Button>
-            <Button onClick={() => window.open('http://ai.asafarim.local:5173', '_blank')} variant="info">
+            <Button onClick={() => openInNewTab(AI_URL)} variant="info">
               AI portal
             </Button>
-            <Button onClick={() => window.open('http://core.asafarim.local:5174', '_blank')} variant="info">
+            <Button onClick={() => openInNewTab(CORE_URL)} variant="info">
               Core portal
             </Button>
           </div>

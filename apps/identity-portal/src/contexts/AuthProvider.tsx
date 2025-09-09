@@ -13,6 +13,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Environment-aware cookie domain for best-effort non-HttpOnly cleanup
+  const COOKIE_DOMAIN = typeof window !== 'undefined' && (window.location.hostname.endsWith('asafarim.be') || window.location.protocol === 'https:')
+    ? '.asafarim.be'
+    : '.asafarim.local';
+
   // Logout user
   const logout = useCallback(async () => {
     setIsLoading(true);
@@ -28,9 +33,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user_info');
-      document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=asafarim.local';
-      document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=asafarim.local';
-      document.cookie = 'user_info=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=asafarim.local';
+      document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+      document.cookie = `refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+      document.cookie = `user_info=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
       
       // Dispatch a custom event for local listeners
       window.dispatchEvent(new Event('auth-signout'));
@@ -41,85 +46,85 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   // Handle successful authentication
-  const handleAuthSuccess = useCallback((authResponse: AuthResponse) => {
-    const { token, refreshToken, user } = authResponse;
-    
-    // Store tokens and user info
+  const handleAuthSuccess = useCallback(async (authResponse: AuthResponse) => {
+    const { token, refreshToken } = authResponse;
+    // Persist but do not rely on these for auth decisions; server cookies are the source of truth
     localStorage.setItem('auth_token', token);
     localStorage.setItem('refresh_token', refreshToken);
-    localStorage.setItem('user_info', JSON.stringify(user));
-    
-    setUser(user);
-    setError(null);
-  }, []);
-
-  // Refresh authentication token
-  const refreshAuthToken = useCallback(async () => {
-    const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
-    }
     
     try {
-      const authResponse = await identityService.refreshToken(refreshToken);
-      handleAuthSuccess(authResponse);
-      return true;
-    } catch (error) {
-      console.error('Failed to refresh token:', error);
-      await logout();
-      return false;
+      // Immediately fetch server-validated profile to ensure cookies are in place
+      const profile = await identityService.getProfile();
+      localStorage.setItem('user_info', JSON.stringify(profile));
+      setUser(profile);
+      setError(null);
+    } catch (e) {
+      console.warn('Post-auth profile fetch failed:', e);
+      setUser(null);
     }
-  }, [handleAuthSuccess, logout]);
+  }, []);
 
-  // Check if user is already logged in on mount
+
+  // Check if user is already logged in on mount (server-validated)
   useEffect(() => {
     const initAuth = async () => {
-      const storedUser = localStorage.getItem('user_info');
-      const token = localStorage.getItem('auth_token');
-      
-      if (storedUser && token) {
-        try {
-          // Parse stored user info
-          const userInfo = JSON.parse(storedUser) as UserInfo;
-          setUser(userInfo); // Set user immediately from localStorage to prevent flicker
-          
-          // Validate the token with the server
+      try {
+        const storedUser = localStorage.getItem('user_info');
+        const token = localStorage.getItem('auth_token');
+
+        if (storedUser && token) {
+          // Validate by fetching profile; only set user after success
           try {
-            // First try to get the profile with the current token
             console.log('Validating token by fetching user profile...');
             const profile = await identityService.getProfile();
             console.log('Token is valid, user profile retrieved:', profile);
-            setUser(profile); // Update with latest user info
+            setUser(profile);
           } catch (profileError) {
             console.log('Profile fetch failed, attempting token refresh...', profileError);
             
-            // Token might be expired, try to refresh
-            try {
-              const refreshSuccess = await refreshAuthToken();
-              console.log('Token refresh result:', refreshSuccess ? 'success' : 'failed');
-              
-              if (!refreshSuccess) {
-                console.log('Keeping user session active despite refresh failure');
+            // Inline token refresh to avoid dependency issues
+            const refreshToken = localStorage.getItem('refresh_token');
+            if (refreshToken) {
+              try {
+                const authResponse = await identityService.refreshToken(refreshToken);
+                const { token, refreshToken: newRefreshToken } = authResponse;
+                localStorage.setItem('auth_token', token);
+                localStorage.setItem('refresh_token', newRefreshToken);
+                
+                // Fetch profile again after successful refresh
+                try {
+                  const profile = await identityService.getProfile();
+                  localStorage.setItem('user_info', JSON.stringify(profile));
+                  setUser(profile);
+                  setError(null);
+                  console.log('Token refresh and profile fetch successful');
+                } catch (err) {
+                  console.warn('Profile fetch after refresh failed:', err);
+                  setUser(null);
+                }
+              } catch (refreshError) {
+                console.error('Failed to refresh token:', refreshError);
+                setUser(null);
               }
-            } catch (refreshError) {
-              console.warn('Token refresh failed; keeping local session to avoid redirect loop:', refreshError);
-              // Intentionally do not logout here to prevent redirect loops
+            } else {
+              console.log('No refresh token available');
+              setUser(null);
             }
           }
-        } catch (error) {
-          console.error('Failed to restore authentication state:', error);
-          // Only logout if we can't parse the stored user data
-          await logout();
+        } else {
+          console.log('No stored authentication found');
+          setUser(null);
         }
-      } else {
-        console.log('No stored authentication found');
+      } catch (err) {
+        console.error('Failed during auth initialization:', err);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
-    
-    initAuth();
-  }, [logout, refreshAuthToken]);
+
+    void initAuth();
+  }, []); // Empty dependency array - only run on mount
 
   // Login user
   const login = useCallback(async (data: LoginRequest): Promise<boolean> => {
@@ -128,7 +133,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     
     try {
       const authResponse = await identityService.login(data);
-      handleAuthSuccess(authResponse);
+      await handleAuthSuccess(authResponse);
       return true;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to login';
@@ -146,7 +151,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     
     try {
       const authResponse = await identityService.register(data);
-      handleAuthSuccess(authResponse);
+      await handleAuthSuccess(authResponse);
       return true;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to register';
@@ -195,10 +200,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_info');
     
-    // Clear cookies
-    document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.asafarim.local';
-    document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.asafarim.local';
-    document.cookie = 'user_info=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.asafarim.local';
+    // Clear cookies (best-effort for any non-HttpOnly values)
+    document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+    document.cookie = `refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+    document.cookie = `user_info=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
     
     console.log('Force sign out completed');
   }, []);

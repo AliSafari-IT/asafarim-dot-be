@@ -1,5 +1,6 @@
 import React, { type ReactNode } from 'react';
 import { ThemeProvider as BaseThemeProvider } from '@asafarim/react-themes';
+import useThemeSync from '../../hooks/useThemeSync';
 
 export interface ThemeProviderProps {
   children: ReactNode;
@@ -14,6 +15,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   storageKey = 'asafarim-theme',
   persistMode = true,
 }) => {
+  // Use the theme sync hook to keep theme in sync across subdomains
+  useThemeSync({ storageKey, defaultTheme: defaultMode });
+
   return (
     <BaseThemeProvider
       defaultMode={defaultMode}

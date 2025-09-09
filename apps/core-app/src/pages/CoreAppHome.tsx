@@ -2,6 +2,7 @@
 import './CoreAppHome.css';
 import './CoreAppHome.css';
 import { Button, useAuth } from '@asafarim/shared-ui-react';
+import { CORE_JOBS_URL, AI_URL, BLOG_URL, openInNewTab } from '../utils/appUrls';
 
 export default function CoreAppHome() {
     const auth = useAuth();
@@ -13,21 +14,21 @@ export default function CoreAppHome() {
                 <>
                     <div className='core-app-home-actions'>
                         <Button className='core-app-home-action-button'
-                            onClick={() => window.open('http://core.asafarim.local:5174/jobs', '_blank')}
+                            onClick={() => openInNewTab(CORE_JOBS_URL)}
                             variant="primary"
                             size="lg"
                             rounded
                             rightIcon="💼"
                         >Jobs</Button>
                         <Button className='core-app-home-action-button'
-                            onClick={() => window.open('http://ai.asafarim.local:5173', '_blank')}
+                            onClick={() => openInNewTab(AI_URL)}
                             variant="primary"
                             size="lg"
                             rounded
                             rightIcon="🤖"
                         >AI</Button>
                         <Button className='core-app-home-action-button'
-                            onClick={() => window.open('http://blog.asafarim.local:3000', '_blank')}
+                            onClick={() => openInNewTab(BLOG_URL)}
                             variant="primary"
                             size="lg"
                             rounded

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchJobApplicationById } from '../../api/jobService';
-import { useNotifications } from '../../contexts/useNotifications';
+import { useNotifications } from '@asafarim/shared-ui-react';
 import { useToast } from '@asafarim/toast';
 import JobForm from './JobForm';
 import type { JobApplication } from '../../types/jobTypes';

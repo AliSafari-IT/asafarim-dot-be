@@ -1,10 +1,9 @@
 import type { TimelineMilestone } from '../types/timelineTypes';
-
-const API_BASE_URL = 'http://localhost:5102/api';
+import { coreApi } from './config';
 
 // Timeline Milestones API
 export const fetchMilestonesByJob = async (jobId: string): Promise<TimelineMilestone[]> => {
-  const response = await fetch(`${API_BASE_URL}/TimelineMilestones/job/${jobId}`);
+  const response = await fetch(coreApi(`TimelineMilestones/job/${jobId}`));
   if (!response.ok) {
     throw new Error('Failed to fetch milestones');
   }
@@ -12,7 +11,7 @@ export const fetchMilestonesByJob = async (jobId: string): Promise<TimelineMiles
 };
 
 export const fetchMilestoneById = async (id: string): Promise<TimelineMilestone> => {
-  const response = await fetch(`${API_BASE_URL}/TimelineMilestones/${id}`);
+  const response = await fetch(coreApi(`TimelineMilestones/${id}`));
   if (!response.ok) {
     throw new Error('Failed to fetch milestone');
   }
@@ -20,7 +19,7 @@ export const fetchMilestoneById = async (id: string): Promise<TimelineMilestone>
 };
 
 export const createMilestone = async (milestone: Omit<TimelineMilestone, 'id' | 'createdAt' | 'updatedAt'>): Promise<TimelineMilestone> => {
-  const response = await fetch(`${API_BASE_URL}/TimelineMilestones`, {
+  const response = await fetch(coreApi('TimelineMilestones'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -50,7 +49,7 @@ export const createMilestone = async (milestone: Omit<TimelineMilestone, 'id' | 
 };
 
 export const updateMilestone = async (id: string, milestone: Partial<TimelineMilestone>): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/TimelineMilestones/${id}`, {
+  const response = await fetch(coreApi(`TimelineMilestones/${id}`), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -76,7 +75,7 @@ export const updateMilestone = async (id: string, milestone: Partial<TimelineMil
 };
 
 export const deleteMilestone = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/TimelineMilestones/${id}`, {
+  const response = await fetch(coreApi(`TimelineMilestones/${id}`), {
     method: 'DELETE',
   });
   
@@ -89,7 +88,7 @@ export const deleteMilestone = async (id: string): Promise<void> => {
 
 // Analytics API
 export const fetchTimelineAnalytics = async () => {
-  const response = await fetch(`${API_BASE_URL}/TimelineMilestones/analytics`);
+  const response = await fetch(coreApi('TimelineMilestones/analytics'));
   if (!response.ok) {
     throw new Error('Failed to fetch analytics');
   }
@@ -97,7 +96,7 @@ export const fetchTimelineAnalytics = async () => {
 };
 
 export const fetchJobProgress = async (jobId: string) => {
-  const response = await fetch(`${API_BASE_URL}/TimelineMilestones/progress/${jobId}`);
+  const response = await fetch(coreApi(`TimelineMilestones/progress/${jobId}`));
   if (!response.ok) {
     throw new Error('Failed to fetch job progress');
   }
@@ -105,7 +104,7 @@ export const fetchJobProgress = async (jobId: string) => {
 };
 
 export const fetchJobSearchInsights = async () => {
-  const response = await fetch(`${API_BASE_URL}/TimelineMilestones/insights`);
+  const response = await fetch(coreApi('TimelineMilestones/insights'));
   if (!response.ok) {
     throw new Error('Failed to fetch job search insights');
   }

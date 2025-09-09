@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Linq;
+using Microsoft.Extensions.Options;
 
 namespace Ai.Api.OpenAI;
 
@@ -36,10 +37,10 @@ internal sealed class OpenAiUpstreamException : Exception
     }
 }
 
-internal sealed class OpenAiService(HttpClient http, OpenAiOptions opts) : IOpenAiService
+internal sealed class OpenAiService(HttpClient http, IOptions<OpenAiOptions> opts) : IOpenAiService
 {
     private readonly HttpClient _http = http;
-    private readonly OpenAiOptions _opts = opts;
+    private readonly OpenAiOptions _opts = opts.Value;
 
     public Task<string> ChatAsync(
         string systemPrompt,

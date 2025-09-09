@@ -1,6 +1,7 @@
 import type { JobApplication } from '../types/jobTypes';
+import { coreApi } from './config';
 
-const API_URL = 'http://localhost:5102/api/JobApplications';
+const API_URL = coreApi('JobApplications');
 
 export const fetchJobApplications = async (): Promise<JobApplication[]> => {
   const response = await fetch(API_URL);

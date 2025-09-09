@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 export interface UseAuthOptions {
-  authApiBase?: string;               // e.g. http://api.asafarim.local:5190
+  authApiBase?: string;               // e.g. http://api.asafarim.local:5177
   meEndpoint?: string;                // e.g. /auth/me
   logoutEndpoint?: string;            // e.g. /auth/logout
   identityLoginUrl?: string;          // full URL to identity login page
@@ -35,10 +35,18 @@ async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | n
 }
 
 export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TUser> {
-  const authApiBase = options?.authApiBase ?? 'http://api.asafarim.local:5190';
+  const isBrowser = typeof window !== 'undefined';
+  const host = isBrowser ? window.location.hostname : '';
+  const isProd = isBrowser && (host.endsWith('asafarim.be') || window.location.protocol === 'https:');
+  const defaultAuthBase = isProd
+    ? '/api/identity'
+    : (import.meta as any).env?.VITE_IDENTITY_API_URL ?? 'http://api.asafarim.local:5177';
+
+  const authApiBase = options?.authApiBase ?? defaultAuthBase;
   const meEndpoint = options?.meEndpoint ?? '/auth/me';
   const logoutEndpoint = options?.logoutEndpoint ?? '/auth/logout';
-  const identityLoginUrl = options?.identityLoginUrl ?? 'http://identity.asafarim.local:5177/login';
+  const defaultIdentityLogin = isProd ? 'https://identity.asafarim.be/login' : 'http://identity.asafarim.local:5177/login';
+  const identityLoginUrl = options?.identityLoginUrl ?? defaultIdentityLogin;
 
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<TUser | null>(null);
@@ -94,8 +102,9 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       }
 
       // Clear cookies
-      document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=.asafarim.local';
-      document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=.asafarim.local';
+      const cookieDomain = isProd ? '.asafarim.be' : '.asafarim.local';
+      document.cookie = `auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
+      document.cookie = `refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
 
       // Notify backend
       try {

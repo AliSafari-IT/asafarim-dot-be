@@ -5,8 +5,8 @@ import { NavLink } from "react-router-dom";
 
 // Define your navigation links
 const navLinks: NavLinkItem[] = [
-  { to: "http://web.asafarim.local:5175/about", label: "About" },
-  { to: "http://web.asafarim.local:5175/contact", label: "Contact" },
+  { to: "https://www.asafarim.be/about", label: "About" },
+  { to: "https://www.asafarim.be/contact", label: "Contact" },
 ];
 
 // Custom render function for React Router links

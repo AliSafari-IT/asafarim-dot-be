@@ -15,12 +15,12 @@ const navLinks: NavLinkItem[] = [
     label: "Job Tracker",
   },
   {
-    to: "http://web.asafarim.local:5175/about",
-    label: "About",
+    to: "https://www.asafarim.be/contact",
+    label: "Contact",
   },
   {
-    to: "http://web.asafarim.local:5175/contact",
-    label: "Contact",
+    to: "https://www.asafarim.be/about",
+    label: "About",
   },
 ];
 

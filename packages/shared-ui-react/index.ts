@@ -33,6 +33,7 @@ export type { NotificationContainerProps } from "./components/Notifications/Noti
 // Hooks
 export { default as useAuth } from "./hooks/useAuth";
 export type { UseAuthOptions, UseAuthResult } from "./hooks/useAuth";
+export { default as useThemeSync } from "./hooks/useThemeSync";
 
 // SVG Icons
 export * from "./svg-icons";

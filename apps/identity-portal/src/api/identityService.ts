@@ -63,7 +63,7 @@ export interface ApiError {
 
 // Base API URL from environment variable
 // Remove the /api prefix as the endpoints don't include it
-const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5190';
+const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177';
 
 /**
  * Handle API responses and errors
@@ -98,14 +98,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 /**
- * Get auth header with token
+ * Default JSON headers. We rely on HttpOnly cookies for auth, not Authorization header.
  */
-function getAuthHeader(): HeadersInit {
-  const token = localStorage.getItem('auth_token');
-  return {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
-  };
+function getJsonHeaders(): HeadersInit {
+  return { 'Content-Type': 'application/json' };
 }
 
 /**
@@ -191,7 +187,7 @@ export const identityService = {
     console.log('Fetching user profile...');
     try {
       const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: getAuthHeader(),
+        headers: getJsonHeaders(),
         credentials: 'include'  // Important: include cookies in the request
       });
       
@@ -215,7 +211,7 @@ export const identityService = {
   async updateProfile(data: Partial<UserInfo>): Promise<UserInfo> {
     const response = await fetch(`${API_BASE_URL}/users/me`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getJsonHeaders(),
       credentials: 'include',
       body: JSON.stringify(data)
     });
@@ -227,7 +223,7 @@ export const identityService = {
   async changePassword(data: ChangePasswordRequestBody): Promise<{ message: string }> {
     const response = await fetch(`${API_BASE_URL}/users/change-password`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getJsonHeaders(),
       credentials: 'include',
       body: JSON.stringify(data)
     });
@@ -272,7 +268,7 @@ export const identityService = {
         // The 'credentials: include' option ensures cookies are sent with the request
         const response = await fetch(`${API_BASE_URL}/auth/logout`, {
           method: 'POST',
-          headers: getAuthHeader(),
+          headers: getJsonHeaders(),
           credentials: 'include',
           body: JSON.stringify({ refreshToken })
         });

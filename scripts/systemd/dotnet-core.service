@@ -1,0 +1,29 @@
+[Unit]
+Description=ASafariM Core API (.NET)
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/asafarim-dot-be/apis/core
+ExecStart=/usr/bin/dotnet /var/www/asafarim-dot-be/apis/core/Core.Api.dll
+Restart=always
+RestartSec=5
+SyslogIdentifier=dotnet-core
+User=www-data
+
+# Environment variables
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+Environment=DOTNET_ENVIRONMENT=Production
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5102
+
+# Load environment variables from file
+EnvironmentFile=/etc/asafarim/env
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

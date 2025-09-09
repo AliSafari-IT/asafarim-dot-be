@@ -10,24 +10,36 @@ const AUTH_TOKEN_KEY = 'auth_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const USER_INFO_KEY = 'user_info';
 
+// Environment awareness
+const isBrowser = typeof window !== 'undefined';
+const hostname = isBrowser ? window.location.hostname : '';
+const isProd = isBrowser && (
+  hostname.endsWith('asafarim.be') || window.location.protocol === 'https:'
+);
+
+// Identity API base (reverse-proxied via Nginx in prod)
+const IDENTITY_API_BASE = isProd
+  ? '/api/identity'
+  : (import.meta as any).env?.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5177';
+
+// Identity site origin for cross-app actions (e.g., sync-logout)
+const IDENTITY_ORIGIN = isProd ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5177';
+
+// Cookie domain
+const COOKIE_DOMAIN = isProd ? '.asafarim.be' : '.asafarim.local';
+
 /**
  * Checks if the user is currently authenticated
  * @returns boolean indicating if the user is authenticated
  */
 export const isAuthenticated = async (): Promise<boolean> => {
-  if (typeof window === 'undefined') return false; // SSR check
-  const check = async () => {
-  const res = await fetch('http://api.asafarim.local:5190/auth/me', {
+  if (!isBrowser) return false; // SSR check
+  const res = await fetch(`${IDENTITY_API_BASE}/auth/me`, {
     method: 'GET',
-    credentials: 'include', // send cookies
+    credentials: 'include',
   });
-  console.log("isAuthenticated authSync", res.status);
-  if (res.status === 401) {
-    return false;
-  }
-  return true;
-  }
-  return await check();
+  console.log('isAuthenticated authSync', res.status);
+  return res.status !== 401;
 };
 
 /**
@@ -35,17 +47,14 @@ export const isAuthenticated = async (): Promise<boolean> => {
  * @returns User info object or null if not authenticated
  */
 export const getUserInfo = async () => {
-  if (typeof window === 'undefined') return null; // SSR check
+  if (!isBrowser) return null; // SSR check
   if (!(await isAuthenticated())) return null;
-  const res = await fetch('http://api.asafarim.local:5190/auth/me', {
+  const res = await fetch(`${IDENTITY_API_BASE}/auth/me`, {
     method: 'GET',
-    credentials: 'include', // send cookies
+    credentials: 'include',
   });
-  if (res.status === 401) {
-    return null;
-  }
-  const userInfo = await res.json();
-  return userInfo;
+  if (res.status === 401) return null;
+  return await res.json();
 };
 
 /**
@@ -60,9 +69,9 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(USER_INFO_KEY);
-  document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
-  document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
-  document.cookie = 'user_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.asafarim.local';
+  document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
+  document.cookie = `refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
+  document.cookie = `user_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
 
   // Best-effort: also clear identity portal storage via hidden iframe (cross-subdomain)
   // This prevents the identity app from thinking the user is still signed in when navigating there next.
@@ -70,7 +79,7 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
     try {
       const iframe = document.createElement('iframe');
       iframe.style.display = 'none';
-      iframe.src = 'http://identity.asafarim.local:5177/sync-logout';
+      iframe.src = `${IDENTITY_ORIGIN}/sync-logout`;
       const cleanup = () => {
         try { iframe.remove(); } catch {
             console.log("cleanup iframe", iframe);
@@ -88,7 +97,7 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
   await syncLogout();
 
   // call logout endpoint
-  await fetch('http://api.asafarim.local:5190/auth/logout', {
+  await fetch(`${IDENTITY_API_BASE}/auth/logout`, {
     method: 'POST',
     credentials: 'include', // send cookies
   });

@@ -1,11 +1,16 @@
+using System.Security.Claims;
 using System.Text;
 using Identity.Api;
+using Identity.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure structured logging
+builder.Host.ConfigureStructuredLogging();
 
 // Add controllers
 builder.Services.AddControllers();
@@ -79,6 +84,8 @@ builder
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOpts.Key)),
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromSeconds(30),
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.NameIdentifier,
         };
         options.Events = new JwtBearerEvents
         {
@@ -93,7 +100,20 @@ builder
 
 builder.Services.AddAuthorization();
 
-var allowedOrigins = new[]
+// Get allowed origins from environment or use defaults
+var corsOriginsEnv = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS");
+var productionOrigins = new[]
+{
+    "https://asafarim.be",
+    "https://www.asafarim.be",
+    "https://ai.asafarim.be",
+    "https://core.asafarim.be",
+    "https://blog.asafarim.be",
+    "https://identity.asafarim.be",
+    "https://*.asafarim.be"  // Wildcard for all subdomains
+};
+
+var developmentOrigins = new[]
 {
     "http://localhost:3000",
     "http://localhost:5173",
@@ -115,14 +135,32 @@ var allowedOrigins = new[]
     "http://core.asafarim.local:5174",
     "http://jobs.asafarim.local:4200",
     "http://blog.asafarim.local:3000",
-    "http://core.asafarim.local:5174",
     "http://web.asafarim.local:5175"
 };
+
+// Combine origins based on environment
+var allowedOrigins = builder.Environment.IsProduction() 
+    ? productionOrigins.Concat(corsOriginsEnv?.Split(',') ?? Array.Empty<string>()).ToArray()
+    : developmentOrigins.Concat(productionOrigins).ToArray();
 
 builder.Services.AddCors(opt =>
     opt.AddPolicy(
         "app",
-        p => p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+        p => {
+            if (builder.Environment.IsDevelopment()) {
+                // In development, allow any origin
+                p.SetIsOriginAllowed(_ => true)
+                 .AllowAnyHeader()
+                 .AllowAnyMethod()
+                 .AllowCredentials();
+            } else {
+                // In production, use specific origins
+                p.WithOrigins(allowedOrigins)
+                 .AllowAnyHeader()
+                 .AllowAnyMethod()
+                 .AllowCredentials();
+            }
+        }
     )
 );
 
@@ -139,4 +177,16 @@ app.UseAuthorization();
 
 // Map controllers
 app.MapControllers();
-app.Run();
+
+// Add health endpoint
+app.MapGet("/health", () => Results.Ok(new
+{
+    Status = "Healthy",
+    Service = "Identity API",
+    Version = "1.0.0",
+    Environment = app.Environment.EnvironmentName,
+    Timestamp = DateTime.UtcNow
+}));
+
+// Run the app with automatic migrations
+app.MigrateDatabase<AppDbContext>().Run();

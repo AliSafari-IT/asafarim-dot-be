@@ -4,7 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 const config: Config = {
-  title: "ASafariM Blog",
+  title: "Blog",
   tagline: "Sharing my thoughts and experiences",
   favicon: "img/logo.svg",
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -258,6 +258,15 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
   // Ensure our client module runs early to sync theme key
   clientModules: [require.resolve("./src/clientModules/themeKey.ts")],
+  
+  // Add theme preloader script to HTML head
+  scripts: [
+    {
+      src: '/theme-preloader.js',
+      async: false,
+      defer: false,
+    },
+  ],
 };
 
 export default config;
