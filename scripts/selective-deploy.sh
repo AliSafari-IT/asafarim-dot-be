@@ -93,9 +93,9 @@ print_info() {
 
 restart_service_if_exists() {
     local svc="$1"
-    if systemctl list-units --type=service --all | grep -q "^${svc}\.service"; then
+    if sudo systemctl list-unit-files "${svc}.service" >/dev/null 2>&1; then
         print_info "Restarting ${svc}..."
-        systemctl restart "${svc}"
+        sudo systemctl restart "${svc}"
         print_success "Service ${svc} restarted"
     else
         print_warning "Service ${svc}.service not found, skipping"

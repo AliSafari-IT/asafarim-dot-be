@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import Home from "./pages/Home";
-import Chat from "./pages/Chat";
+import ChatPage from "./pages/ChatPage";
 import JobTools from "./pages/JobTools";
 import ResumeMaker from "./pages/ResumeMaker";
 import { NotFound } from "@asafarim/shared-ui-react";
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <Home /> },
-      { path: "chat", element: <Chat /> },
+      { path: "chat", element: <ChatPage /> },
       { path: "job-tools", element: <JobTools /> },
       { path: "resume-maker", element: <ResumeMaker /> },
       { path: "*", element: <NotFound /> },

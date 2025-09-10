@@ -160,39 +160,4 @@ Detailed CV: {req.DetailedCv ?? "(not provided)"}";
         );
         return Ok(new { userId = sub, raw = json });
     }
-
-    // Real chat endpoint using OpenAI Chat Completions
-    [HttpPost("chat")]
-    [HttpPost("~/chat")]
-    public async Task<IActionResult> Chat([FromBody] ChatRequest request, CancellationToken ct)
-    {
-        if (request is null || string.IsNullOrWhiteSpace(request.Prompt))
-            return BadRequest(new { error = "Missing prompt" });
-
-        const string systemPrompt = "You are a helpful assistant for ASafariM.";
-
-        try
-        {
-            var answer = await _ai.ChatAsync(systemPrompt, request.Prompt, ct);
-            return Ok(new { answer });
-        }
-        catch (OpenAiUpstreamException ex)
-        {
-            _logger.LogError(ex, "OpenAI upstream error during chat: {Status}", ex.StatusCode);
-            return StatusCode(
-                ex.StatusCode,
-                new { error = "OpenAI request failed", details = ex.Body }
-            );
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "OpenAI HTTP error during chat");
-            return StatusCode(502, new { error = "Upstream OpenAI request failed" });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error during chat");
-            return StatusCode(500, new { error = "Unexpected server error" });
-        }
-    }
 }

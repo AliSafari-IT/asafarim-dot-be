@@ -5,6 +5,7 @@ export interface UseAuthOptions {
   meEndpoint?: string;                // e.g. /auth/me
   logoutEndpoint?: string;            // e.g. /auth/logout
   identityLoginUrl?: string;          // full URL to identity login page
+  identityRegisterUrl?: string;       // full URL to identity register page
 }
 
 export interface UseAuthResult<TUser = any> {
@@ -13,6 +14,7 @@ export interface UseAuthResult<TUser = any> {
   loading: boolean;
   signOut: (redirectUrl?: string) => Promise<void>;
   signIn: (redirectUrl?: string) => Promise<void>;
+  register: (redirectUrl?: string) => Promise<void>;
 }
 
 async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> {
@@ -46,7 +48,9 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   const meEndpoint = options?.meEndpoint ?? '/auth/me';
   const logoutEndpoint = options?.logoutEndpoint ?? '/auth/logout';
   const defaultIdentityLogin = isProd ? 'https://identity.asafarim.be/login' : 'http://identity.asafarim.local:5177/login';
+  const defaultIdentityRegister = isProd ? 'https://identity.asafarim.be/register' : 'http://identity.asafarim.local:5177/register';
   const identityLoginUrl = options?.identityLoginUrl ?? defaultIdentityLogin;
+  const identityRegisterUrl = options?.identityRegisterUrl ?? defaultIdentityRegister;
 
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<TUser | null>(null);
@@ -148,7 +152,12 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     window.location.href = `${identityLoginUrl}?returnUrl=${returnUrl}`;
   }, [identityLoginUrl]);
 
-  return { isAuthenticated: authenticated, user, loading, signOut, signIn };
+  const register = useCallback(async (redirectUrl?: string) => {
+    const returnUrl = encodeURIComponent(redirectUrl || window.location.href);
+    window.location.href = `${identityRegisterUrl}?returnUrl=${returnUrl}`;
+  }, [identityRegisterUrl]);
+
+  return { isAuthenticated: authenticated, user, loading, signOut, signIn, register };
 }
 
 export default useAuth;

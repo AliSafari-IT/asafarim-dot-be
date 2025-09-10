@@ -1,0 +1,29 @@
+/* ChatPage specific styles */
+.chat-page .theme-layout-content {
+  padding: 0 !important;
+  max-width: none !important;
+  width: 100%;
+  height: calc(100vh - 4rem); /* Adjust for navbar height */
+  overflow: hidden;
+}
+
+/* Ensure the chat container takes full height */
+.chat-page .ai-ui-container {
+  height: 100%;
+}
+
+/* Fix for the navbar overlap */
+.chat-page .ai-ui-sidebar {
+  top: 4rem; /* Match navbar height */
+  height: calc(100vh - 4rem);
+}
+
+/* Fix for the main content area */
+.chat-page .ai-ui-main {
+  margin-top: 0;
+}
+
+/* Ensure the chat input is properly positioned */
+.chat-page .chat-input-section {
+  bottom: 0;
+}

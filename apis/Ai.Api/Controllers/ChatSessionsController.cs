@@ -9,8 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Ai.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
+    [Route("")]
     public class ChatSessionsController : ControllerBase
     {
         private readonly SharedDbContext _context;
@@ -25,16 +24,14 @@ namespace Ai.Api.Controllers
             _logger = logger;
         }
 
-        // GET: api/chatsessions
-        [HttpGet]
+        // GET: chatsessions
+        [HttpGet("chatsessions")]
         public async Task<ActionResult<IEnumerable<ChatSessionDto>>> GetChatSessions()
         {
-            var userId = GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            var userId = "anonymous"; // Remove authentication requirement
 
             var sessions = await _context
-                .ChatSessions.Where(s => s.UserId == userId && !s.IsDeleted)
+                .ChatSessions.Where(s => !s.IsDeleted)
                 .OrderByDescending(s => s.LastMessageAt ?? s.UpdatedAt)
                 .Select(s => new ChatSessionDto
                 {
@@ -52,17 +49,15 @@ namespace Ai.Api.Controllers
             return Ok(sessions);
         }
 
-        // GET: api/chatsessions/{id}
-        [HttpGet("{id}")]
+        // GET: chatsessions/{id}
+        [HttpGet("chatsessions/{id}")]
         public async Task<ActionResult<ChatSessionDto>> GetChatSession(Guid id)
         {
-            var userId = GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            var userId = "anonymous"; // Remove authentication requirement
 
             var session = await _context
                 .ChatSessions.Include(s => s.Messages.OrderBy(m => m.CreatedAt))
-                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId && !s.IsDeleted);
+                .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
 
             if (session == null)
                 return NotFound();
@@ -77,25 +72,30 @@ namespace Ai.Api.Controllers
                 IsArchived = session.IsArchived,
                 LastMessageAt = session.LastMessageAt,
                 MessageCount = session.MessageCount,
+                Messages = session.Messages.Select(m => new ChatMessageDto
+                {
+                    Id = m.Id,
+                    Content = m.Content,
+                    Role = m.Role,
+                    CreatedAt = m.CreatedAt
+                }).ToList()
             };
 
             return Ok(sessionDto);
         }
 
-        // POST: api/chatsessions
-        [HttpPost]
+        // POST: chatsessions
+        [HttpPost("chatsessions")]
         public async Task<ActionResult<ChatSessionDto>> CreateChatSession(
             CreateChatSessionDto createDto
         )
         {
-            var userId = GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            var userId = "anonymous"; // Remove authentication requirement
 
             var session = new ChatSession
             {
                 Id = Guid.NewGuid(),
-                UserId = userId,
+                UserId = "anonymous",
                 Title = createDto.Title,
                 Description = createDto.Description,
                 CreatedAt = DateTime.UtcNow,
@@ -123,16 +123,14 @@ namespace Ai.Api.Controllers
             return CreatedAtAction(nameof(GetChatSession), new { id = session.Id }, sessionDto);
         }
 
-        // PUT: api/chatsessions/{id}
-        [HttpPut("{id}")]
+        // PUT: chatsessions/{id}
+        [HttpPut("chatsessions/{id}")]
         public async Task<IActionResult> UpdateChatSession(Guid id, UpdateChatSessionDto updateDto)
         {
-            var userId = GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            var userId = "anonymous"; // Remove authentication requirement
 
             var session = await _context.ChatSessions.FirstOrDefaultAsync(s =>
-                s.Id == id && s.UserId == userId && !s.IsDeleted
+                s.Id == id && !s.IsDeleted
             );
 
             if (session == null)
@@ -148,16 +146,14 @@ namespace Ai.Api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/chatsessions/{id}
-        [HttpDelete("{id}")]
+        // DELETE: chatsessions/{id}
+        [HttpDelete("chatsessions/{id}")]
         public async Task<IActionResult> DeleteChatSession(Guid id)
         {
-            var userId = GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            var userId = "anonymous"; // Remove authentication requirement
 
             var session = await _context.ChatSessions.FirstOrDefaultAsync(s =>
-                s.Id == id && s.UserId == userId && !s.IsDeleted
+                s.Id == id && !s.IsDeleted
             );
 
             if (session == null)
@@ -171,16 +167,14 @@ namespace Ai.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/chatsessions/{id}/archive
-        [HttpPost("{id}/archive")]
+        // POST: chatsessions/{id}/archive
+        [HttpPost("chatsessions/{id}/archive")]
         public async Task<IActionResult> ArchiveChatSession(Guid id)
         {
-            var userId = GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            var userId = "anonymous"; // Remove authentication requirement
 
             var session = await _context.ChatSessions.FirstOrDefaultAsync(s =>
-                s.Id == id && s.UserId == userId && !s.IsDeleted
+                s.Id == id && !s.IsDeleted
             );
 
             if (session == null)

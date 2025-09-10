@@ -1,7 +1,7 @@
 using Ai.Api.Data;
 using Ai.Api.Extensions;
 using Ai.Api.OpenAI;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,27 +15,9 @@ var openAiTemperature = double.TryParse(openAi["Temperature"], out var t) ? t : 
 var openAiMaxTokens = int.TryParse(openAi["MaxTokens"], out var mt) ? mt : 512;
 var useMockOnFailure = bool.TryParse(openAi["UseMockOnFailure"], out var umf) ? umf : true;
 
-// Add Authentication and Authorization
-// Determine authority URL based on environment
-var identityAuthority = builder.Environment.IsProduction()
-    ? "https://identity.asafarim.be"
-    : "http://identity.asafarim.local:5177";
-
-var requireHttps = builder.Environment.IsProduction();
-
-builder
-    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(
-        JwtBearerDefaults.AuthenticationScheme,
-        options =>
-        {
-            options.Authority = identityAuthority;
-            options.RequireHttpsMetadata = requireHttps;
-            options.Audience = "asafarim.be";
-        }
-    );
-
-builder.Services.AddAuthorization();
+// Remove authentication for now - make endpoints public like JobTools
+// builder.Services.AddAuthentication();
+// builder.Services.AddAuthorization();
 
 // CORS for the AI UI app with production domains
 // Get allowed origins from environment or use defaults

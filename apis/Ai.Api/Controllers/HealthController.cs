@@ -6,7 +6,7 @@ using System.Reflection;
 namespace Ai.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("health-check")]
     public class HealthController : ControllerBase
     {
         private static readonly string StartTime = DateTime.UtcNow.ToString("o");

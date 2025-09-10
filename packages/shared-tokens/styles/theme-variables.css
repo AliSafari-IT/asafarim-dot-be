@@ -93,6 +93,19 @@
   --color-text-muted: #6b7280;
   --color-border: #e5e7eb;
 
+  /* ChatGPT-like theme variables that adapt to light/dark mode */
+  --chatgpt-bg: #FFFFFF;
+  --chatgpt-sidebar-bg: #F7F7F8;
+  --chatgpt-text: #343541;
+  --chatgpt-input-bg: #FFFFFF;
+  --chatgpt-border: #E5E5E5;
+  --chatgpt-user-bubble: #FFFFFF;
+  --chatgpt-assistant-bubble: #F7F7F8;
+  --chatgpt-sidebar-hover: #EFEFEF;
+  /* Common variables */
+  --chatgpt-accent: #10A37F;
+  --chatgpt-accent-hover: #0D8A6C;
+
   /* Form inputs */
   --input-bg: rgba(253, 242, 242, 0.733);
   --input-border-color: var(--color-border);
@@ -326,6 +339,16 @@ body.dark,
   --color-brand-50: 30, 41, 59;
   --color-brand-500: 96, 165, 250;
 
+  /* ChatGPT-like theme variables that adapt to light/dark mode */
+  --chatgpt-bg: #343541;
+  --chatgpt-sidebar-bg: #202123;
+  --chatgpt-text: #ECECF1;
+  --chatgpt-input-bg: #40414F;
+  --chatgpt-border: #565869;
+  --chatgpt-user-bubble: #343541;
+  --chatgpt-assistant-bubble: #444654;
+  --chatgpt-sidebar-hover: #2A2B32;
+  
   --ifm-color-primary: var(--color-primary);
   --ifm-color-primary-dark: var(--color-primary-dark);
   --ifm-color-primary-darker: var(--color-primary-dark);

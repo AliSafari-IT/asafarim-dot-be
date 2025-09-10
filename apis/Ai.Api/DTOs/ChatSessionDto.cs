@@ -10,6 +10,7 @@ namespace Ai.Api.DTOs
         public bool IsArchived { get; set; }
         public DateTime? LastMessageAt { get; set; }
         public int MessageCount { get; set; }
+        public List<ChatMessageDto> Messages { get; set; } = new List<ChatMessageDto>();
     }
 
     public class CreateChatSessionDto

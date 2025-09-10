@@ -10,8 +10,7 @@ using System.Security.Claims;
 namespace Ai.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
+    [Route("")]
     public class ChatController : ControllerBase
     {
         private readonly IOpenAiService _openAIService;
@@ -28,12 +27,10 @@ namespace Ai.Api.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
+        [HttpPost("chat")]
         public async Task<ActionResult<ChatResponseDto>> SendMessage([FromBody] SendMessageDto request)
         {
-            var userId = GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            var userId = "anonymous"; // Remove authentication requirement
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             ChatSession session;
@@ -45,13 +42,16 @@ namespace Ai.Api.Controllers
                 if (request.SessionId.HasValue)
                 {
                     // Existing session
-                    session = await _context.ChatSessions
+                    var sessions = await _context
+                        .ChatSessions
+                        .Where(s => !s.IsDeleted)
                         .Include(s => s.Messages.OrderBy(m => m.CreatedAt))
                         .FirstOrDefaultAsync(s => s.Id == request.SessionId.Value && s.UserId == userId && !s.IsDeleted);
 
-                    if (session == null)
+                    if (sessions == null)
                         return NotFound("Chat session not found");
 
+                    session = sessions;
                     existingMessages = session.Messages.ToList();
                 }
                 else

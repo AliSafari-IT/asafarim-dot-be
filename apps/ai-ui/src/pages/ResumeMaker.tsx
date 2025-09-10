@@ -18,7 +18,7 @@ type FunctionalResumeResponse = {
 };
 
 export default function ResumeMaker() {
-  const { isAuthenticated, user, loading, signIn } = useAuth<{ id: string; email?: string; userName?: string }>();
+  const { isAuthenticated, user, loading, signIn, register } = useAuth<{ id: string; email?: string; userName?: string }>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -224,9 +224,7 @@ ${`
         </p>
         <div className="ai-ui-buttons">
           <button onClick={() => signIn(goTo)} className="ai-ui-button">Sign in</button>
-          <a href={`http://identity.asafarim.local:5177/register?returnUrl=${encodeURIComponent(goTo || '')}`}>
-            <button className="ai-ui-button">Register</button>
-          </a>
+          <button onClick={() => register(goTo)} className="ai-ui-button">Register</button>
         </div>
       </div>
     );
