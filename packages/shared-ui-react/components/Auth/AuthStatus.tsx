@@ -1,6 +1,8 @@
 import React from "react";
 import CentralSignOut from "./CentralSignOut";
 import CentralSignIn from "./CentralSignIn";
+import AuthStatusIcon from "../../svg-icons/AuthStatusIcon";
+import "./AuthStatus.css";
 
 export interface AuthStatusProps {
   isAuthenticated: boolean;
@@ -54,15 +56,24 @@ export default function AuthStatus(props: AuthStatusProps) {
   if (!isAuthenticated) {
     return (
       <div className={className + " align-middle"} style={style}>
-        <span style={{ marginRight: 8 }}>{t.notSignedIn}</span>
+        <div className="auth-status-indicator">
+          <AuthStatusIcon authenticated={false} size={18} className="auth-status-svg-icon" />
+          <span className="auth-status-text" title={t.notSignedIn}>{t.notSignedIn}</span>
+          <span className="auth-status-text-short" title="Not signed in">Not signed in</span>
+        </div>
         <CentralSignIn onSignIn={onSignIn}>{isMobile ? "" : t.signIn}</CentralSignIn>
       </div>
     );
   }
 
+  const welcomeText = t.welcome(user?.email);
   return (
     <div className={className + " align-middle"} style={style}>
-      <span style={{ marginRight: 8 }}>{t.welcome(user?.email)}</span>
+      <div className="auth-status-indicator auth-status-authenticated">
+        <AuthStatusIcon authenticated={true} size={18} className="auth-status-svg-icon" />
+        <span className="auth-status-text" title={welcomeText}>{welcomeText}</span>
+        <span className="auth-status-text-short" title="Signed in">Signed in</span>
+      </div>
       <CentralSignOut onSignOut={onSignOut}>
         {isMobile ? "" : t.signOut}
       </CentralSignOut>

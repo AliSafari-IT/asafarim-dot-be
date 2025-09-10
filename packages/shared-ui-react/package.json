@@ -9,6 +9,7 @@
     "hooks",
     "index.css",
     "index.ts",
+    "svg-icons",
     "package.json",
     "tsconfig.json"
   ],
@@ -23,7 +24,7 @@
     "./components/*": "./components/*",
     "./contexts/*": "./contexts/*",
     "./hooks/*": "./hooks/*",
-    "./styles/*": "./styles/*",
+    "./svg-icons/*": "./svg-icons/*",
     "./index.css": "./index.css"
   },
   "typesVersions": {
