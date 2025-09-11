@@ -16,6 +16,7 @@ import AdminUsersPage from './pages/AdminUsersPage';
 import DashboardPage from './pages/DashboardPage';
 import UserProfilePage from './pages/UserProfilePage';
 import MeProfilePage from './pages/MeProfilePage';
+import AddNewUserPage from './pages/AddNewUserPage';
 
 function App() {
   return (
@@ -62,6 +63,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminUsersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users/add"
+                element={
+                  <ProtectedRoute>
+                    <AddNewUserPage />
                   </ProtectedRoute>
                 }
               />

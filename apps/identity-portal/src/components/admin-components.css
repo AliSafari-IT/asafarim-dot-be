@@ -1,5 +1,69 @@
 /* Minimal, elegant Admin Components Styling */
 
+/* Hero section with actions */
+.hero__actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-icon {
+  margin-right: 0.5rem;
+}
+
+/* Admin Form Container */
+.admin-form-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .admin-form-container {
+  background: rgba(30, 41, 59, 0.3);
+  border-color: rgba(71, 85, 105, 0.4);
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.form-note {
+  padding: 1rem;
+  background-color: rgba(var(--color-info-rgb, 59, 130, 246), 0.1);
+  border-left: 3px solid var(--color-info, #3b82f6);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--color-foreground);
+}
+
+.role-selection {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.role-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+[data-theme="dark"] .role-checkbox {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(71, 85, 105, 0.3);
+}
+
 /* User Profile Admin Form */
 .admin-user-profile-container {
   padding: 0;

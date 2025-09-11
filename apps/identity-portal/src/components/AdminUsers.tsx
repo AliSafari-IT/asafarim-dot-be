@@ -99,6 +99,17 @@ export default function AdminUsers() {
         <div className="hero">
           <h1 className="hero__title">Admin: User Management</h1>
           <p className="hero__subtitle">Manage all user accounts, roles, and permissions</p>
+          <div className="hero__actions">
+            <button 
+              className="btn btn-primary" 
+              onClick={() => navigate('/admin/users/add')}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="btn-icon">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Add User with Null Password
+            </button>
+          </div>
         </div>
 
         {/* Table Body */}

@@ -17,6 +17,6 @@ public record ChangePasswordRequest(
 // Admin DTOs
 public record AdminUserDto(string Id, string? Email, string? UserName, string[] Roles);
 
-public record AdminUserUpsert(string Email, string? UserName, string? Password);
+public record AdminUserUpsert(string Email, string? UserName, string? Password, string[]? Roles = null);
 
 public record SetUserRolesRequest(string[] Roles);

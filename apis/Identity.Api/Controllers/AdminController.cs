@@ -75,6 +75,71 @@ public class AdminController : ControllerBase
         }
         return Ok(new { id = user.Id });
     }
+    
+    [HttpPost("users/with-null-password")]
+    public async Task<IActionResult> CreateUserWithNullPassword(AdminUserUpsert req)
+    {
+        try
+        {
+            // Validate request
+            if (string.IsNullOrEmpty(req.Email))
+            {
+                return BadRequest(new { message = "Email is required" });
+            }
+            
+            // Create user object
+            var user = new AppUser
+            {
+                Id = Guid.NewGuid(),
+                Email = req.Email,
+                UserName = req.UserName ?? req.Email,
+                EmailConfirmed = true // Auto-confirm email for admin-created users
+            };
+            
+            // Create user without password
+            var result = await _userManager.CreateAsync(user);
+            
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+                return ValidationProblem(ModelState);
+            }
+            
+            // Add roles if specified
+            if (req.Roles != null && req.Roles.Any())
+            {
+                var validRoles = new List<string>();
+                foreach (var role in req.Roles)
+                {
+                    if (await _roleManager.RoleExistsAsync(role))
+                    {
+                        validRoles.Add(role);
+                    }
+                }
+                
+                if (validRoles.Any())
+                {
+                    await _userManager.AddToRolesAsync(user, validRoles);
+                }
+            }
+            
+            return Ok(new { 
+                id = user.Id.ToString(),
+                email = user.Email,
+                userName = user.UserName,
+                message = "User created successfully with null password hash. User will need to set password on first login."
+            });
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            Console.Error.WriteLine($"Error creating user with null password: {ex.Message}");
+            return StatusCode(500, new { message = "An error occurred while creating the user", error = ex.Message });
+        }
+    }
 
     [HttpPut("users/{id:guid}")]
     public async Task<IActionResult> UpdateUser(Guid id, AdminUserUpsert req)
