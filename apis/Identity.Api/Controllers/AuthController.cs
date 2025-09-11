@@ -82,6 +82,17 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByEmailAsync(req.Email);
         if (user is null)
             return Unauthorized();
+            
+        // Check if the user has a null password (needs to set one)
+        if (string.IsNullOrEmpty(user.PasswordHash))
+        {
+            return Ok(new
+            {
+                requiresPasswordSetup = true,
+                userId = user.Id.ToString(),
+                email = user.Email
+            });
+        }
 
         var ok = await _userManager.CheckPasswordAsync(user, req.Password);
         if (!ok)
@@ -170,22 +181,83 @@ public class AuthController : ControllerBase
         );
     }
 
-    private static void SetAuthCookies(
-        HttpResponse res,
-        string accessToken,
-        string refreshToken,
-        AuthOptions opts
-    )
+    [HttpPost("setup-password")]
+    public async Task<IActionResult> SetupPassword([FromBody] SetupPasswordRequest req)
     {
-        // Determine cookie security based on environment/domain
-        // If cookie domain ends with .asafarim.be or the request is HTTPS, use Secure + SameSite=None
+        // Declare user variable outside try block for scope
+        AppUser user;
+        
+        try
+        {
+            // Validate the request
+            if (string.IsNullOrEmpty(req.UserId) || string.IsNullOrEmpty(req.Password))
+            {
+                return BadRequest(new { message = "User ID and password are required" });
+            }
+            
+            // Find the user
+            user = await _userManager.FindByIdAsync(req.UserId);
+            if (user is null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+            
+            // Check if user actually has a null password
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                return BadRequest(new { message = "User already has a password set" });
+            }
+            
+            // Set the password - use AddPassword for users with null password hash
+            var result = await _userManager.AddPasswordAsync(user, req.Password);
+            
+            if (!result.Succeeded)
+            {
+                // Return validation errors in a structured format
+                var errors = result.Errors.Select(e => new { code = e.Code, description = e.Description }).ToList();
+                return BadRequest(new { message = "Password validation failed", errors });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            Console.Error.WriteLine($"Error in SetupPassword: {ex.Message}");
+            return StatusCode(500, new { message = "An error occurred while setting the password", error = ex.Message });
+        }
+        
+        // Log the user in
+        var opts = _authOptions.Value;
+        var roleNames = await _userManager.GetRolesAsync(user);
+        var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
+        var refresh = Guid.NewGuid().ToString("N");
+        SetAuthCookies(Response, access, refresh, opts);
+        
+        // Return user info along with tokens
+        return Ok(new
+        {
+            token = access,
+            refreshToken = refresh,
+            expiresAt = DateTime.UtcNow.AddMinutes(opts.AccessMinutes).ToString("o"),
+            user = new
+            {
+                id = user.Id.ToString(),
+                email = user.Email,
+                firstName = user.UserName,
+                lastName = "",
+                roles = roleNames.ToArray(),
+            }
+        });
+    }
+
+    private void SetAuthCookies(HttpResponse response, string accessToken, string refreshToken, AuthOptions opts)
+    {
         var isProdDomain = opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
-        var context = res.HttpContext;
+        var context = response.HttpContext;
         var isHttps = context?.Request?.IsHttps == true;
         var useSecure = isProdDomain || isHttps;
         var sameSite = useSecure ? SameSiteMode.None : SameSiteMode.Lax;
 
-        res.Cookies.Append(
+        response.Cookies.Append(
             "atk",
             accessToken,
             new CookieOptions
@@ -195,10 +267,11 @@ public class AuthController : ControllerBase
                 SameSite = sameSite,
                 Domain = opts.CookieDomain,
                 Path = "/",
-                Expires = DateTimeOffset.UtcNow.AddMinutes(opts.AccessMinutes),
+                Expires = DateTime.UtcNow.AddMinutes(opts.AccessMinutes),
             }
         );
-        res.Cookies.Append(
+
+        response.Cookies.Append(
             "rtk",
             refreshToken,
             new CookieOptions
@@ -208,7 +281,7 @@ public class AuthController : ControllerBase
                 SameSite = sameSite,
                 Domain = opts.CookieDomain,
                 Path = "/",
-                Expires = DateTimeOffset.UtcNow.AddDays(opts.RefreshDays),
+                Expires = DateTime.UtcNow.AddDays(opts.RefreshDays),
             }
         );
     }

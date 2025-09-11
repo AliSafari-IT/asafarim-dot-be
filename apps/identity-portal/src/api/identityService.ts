@@ -10,6 +10,17 @@ export interface LoginRequest {
   rememberMe?: boolean;
 }
 
+export interface PasswordSetupRequest {
+  userId: string;
+  password: string;
+}
+
+export interface PasswordSetupResponse {
+  requiresPasswordSetup: boolean;
+  userId: string;
+  email: string;
+}
+
 export interface RegisterRequest {
   email: string;
   password: string;
@@ -111,7 +122,7 @@ export const identityService = {
   /**
    * Login with email and password
    */
-  async login(data: LoginRequest): Promise<AuthResponse> {
+  async login(data: LoginRequest): Promise<AuthResponse | PasswordSetupResponse> {
     console.log('Login API call to:', `${API_BASE_URL}/auth/login`);
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -124,9 +135,39 @@ export const identityService = {
       });
       
       console.log('Login API response status:', response.status);
-      return handleResponse<AuthResponse>(response);
+      const result = await handleResponse<AuthResponse | PasswordSetupResponse>(response);
+      
+      // Check if the response indicates a password setup is required
+      if ('requiresPasswordSetup' in result && result.requiresPasswordSetup) {
+        return result as PasswordSetupResponse;
+      }
+      
+      return result as AuthResponse;
     } catch (error) {
       console.error('Login API call error:', error);
+      throw error;
+    }
+  },
+  
+  /**
+   * Setup initial password for user with null password
+   */
+  async setupPassword(data: PasswordSetupRequest): Promise<AuthResponse> {
+    console.log('Setup password API call to:', `${API_BASE_URL}/auth/setup-password`);
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/setup-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+      
+      console.log('Setup password API response status:', response.status);
+      return handleResponse<AuthResponse>(response);
+    } catch (error) {
+      console.error('Setup password API call error:', error);
       throw error;
     }
   },

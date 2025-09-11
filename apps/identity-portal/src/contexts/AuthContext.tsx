@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [passwordSetupRequired, setPasswordSetupRequired] = useState<{ userId: string; email: string } | null>(null);
 
   // Check if user is already logged in on mount
   useEffect(() => {
@@ -112,12 +113,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     async (data: LoginRequest) => {
       setIsLoading(true);
       setError(null);
+      setPasswordSetupRequired(null);
 
       try {
-        const authResponse = await identityService.login(data);
-        handleAuthSuccess(authResponse);
-        // Return true to indicate success for UI handling
-        return true;
+        const response = await identityService.login(data);
+        
+        // Check if password setup is required
+        if ('requiresPasswordSetup' in response && response.requiresPasswordSetup) {
+          setPasswordSetupRequired({
+            userId: response.userId,
+            email: response.email
+          });
+          return false; // Return false to indicate login not completed
+        }
+        
+        // Normal login flow - we know it's an AuthResponse at this point
+        handleAuthSuccess(response as AuthResponse);
+        return true; // Return true to indicate success for UI handling
       } catch (error: unknown) {
         setError(error instanceof Error ? error.message : "Failed to login");
         throw error;
@@ -191,6 +203,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null);
   }, []);
 
+  // Setup password for user with null password
+  const setupPassword = useCallback(
+    async (data: { userId: string; password: string }) => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const authResponse = await identityService.setupPassword(data);
+        handleAuthSuccess(authResponse);
+        setPasswordSetupRequired(null);
+        return true;
+      } catch (error: unknown) {
+        setError(error instanceof Error ? error.message : "Failed to set password");
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [handleAuthSuccess]
+  );
+
+  // Cancel password setup
+  const cancelPasswordSetup = useCallback(() => {
+    setPasswordSetupRequired(null);
+    setError(null);
+  }, []);
+
   return (
     <AuthContextCreated.Provider
       value={{
@@ -198,8 +237,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isAuthenticated: !!user,
         isLoading,
         error,
+        passwordSetupRequired,
         login,
         register,
+        setupPassword,
+        cancelPasswordSetup,
         logout,
         clearError,
         updateUser,

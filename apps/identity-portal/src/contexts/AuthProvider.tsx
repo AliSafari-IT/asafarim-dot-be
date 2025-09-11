@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { AuthContextCreated } from "./AuthContextCreated";
-import identityService, { type AuthResponse, type UserInfo } from '../api/identityService';
+import identityService, { type AuthResponse, type UserInfo, type PasswordSetupRequest } from '../api/identityService';
 import type { LoginRequest, RegisterRequest } from '../api/identityService';
+import type { PasswordSetupState } from './authTypes';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -12,6 +13,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [passwordSetupRequired, setPasswordSetupRequired] = useState<PasswordSetupState | null>(null);
 
   // Environment-aware cookie domain for best-effort non-HttpOnly cleanup
   const COOKIE_DOMAIN = typeof window !== 'undefined' && (window.location.hostname.endsWith('asafarim.be') || window.location.protocol === 'https:')
@@ -130,10 +132,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = useCallback(async (data: LoginRequest): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
+    setPasswordSetupRequired(null);
     
     try {
-      const authResponse = await identityService.login(data);
-      await handleAuthSuccess(authResponse);
+      const response = await identityService.login(data);
+      
+      // Check if password setup is required
+      if ('requiresPasswordSetup' in response && response.requiresPasswordSetup) {
+        setPasswordSetupRequired({
+          userId: response.userId,
+          email: response.email
+        });
+        return false; // Return false to indicate login not completed
+      }
+      
+      // Normal login flow - we know it's an AuthResponse at this point
+      await handleAuthSuccess(response as AuthResponse);
       return true;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to login';
@@ -208,6 +222,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     console.log('Force sign out completed');
   }, []);
 
+  // Setup password for user with null password
+  const setupPassword = useCallback(async (data: PasswordSetupRequest): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const authResponse = await identityService.setupPassword(data);
+      await handleAuthSuccess(authResponse);
+      setPasswordSetupRequired(null);
+      return true;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to set password';
+      setError(errorMessage);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [handleAuthSuccess]);
+
+  // Cancel password setup
+  const cancelPasswordSetup = useCallback(() => {
+    setPasswordSetupRequired(null);
+    setError(null);
+  }, []);
+
   return (
     <AuthContextCreated.Provider
       value={{
@@ -215,12 +254,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isAuthenticated: !!user,
         isLoading,
         error,
-        updateUser,
-        reloadProfile,
+        passwordSetupRequired,
         login,
         register,
+        setupPassword,
+        cancelPasswordSetup,
         logout,
         clearError,
+        updateUser,
+        reloadProfile,
         forceSignOut,
       }}
     >

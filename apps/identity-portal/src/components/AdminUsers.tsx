@@ -15,15 +15,37 @@ export default function AdminUsers() {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      const [usersRes, rolesRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177'}/admin/users`, { credentials: 'include' }),
-        fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177'}/admin/roles`, { credentials: 'include' })
-      ]);
-      const usersJson = await usersRes.json();
-      const rolesJson = await rolesRes.json();
-      setUsers(usersJson);
-      setRoles(rolesJson.map((r: { name: string }) => r.name));
-      setLoading(false);
+      try {
+        const base = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177';
+        const [usersRes, rolesRes] = await Promise.all([
+          fetch(`${base}/admin/users`, { credentials: 'include' }),
+          fetch(`${base}/admin/roles`, { credentials: 'include' })
+        ]);
+
+        // Handle non-OK responses explicitly to avoid leaving the UI stuck on loading
+        if (!usersRes.ok || !rolesRes.ok) {
+          const status = !usersRes.ok ? usersRes.status : rolesRes.status;
+          let message = 'Failed to load users and roles';
+          if (status === 401) message = 'You are not authenticated. Please sign in.';
+          if (status === 403) message = 'You are not authorized to view this page (admin role required).';
+          const body = !usersRes.ok ? await usersRes.text() : await rolesRes.text();
+          throw new Error(`${message}${body ? `: ${body}` : ''}`);
+        }
+
+        const usersJson = await usersRes.json();
+        const rolesJson = await rolesRes.json();
+        setUsers(usersJson);
+        setRoles(rolesJson.map((r: { name: string }) => r.name));
+      } catch (err) {
+        const description = err instanceof Error ? err.message : 'Unknown error';
+        toast.error('Failed to load admin data', { description, durationMs: 6000 });
+        // If unauthenticated, redirect to login and preserve return URL
+        if (description.toLowerCase().includes('not authenticated')) {
+          navigate(`/login?returnUrl=${encodeURIComponent('/admin/users')}`);
+        }
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);
