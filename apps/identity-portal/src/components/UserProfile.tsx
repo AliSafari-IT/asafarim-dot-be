@@ -24,33 +24,78 @@ export default function UserProfile() {
 
   useEffect(() => {
     const load = async () => {
-      const [uRes, rRes] = await Promise.all([
-        fetch(`${API}/admin/users`, { credentials: 'include' }),
-        fetch(`${API}/admin/roles`, { credentials: 'include' }),
-      ]);
-      const u = await uRes.json();
-      const r = await rRes.json();
-      const allUsers: AdminUser[] = u;
+      try {
+        const [uRes, rRes] = await Promise.all([
+          fetch(`${API}/admin/users`, { credentials: 'include' }),
+          fetch(`${API}/admin/roles`, { credentials: 'include' }),
+        ]);
+        
+        if (!uRes.ok || !rRes.ok) {
+          const errorStatus = !uRes.ok ? uRes.status : rRes.status;
+          const errorText = !uRes.ok ? await uRes.text() : await rRes.text();
+          throw new Error(`API error (${errorStatus}): ${errorText}`);
+        }
+        
+        const u = await uRes.json();
+        const r = await rRes.json();
+        const allUsers: AdminUser[] = u;
 
-      // If not admin, restrict the list to the current user only
-      const isAdmin = (user?.roles || []).includes('Admin');
-      const filteredUsers = isAdmin ? allUsers : allUsers.filter(x => x.email === user?.email || x.id === user?.id);
+        // If not admin, restrict the list to the current user only
+        const isAdmin = (user?.roles || []).includes('Admin');
+        const filteredUsers = isAdmin ? allUsers : allUsers.filter(x => x.email === user?.email || x.id === user?.id);
 
-      setUsers(filteredUsers);
-      setRoles(r.map((x: { name: string }) => x.name));
+        setUsers(filteredUsers);
+        setRoles(r.map((x: { name: string }) => x.name));
 
-      // Select by route param if provided (admin flow), otherwise current user, otherwise first
-      let current: AdminUser | undefined;
-      if (routeUserId) {
-        current = filteredUsers.find(x => x.id === routeUserId);
+        // Select by route param if provided (admin flow), otherwise current user, otherwise first
+        let current: AdminUser | undefined;
+        
+        if (routeUserId) {
+          // If we have a route user ID, strictly use that and don't fall back
+          // Try to find by ID first
+          current = filteredUsers.find(x => x.id === routeUserId);
+          
+          // If not found by ID, try to find by email (for cases where ID might be an email)
+          if (!current) {
+            current = filteredUsers.find(x => x.email === routeUserId);
+          }
+          
+          // If still not found, try case-insensitive email comparison
+          if (!current && routeUserId.includes('@')) {
+            const lowerCaseEmail = routeUserId.toLowerCase();
+            current = filteredUsers.find(x => x.email?.toLowerCase() === lowerCaseEmail);
+          }
+          
+          // If we can't find the user with the given ID, show an error
+          if (!current) {
+            console.error(`User not found with ID or email: ${routeUserId}`);
+            console.log('Available users:', filteredUsers);
+            toast.error('User not found', { 
+              description: `Could not find user with ID or email: ${routeUserId}`, 
+              durationMs: 5000 
+            });
+            // Navigate back to users list
+            navigate('/admin/users');
+            return;
+          }
+        } else {
+          // No route ID, so use current user or first in list
+          current = filteredUsers.find(x => x.email === user?.email || x.id === user?.id) || filteredUsers[0];
+        }
+        
+        if (current) selectUser(current);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error loading user data';
+        console.error('Error loading user profile:', errorMessage);
+        toast.error('Failed to load user data', {
+          description: errorMessage,
+          durationMs: 5000
+        });
+        navigate('/admin/users');
       }
-      if (!current) {
-        current = filteredUsers.find(x => x.email === user?.email || x.id === user?.id) || filteredUsers[0];
-      }
-      if (current) selectUser(current);
     };
     void load();
-  }, [user, routeUserId]);
+  }, [user, routeUserId, toast, navigate]);
 
   const selectUser = (u: AdminUser) => {
     setSelectedId(u.id);

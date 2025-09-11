@@ -217,9 +217,10 @@ export default function AdminUsers() {
                     {/* TODO: Add a button to edit the user detaileds such as name, email, phone, etc. */}
                     <button className="admin-table-button"
                       onClick={() => {
-                        // TODO: Take the current user and pass it to the UserProfile component
-                        navigate(`/admin/user-profile/${u.id}`);
+                        navigate(`/admin/edit-user/${u.id}`);
                       }}
+                      aria-label="Edit user"
+                      title="Edit user"
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="admin-table-button-icon">
                         <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

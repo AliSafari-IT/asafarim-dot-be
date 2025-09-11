@@ -17,6 +17,7 @@ import DashboardPage from './pages/DashboardPage';
 import UserProfilePage from './pages/UserProfilePage';
 import MeProfilePage from './pages/MeProfilePage';
 import AddNewUserPage from './pages/AddNewUserPage';
+import EditUserPage from './pages/EditUserPage';
 
 function App() {
   return (
@@ -97,6 +98,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <UserProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Admin edit user (admin-only) */}
+              <Route
+                path="/admin/edit-user/:id"
+                element={
+                  <ProtectedRoute>
+                    <EditUserPage />
                   </ProtectedRoute>
                 }
               />

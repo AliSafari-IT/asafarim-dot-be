@@ -214,4 +214,66 @@ public class AdminController : ControllerBase
         var roles = await _userManager.GetRolesAsync(user);
         return Ok(roles);
     }
+
+    [HttpPost("users/{id:guid}/reset-password")]
+    public async Task<IActionResult> ResetUserPassword(Guid id, AdminResetPasswordRequest req)
+    {
+        try
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user is null)
+                return NotFound(new { message = $"User with ID {id} not found" });
+            
+            // Remove existing password if any
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                // Generate a reset token
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                
+                // Reset the password with the new one or a generated one
+                var result = await _userManager.ResetPasswordAsync(
+                    user,
+                    resetToken,
+                    req.NewPassword ?? Guid.NewGuid().ToString("N") + "Aa1!"
+                );
+                
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return ValidationProblem(ModelState);
+                }
+            }
+            else
+            {
+                // If user has no password, set one directly
+                var result = await _userManager.AddPasswordAsync(
+                    user,
+                    req.NewPassword ?? Guid.NewGuid().ToString("N") + "Aa1!"
+                );
+                
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return ValidationProblem(ModelState);
+                }
+            }
+            
+            return Ok(new { 
+                message = "Password has been reset successfully",
+                passwordWasGenerated = req.NewPassword == null
+            });
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            Console.Error.WriteLine($"Error resetting password: {ex.Message}");
+            return StatusCode(500, new { message = "An error occurred while resetting the password", error = ex.Message });
+        }
+    }
 }
