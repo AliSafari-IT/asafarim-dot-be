@@ -1,9 +1,10 @@
 {
   "name": "@asafarim/web",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "scripts": {
+    "app": "cd ../../ && pnpm app",
     "dev": "vite",
     "prestart": "npx kill-port 5175",
     "start": "vite --host web.asafarim.local --port 5175",

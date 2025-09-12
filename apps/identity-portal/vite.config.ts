@@ -3,10 +3,12 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(
+  {
   plugins: [react()],
   server: {
-    host: true, // This allows connections from all network interfaces
+    host: 'identity.asafarim.local',
+    //host: true,
     port: 5177,
     proxy: {
       '/api': {

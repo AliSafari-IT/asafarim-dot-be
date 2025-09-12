@@ -1,19 +1,154 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+welcome:
+  label: Welcome
+  description: Welcome posts introducing new features or sections
+  permalink: /tags/welcome-tag
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+asafarim:
+  label: ASafariM
+  description: Posts related to the ASafariM project
+  permalink: /tags/asafarim-tag
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+blog:
+  label: Blog
+  description: Meta posts about the blog itself
+  permalink: /tags/blog-tag
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+automation:
+  label: Automation
+  description: Posts about automation and automated processes
+  permalink: /tags/automation-tag
+
+technology:
+  label: Technology
+  description: Posts related to technology trends and innovations
+  permalink: /tags/technology-tag
+
+data-management:
+  label: Data Management
+  description: Posts about data management and database systems
+  permalink: /tags/data-management-tag
+
+xitechnix:
+  label: XiTechniX
+  description: Posts related to XiTechniX projects and technologies
+  permalink: /tags/xitechnix-tag
+
+programming:
+  label: Programming
+  description: Posts about programming languages, techniques, and best practices
+  permalink: /tags/programming-tag
+
+angular:
+  label: Angular
+  description: Posts about Angular development
+  permalink: /tags/angular-tag
+
+clean-architecture:
+  label: Clean Architecture
+  description: Posts about Clean Architecture principles
+  permalink: /tags/clean-architecture-tag
+
+dotnet:
+  label: .NET
+  description: Posts about .NET development
+  permalink: /tags/dotnet-tag
+
+fullstack:
+  label: Fullstack
+  description: Posts about fullstack development
+  permalink: /tags/fullstack-tag
+
+windsurf:
+  label: Windsurf
+  description: Windsurf AI integration code editor
+  permalink: /tags/windsurf-tag
+
+ai:
+  label: AI
+  description: Posts about AI and machine learning
+  permalink: /tags/ai-tag
+
+machine-learning:
+  label: Machine Learning
+  description: Posts about machine learning and AI
+  permalink: /tags/machine-learning-tag
+
+codeium:
+  label: Codeium
+  description: Posts about Codeium AI coding assistant
+  permalink: /tags/codeium-tag
+
+debugging:
+  label: Debugging
+  description: Posts about debugging techniques and tools
+  permalink: /tags/debugging-tag
+
+docker:
+  label: Docker
+  description: Posts about Docker
+  permalink: /tags/docker-tag
+
+efficiency:
+  label: Efficiency
+  description: Posts about development efficiency and productivity
+  permalink: /tags/efficiency-tag
+
+productivity:
+  label: Productivity
+  description: Posts about developer productivity tools and techniques
+  permalink: /tags/productivity-tag
+
+troubleshooting:
+  label: Troubleshooting
+  description: Posts about troubleshooting technical issues
+  permalink: /tags/troubleshooting-tag
+
+react:
+  label: React
+  description: Posts about React.js development
+  permalink: /tags/react-tag
+
+portfolio:
+  label: Portfolio
+  description: Posts about portfolio development and management
+  permalink: /tags/portfolio-tag
+
+multi-user:
+  label: Multi-User
+  description: Posts about multi-user systems and architectures
+  permalink: /tags/multi-user-tag
+
+api:
+  label: API
+  description: Posts about API design and development
+  permalink: /tags/api-tag
+
+open-source:
+  label: Open Source
+  description: Posts about open source software and contributions
+  permalink: /tags/open-source-tag
+
+ai-coding:
+  label: AI Coding
+  description: Posts about AI coding assistants and their impact on development workflows
+  permalink: /tags/ai-coding-tag
+
+ai-debugging:
+  label: AI Debugging
+  description: Posts about AI debugging assistants and their impact on development workflows
+  permalink: /tags/ai-debugging-tag
+
+ai-productivity:
+  label: AI Productivity
+  description: Posts about AI productivity assistants and their impact on development workflows
+  permalink: /tags/ai-productivity-tag
+
+ai-troubleshooting:
+  label: AI Troubleshooting
+  description: Posts about AI troubleshooting assistants and their impact on development workflows
+  permalink: /tags/ai-troubleshooting-tag
+
+ai-creativity:
+  label: AI Creativity
+  description: Posts about AI creativity assistants and their impact on development workflows
+  permalink: /tags/ai-creativity-tag

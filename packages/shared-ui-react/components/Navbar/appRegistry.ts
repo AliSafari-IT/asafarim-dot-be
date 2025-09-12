@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import isProduction from '../../configs/isProduction';
 
 export interface AppInfo {
   id: string;
@@ -13,43 +14,43 @@ export interface AppLinkGroup {
   groupName: string;
   links: AppInfo[];
 }
-// production main domain: asafarim.be
+
 // Central registry of all applications in the ecosystem
 export const appRegistry: AppInfo[] = [
   {
     id: 'web',
     name: 'Web Portal',
-    url: 'https://asafarim.be',
+    url: isProduction ? 'https://asafarim.be' : 'http://web.asafarim.local:5175',
     description: 'Main web portal'
   },
   {
     id: 'blog',
     name: 'Blog',
-    url: 'https://blog.asafarim.be',
+    url: isProduction ? 'https://blog.asafarim.be' : 'http://blog.asafarim.local:3000',
     description: 'Documentation and blog'
   },
   {
     id: 'ai',
     name: 'AI Tools',
-    url: 'https://ai.asafarim.be',
+    url: isProduction ? 'https://ai.asafarim.be' : 'http://ai.asafarim.local:5173',
     description: 'AI-powered tools and services'
   },
   {
     id: 'core',
     name: 'Core App',
-    url: 'https://core.asafarim.be',
+    url: isProduction ? 'https://core.asafarim.be' : 'http://core.asafarim.local:5174',
     description: 'Core application features'
   },
   {
     id: 'jobs',
     name: 'Job Applications',
-    url: 'https://core.asafarim.be/jobs',
+    url: isProduction ? 'https://core.asafarim.be/jobs' : 'http://core.asafarim.local:5174/jobs',
     description: 'Job application tracking'
   },
   {
     id: 'identity',
     name: 'Identity Portal',
-    url: 'https://identity.asafarim.be',
+    url: isProduction ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5177',
     description: 'User management and authentication'
   }
 ];
@@ -78,15 +79,15 @@ export const getAppById = (id: string): AppInfo | undefined => {
 // Helper function to get current app ID based on hostname
 export const getCurrentAppId = (): string => {
   if (typeof window === 'undefined') return '';
-  
+
   const hostname = window.location.hostname;
-  
+
   if (hostname.startsWith('web.')) return 'web';
   if (hostname.startsWith('blog.')) return 'blog';
   if (hostname.startsWith('ai.')) return 'ai';
   if (hostname.startsWith('core.')) return 'core';
   if (hostname.startsWith('identity.')) return 'identity';
-  
+
   // Default fallback
   return '';
 };

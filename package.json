@@ -1,6 +1,6 @@
 {
   "name": "asafarim-dot-be",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
@@ -11,7 +11,7 @@
     "dev:ai": "pnpm --filter @asafarim/ai-ui start",
     "dev:jobs": "pnpm --filter @asafarim/jobs-ui start",
     "dev:blog": "pnpm --filter @asafarim/blog start",
-    "dev:identity-portal": "pnpm --filter @asafarim/identity-portal start",
+    "dev:identity-portal": "pnpm --filter @asafarim/identity-portal dev",
     "dev:identity": "dotnet watch --project apis/Identity.Api/Identity.Api.csproj",
     "dev:aiapi": "dotnet watch --project apis/Ai.Api/Ai.Api.csproj",
     "dev": "concurrently -n web,blog,core,ai,jobs,identity-portal -c \"blue,magenta,cyan,green,yellow,orange\" \"pnpm dev:web\" \"pnpm dev:blog\" \"pnpm dev:core\" \"pnpm dev:ai\" \"pnpm dev:jobs\" \"pnpm dev:identity-portal\"",

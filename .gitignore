@@ -12,19 +12,13 @@ yarn.lock
 # Swap the comments on the following lines if you wish to use zero-installs
 # In that case, don't forget to run `yarn config set enableGlobalCache false`!
 # Documentation here: https://yarnpkg.com/features/caching#zero-installs
-appsettings.json
-appsettings.Development.json
-appsettings.Production.json
-launchSettings.json
 backups/**
-.env
+
 #!.yarn/cache
 .pnp.*
 
 # Ignore node_modules for React
 node_modules/
-Properties/launchSettings.*.json
-launchSettings.*.json
 
 deploy/
 deploy/**
@@ -38,15 +32,6 @@ dist/**
 !ASafariM.Clients/packages/dd-menu/dist/**
 !ASafariM.Clients/packages/dd-menu/src/**
 !ASafariM.Clients/packages/dd-menu/src/components/**
-
-# Ignore .env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.development
-.env.production
 
 # Ignore log files
 npm-debug.log*
@@ -66,9 +51,12 @@ coverage/
 # Ignore .NET build output
 bin/
 obj/
+net9.0/
 net8.0/
-dist/**/*.dll
-dist/**/*.pdb
+net7.0/
+net6.0/
+net5.0/
+net4.8/
 
 # Ignore user-specific files
 *.user
@@ -116,8 +104,6 @@ Scaffolding/
 *.log
 *.gz
 usersecrets/secrets.json
-backend/
-
 
 # Ignore all log files and directories
 logs/
@@ -126,29 +112,16 @@ Log/
 log-*.txt
 
 yarn.lock
-yarn.lock
-
-# Ignore ASafariM.Api
-ASafariM.Api/Properties/launchSettings.Development.json
-ASafariM.Api/Properties/launchSettings.production.json
-ASafariM.Api/Properties/launchSettings.json
 
 # Ignore ASafariM.Clients/asafarim-blog
-ASafariM.Clients/asafarim-blog/stats.html
 **/.docusaurus/*
-ASafariM.Clients/asafarim-blog/.docusaurus/client-manifest.json
-ASafariM.Clients/asafarim-blog/.docusaurus/client-modules.js
-ASafariM.Clients/asafarim-blog/.docusaurus/docusaurus.config.mjs
-ASafariM.Clients/asafarim-blog/.docusaurus/docusaurus-plugin-content-blog/default/p/*.json
-
-# Ignore ASafariM.Clients/asafarim-ui
-ASafariM.Clients/asafarim-ui/stats.html
-
-
 
 .qodo
-
-ASafariM.Clients/asafarim-cli/ .env
 \[Unit].ini
-ASafariM.Clients/packages/dd-menu/node-compile-cache/v24.1.0-x64-7b018323-0/51c96912
 pnpm-lock.yaml
+
+# Ignore .env and appsettings files
+appsettings*.json
+launchSettings*.json
+.env
+.env.*

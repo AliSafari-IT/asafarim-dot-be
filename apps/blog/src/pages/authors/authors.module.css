@@ -1,0 +1,167 @@
+.authorsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.authorCard {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.authorCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.authorCardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.authorCardContent {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.authorAvatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 3px solid var(--ifm-color-primary);
+}
+
+.authorName {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: var(--ifm-heading-color);
+}
+
+.authorTitle {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+/* Author profile page styles */
+.authorProfileContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 996px) {
+  .authorProfileContainer {
+    flex-direction: row;
+  }
+  
+  .authorInfoPanel {
+    flex: 1;
+    max-width: 350px;
+  }
+  
+  .authorPostsPanel {
+    flex: 2;
+  }
+}
+
+.authorInfoPanel {
+  background-color: var(--ifm-card-background-color);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.authorBio {
+  margin-top: 1rem;
+  font-style: italic;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.authorDetail {
+  display: flex;
+  align-items: center;
+  margin-top: 0.75rem;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.authorDetailIcon {
+  margin-right: 0.5rem;
+  color: var(--ifm-color-primary);
+}
+
+.authorSocialLinks {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.authorSocialLink {
+  color: var(--ifm-color-primary);
+  font-size: 1.25rem;
+  transition: color 0.2s ease;
+}
+
+.authorSocialLink:hover {
+  color: var(--ifm-color-primary-darker);
+}
+
+.authorPostsPanel {
+  background-color: var(--ifm-card-background-color);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.authorPostsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.authorPostItem {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.authorPostItem:last-child {
+  border-bottom: none;
+}
+
+.authorPostTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--ifm-heading-color);
+}
+
+.authorPostDate {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.authorPostExcerpt {
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 1rem;
+}
+
+.authorPostReadMore {
+  color: var(--ifm-color-primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.authorPostReadMore:hover {
+  text-decoration: underline;
+}
