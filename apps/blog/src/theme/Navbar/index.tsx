@@ -6,15 +6,14 @@ import OriginalNavbar from "@theme-original/Navbar";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import type { DocusaurusConfig } from "@docusaurus/types";
 import "./Navbar.css";
+import { isProduction } from "../../api/currentHost";
 
 // Define your blog navigation links
 const navLinks: NavLinkItem[] = [
-  { to: "/", label: "Home" },
   { to: "/blog", label: "Blog" },
   { to: "/docs/intro", label: "Docs" },
-  { to: "https://www.asafarim.be/contact", label: "Contact", external: true },
-  { to: "https://www.asafarim.be/about", label: "About", external: true },
-  // Add more links as needed
+  { to: isProduction ? "https://www.asafarim.be/contact" : "http://web.asafarim.local:5175/contact", label: "Contact", external: true },
+  { to: isProduction ? "https://www.asafarim.be/about" : "http://web.asafarim.local:5175/about", label: "About", external: true },
 ];
 
 // Custom render function for Docusaurus links
@@ -81,8 +80,8 @@ export default function NavbarWrapper(props): React.ReactElement {
           },
         }}
         renderLink={renderLink}
-        breakpoint={996} // Docusaurus default breakpoint for mobile menu
-        mobileMenuBreakpoint={576}
+        breakpoint={960} // Match the CSS media query 980
+        mobileMenuBreakpoint={768}
         className="blog-navbar"
       />
       {/* Keep OriginalNavbar but hide it - some Docusaurus features might need it */}

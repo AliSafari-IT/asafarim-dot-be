@@ -2,46 +2,64 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# ASafariM Blog
 
-Let's discover **Docusaurus in less than 5 minutes**.
+This is the official blog for the ASafariM project, a modern, enterprise-grade full-stack application built with .NET 8 and React TypeScript, utilizing multiple APIs for authentication, data management and AI integration.
 
 ## Getting Started
 
-Get started by **creating a new site**.
+### Prerequisites
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+- Node.js version 18.0 or above
+- pnpm package manager
 
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
+### Installation
 
 ```bash
-npm init docusaurus@latest my-website classic
+# Clone the repository
+git clone https://github.com/asafarim-dot-be.git
+cd apps/blog
+
+# Install dependencies
+pnpm install
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
+### Local Development
 
 ```bash
-cd my-website
-npm run start
+# Start the development server
+pnpm start
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+### Build
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+```bash
+# Build the static site
+pnpm run build
+```
+
+This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+### Deployment
+
+```bash
+# Deploy to GitHub Pages
+pnpm run deploy
+```
+
+If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+
+## Project Structure
+
+- `/blog/` - Contains the blog posts
+- `/docs/` - Contains the documentation
+- `/src/` - Contains the React components and pages
+- `/static/` - Contains static assets like images
+- `/docusaurus.config.ts` - Main configuration file
+- `/sidebars.ts` - Configuration for documentation sidebar
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

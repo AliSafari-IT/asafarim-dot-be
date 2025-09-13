@@ -240,8 +240,8 @@
   align-items: center;
 }
 
-/* Responsive styles */
-@media (min-width: 768px) {
+/* Responsive styles min-width: 960px */
+@media (min-width: 960px) {
   .nav-center {
     display: block;
   }
@@ -255,7 +255,3 @@
   }
 }
 
-@media (max-width: 768px) {
-
-}
-  

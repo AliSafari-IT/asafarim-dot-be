@@ -1,6 +1,8 @@
 // Runs on the client to unify Docusaurus's theme key with our cross‑app key
 // Maps localStorage 'theme' <-> 'asafarim-theme' and syncs a root-domain cookie
 
+import { isProduction } from "../api/currentHost";
+
 (function () {
   if (typeof window === 'undefined') return;
 
@@ -15,12 +17,8 @@
 
   const setCookie = (value: string) => {
     try {
-      // Auto-detect if we're in production or development
-      const isProd = window.location.protocol === 'https:' || 
-                     window.location.hostname.endsWith('asafarim.be');
-      
       // Use the appropriate domain for cookies
-      const domain = isProd ? '.asafarim.be' : '.asafarim.local';
+      const domain = isProduction ? '.asafarim.be' : '.asafarim.local';
       
       // Set domain-wide cookie
       document.cookie = `${COOKIE}=${value}; domain=${domain}; path=/; max-age=31536000; samesite=lax`;
