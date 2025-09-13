@@ -1,26 +1,28 @@
 import type { PropsWithChildren } from 'react';
 import './footer.css';
+import isProduction from '../configs/isProduction';
+import { Github, Twitter, Linkedin, StackOverflow } from '../svg-icons';
 
 const socialLinks = [
   { 
     name: 'GitHub', 
     url: 'https://github.com/AliSafari-IT',
-    icon: 'github'
+    icon: <Github stroke = "currentColor" />
   },
   { 
     name: 'Twitter', 
     url: 'https://twitter.com/ASafariM',
-    icon: 'twitter'
+    icon: <Twitter stroke = "currentColor" />
   },
   { 
     name: 'LinkedIn', 
     url: 'https://linkedin.com/in/ali-safari',
-    icon: 'linkedin'
+    icon: <Linkedin stroke = "currentColor" />
   },
   { 
-    name: 'Email', 
-    url: 'mailto:contact@asafarim.be',
-    icon: 'mail'
+    name: 'StackOverflow', 
+    url: 'https://stackoverflow.com/users/10703628/ali-safari',
+    icon: <StackOverflow stroke = "currentColor" />
   },
 ];
 
@@ -29,17 +31,18 @@ const footerLinks = [
     title: 'Navigation',
     items: [
       { label: 'Home', to: '/' },
-      { label: 'About', to: '/about' },
-      { label: 'Blog', to: 'http://blog.asafarim.local:3000/' },
-      { label: 'Contact', to: '/contact' },
+      { label: 'About', to: isProduction ? 'https://asafarim.be/about' : 'http://web.asafarim.local:5175/about' },
+      { label: 'Blog', to: isProduction ? 'https://blog.asafarim.be' : 'http://blog.asafarim.local:3000/' },
+      { label: 'Contact', to: isProduction ? 'https://asafarim.be/contact' : 'http://web.asafarim.local:5175/contact' },
     ],
   },
   {
     title: 'Legal',
     items: [
-      { label: 'Privacy Policy', to: '/privacy' },
-      { label: 'Terms of Service', to: '/terms' },
-      { label: 'Cookie Policy', to: '/cookies' },
+      { label: 'Privacy Policy', to: isProduction ? 'https://blog.asafarim.be/docs/LegalDocs/privacy-policy' : 'http://blog.asafarim.local:3000/docs/LegalDocs/privacy-policy' },
+      { label: 'Terms of Service', to: isProduction ? 'https://blog.asafarim.be/docs/LegalDocs/terms-of-service' : 'http://blog.asafarim.local:3000/docs/LegalDocs/terms-of-service' },
+      { label: 'Cookie Policy', to: isProduction ? 'https://blog.asafarim.be/docs/LegalDocs/cookie-policy' : 'http://blog.asafarim.local:3000/docs/LegalDocs/cookie-policy' },
+      { label: 'Disclaimer', to: isProduction ? 'https://blog.asafarim.be/docs/LegalDocs/legal-disclaimer' : 'http://blog.asafarim.local:3000/docs/LegalDocs/legal-disclaimer' },
     ],
   },
   {
@@ -48,6 +51,7 @@ const footerLinks = [
       { label: 'GitHub', to: 'https://github.com/AliSafari-IT' },
       { label: 'Twitter', to: 'https://twitter.com/ASafariM' },
       { label: 'LinkedIn', to: 'https://linkedin.com/in/ali-safari' },
+      { label: 'StackOverflow', to: 'https://stackoverflow.com/users/10703628/ali-safari' },
     ],
   },
 ];
@@ -95,7 +99,7 @@ export default function FooterContainer({ children }: PropsWithChildren) {
                   aria-label={link.name}
                   title={link.name}
                 >
-                  <i className={`icon-${link.icon}`} aria-hidden="true" />
+                  {link.icon}
                   <span className="sr-only">{link.name}</span>
                 </a>
               ))}
