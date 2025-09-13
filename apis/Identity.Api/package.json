@@ -1,14 +1,12 @@
 {
   "name": "@asafarim/identity-api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "predev": "kill-port 5101",
     "dev": "dotnet watch run --project Identity.Api.csproj",
     "start": "dotnet run --project Identity.Api.csproj",
     "build": "dotnet build Identity.Api.csproj",
-    "preapi": "kill-port 5101",
     "api": "dotnet watch run --project Identity.Api.csproj --no-hot-reload"
   },
   "devDependencies": {

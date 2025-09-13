@@ -10,17 +10,6 @@ export default defineConfig(
     host: 'identity.asafarim.local',
     //host: true,
     port: 5177,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5177',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      },
-      '/auth': {
-        target: 'http://localhost:5177',
-        changeOrigin: true
-      }
-    }
   },
   // Do not hardcode VITE_IDENTITY_API_URL here; rely on .env files for dev/prod.
   // Keep only this convenience flag if needed by the app.

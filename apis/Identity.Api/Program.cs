@@ -65,7 +65,7 @@ builder
     .Services.AddIdentityCore<AppUser>(o =>
     {
         o.User.RequireUniqueEmail = true;
-        
+
         // Set password requirements
         o.Password.RequireDigit = true;
         o.Password.RequireLowercase = true;
@@ -117,7 +117,7 @@ var productionOrigins = new[]
     "https://core.asafarim.be",
     "https://blog.asafarim.be",
     "https://identity.asafarim.be",
-    "https://*.asafarim.be"  // Wildcard for all subdomains
+    "https://*.asafarim.be", // Wildcard for all subdomains
 };
 
 var developmentOrigins = new[]
@@ -142,30 +142,31 @@ var developmentOrigins = new[]
     "http://core.asafarim.local:5174",
     "http://jobs.asafarim.local:4200",
     "http://blog.asafarim.local:3000",
-    "http://web.asafarim.local:5175"
+    "http://web.asafarim.local:5175",
 };
 
 // Combine origins based on environment
-var allowedOrigins = builder.Environment.IsProduction() 
+var allowedOrigins = builder.Environment.IsProduction()
     ? productionOrigins.Concat(corsOriginsEnv?.Split(',') ?? Array.Empty<string>()).ToArray()
     : developmentOrigins.Concat(productionOrigins).ToArray();
 
 builder.Services.AddCors(opt =>
     opt.AddPolicy(
         "app",
-        p => {
-            if (builder.Environment.IsDevelopment()) {
+        p =>
+        {
+            if (builder.Environment.IsDevelopment())
+            {
                 // In development, allow any origin
                 p.SetIsOriginAllowed(_ => true)
-                 .AllowAnyHeader()
-                 .AllowAnyMethod()
-                 .AllowCredentials();
-            } else {
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            }
+            else
+            {
                 // In production, use specific origins
-                p.WithOrigins(allowedOrigins)
-                 .AllowAnyHeader()
-                 .AllowAnyMethod()
-                 .AllowCredentials();
+                p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
             }
         }
     )
@@ -186,14 +187,20 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Add health endpoint
-app.MapGet("/health", () => Results.Ok(new
-{
-    Status = "Healthy",
-    Service = "Identity API",
-    Version = "1.0.0",
-    Environment = app.Environment.EnvironmentName,
-    Timestamp = DateTime.UtcNow
-}));
+app.MapGet(
+    "/health",
+    () =>
+        Results.Ok(
+            new
+            {
+                Status = "Healthy",
+                Service = "Identity API",
+                Version = "1.0.0",
+                Environment = app.Environment.EnvironmentName,
+                Timestamp = DateTime.UtcNow,
+            }
+        )
+);
 
 // Run the app with automatic migrations
 app.MigrateDatabase<AppDbContext>().Run();

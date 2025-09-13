@@ -42,11 +42,14 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   const isProd = isBrowser && (host.endsWith('asafarim.be') || window.location.protocol === 'https:');
   const defaultAuthBase = isProd
     ? '/api/identity'
-    : (import.meta as any).env?.VITE_IDENTITY_API_URL ?? 'http://api.asafarim.local:5177';
-
+    : (import.meta as any).env?.VITE_IDENTITY_API_URL ?? 'http://api.asafarim.local:5101';
+  console.log("defaultAuthBase", defaultAuthBase);
   const authApiBase = options?.authApiBase ?? defaultAuthBase;
+  console.log("authApiBase", authApiBase);
   const meEndpoint = options?.meEndpoint ?? '/auth/me';
+  console.log("meEndpoint", meEndpoint);
   const logoutEndpoint = options?.logoutEndpoint ?? '/auth/logout';
+  console.log("logoutEndpoint", logoutEndpoint);
   const defaultIdentityLogin = isProd ? 'https://identity.asafarim.be/login' : 'http://identity.asafarim.local:5177/login';
   const defaultIdentityRegister = isProd ? 'https://identity.asafarim.be/register' : 'http://identity.asafarim.local:5177/register';
   const identityLoginUrl = options?.identityLoginUrl ?? defaultIdentityLogin;

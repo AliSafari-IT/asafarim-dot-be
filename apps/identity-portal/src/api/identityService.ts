@@ -74,7 +74,7 @@ export interface ApiError {
 
 // Base API URL from environment variable
 // Remove the /api prefix as the endpoints don't include it
-const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177';
+const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
 
 /**
  * Handle API responses and errors
@@ -225,9 +225,10 @@ export const identityService = {
    * Get current user profile
    */
   async getProfile(): Promise<UserInfo> {
-    console.log('Fetching user profile...');
+    const url = `${API_BASE_URL}/auth/me`;
+    console.log('Fetching user profile...', url);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      const response = await fetch(url, {
         headers: getJsonHeaders(),
         credentials: 'include'  // Important: include cookies in the request
       });
