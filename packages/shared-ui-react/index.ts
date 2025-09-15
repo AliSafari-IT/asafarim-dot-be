@@ -37,3 +37,6 @@ export { default as useThemeSync } from "./hooks/useThemeSync";
 
 // SVG Icons
 export * from "./svg-icons";
+
+// Configs
+export * from "./configs";

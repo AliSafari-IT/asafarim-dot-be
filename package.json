@@ -1,6 +1,6 @@
 {
   "name": "asafarim-dot-be",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
@@ -54,7 +54,7 @@
   "keywords": [],
   "author": "ASafariM",
   "email": "asafarim.it@gmail.com",
-  "license": "ISC",
+  "license": "CC BY 4.0",
   "packageManager": "pnpm@10.14.0",
   "dependencies": {
     "rimraf": "^6.0.1"

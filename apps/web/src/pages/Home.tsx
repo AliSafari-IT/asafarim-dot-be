@@ -1,4 +1,5 @@
 import { Arrow, Button, Spark } from "@asafarim/shared-ui-react";
+import { isProduction } from "@asafarim/shared-ui-react";
 
 export default function Home() {
   return (
@@ -40,19 +41,29 @@ export default function Home() {
 
         <div className="features-grid mb-8">
           <Feature
+            title="What's I'm building now?"
+            desc="A “What I’m Building Now” feed (pull from GitHub commits)."
+            href={isProduction ? "https://core.asafarim.be/what-is-building" : "/what-is-building"}
+          />
+          <Feature
+            title="AI"
+            desc="AI with clean architecture, typed clients, and SSO."
+            href={isProduction ? "https://ai.asafarim.be" : "http://ai.asafarim.local:5173"}
+          />
+          <Feature
             title="Core Apps"
             desc="Users & Projects with clean architecture, typed clients, and SSO."
-            href="https://core.asafarim.be"
+            href={isProduction ? "https://core.asafarim.be" : "http://core.asafarim.local:5174"}
           />
           <Feature
             title="Jobs Tracker"
             desc="Track applications and interviews. Angular UI + .NET Jobs API."
-            href="https://core.asafarim.be/jobs"
+            href={isProduction ? "https://core.asafarim.be/jobs" : "http://core.asafarim.local:5174/jobs"}
           />
           <Feature
             title="Blog & Docs"
             desc="Docusaurus TS with shared header/footer and tokens."
-            href="https://blog.asafarim.be/"
+            href={isProduction ? "https://blog.asafarim.be/" : "http://blog.asafarim.local:3000/"}
             external
           />
         </div>

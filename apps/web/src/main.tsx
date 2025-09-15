@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import { NotificationProvider, NotFound } from "@asafarim/shared-ui-react";
+import WhatIsBuilding from "./pages/WhatIsBuilding";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
+      { path: "what-is-building", element: <WhatIsBuilding /> },
       { path: "*", element: <NotFound /> },
     ]
   }
