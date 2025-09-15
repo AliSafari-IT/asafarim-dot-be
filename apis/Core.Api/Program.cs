@@ -55,6 +55,7 @@ builder.Services.AddCors(opts =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 
 // Add database context using Jobs connection string for job tracking
 var jobsConnectionString = builder.Configuration.GetConnectionString("JobsConnection");
