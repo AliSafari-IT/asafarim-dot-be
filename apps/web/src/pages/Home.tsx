@@ -1,42 +1,13 @@
-import { Arrow, Button, Spark } from "@asafarim/shared-ui-react";
 import { isProduction } from "@asafarim/shared-ui-react";
+import Hero from "../components/Hero";
+import Feature from "../components/Feature";
 
 export default function Home() {
   return (
     <section className="section">
       <div className="container">
         <div className="mb-8">
-          <div className="flex items-center gap-sm mb-4">
-            <span className="badge">
-              <span className="badge-dot"></span>
-              ASafariM • Multi‑framework monorepo
-            </span>
-          </div>
-
-          <h1 className="text-2xl font-bold mb-4 text-phosphor">Build fast. Scale clean. Theme everywhere.</h1>
-
-          <p className="text-lg text-secondary mb-4" style={{ maxWidth: '42rem' }}>
-            React, Angular, and Docusaurus frontends powered by .NET 8+ APIs.
-            Shared design tokens ensure consistent UI. SSO via cookies on{" "}
-            <code>.asafarim.be</code>.
-          </p>
-          
-          <div className="flex flex-wrap gap-md mt-4">
-            <Button
-              href="/about"
-              variant="primary"
-              rightIcon={<Spark />}
-            >
-              Explore More
-            </Button>
-            <Button
-              href="/contact"
-              variant="outline"
-              rightIcon={<Arrow />}
-            >
-              Contact Me
-            </Button>
-          </div>
+          <Hero />
         </div>
 
         <div className="features-grid mb-8">
@@ -82,35 +53,6 @@ export default function Home() {
   );
 }
 
-function Feature({
-  title,
-  desc,
-  href,
-  external,
-}: {
-  title: string;
-  desc: string;
-  href: string;
-  external?: boolean;
-}) {
-  const body = (
-    <article className="feature-card p-4">
-      <h3 className="flex items-center gap-sm font-semibold mb-2 text-brand">
-        <Spark /> {title}
-      </h3>
-      <p className="text-secondary mb-2" style={{ fontSize: '0.875rem' }}>{desc}</p>
-      <span className="flex items-center gap-sm text-primary font-semibold" style={{ fontSize: '0.875rem' }}>
-        Open <Arrow />
-      </span>
-    </article>
-  );
-  return external ? (
-    <a href={href} target="_blank" rel="noreferrer" className="no-underline">
-      {body}
-    </a>
-  ) : (
-    <a href={href} className="no-underline">{body}</a>
-  );
-}
+
 
 

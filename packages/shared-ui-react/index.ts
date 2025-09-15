@@ -3,6 +3,8 @@ export { default as FooterContainer } from "./components/FooterContainer";
 export { default as HeaderContainer } from "./components/HeaderContainer";
 export { default as LayoutContainer } from "./components/LayoutContainer";
 export { Button } from "./components/Button";
+export { default as Hero } from "./components/Hero";
+export { default as ShowcaseCard } from "./components/ShowcaseCard";
 
 // Auth
 export { default as AuthStatus } from "./components/Auth/AuthStatus";

@@ -106,6 +106,10 @@
   --chatgpt-accent: #10A37F;
   --chatgpt-accent-hover: #0D8A6C;
 
+  /* Hero */
+  --hero-glow: rgba(0, 140, 255, 0.18);
+  --hero-grid: rgba(127, 127, 127, 0.12);
+
   /* Form inputs */
   --input-bg: rgba(253, 242, 242, 0.733);
   --input-border-color: var(--color-border);
@@ -348,7 +352,12 @@ body.dark,
   --chatgpt-user-bubble: #343541;
   --chatgpt-assistant-bubble: #444654;
   --chatgpt-sidebar-hover: #2A2B32;
-  
+
+  /* Hero */
+  --hero-glow: rgba(0, 200, 255, 0.15);
+  --hero-grid: rgba(255, 255, 255, 0.08);
+
+  /* Ifm */
   --ifm-color-primary: var(--color-primary);
   --ifm-color-primary-dark: var(--color-primary-dark);
   --ifm-color-primary-darker: var(--color-primary-dark);
@@ -454,6 +463,26 @@ select:focus-visible {
 }
 .hero__subtitle {
   color: var(--color-brand-50);
+}
+
+.hero-glow {
+  position: absolute;
+  inset: -10% -10% auto -10%;
+  height: 40%;
+  background: radial-gradient(ellipse at 30% 20%, var(--hero-glow), transparent 60%);
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--hero-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hero-grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at 50% 10%, rgba(0,0,0,0.8), transparent 65%);
+  pointer-events: none;
 }
 
 .text-fg {

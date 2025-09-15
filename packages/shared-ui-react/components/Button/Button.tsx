@@ -64,8 +64,9 @@ const Button: React.FC<ButtonProps> = ({
   ].filter(Boolean).join(' ');
 
   // Determine if this should render as a link
-  const isLink = variant === 'link' && (to || href);
-  const isExternalLink = href && href.startsWith('http');
+  // Treat presence of `to` or `href` as a link regardless of visual variant
+  const isLink = Boolean(to || href);
+  const isExternalLink = Boolean(href && /^(https?:)?\/\//i.test(href));
 
   // Common content for all variants
   const buttonContent = (
@@ -119,7 +120,7 @@ const Button: React.FC<ButtonProps> = ({
     );
   }
 
-  // Render as internal link (React Router)
+  // Render as internal link (React Router-like). We use a regular anchor to avoid hard dependency.
   if (isLink && to) {
     // For now, use regular anchor tag
     // In a real implementation, you'd check if React Router is available
