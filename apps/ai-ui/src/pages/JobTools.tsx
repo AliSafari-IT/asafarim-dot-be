@@ -1,58 +1,57 @@
-import { useState } from 'react';
-import { api } from '../api';
-import "./JobTools.css";
-import { useAuth } from '@asafarim/shared-ui-react';
+import { useState } from "react";
+import { api } from "../api";
+import { useAuth } from "@asafarim/shared-ui-react";
 
 type ExtractResp = {
   title: string;
   mustHave: string[];
   niceToHave: string[];
-  keywords: string[]
-}
+  keywords: string[];
+};
 
-type LoadingState = 'idle' | 'extracting' | 'scoring' | 'generating';
+type LoadingState = "idle" | "extracting" | "scoring" | "generating";
 
 export default function JobTools() {
-  const [text, setText] = useState('');
-  const [skills, setSkills] = useState('React, TypeScript, .NET, PostgreSQL');
+  const [text, setText] = useState("");
+  const [skills, setSkills] = useState("React, TypeScript, .NET, PostgreSQL");
   const [extracted, setExtracted] = useState<ExtractResp | null>(null);
   const [score, setScore] = useState<number | null>(null);
-  const [letter, setLetter] = useState<string>('');
-  const [loading, setLoading] = useState<LoadingState>('idle');
+  const [letter, setLetter] = useState<string>("");
+  const [loading, setLoading] = useState<LoadingState>("idle");
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated, loading: authLoading, signIn } = useAuth();
+  const { isAuthenticated, loading: authLoading, signIn, register } = useAuth();
 
   const resetState = () => {
     setExtracted(null);
     setScore(null);
-    setLetter('');
+    setLetter("");
     setError(null);
   };
 
   const handleError = (err: unknown) => {
     console.error(err);
-    setError('An error occurred. Please try again.');
-    setLoading('idle');
+    setError("An error occurred. Please try again.");
+    setLoading("idle");
   };
 
   async function doExtract() {
     if (!text.trim()) {
-      setError('Please enter a job description');
+      setError("Please enter a job description");
       return;
     }
 
     try {
-      setLoading('extracting');
+      setLoading("extracting");
       resetState();
-      const data = await api<ExtractResp>('/extract/job', {
-        method: 'POST',
-        body: JSON.stringify({ text })
+      const data = await api<ExtractResp>("/extract/job", {
+        method: "POST",
+        body: JSON.stringify({ text }),
       });
       setExtracted(data);
     } catch (err) {
       handleError(err);
     } finally {
-      setLoading('idle');
+      setLoading("idle");
     }
   }
 
@@ -60,23 +59,23 @@ export default function JobTools() {
     if (!extracted) return;
 
     try {
-      setLoading('scoring');
-      const candidateSkills = skills.split(',').map((s) => s.trim()).filter(Boolean);
-      const data = await api<{ score: number }>(
-        '/score/match',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            candidateSkills,
-            jobSkills: extracted.mustHave
-          })
-        },
-      );
+      setLoading("scoring");
+      const candidateSkills = skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const data = await api<{ score: number }>("/score/match", {
+        method: "POST",
+        body: JSON.stringify({
+          candidateSkills,
+          jobSkills: extracted.mustHave,
+        }),
+      });
       setScore(Math.round(data.score * 100));
     } catch (err) {
       handleError(err);
     } finally {
-      setLoading('idle');
+      setLoading("idle");
     }
   }
 
@@ -84,63 +83,74 @@ export default function JobTools() {
     if (!extracted) return;
 
     try {
-      setLoading('generating');
-      const highlights = skills.split(',').map((s) => s.trim()).filter(Boolean);
-      const data = await api<{ letter: string }>(
-        '/generate/cover-letter',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            jobTitle: extracted.title,
-            company: 'Sample Co',
-            highlights,
-            tone: 'concise'
-          })
-        },
-      );
+      setLoading("generating");
+      const highlights = skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const data = await api<{ letter: string }>("/generate/cover-letter", {
+        method: "POST",
+        body: JSON.stringify({
+          jobTitle: extracted.title,
+          company: "Sample Co",
+          highlights,
+          tone: "concise",
+        }),
+      });
       setLetter(data.letter);
     } catch (err) {
       handleError(err);
     } finally {
-      setLoading('idle');
+      setLoading("idle");
     }
   }
 
   const isLoading = (type: LoadingState) => loading === type;
-  const isDisabled = (type: LoadingState) => loading !== 'idle' && loading !== type;
+  const isDisabled = (type: LoadingState) =>
+    loading !== "idle" && loading !== type;
 
   // Unauthenticated experience: intro and prompt to login/register
   if (!authLoading && !isAuthenticated) {
-    const goTo = typeof window !== 'undefined' ? window.location.href : undefined;
+    const goTo =
+      typeof window !== "undefined" ? window.location.href : undefined;
+
     return (
-      <div className="job-tools">
-        <h1>Job Application Assistant</h1>
-        <p className="ai-ui-cover-letter">
-          Paste a job description and analyze how well you match the requirements. To continue, please sign in or create an account.
-        </p>
+      <div className="flex flex-col items-center ai-ui-job-tools">
+        <header className="ai-ui-job-tools-header">
+          <h1 className="ai-ui-title">Job Application Assistant</h1>
+          <p className="ai-ui-cover-letter">
+            Paste a job description and analyze how well you match the
+            requirements. To continue, please sign in or create an account.
+          </p>
+        </header>
         <div className="ai-ui-buttons">
-          <button onClick={() => signIn(goTo)} className="ai-ui-button">Sign in</button>
-          <a href={`http://identity.asafarim.local:5177/register?returnUrl=${encodeURIComponent(goTo || '')}`}>
-            <button className="ai-ui-button">Register</button>
-          </a>
+          <button onClick={() => signIn(goTo)} className="ai-ui-button">
+            Sign in
+          </button>
+          <button onClick={() => register(goTo)} className="ai-ui-button">
+            Register
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="job-tools">
-      <header className="job-tools-header">
+    <div className="ai-ui-job-tools">
+      <header className="ai-ui-job-tools-header">
         <h1>Job Application Assistant</h1>
-        <p className="subtitle">Paste a job description and analyze how well you match the requirements</p>
+        <p className="ai-ui-subtitle">
+          Paste a job description and analyze how well you match the
+          requirements
+        </p>
       </header>
 
-      <div className="job-tools-container">
-        <section className="job-description-section">
-          <div className="form-group">
-            <label htmlFor="job-description" className="form-label">
+      <div className="ai-ui-job-tools-container">
+        <section className="ai-ui-job-description-section">
+          <div className="ai-ui-form-group">
+            <label htmlFor="job-description" className="ai-ui-form-label">
               Job Description
-              <span className="required">*</span>
+              <span className="ai-ui-required">*</span>
             </label>
             <textarea
               id="job-description"
@@ -148,27 +158,32 @@ export default function JobTools() {
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste the full job description here..."
               rows={8}
-              className="form-textarea"
-              disabled={isDisabled('extracting')}
+              className="ai-ui-form-textarea"
+              disabled={isDisabled("extracting")}
             />
           </div>
 
-          <div className="action-buttons">
+          <div className="ai-ui-action-buttons">
             <button
               onClick={doExtract}
-              disabled={!text.trim() || isDisabled('extracting')}
-              className={`btn btn-primary ${isLoading('extracting') ? 'loading' : ''}`}
+              disabled={!text.trim() || isDisabled("extracting")}
+              className={`ai-ui-btn ai-ui-btn-primary ${
+                isLoading("extracting") ? "loading" : ""
+              }`}
             >
-              {isLoading('extracting') ? 'Analyzing...' : 'Analyze Job'}
+              {isLoading("extracting") ? "Analyzing..." : "Analyze Job"}
             </button>
           </div>
         </section>
 
-        <section className="skills-section">
-          <div className="form-group">
-            <label htmlFor="skills" className="form-label">
+        <section className="ai-ui-skills-section">
+          <div className="ai-ui-form-group">
+            <label htmlFor="skills" className="ai-ui-form-label">
               Your Skills
-              <span className="hint">(comma-separated): include Must-Have skills from Job Details if applicable, then re-calculate match score</span>
+              <span className="ai-ui-hint">
+                (comma-separated): include Must-Have skills from Job Details if
+                applicable, then re-calculate match score
+              </span>
             </label>
             <input
               id="skills"
@@ -177,65 +192,80 @@ export default function JobTools() {
               onChange={(e) => setSkills(e.target.value)}
               placeholder="e.g. React, TypeScript, Node.js"
               className="form-input"
-              disabled={isDisabled('scoring')}
+              disabled={isDisabled("scoring")}
             />
           </div>
 
-          <div className="action-buttons">
+          <div className="ai-ui-action-buttons">
             <button
               onClick={doScore}
-              disabled={!extracted || isDisabled('scoring')}
-              className={`btn btn-secondary ${isLoading('scoring') ? 'loading' : ''}`}
+              disabled={!extracted || isDisabled("scoring")}
+              className={`ai-ui-btn ai-ui-btn-secondary ${
+                isLoading("scoring") ? "loading" : ""
+              }`}
             >
-              {isLoading('scoring') ? 'Calculating...' : 'Calculate Match'}
+              {isLoading("scoring") ? "Calculating..." : "Calculate Match"}
             </button>
             <button
               onClick={doLetter}
-              disabled={!extracted || isDisabled('generating')}
-              className={`btn btn-secondary ${isLoading('generating') ? 'loading' : ''}`}
+              disabled={!extracted || isDisabled("generating")}
+              className={`ai-ui-btn ai-ui-btn-secondary ${
+                isLoading("generating") ? "loading" : ""
+              }`}
             >
-              {isLoading('generating') ? 'Generating...' : 'Generate Cover Letter'}
+              {isLoading("generating")
+                ? "Generating..."
+                : "Generate Cover Letter"}
             </button>
           </div>
         </section>
 
         {error && (
-          <div className="error-message">
-            <span className="error-icon">⚠️</span> {error}
+          <div className="ai-ui-error-message">
+            <span className="ai-ui-error-icon">⚠️</span> {error}
           </div>
         )}
 
         {score !== null && (
-          <section className="results-section">
+          <section className="ai-ui-results-section">
             <h2>Match Score</h2>
-            <div className="score-container">
-              <div className="score-circle" style={{
-                '--score': `${score}%`,
-                '--color': score > 70 ? '#4CAF50' : score > 40 ? '#FFC107' : '#F44336'
-              } as React.CSSProperties}>
+            <div className="ai-ui-score-container">
+              <div
+                className="ai-ui-score-circle"
+                style={
+                  {
+                    "--score": `${score}%`,
+                    "--color":
+                      score > 70
+                        ? "#4CAF50"
+                        : score > 40
+                        ? "#FFC107"
+                        : "#F44336",
+                  } as React.CSSProperties
+                }
+              >
                 <span className="score-value">{score}%</span>
               </div>
               <p className="score-description">
                 {score > 70
-                  ? 'Excellent match! You meet most of the requirements.'
+                  ? "Excellent match! You meet most of the requirements."
                   : score > 40
-                    ? 'Moderate match. Consider highlighting your transferable skills.'
-                    : 'Low match. You might want to look for roles that better align with your skills.'
-                }
+                  ? "Moderate match. Consider highlighting your transferable skills."
+                  : "Low match. You might want to look for roles that better align with your skills."}
               </p>
             </div>
           </section>
         )}
 
         {extracted && (
-          <section className="extracted-details">
+          <section className="ai-ui-extracted-details">
             <h2>Job Details</h2>
-            <div className="details-grid">
-              <div className="detail-item">
+            <div className="ai-ui-details-grid">
+              <div className="ai-ui-detail-item">
                 <h3>Job Title</h3>
-                <p>{extracted.title || 'Not specified'}</p>
+                <p>{extracted.title || "Not specified"}</p>
               </div>
-              <div className="detail-item">
+              <div className="ai-ui-detail-item">
                 <h3>Must-Have Skills</h3>
                 <ul>
                   {extracted.mustHave.map((skill, i) => (
@@ -243,7 +273,7 @@ export default function JobTools() {
                   ))}
                 </ul>
               </div>
-              <div className="detail-item">
+              <div className="ai-ui-detail-item">
                 <h3>Nice-to-Have Skills</h3>
                 <ul>
                   {extracted.niceToHave.map((skill, i) => (
@@ -251,11 +281,13 @@ export default function JobTools() {
                   ))}
                 </ul>
               </div>
-              <div className="detail-item">
+              <div className="ai-ui-detail-item">
                 <h3>Keywords</h3>
-                <div className="keywords">
+                <div className="ai-ui-keywords">
                   {extracted.keywords.map((keyword, i) => (
-                    <span key={i} className="keyword-tag">{keyword}</span>
+                    <span key={i} className="ai-ui-keyword-tag">
+                      {keyword}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -264,18 +296,18 @@ export default function JobTools() {
         )}
 
         {letter && (
-          <section className="cover-letter-section">
-            <div className="section-header">
+          <section className="ai-ui-cover-letter-section">
+            <div className="ai-ui-section-header">
               <h2>Generated Cover Letter</h2>
               <button
                 onClick={() => navigator.clipboard.writeText(letter)}
-                className="btn btn-text"
+                className="ai-ui-btn ai-ui-btn-text"
               >
                 Copy to Clipboard
               </button>
             </div>
-            <div className="cover-letter-content">
-              {letter.split('\n').map((paragraph, i) => (
+            <div className="ai-ui-cover-letter-content">
+              {letter.split("\n").map((paragraph, i) => (
                 <p key={i}>{paragraph}</p>
               ))}
             </div>

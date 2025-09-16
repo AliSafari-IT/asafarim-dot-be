@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import type { ChatSessionListItem } from '../types/chat';
 import { chatService } from '../api/chatService';
-import './ChatSessionList.css';
 
 interface ChatSessionListProps {
   sessions: ChatSessionListItem[];
@@ -66,7 +65,7 @@ export default function ChatSessionList({
 
   if (sessions.length === 0) {
     return (
-      <div className="chat-session-list-empty">
+      <div className="ai-ui-chat-session-list-empty">
         <div className="empty-icon">💬</div>
         <h3>No chat sessions yet</h3>
         <p>Start a new conversation to see your chat history here.</p>
@@ -75,46 +74,46 @@ export default function ChatSessionList({
   }
 
   return (
-    <div className="chat-session-list">
-      <h3 className="chat-session-list-title">Previous Conversations</h3>
-      <div className="chat-session-items">
+    <div className="ai-ui-chat-session-list">
+      <h3 className="ai-ui-chat-session-list-title">Previous Conversations</h3>
+      <div className="ai-ui-chat-session-items">
         {sessions.map((session) => (
           <div
             key={session.id}
-            className={`chat-session-item ${session.isArchived ? 'archived' : ''}`}
+            className={`ai-ui-chat-session-item ${session.isArchived ? 'archived' : ''}`}
             onMouseEnter={() => setHoveredSession(session.id)}
             onMouseLeave={() => setHoveredSession(null)}
             onClick={() => onSessionSelect(session)}
           >
-            <div className="chat-session-content">
-              <div className="chat-session-header">
-                <h4 className="chat-session-title">
+            <div className="ai-ui-chat-session-content">
+              <div className="ai-ui-chat-session-header">
+                <h4 className="ai-ui-chat-session-title">
                   {truncateText(session.title, 40)}
                 </h4>
-                <span className="chat-session-date">
+                <span className="ai-ui-chat-session-date">
                   {formatDate(session.lastMessageAt || session.createdAt)}
                 </span>
               </div>
               
               {session.description && (
-                <p className="chat-session-description">
+                <p className="ai-ui-chat-session-description">
                   {truncateText(session.description, 80)}
                 </p>
               )}
               
-              <div className="chat-session-meta">
-                <span className="chat-session-message-count">
+              <div className="ai-ui-chat-session-meta">
+                <span className="ai-ui-chat-session-message-count">
                   {session.messageCount} messages
                 </span>
                 {session.isArchived && (
-                  <span className="chat-session-archived-badge">Archived</span>
+                  <span className="ai-ui-chat-session-archived-badge">Archived</span>
                 )}
               </div>
             </div>
 
             {/* Hover Actions */}
             {hoveredSession === session.id && (
-              <div className="chat-session-actions">
+              <div className="ai-ui-chat-session-actions">
                 <button
                   className="action-btn resume-btn"
                   onClick={(e) => handleResume(session, e)}

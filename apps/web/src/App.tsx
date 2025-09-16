@@ -11,11 +11,7 @@ import Root from "./theme/Root";
 export default function App() {
 
   return (
-    <ThemeProvider
-      defaultMode="dark"
-      storageKey="asafarim-theme"
-      persistMode={true}
-    >
+    <ThemeProvider>
       <Root>
         <NotificationContainer position="top-right" />
         <LayoutContainer

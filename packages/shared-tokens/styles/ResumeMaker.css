@@ -1,19 +1,19 @@
-.ai-ui-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    text-align: center;
+.ai-ui-resume-maker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
 }
 
-.ai-ui-title {
+.ai-ui-resume-maker-title {
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 1rem;
 }
 
-.ai-ui-input {
+.ai-ui-resume-maker-input {
     color: var(--color-foreground);
     background-color: var(--color-background);
     margin-top: 12px;
@@ -25,19 +25,19 @@
     border: 1px solid var(--color-border);
 }
 
-.ai-ui-input:focus {
+.ai-ui-resume-maker-input:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.ai-ui-buttons {
+.ai-ui-resume-maker-buttons {
     display: flex;
     gap: 8px;
     margin-top: 8px;
 }
 
-.ai-ui-buttons button {
+.ai-ui-resume-maker-buttons button {
     padding: 0.5rem 1rem;
     border: none;
     border-radius: var(--global-border-radius-sm);
@@ -47,38 +47,40 @@
     transition: var(--global-transition-fast);
 }
 
-.ai-ui-buttons button:hover {
+.ai-ui-resume-maker-buttons button:hover {
     background-color: var(--color-primary-dark);
     transform: translateY(-1px);
 }
 
-.ai-ui-cover-letter {
+.ai-ui-resume-maker-cover-letter {
     margin-top: 12px;
+    width: 100%;
 }
 
-.ai-ui-cover-letter-title {
+.ai-ui-resume-maker-cover-letter-title {
     font-size: 1.25rem;
     font-weight: bold;
     margin-bottom: 0.5rem;
 }
 
-.ai-ui-cover-letter-list {
+.ai-ui-resume-maker-cover-letter-list {
     margin-left: 1rem;
 }
 
-.ai-ui-cover-letter-textarea {
+.ai-ui-resume-maker-cover-letter-textarea {
     width: 100%;
     height: 200px;
     margin-top: 1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--global-border-radius-sm);
     padding: 0.5rem;
+    padding-right: 3rem; /* room for copy button inside */
     background-color: var(--color-background);
     color: var(--color-foreground);
 }
 
 /* Form styles */
-.form-card {
+.ai-ui-resume-maker-form-card {
   width: 100%;
   max-width: 900px;
   margin: 0 auto 1.5rem auto;
@@ -89,20 +91,20 @@
   box-shadow: var(--global-shadow-sm);
 }
 
-.form-header { 
+.ai-ui-resume-maker-form-header { 
   display: flex; 
   justify-content: flex-end; 
   margin-bottom: .5rem; 
 }
 
-.form-grid {
+.ai-ui-resume-maker-form-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: .75rem .75rem;
 }
 
 @media (min-width: 720px){
-  .form-grid { 
+  .ai-ui-resume-maker-form-grid { 
     grid-template-columns: 1fr 1fr; 
   }
   .form-col-2 { 
@@ -110,25 +112,25 @@
   }
 }
 
-.form-field { 
+.ai-ui-resume-maker-form-field { 
   display: flex; 
   flex-direction: column; 
   gap: .25rem; 
 }
 
-.form-field label { 
+.ai-ui-resume-maker-form-field label { 
   font-size: .9rem; 
   color: var(--color-foreground-muted); 
 }
 
-.form-actions { 
+.ai-ui-resume-maker-form-actions { 
   display: flex; 
   justify-content: center; 
   margin-top: 1rem; 
 }
 
 /* Input polish */
-.ai-ui-input {
+.ai-ui-resume-maker-input {
   border: 1px solid var(--color-border);
   background: var(--color-background);
   color: var(--color-foreground);
@@ -138,17 +140,45 @@
   transition: box-shadow var(--global-transition-fast), border-color var(--global-transition-fast);
 }
 
-.ai-ui-input:focus {
+.ai-ui-resume-maker-input:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59,130,246,.2);
 }
 
-.ai-ui-input::placeholder { 
+.ai-ui-resume-maker-input::placeholder { 
   color: var(--color-foreground-muted); 
 }
 
+.ai-ui-resume-maker-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ai-ui-resume-maker-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  background-color: var(--chatgpt-accent);
+  color: white;
+}
+
+.ai-ui-resume-maker-button:hover {
+  background-color: var(--chatgpt-accent-hover);
+}
+
+.ai-ui-resume-maker-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 /* Resume preview styles */
-.resume-root {
+.ai-ui-resume-maker-resume-root {
     text-align: left;
     max-width: 800px;
     margin: 0 auto;
@@ -160,53 +190,92 @@
     box-shadow: var(--global-shadow-sm);
 }
 
-.resume-header {
+.ai-ui-resume-maker-resume-header {
     border-bottom: 1px solid var(--color-border);
     margin-bottom: 1rem;
     padding-bottom: .5rem;
 }
 
-.resume-name {
+.ai-ui-resume-maker-resume-name {
     margin: 0 0 .25rem 0;
     font-size: 1.75rem;
 }
 
-.resume-contact {
+.ai-ui-resume-maker-resume-contact {
     color: var(--color-foreground-muted);
 }
 
-.resume-list {
+.ai-ui-resume-maker-resume-list {
     margin: .25rem 0 0 0;
     padding-left: 1.25rem;
 }
 
-.resume-bullets {
+.ai-ui-resume-maker-resume-bullets {
     padding-left: 1.25rem;
 }
 
-.resume-project { 
+.ai-ui-resume-maker-resume-project { 
   margin-bottom: .5rem; 
 }
 
-.resume-project-title { 
+.ai-ui-resume-maker-resume-project-title { 
   font-weight: 600; 
 }
 
-.resume-project-desc { 
+.ai-ui-resume-maker-resume-project-desc { 
   color: var(--color-foreground-muted); 
 }
 
-.two-col { 
+.ai-ui-resume-maker-two-col { 
   columns: 2; 
   column-gap: 2rem; 
 }
 
+/* Copy-to-clipboard wrapper for RAW textarea */
+.ai-ui-copyable {
+  position: relative;
+  display: block;
+  max-width: 40rem;
+  margin: 12px auto;
+  width: 100%;
+}
+.ai-ui-copyable.is-copied .ai-ui-copy-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ai-ui-copy-btn {
+  position: absolute;
+  top: 12px; /* place within textarea padding */
+  right: 12px; /* place within textarea padding */
+  z-index: 1;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--global-shadow-sm);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.12s ease, transform 0.12s ease, background 0.2s ease;
+}
+.ai-ui-copy-btn:hover {
+  background: var(--color-surface);
+}
+.ai-ui-copyable:focus-within .ai-ui-copy-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Print styles */
 @media print {
-  .ai-ui-buttons, .ai-ui-input, textarea { 
+  .ai-ui-resume-maker-buttons, .ai-ui-resume-maker-input, textarea { 
     display: none !important; 
   }
-  .resume-root { 
+  .ai-ui-resume-maker-resume-root { 
     border: none; 
     box-shadow: none; 
     max-width: 100%; 

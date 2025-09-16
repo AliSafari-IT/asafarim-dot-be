@@ -1,4 +1,10 @@
 @import "./styles/theme-variables.css";
+@import "./styles/Chat.css";
+@import "./styles/ChatPage.css";
+@import "./styles/ChatSessionList.css";
+@import "./styles/ToolCard.css";
+@import "./styles/JobTools.css";
+@import "./styles/ResumeMaker.css";
 
 /* Use central theme variables */
 body {
@@ -438,3 +444,107 @@ body {
     }
   }
   
+  /* Chat preview */
+.chat-preview {
+  position: relative;
+}
+.chat-window {
+  background: var(--chat-window-bg);
+  border: 1px solid var(--chat-window-border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.bubble {
+  display: inline-block;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin: 6px 0;
+  max-width: 100%;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--chat-text);
+}
+.bubble.user {
+  background: var(--chat-user-bg);
+  border: 1px solid var(--chat-user-border);
+  align-self: flex-end;
+}
+.bubble.ai {
+  background: var(--chat-ai-bg);
+  border: 1px solid var(--chat-ai-border);
+}
+.typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--chat-dot);
+  opacity: 0.35;
+}
+.dot.on {
+  opacity: 1;
+  background: var(--chat-dot-on);
+}
+
+.ai-ui-home-container {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+}
+
+.home-header {
+  max-width: 800px;
+  margin: 0 auto var(--spacing-2xl);
+}
+
+.home-title {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.2;
+}
+
+.home-subtitle {
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+  .home-title {
+    font-size: 2.25rem;
+  }
+  
+  .home-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .tool-grid {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-sm);
+  }
+}

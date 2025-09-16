@@ -93,18 +93,16 @@
   --color-text-muted: #6b7280;
   --color-border: #e5e7eb;
 
-  /* ChatGPT-like theme variables that adapt to light/dark mode */
-  --chatgpt-bg: #FFFFFF;
-  --chatgpt-sidebar-bg: #F7F7F8;
-  --chatgpt-text: #343541;
-  --chatgpt-input-bg: #FFFFFF;
-  --chatgpt-border: #E5E5E5;
-  --chatgpt-user-bubble: #FFFFFF;
-  --chatgpt-assistant-bubble: #F7F7F8;
-  --chatgpt-sidebar-hover: #EFEFEF;
-  /* Common variables */
-  --chatgpt-accent: #10A37F;
-  --chatgpt-accent-hover: #0D8A6C;
+  /* Chat preview variables (light/default) */
+  --chat-window-bg: rgba(0,0,0,0.02);
+  --chat-window-border: rgba(0,0,0,0.12);
+  --chat-text: var(--color-foreground);
+  --chat-user-bg: rgba(59,130,246,0.12);
+  --chat-user-border: rgba(59,130,246,0.28);
+  --chat-ai-bg: rgba(16,163,127,0.10);
+  --chat-ai-border: rgba(16,163,127,0.26);
+  --chat-dot: rgba(0,0,0,0.30);
+  --chat-dot-on: rgba(0,0,0,0.65);
 
   /* Hero */
   --hero-glow: rgba(0, 140, 255, 0.18);
@@ -306,6 +304,9 @@ body.dark,
   --bg-secondary: #1e293b;
   --bg-tertiary: #334155;
   --bg-card: #1e293b;
+  /* Map generic surface tokens used by components to dark surfaces */
+  --color-surface: var(--bg-card);
+  --color-surface-elevated: rgba(255,255,255,0.06);
   --bg-row: #334155;
   --bg-archived: #2d3748;
   
@@ -343,15 +344,16 @@ body.dark,
   --color-brand-50: 30, 41, 59;
   --color-brand-500: 96, 165, 250;
 
-  /* ChatGPT-like theme variables that adapt to light/dark mode */
-  --chatgpt-bg: #343541;
-  --chatgpt-sidebar-bg: #202123;
-  --chatgpt-text: #ECECF1;
-  --chatgpt-input-bg: #40414F;
-  --chatgpt-border: #565869;
-  --chatgpt-user-bubble: #343541;
-  --chatgpt-assistant-bubble: #444654;
-  --chatgpt-sidebar-hover: #2A2B32;
+  /* Chat preview variables (dark overrides) */
+  --chat-window-bg: rgba(255,255,255,0.04);
+  --chat-window-border: rgba(255,255,255,0.14);
+  --chat-text: rgba(255,255,255,0.92);
+  --chat-user-bg: rgba(59,130,246,0.18);
+  --chat-user-border: rgba(59,130,246,0.38);
+  --chat-ai-bg: rgba(16,163,127,0.18);
+  --chat-ai-border: rgba(16,163,127,0.40);
+  --chat-dot: rgba(255,255,255,0.35);
+  --chat-dot-on: var(--color-primary, rgba(0,140,255,0.9));
 
   /* Hero */
   --hero-glow: rgba(0, 200, 255, 0.15);
@@ -429,6 +431,26 @@ textarea {
 }
 select {
   font-family: var(--global-font-family-base);
+}
+
+/* Unified form control theming */
+input,
+textarea,
+select {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-foreground-muted);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 input:focus,
@@ -644,7 +666,7 @@ article { margin: 2rem 0; }
   border-radius: var(--radius-xl);
   background: rgb(var(--color-brand-50) / 0.6);
   padding: 1.5rem;
-  border: 1px solid rgba(0,0,0,.08);
+  border: 1px solid var(--color-border);
 }
 .hero__title {
   color: var(--color-phosphor);
@@ -663,7 +685,7 @@ article { margin: 2rem 0; }
   border-radius: var(--radius-lg);
   background: var(--color-background);
   padding: 1.5rem;
-  border: 1px solid rgba(0,0,0,.08);
+  border: 1px solid var(--color-border);
 }
 
 .feature-card:hover {
@@ -678,7 +700,7 @@ article { margin: 2rem 0; }
 a {
   padding: 0.5rem 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(0,0,0,.08);
+  border: 1px solid var(--color-border);
 }
 
 @media (prefers-color-scheme: dark) {

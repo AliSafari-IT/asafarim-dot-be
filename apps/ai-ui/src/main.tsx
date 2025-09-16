@@ -1,13 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./index.css";
 import App from "./App";
+import "./index.css";
 import Home from "./pages/Home";
 import ChatPage from "./pages/ChatPage";
 import JobTools from "./pages/JobTools";
 import ResumeMaker from "./pages/ResumeMaker";
-import { NotFound } from "@asafarim/shared-ui-react";
+import { NotFound, NotificationProvider } from "@asafarim/shared-ui-react";
 
 const router = createBrowserRouter([
   {
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "chat", element: <ChatPage /> },
-      { path: "job-tools", element: <JobTools /> },
+      { path: "ai-ui-job-tools", element: <JobTools /> },
       { path: "resume-maker", element: <ResumeMaker /> },
       { path: "*", element: <NotFound /> },
     ]
@@ -25,6 +25,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <NotificationProvider>
+      <RouterProvider router={router} />
+    </NotificationProvider>
   </React.StrictMode>
 );

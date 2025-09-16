@@ -8,7 +8,6 @@ import type {
   ChatMessage,
   ChatSessionListItem,
 } from "../types/chat";
-import "./Chat.css";
 
 export default function Chat() {
   const [prompt, setPrompt] = useState("");
@@ -157,7 +156,7 @@ export default function Chat() {
   // Render unauthenticated experience
   if (!authLoading && !isAuthenticated) {
     return (
-      <div className="ai-ui-container">
+      <section className="ai-ui-container">
         <div className="ai-ui-main" style={{ marginLeft: 0, width: "100%" }}>
           <div className="ai-ui-header">
             <h1 className="ai-ui-title">AI Chat</h1>
@@ -186,13 +185,13 @@ export default function Chat() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   // Render authenticated experience
   return (
-    <div
+    <section
       className={`ai-ui-container ${
         sidebarCollapsed ? "sidebar-collapsed" : ""
       }`}
@@ -322,6 +321,6 @@ export default function Chat() {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
