@@ -1,10 +1,39 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import React from 'react'
+import { 
+  NotFound,
+  NotificationProvider
+} from '@asafarim/shared-ui-react'
+import { RouterProvider } from 'react-router-dom'
+import JobEdit from './components/JobTracker/JobEdit'
+import JobView from './components/JobTracker/JobView'
+import CoreAppHome from './pages/CoreAppHome'
+import { createBrowserRouter } from 'react-router-dom'
+import JobTracker from './components/JobTracker/JobTracker'
+import { ToastProvider } from '@asafarim/toast'
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      { index: true, element: <CoreAppHome /> },
+      { path: "jobs", element: <JobTracker /> },
+      { path: "jobs/:jobId/edit", element: <JobEdit /> },
+      { path: "jobs/:jobId/view", element: <JobView /> },
+      { path: "*", element: <NotFound /> },
+    ]
+  }
+]);
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+  <React.StrictMode>
+  <NotificationProvider>
+    <ToastProvider>
+    <RouterProvider router={router} />
+    </ToastProvider>
+  </NotificationProvider>
+</React.StrictMode>,
 )

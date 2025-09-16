@@ -1,6 +1,18 @@
 @import url("@asafarim/shared-ui-react/index.css");
 /* Use central theme variables */
 
+/* Neutralize global borders from shared tokens for the blog */
+a { 
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+/* If you see boxes around components that match these classes */
+.hero,
+.feature-card {
+  border: none !important;
+}
+
 .theme-doc-sidebar-container {
   border-right: 1px solid var(--ifm-color-emphasis-200);
 }

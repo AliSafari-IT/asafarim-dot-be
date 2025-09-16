@@ -21,7 +21,7 @@ import EditUserPage from './pages/EditUserPage';
 
 function App() {
   return (
-      <ThemeProvider defaultMode="dark" storageKey="asafarim-theme" persistMode={true}>
+      <ThemeProvider>
         <ToastProvider>
           <NotificationProvider>
             <AuthProvider>

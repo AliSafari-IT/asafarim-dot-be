@@ -1,17 +1,35 @@
 /* App Home Page */
 import './CoreAppHome.css';
-import './CoreAppHome.css';
 import { Button, useAuth } from '@asafarim/shared-ui-react';
+import { useNavigate } from 'react-router-dom';
+
 import { CORE_JOBS_URL, AI_URL, BLOG_URL, openInNewTab } from '../utils/appUrls';
+import Hero from '../components/Hero';
 
 export default function CoreAppHome() {
     const auth = useAuth();
+    const navigate = useNavigate();
     return (
         <div className='core-app-home-container'>
-            <h1>Core App Home</h1>
-            <p>Welcome to the Core Application</p>
+            <Hero />
             {auth.isAuthenticated ? (
                 <>
+                    <div className='core-app-home-greeting' style={{ marginBottom: '1rem' }}>
+                        <h2 style={{ margin: 0 }}>
+                            {`Welcome, ${auth.user?.userName || auth.user?.email || 'friend'}`}
+                        </h2>
+                        <div style={{ marginTop: '.5rem' }}>
+                            <Button
+                                onClick={() => navigate('/jobs')}
+                                variant="secondary"
+                                size="md"
+                                rounded
+                                rightIcon="➡️"
+                            >
+                                Go to your dashboard
+                            </Button>
+                        </div>
+                    </div>
                     <div className='core-app-home-actions'>
                         <Button className='core-app-home-action-button'
                             onClick={() => openInNewTab(CORE_JOBS_URL)}
@@ -42,7 +60,7 @@ export default function CoreAppHome() {
                     size="lg"
                     rounded
                     rightIcon="🔒"
-                >Login</Button>
+                >Log in to personalize</Button>
             )}
         </div>
     );

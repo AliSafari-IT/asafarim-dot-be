@@ -11,7 +11,7 @@ import Root from "./theme/Root";
 export default function App() {
 
   return (
-    <ThemeProvider>
+    <ThemeProvider defaultMode="dark">
       <Root>
         <NotificationContainer position="top-right" />
         <LayoutContainer
