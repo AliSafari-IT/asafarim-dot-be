@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
-import RegisterForm from '../components/RegisterForm';
 import { useAuth } from '@asafarim/shared-ui-react';
+import RegisterHero from '../components/RegisterHero';
 
 export const Register = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -20,7 +20,7 @@ export const Register = () => {
       title="Create Account" 
       subtitle="Sign up to get started with ASafariM"
     >
-      <RegisterForm />
+      <RegisterHero />
     </AuthLayout>
   );
 };

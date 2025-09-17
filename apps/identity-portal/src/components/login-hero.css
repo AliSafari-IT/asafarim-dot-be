@@ -1,0 +1,54 @@
+.login-hero {
+  min-height: calc(100vh - 60px);
+  padding: 2rem 0;
+  background: linear-gradient(
+    135deg,
+    var(--color-background) 0%,
+    var(--color-surface) 100%
+  );
+}
+
+.login-hero-media {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .login-hero {
+    padding: 1rem 0;
+  }
+  
+  .login-hero-media {
+    max-width: 100%;
+    padding: 1rem;
+  }
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .login-hero-media {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+/* Add a subtle animation */
+.login-hero-media {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
