@@ -12,6 +12,7 @@ import { isProduction } from "../../api/currentHost";
 const navLinks: NavLinkItem[] = [
   { to: "/blog", label: "Blog" },
   { to: "/docs/intro", label: "Docs" },
+  { to: "/authors", label: "Authors" },
   { to: isProduction ? "https://www.asafarim.be/contact" : "http://web.asafarim.local:5175/contact", label: "Contact", external: true },
   { to: isProduction ? "https://www.asafarim.be/about" : "http://web.asafarim.local:5175/about", label: "About", external: true },
 ];

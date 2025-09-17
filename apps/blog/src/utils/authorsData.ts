@@ -27,14 +27,16 @@ const fallbackAuthorsData: Record<string, Author> = {
     key: 'alisafari',
     name: 'Ali Safari',
     title: 'Full-Stack Software Engineer | Clean Architecture | AI & Data Enthusiast',
-    urls: ['https://alisafarim.com',
+    urls: [
+      'https://asafarim.com',
       'https://github.com/AliSafari-IT',
       'https://www.linkedin.com/in/ali-safari-m/',
       'https://stackoverflow.com/users/10703628/ali-safari',
-      'https://x.com/asafarim'
+      'https://x.com/asafarim',
+      'https://www.asafarim.com/contact'
     ],
     image_url: '/img/authors/ali-photo.jpg',
-    email: 'alisafari@asafarim.com',
+    email: 'contact@asafarim.com',
     company: 'ASafariM',
     location: 'Hasselt, Belgium',
     bio: 'A passionate software engineer with a deep love for coding and problem-solving.',

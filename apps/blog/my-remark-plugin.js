@@ -6,7 +6,7 @@
  * @returns {(tree: import('unist').Node) => void}
  */
 function myRemarkPlugin() {
-  return function transformer() {
+  return function transformer(tree) {
     // no-op: add transformations here if needed
   };
 }

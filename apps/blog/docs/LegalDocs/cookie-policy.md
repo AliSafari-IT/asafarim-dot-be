@@ -1,5 +1,9 @@
 # Cookies policy
 
+**ASafariM** (“we,” “us,” or “our”), located in Belgium, operates [https://www.asafarim.com](https://www.asafarim.com) or [https://www.asafarim.be](https://www.asafarim.be) (“the Site”). By using the Site, you acknowledge the cookies policy below.
+
+---
+
 ## What are cookies?
 
 A cookie is a small text file that a website stores on your computer or mobile device when you visit the site.

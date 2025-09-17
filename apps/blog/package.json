@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
+    "dev": "docusaurus start",
     "prestart": "npx kill-port 3000",
     "start": "docusaurus start --host blog.asafarim.local --port 3000",
     "build": "docusaurus build",
@@ -21,7 +22,6 @@
   "dependencies": {
     "@asafarim/dd-menu": "^1.4.0",
     "@asafarim/react-themes": "^1.6.1",
-    "@docusaurus/core": "3.8.1",
     "@docusaurus/preset-classic": "3.8.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
@@ -30,6 +30,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@docusaurus/core": "3.8.1",
     "@docusaurus/module-type-aliases": "3.8.1",
     "@docusaurus/tsconfig": "3.8.1",
     "@docusaurus/types": "3.8.1",

@@ -1,33 +1,40 @@
-import type { ReactNode } from 'react';
-import clsx from 'clsx';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
-import Heading from '@theme/Heading';
-
-import styles from './index.module.css';
-import HomepageFeatures from '../components/HomepageFeatures';
-import Root from '../theme/Root';
-import { Button } from '@asafarim/shared-ui-react';
+import type { ReactNode } from "react";
+import clsx from "clsx";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import Layout from "@theme/Layout";
+import styles from "./index.module.css";
+import Root from "../theme/Root";
+import { Hero as SharedHero } from "@asafarim/shared-ui-react";
+import HeroMedia from "../components/HeroMedia";
 
 function HomepageHeader() {
-  const { siteConfig } = useDocusaurusContext();
+  const kicker = "Sharing my thoughts and experiences";
+  const title = "ASafariM Blog";
+  const subtitle = "Welcome to my technical blog where I share insights about software development, clean architecture, and AI technologies...";
+  const bullets = [
+    "Technical docs, how‑tos, and architecture notes",
+    "Change logs and legal docs",
+    "Shared tokens and UI across all apps",
+  ];
+  const primaryCta = {
+    label: "Get Started",
+    to: "/docs/intro",
+  };
+  const secondaryCta = {
+    label: "View the blog",
+    to: "/blog",
+  };
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
-        </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Button
-            variant="link"
-            size="lg"
-            to="/docs/intro">
-            Technical Documentation and more
-          </Button>
-        </div>
-      </div>
-    </header>
+    <SharedHero
+      className={clsx("hero", styles.heroBanner)}
+      kicker={kicker}
+      title={title}
+      subtitle={subtitle}
+      bullets={bullets}
+      primaryCta={primaryCta}
+      secondaryCta={secondaryCta}
+      media={<HeroMedia />}
+    />
   );
 }
 
@@ -37,11 +44,9 @@ export default function Home(): ReactNode {
     <Root>
       <Layout
         title={`${siteConfig.title}`}
-        description={`${siteConfig.tagline}`}>
+        description={`${siteConfig.tagline}`}
+      >
         <HomepageHeader />
-        <main>
-          <HomepageFeatures />
-        </main>
       </Layout>
     </Root>
   );

@@ -4,6 +4,9 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 const config: Config = {
+  customFields: {
+    recentBlogPostsOnHomePage: process.env.RECENT_BLOG_POSTS_ON_HOME_PAGE ? parseInt(process.env.RECENT_BLOG_POSTS_ON_HOME_PAGE) : undefined,
+  },
   title: "Blog",
   tagline: "Sharing my thoughts and experiences",
   favicon: "img/logo.svg",
@@ -69,9 +72,9 @@ const config: Config = {
           editUrl: ({ locale, blogDirPath, blogPath, permalink }) =>
             `https://github.com/AliSafari-IT/asafarim-dot-be/edit/main/apps/blog/${blogDirPath}/${blogPath}`,
           editLocalizedFiles: false,
-          blogTitle: "Blog title",
-          blogDescription: "Blog",
-          blogSidebarCount: 5,
+          blogTitle: "Blog",
+          blogDescription: "Sharing my thoughts and experiences",
+          blogSidebarCount: "ALL",
           blogSidebarTitle: "All our posts",
           routeBasePath: "blog",
           include: ["**/*.{md,mdx}"],
@@ -81,7 +84,7 @@ const config: Config = {
             "**/*.test.{js,jsx,ts,tsx}",
             "**/__tests__/**",
           ],
-          postsPerPage: 10,
+          postsPerPage: 3,
           blogListComponent: "@theme/BlogListPage",
           blogPostComponent: "@theme/BlogPostPage",
           blogTagsListComponent: "@theme/BlogTagsListPage",
@@ -213,8 +216,12 @@ const config: Config = {
           title: "Docs",
           items: [
             {
-              label: "Tutorial",
-              to: "/docs/intro",
+              label: "ASafariM Blog",
+              to: "/blog",
+            },
+            {
+              label: "Technical Documentations",
+              to: "/docs/TechDocs/intro",
             },
           ],
         },
@@ -246,10 +253,14 @@ const config: Config = {
               label: "GitHub",
               href: "https://github.com/AliSafari-IT/asafarim-dot-be",
             },
+            {
+              label: "ASafariM Dot Com",
+              href: "https://www.asafarim.com",
+            },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} ASafariM, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} ASafariM. Blog built on React using Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

@@ -2,7 +2,7 @@
 
 _Last Updated: **2025-02-14**_
 
-Welcome to **ASafariM** (“we,” “us,” or “our”) accessible at [https://www.asafarim.com](https://www.asafarim.com) (“the Site”). By accessing or using the Site, you agree to these Terms of Service (“Terms”). If you do not agree to these Terms, please discontinue your use immediately.
+Welcome to **ASafariM** (“we,” “us,” or “our”) accessible at [https://www.asafarim.com](https://www.asafarim.com) or [https://www.asafarim.be](https://www.asafarim.be) (“the Site”). By accessing or using the Site, you agree to these Terms of Service (“Terms”). If you do not agree to these Terms, please discontinue your use immediately.
 
 ---
 

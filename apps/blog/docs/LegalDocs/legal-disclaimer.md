@@ -2,7 +2,7 @@
 
 _Last Updated: **2025-02-14**_
 
-**ASafariM** (“we,” “us,” or “our”), located in Belgium, operates [https://www.asafarim.com](https://www.asafarim.com) (“the Site”). By using the Site, you acknowledge the disclaimers below.
+**ASafariM** (“we,” “us,” or “our”), located in Belgium, operates [https://www.asafarim.com](https://www.asafarim.com) or [https://www.asafarim.be](https://www.asafarim.be) (“the Site”). By using the Site, you acknowledge the disclaimers below.
 
 ---
 

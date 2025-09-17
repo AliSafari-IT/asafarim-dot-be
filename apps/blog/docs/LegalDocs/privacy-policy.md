@@ -2,7 +2,7 @@
 
 _Last Updated: **2025-02-14**_
 
-Thank you for visiting **ASafariM** (“we,” “us,” or “our”), accessible at [https://www.asafarim.com](https://www.asafarim.com). We respect your privacy and strive to process personal data in accordance with the **General Data Protection Regulation (GDPR)** and relevant Belgian data protection laws.
+Thank you for visiting **ASafariM** (“we,” “us,” or “our”), accessible at [https://www.asafarim.com](https://www.asafarim.com) or [https://www.asafarim.be](https://www.asafarim.be). We respect your privacy and strive to process personal data in accordance with the **General Data Protection Regulation (GDPR)** and relevant Belgian data protection laws.
 
 ---
 

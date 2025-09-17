@@ -17,9 +17,17 @@ import Download from "./Download";
 import Html from "./Html";
 import MarkDown from "./MarkDown";
 import Pdf from "./Pdf";
+import Email from "./Email";
+import Contact from "./Contact";
+import Location from "./Location";
+import Company from "./Company";
+import Website from "./Website";
+import Phone from "./Phone";
+
 
 export {
     Arrow, Spark,
     Lock, UnLock, Login, SignIn, SignOut, AuthStatusIcon, Eye, EyeOff,
-    Github, Twitter, Linkedin, StackOverflow, TwitterX, Download, Html, MarkDown, Pdf
+    Github, Twitter, Linkedin, StackOverflow, TwitterX, Download, Html,
+    MarkDown, Pdf, Email, Contact, Location, Company, Website, Phone
 };

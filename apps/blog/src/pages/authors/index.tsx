@@ -1,13 +1,10 @@
 import React from "react";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useAuthorsData, Author } from "../../utils/authorsData";
 import styles from "./authors.module.css";
 
 export default function AuthorsPage() {
-  const { siteConfig } = useDocusaurusContext();
-
   // Get authors data using the hook
   const authorsData = useAuthorsData();
 
@@ -20,7 +17,7 @@ export default function AuthorsPage() {
   return (
     <Layout title="Authors" description="Blog authors at ASafariM">
       <main className="container margin-vert--lg">
-        <h1>Blog Authors</h1>
+        <h1 className="text--center menu__link">Blog Authors</h1>
         <div className={styles.authorsGrid}>
           {authors.map((author) => (
             <div key={author.key} className={styles.authorCard}>

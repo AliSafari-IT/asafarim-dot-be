@@ -1,0 +1,61 @@
+.media {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .75rem;
+    max-width: 520px;
+    background-color: var(--ifm-background-color);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .media h1 {
+    color: var(--ifm-color-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid var(--ifm-color-emphasis-200);
+    border-radius: var(--radius-md);
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+    text-decoration: none;
+    transition: transform .12s ease, background .2s ease, border-color .2s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .card:hover {
+    color: var(--ifm-color-primary);
+
+    background: var(--ifm-color-emphasis-100);
+    border-color: var(--ifm-color-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .cardTitle {
+    font-weight: 600;
+    color: var(--ifm-color-primary);
+  }
+  
+  .cardMeta {
+    color: var(--ifm-color-emphasis-600);
+    font-size: .85rem;
+    margin-top: 0.5rem;
+  }
+  
+  .cardCta {
+    color: var(--ifm-color-primary);
+    font-weight: 600;
+  }
+  
+  .header {
+    font-size: .9rem;
+    color: var(--ifm-color-emphasis-600);
+    margin-bottom: .5rem;
+  }
