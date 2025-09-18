@@ -6,7 +6,7 @@ This document serves as the central reference for all port configurations across
 
 | API Service   | Development Port | Production Port |
 |---------------|------------------|----------------|
-| Identity.Api  | 5177             | 5177           |
+| Identity.Api  | 5101             | 5101           |
 | Core.Api      | 5102             | 5102           |
 | Ai.Api        | 5103             | 5103           |
 
@@ -14,7 +14,7 @@ This document serves as the central reference for all port configurations across
 
 | Frontend App     | Development Port |
 |------------------|------------------|
-| identity-portal  | 5177             |
+| identity-portal  | 5101             |
 | core-app         | 5174             |
 | ai-ui            | 5173             |
 
@@ -24,7 +24,7 @@ All APIs are exposed through nginx with the following routes:
 
 | API Route         | Internal Endpoint        |
 |-------------------|--------------------------|
-| /api/identity/    | http://127.0.0.1:5177/   |
+| /api/identity/    | http://127.0.0.1:5101/   |
 | /api/core/        | http://127.0.0.1:5102/   |
 | /api/ai/          | http://127.0.0.1:5103/   |
 
@@ -32,7 +32,7 @@ All APIs are exposed through nginx with the following routes:
 
 | Service Name       | Listening On             |
 |--------------------|--------------------------| 
-| dotnet-identity    | http://127.0.0.1:5177    |
+| dotnet-identity    | http://127.0.0.1:5101    |
 | dotnet-core        | http://127.0.0.1:5102    |
 | dotnet-ai          | http://127.0.0.1:5103    |
 

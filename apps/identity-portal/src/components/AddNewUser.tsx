@@ -18,7 +18,7 @@ export default function AddNewUser() {
     const loadRoles = async () => {
       setLoadingRoles(true);
       try {
-        const base = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177';
+        const base = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101';
         const response = await fetch(`${base}/admin/roles`, { credentials: 'include' });
         
         if (!response.ok) {
@@ -49,7 +49,7 @@ export default function AddNewUser() {
     setLoading(true);
     
     try {
-      const base = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177';
+      const base = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101';
       const response = await fetch(`${base}/admin/users/with-null-password`, {
         method: 'POST',
         headers: {

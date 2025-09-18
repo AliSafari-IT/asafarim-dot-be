@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prestart": "npx kill-port 5177",
-    "start": "vite --host localhost --port 5177",
+    "prestart": "npx kill-port 5101",
+    "start": "vite --host localhost --port 5101",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

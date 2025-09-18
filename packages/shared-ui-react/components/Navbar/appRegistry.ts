@@ -50,7 +50,7 @@ export const appRegistry: AppInfo[] = [
   {
     id: 'identity',
     name: 'Identity Portal',
-    url: isProduction ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5177',
+    url: isProduction ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5101',
     description: 'User management and authentication'
   }
 ];

@@ -6,7 +6,7 @@ import { Eye, EyeOff } from '@asafarim/shared-ui-react';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
-const API = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177';
+const API = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101';
 
 export default function EditUser() {
   const { id: userId } = useParams<{ id: string }>();

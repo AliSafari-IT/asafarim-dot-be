@@ -20,10 +20,10 @@ const isProd = isBrowser && (
 // Identity API base (reverse-proxied via Nginx in prod)
 const IDENTITY_API_BASE = isProd
   ? '/api/identity'
-  : (import.meta as any).env?.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5177';
+  : (import.meta as any).env?.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
 
 // Identity site origin for cross-app actions (e.g., sync-logout)
-const IDENTITY_ORIGIN = isProd ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5177';
+const IDENTITY_ORIGIN = isProd ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5101';
 
 // Cookie domain
 const COOKIE_DOMAIN = isProd ? '.asafarim.be' : '.asafarim.local';

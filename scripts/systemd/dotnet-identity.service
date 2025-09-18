@@ -14,7 +14,7 @@ User=www-data
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 Environment=DOTNET_ENVIRONMENT=Production
 Environment=ASPNETCORE_ENVIRONMENT=Production
-Environment=ASPNETCORE_URLS=http://127.0.0.1:5177
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5101
 
 # Load environment variables from file
 EnvironmentFile=/etc/asafarim/env

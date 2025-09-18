@@ -16,7 +16,7 @@ const hostname = isBrowser ? window.location.hostname : '';
 const isProd = isBrowser && (
   hostname.endsWith('asafarim.be') || window.location.protocol === 'https:'
 );
-const IDENTITY_ORIGIN = isProd ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5177';
+const IDENTITY_ORIGIN = isProd ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5101';
 const COOKIE_DOMAIN = isProd ? '.asafarim.be' : '.asafarim.local';
 
 /**

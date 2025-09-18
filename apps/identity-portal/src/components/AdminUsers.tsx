@@ -16,7 +16,7 @@ export default function AdminUsers() {
     const load = async () => {
       setLoading(true);
       try {
-        const base = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177';
+        const base = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101';
         const [usersRes, rolesRes] = await Promise.all([
           fetch(`${base}/admin/users`, { credentials: 'include' }),
           fetch(`${base}/admin/roles`, { credentials: 'include' })
@@ -51,7 +51,7 @@ export default function AdminUsers() {
   }, []);
 
   const saveUser = async (u: AdminUser) => {
-    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177'}/admin/users/${u.id}`, {
+    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101'}/admin/users/${u.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -64,7 +64,7 @@ export default function AdminUsers() {
   };
 
   const setUserRoles = async (u: AdminUser, nextRoles: string[]) => {
-    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5177'}/admin/users/${u.id}/roles`, {
+    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101'}/admin/users/${u.id}/roles`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

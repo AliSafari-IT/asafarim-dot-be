@@ -31,12 +31,12 @@ console.log('Environment detection:', {
 
 // Development configuration
 const devConfig: Config = {
-  apiBaseUrl: 'http://api.asafarim.local:5177',
+  apiBaseUrl: 'http://api.asafarim.local:5101',
   authEndpoints: {
-    me: 'http://api.asafarim.local:5177/auth/me',
-    login: 'http://api.asafarim.local:5177/auth/login',
-    register: 'http://api.asafarim.local:5177/auth/register',
-    logout: 'http://api.asafarim.local:5177/auth/logout',
+    me: 'http://api.asafarim.local:5101/auth/me',
+    login: 'http://api.asafarim.local:5101/auth/login',
+    register: 'http://api.asafarim.local:5101/auth/register',
+    logout: 'http://api.asafarim.local:5101/auth/logout',
   },
   isProduction: false
 };
