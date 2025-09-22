@@ -5,14 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prestart": "npx kill-port 5101",
-    "start": "vite --host localhost --port 5101",
+    "prestart": "npx kill-port 5177",
+    "start": "vite --host identity.asafarim.local --port 5177",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "@asafarim/shared-tokens": "workspace:*",
     "@asafarim/shared-ui-react": "workspace:*"
   },
   "dependencies": {

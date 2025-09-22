@@ -1,7 +1,7 @@
 // Runs on the client to unify Docusaurus's theme key with our cross‑app key
 // Maps localStorage 'theme' <-> 'asafarim-theme' and syncs a root-domain cookie
 
-import { isProduction } from "../api/currentHost";
+import { isProduction } from "@asafarim/shared-ui-react";
 
 (function () {
   if (typeof window === 'undefined') return;

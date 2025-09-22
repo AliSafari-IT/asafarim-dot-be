@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { isProduction } from '../configs';
 
 export interface UseAuthOptions {
   authApiBase?: string;               // e.g. http://api.asafarim.local:5101
@@ -37,13 +38,11 @@ async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | n
 }
 
 export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TUser> {
-  const isBrowser = typeof window !== 'undefined';
-  const host = isBrowser ? window.location.hostname : '';
-  const isProd = isBrowser && (host.endsWith('asafarim.be') || window.location.protocol === 'https:');
+  const isProd = isProduction;
   const defaultAuthBase = isProd
     ? '/api/identity'
     : (import.meta as any).env?.VITE_IDENTITY_API_URL ?? 'http://api.asafarim.local:5101';
-  console.log("defaultAuthBase", defaultAuthBase);
+  console.log("defaultAuthBase: in production? "+isProd, defaultAuthBase);
   const authApiBase = options?.authApiBase ?? defaultAuthBase;
   console.log("authApiBase", authApiBase);
   const meEndpoint = options?.meEndpoint ?? '/auth/me';

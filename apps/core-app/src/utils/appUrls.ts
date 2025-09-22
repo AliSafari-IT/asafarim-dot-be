@@ -1,9 +1,18 @@
 // appUrls.ts - Core App
 // Centralized, environment-aware URLs for external apps
 
-const env = import.meta.env as any;
+import { isProduction } from "@asafarim/shared-ui-react";
 
-const isProd = String(env?.VITE_IS_PRODUCTION ?? env?.MODE === 'production').toLowerCase() === 'true' || env?.MODE === 'production';
+interface ImportMetaEnv {
+    readonly VITE_BLOG_URL: string;
+    readonly VITE_AI_URL: string;
+    readonly VITE_CORE_URL: string;
+    readonly VITE_CORE_JOBS_URL: string;
+}
+
+const env = import.meta.env as unknown as ImportMetaEnv;
+
+const isProd = isProduction;
 
 // Allow explicit overrides via env; otherwise use sensible defaults per environment
 export const BLOG_URL = env?.VITE_BLOG_URL || (isProd ? 'https://blog.asafarim.be' : 'http://blog.asafarim.local:3000');

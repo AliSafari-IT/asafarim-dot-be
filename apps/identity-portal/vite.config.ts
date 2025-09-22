@@ -7,9 +7,9 @@ export default defineConfig(
   {
   plugins: [react()],
   server: {
-    //host: 'identity.asafarim.local',
-    host: true,
-    //port: 5101,
+    host: 'identity.asafarim.local',
+    // host: true,
+    port: 5177,
   },
   // Do not hardcode VITE_IDENTITY_API_URL here; rely on .env files for dev/prod.
   // Keep only this convenience flag if needed by the app.

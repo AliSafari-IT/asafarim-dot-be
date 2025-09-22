@@ -1,7 +1,7 @@
 // Centralized API configuration for Core App
 // Uses environment variables when provided, with sensible defaults.
 
-import { isProduction } from "./currentHost";
+import { isProduction } from "@asafarim/shared-ui-react";
 
 interface ImportMetaEnv {
     readonly VITE_CORE_API_URL: string;

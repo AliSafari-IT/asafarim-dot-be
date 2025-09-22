@@ -1,12 +1,12 @@
-import { useAuth } from '@asafarim/shared-ui-react';
 import { useEffect, useState } from 'react';
 import './dashboard.css';
 import { Button } from '@asafarim/shared-ui-react';
 import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab } from '../utils/appUrls';
 import ChangePasswordModal from './ChangePasswordModal';
+import useAuth from '../hooks/useAuth';
 
 export const Dashboard = () => {
-  const { isAuthenticated, user, loading } = useAuth();
+  const { isAuthenticated, user, isLoading: loading } = useAuth();
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   useEffect(() => {

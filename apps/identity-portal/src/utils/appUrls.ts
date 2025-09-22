@@ -1,9 +1,11 @@
 // appUrls.ts
 // Centralized, environment-aware URLs for external apps
 
+import { isProduction } from "@asafarim/shared-ui-react";
+
 const env = import.meta.env;
 
-const isProd = String(env.VITE_IS_PRODUCTION).toLowerCase() === 'true';
+const isProd = isProduction;
 
 // Allow explicit overrides via env; otherwise use sensible defaults per environment
 export const BLOG_URL = env.VITE_BLOG_URL || (isProd ? 'https://blog.asafarim.be' : 'http://blog.asafarim.local:3000');

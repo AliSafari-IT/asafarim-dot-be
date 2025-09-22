@@ -1,5 +1,7 @@
 // Environment-aware configuration
 
+import { isProduction } from "@asafarim/shared-ui-react";
+
 interface Config {
   apiBaseUrl: string;
   authEndpoints: {
@@ -10,17 +12,6 @@ interface Config {
   };
   isProduction: boolean;
 }
-
-// Determine if we're in production based on hostname and protocol
-const isProduction = typeof window !== 'undefined' && (
-  // Check for production domains
-  window.location.hostname.includes('asafarim.be') || 
-  window.location.hostname.includes('asafarim.com') ||
-  // Also consider HTTPS as production
-  window.location.protocol === 'https:' ||
-  // Force production mode for specific hostnames
-  window.location.hostname === 'core.asafarim.be'
-);
 
 // Log the environment detection for debugging
 console.log('Environment detection:', { 

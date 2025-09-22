@@ -6,7 +6,7 @@ import OriginalNavbar from "@theme-original/Navbar";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import type { DocusaurusConfig } from "@docusaurus/types";
 import "./Navbar.css";
-import { isProduction } from "../../api/currentHost";
+import { isProduction } from "@asafarim/shared-ui-react";
 
 // Define your blog navigation links
 const navLinks: NavLinkItem[] = [

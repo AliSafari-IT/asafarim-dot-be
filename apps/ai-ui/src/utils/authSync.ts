@@ -5,6 +5,8 @@
  * by listening to localStorage changes and handling sign-out events.
  */
 
+import { isProduction } from "@asafarim/shared-ui-react";
+
 // Key constants for authentication storage
 const AUTH_TOKEN_KEY = 'auth_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
@@ -12,15 +14,12 @@ const USER_INFO_KEY = 'user_info';
 
 // Environment awareness
 const isBrowser = typeof window !== 'undefined';
-const hostname = isBrowser ? window.location.hostname : '';
-const isProd = isBrowser && (
-  hostname.endsWith('asafarim.be') || window.location.protocol === 'https:'
-);
+const isProd = isProduction;
 
 // Identity API base (reverse-proxied via Nginx in prod)
 const IDENTITY_API_BASE = isProd
   ? '/api/identity'
-  : (import.meta as any).env?.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
+  : (import.meta as { env: Record<string, string> }).env?.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
 
 // Identity site origin for cross-app actions (e.g., sync-logout)
 const IDENTITY_ORIGIN = isProd ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5101';

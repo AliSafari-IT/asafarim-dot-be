@@ -1,6 +1,6 @@
 // Environment-aware configuration
 
-import { isProduction } from "./api/currentHost";
+import { isProduction } from "@asafarim/shared-ui-react";
 
 interface Config {
   apiBaseUrl: string;

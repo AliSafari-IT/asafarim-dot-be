@@ -4,6 +4,7 @@
  * This utility helps synchronize authentication state across multiple applications
  * by listening to localStorage changes and handling sign-out events.
  */
+import { isProduction } from '@asafarim/shared-ui-react';
 
 // Key constants for authentication storage
 const AUTH_TOKEN_KEY = 'auth_token';
@@ -11,9 +12,7 @@ const REFRESH_TOKEN_KEY = 'refresh_token';
 const USER_INFO_KEY = 'user_info';
 
 // Environment awareness
-const isBrowser = typeof window !== 'undefined';
-const hostname = isBrowser ? window.location.hostname : '';
-const isProd = isBrowser && (hostname.endsWith('asafarim.be') || window.location.protocol === 'https:');
+const isProd = isProduction;
 const IDENTITY_ORIGIN = isProd ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5101';
 const COOKIE_DOMAIN = isProd ? '.asafarim.be' : '.asafarim.local';
 
@@ -112,6 +111,7 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
 };
 
 export const handleSignIn = async (redirectUrl?: string): Promise<void> => {
+  const isBrowser = typeof window !== 'undefined';
   if (!isBrowser) return; // SSR check
   window.location.href = redirectUrl || IDENTITY_ORIGIN;
 };
