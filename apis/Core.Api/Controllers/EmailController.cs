@@ -1,24 +1,37 @@
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Core.Api.Data;
+using Core.Api.Models;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MimeKit;
 
 namespace Core.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class EmailController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<EmailController> _logger;
+    private readonly CoreDbContext _context;
 
-    public EmailController(IConfiguration configuration, ILogger<EmailController> logger)
+    public EmailController(
+        IConfiguration configuration,
+        ILogger<EmailController> logger,
+        CoreDbContext context
+    )
     {
         _configuration = configuration;
         _logger = logger;
+        _context = context;
     }
 
     [HttpPost("send")]
+    [AllowAnonymous]
     public async Task<IActionResult> SendEmail([FromBody] EmailRequest request)
     {
         try
@@ -26,7 +39,7 @@ public class EmailController : ControllerBase
             // Validate configuration
             var fromAddress = _configuration["Smtp:From"];
             var toAddress = _configuration["Smtp:To"];
-            
+
             if (string.IsNullOrEmpty(fromAddress) || string.IsNullOrEmpty(toAddress))
             {
                 _logger.LogError("SMTP From or To address not configured");
@@ -40,7 +53,7 @@ public class EmailController : ControllerBase
             }
 
             var email = new MimeMessage();
-            
+
             try
             {
                 email.From.Add(MailboxAddress.Parse(fromAddress));
@@ -55,7 +68,7 @@ public class EmailController : ControllerBase
             }
 
             var builder = new BodyBuilder();
-            
+
             // Format the message body
             var messageBody = $"Message from: {request.Name} <{request.Email}>\n\n";
             if (!string.IsNullOrEmpty(request.ReferenceNumber))
@@ -82,7 +95,11 @@ public class EmailController : ControllerBase
                 foreach (var attachment in request.Attachments)
                 {
                     byte[] fileBytes = Convert.FromBase64String(attachment.Base64Content);
-                    builder.Attachments.Add(attachment.FileName, fileBytes, ContentType.Parse(attachment.ContentType));
+                    builder.Attachments.Add(
+                        attachment.FileName,
+                        fileBytes,
+                        ContentType.Parse(attachment.ContentType)
+                    );
                 }
             }
 
@@ -91,7 +108,7 @@ public class EmailController : ControllerBase
             using var smtp = new SmtpClient();
             var host = _configuration["Smtp:Host"];
             var portStr = _configuration["Smtp:Port"];
-            
+
             if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(portStr))
             {
                 _logger.LogError("SMTP host or port not configured");
@@ -105,13 +122,11 @@ public class EmailController : ControllerBase
             }
 
             var secure = _configuration.GetValue<bool>("Smtp:Secure");
-            var secureOption = secure ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
+            var secureOption = secure
+                ? SecureSocketOptions.SslOnConnect
+                : SecureSocketOptions.StartTls;
 
-            await smtp.ConnectAsync(
-                host,
-                port,
-                secureOption
-            );
+            await smtp.ConnectAsync(host, port, secureOption);
 
             await smtp.AuthenticateAsync(
                 _configuration["Smtp:User"],
@@ -121,7 +136,43 @@ public class EmailController : ControllerBase
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
 
-            return Ok(new { success = true, message = "Email sent successfully" });
+            // Get user ID from the token (if authenticated)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int? contactId = null;
+
+            // Store the contact in the database only if user is authenticated
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var contact = new Contact
+                {
+                    UserId = userId,
+                    Email = request.Email,
+                    Name = request.Name,
+                    Subject = request.Subject,
+                    Message = request.Message,
+                    EmailSent = true,
+                    AttachmentPath =
+                        request.Attachments?.Any() == true
+                            ? string.Join(", ", request.Attachments.Select(a => a.FileName))
+                            : null,
+                    ReferenceNumber = request.ReferenceNumber,
+                    Links = request.Links?.Any() == true ? string.Join(", ", request.Links) : null,
+                };
+
+                _context.Contacts.Add(contact);
+                await _context.SaveChangesAsync();
+                contactId = contact.Id;
+            }
+
+            return Ok(
+                new
+                {
+                    success = true,
+                    message = "Email sent successfully",
+                    contactId = contactId,
+                    isAuthenticated = !string.IsNullOrEmpty(userId)
+                }
+            );
         }
         catch (Exception ex)
         {
@@ -129,22 +180,39 @@ public class EmailController : ControllerBase
             return BadRequest(new { success = false, error = ex.Message });
         }
     }
-}
 
-public class EmailRequest
-{
-    public required string Name { get; set; }
-    public required string Email { get; set; }
-    public required string Subject { get; set; }
-    public required string Message { get; set; }
-    public string? ReferenceNumber { get; set; }
-    public List<EmailAttachment>? Attachments { get; set; }
-    public List<string>? Links { get; set; }
-}
+    [HttpGet("conversations")]
+    public async Task<IActionResult> GetConversations()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new { error = "User not authenticated" });
+        }
 
-public class EmailAttachment
-{
-    public required string FileName { get; set; }
-    public required string ContentType { get; set; }
-    public required string Base64Content { get; set; }
+        var conversations = await _context
+            .Contacts.Where(c => c.UserId == userId)
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync();
+
+        return Ok(conversations);
+    }
+
+    public class EmailRequest
+    {
+        public required string Name { get; set; }
+        public required string Email { get; set; }
+        public required string Subject { get; set; }
+        public required string Message { get; set; }
+        public string? ReferenceNumber { get; set; }
+        public List<EmailAttachment>? Attachments { get; set; }
+        public List<string>? Links { get; set; }
+    }
+
+    public class EmailAttachment
+    {
+        public required string FileName { get; set; }
+        public required string ContentType { get; set; }
+        public required string Base64Content { get; set; }
+    }
 }

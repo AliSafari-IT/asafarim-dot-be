@@ -1,5 +1,6 @@
 using System.Text;
 using Core.Api;
+using Core.Api.Data;
 using Core.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -59,13 +60,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 
-// Add database context using Jobs connection string for job tracking
+// Add database contexts
+var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrEmpty(defaultConnection))
+{
+    builder.Services.AddDbContext<CoreDbContext>(options => options.UseNpgsql(defaultConnection));
+}
+
 var jobsConnectionString = builder.Configuration.GetConnectionString("JobsConnection");
 if (!string.IsNullOrEmpty(jobsConnectionString))
 {
     builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(jobsConnectionString));
 }
-else
+
+if (string.IsNullOrEmpty(defaultConnection) && string.IsNullOrEmpty(jobsConnectionString))
 {
     // Log warning that database is not configured
     builder.Services.AddLogging(logging =>
@@ -73,7 +81,7 @@ else
         logging.AddConsole();
         logging.AddDebug();
     });
-    Console.WriteLine("WARNING: Database connection string not found. Running without database.");
+    Console.WriteLine("WARNING: Database connection strings not found. Running without database.");
 }
 
 // Authentication (share cookie "atk" from Identity)
@@ -138,6 +146,10 @@ app.MapGet("/health", () => Results.Ok(new
 }));
 
 // Run the app with automatic migrations
+if (builder.Configuration.GetConnectionString("DefaultConnection") != null)
+{
+    app.MigrateDatabase<CoreDbContext>().Run();
+}
 if (builder.Configuration.GetConnectionString("JobsConnection") != null)
 {
     app.MigrateDatabase<AppDbContext>().Run();

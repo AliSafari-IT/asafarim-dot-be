@@ -1,8 +1,8 @@
 import { isProduction } from "@asafarim/shared-ui-react";
 
 export const CORE_API_BASE = isProduction
-  ? "https://core.asafarim.be"
-  : "http://core-api.asafarim.local:5102";
+  ? "https://core.asafarim.be/api"
+  : "http://core-api.asafarim.local:5102/api";
 
 export interface PagedResponse<T> {
   page: number;

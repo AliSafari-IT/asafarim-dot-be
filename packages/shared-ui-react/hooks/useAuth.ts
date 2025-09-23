@@ -4,6 +4,7 @@ import { isProduction } from '../configs';
 export interface UseAuthOptions {
   authApiBase?: string;               // e.g. http://api.asafarim.local:5101
   meEndpoint?: string;                // e.g. /auth/me
+  tokenEndpoint?: string;             // e.g. /auth/token
   logoutEndpoint?: string;            // e.g. /auth/logout
   identityLoginUrl?: string;          // full URL to identity login page
   identityRegisterUrl?: string;       // full URL to identity register page
@@ -12,6 +13,7 @@ export interface UseAuthOptions {
 export interface UseAuthResult<TUser = any> {
   isAuthenticated: boolean;
   user: TUser | null;
+  token: string | null;
   loading: boolean;
   signOut: (redirectUrl?: string) => Promise<void>;
   signIn: (redirectUrl?: string) => Promise<void>;
@@ -37,6 +39,25 @@ async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | n
   }
 }
 
+// fetch token
+async function fetchToken(base: string, tokenEndpoint: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${base}${tokenEndpoint}`, { 
+      method: 'GET', 
+      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}` // or however you store your token
+      }
+    });
+    
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.token; // Extract token from the response
+  } catch {
+    return null;
+  }
+}
+
 export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TUser> {
   const isProd = isProduction;
   const defaultAuthBase = isProd
@@ -46,7 +67,9 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   const authApiBase = options?.authApiBase ?? defaultAuthBase;
   console.log("authApiBase", authApiBase);
   const meEndpoint = options?.meEndpoint ?? '/auth/me';
+  const tokenEndpoint = options?.tokenEndpoint ?? '/auth/token';
   console.log("meEndpoint", meEndpoint);
+  console.log("tokenEndpoint", tokenEndpoint);
   const logoutEndpoint = options?.logoutEndpoint ?? '/auth/logout';
   console.log("logoutEndpoint", logoutEndpoint);
   const defaultIdentityLogin = isProd ? 'https://identity.asafarim.be/login' : 'http://identity.asafarim.local:5177/login';
@@ -57,14 +80,29 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<TUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
     const checkAuth = async () => {
       const ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
       if (!mounted) return;
+      
       setAuthenticated(ok);
       setUser(ok ? await fetchUserInfo<TUser>(authApiBase, meEndpoint) : null);
+      
+      if (ok) {
+        const authToken = await fetchToken(authApiBase, tokenEndpoint);
+        setToken(authToken);
+        // Store the token if needed
+        if (authToken) {
+          localStorage.setItem('auth_token', authToken);
+        }
+      } else {
+        setToken(null);
+        localStorage.removeItem('auth_token');
+      }
+      
       setLoading(false);
     };
 
@@ -159,7 +197,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     window.location.href = `${identityRegisterUrl}?returnUrl=${returnUrl}`;
   }, [identityRegisterUrl]);
 
-  return { isAuthenticated: authenticated, user, loading, signOut, signIn, register };
+  return { isAuthenticated: authenticated, user,  token, loading, signOut, signIn, register };
 }
 
 export default useAuth;

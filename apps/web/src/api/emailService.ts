@@ -1,3 +1,5 @@
+import { apiGet } from "./core";
+
 export interface EmailRequest {
   name: string;
   email: string;
@@ -40,7 +42,7 @@ async function fileToBase64(file: File): Promise<string> {
 /**
  * Send an email using the Core.Api endpoint
  */
-export async function sendEmail(data: EmailRequest): Promise<EmailResponse> {
+export async function sendEmail(data: EmailRequest, token?: string | null): Promise<EmailResponse> {
   try {
     // Convert attachments to base64
     const attachments = data.attachments 
@@ -51,11 +53,21 @@ export async function sendEmail(data: EmailRequest): Promise<EmailResponse> {
         })))
       : undefined;
 
-    const response = await fetch(`${import.meta.env.VITE_CORE_API_URL}/email/send`, {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+
+    // Only add Authorization header if token is provided
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const result = await apiGet<EmailResponse>(`/email/send`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      
+      headers,
+      credentials: 'include',
       body: JSON.stringify({
         name: data.name,
         email: data.email,
@@ -67,11 +79,8 @@ export async function sendEmail(data: EmailRequest): Promise<EmailResponse> {
       }),
     });
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to send email');
-    }
+    // The apiGet function already handles the response.ok check and throws an error if needed
+    // So if we get here, the request was successful
 
     return result;
   } catch (error) {

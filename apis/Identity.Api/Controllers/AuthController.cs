@@ -184,6 +184,20 @@ public class AuthController : ControllerBase
         );
     }
 
+    [HttpGet("token")]
+    public IActionResult GetToken()
+    {
+        // Get the token from the Authorization header
+        string authHeader = HttpContext.Request.Headers["Authorization"];
+        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+        {
+            return Unauthorized();
+        }
+
+        string token = authHeader.Substring("Bearer ".Length).Trim();
+        return Ok(new { token });
+    }
+
     [HttpPost("setup-password")]
     public async Task<IActionResult> SetupPassword([FromBody] SetupPasswordRequest req)
     {
@@ -271,7 +285,7 @@ public class AuthController : ControllerBase
         var context = response.HttpContext;
         var isHttps = context?.Request?.IsHttps == true;
         var useSecure = isProdDomain || isHttps;
-        
+
         // For production with HTTPS, use None with Secure flag
         // For local development, use Lax to ensure cookies work across subdomains
         var sameSite = isProdDomain && isHttps ? SameSiteMode.None : SameSiteMode.Lax;

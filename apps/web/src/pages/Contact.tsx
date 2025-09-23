@@ -1,43 +1,34 @@
-import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  type FormEvent,
+  type ChangeEvent,
+} from "react";
 import { sendEmail } from "../api/emailService";
 import { useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { apiGet, CORE_API_BASE } from "../api/core";
+import React from "react";
 
 interface Conversation {
-  id: string;
-  referenceNumber: string;
-  messages: ConversationMessage[];
-  status: 'open' | 'replied' | 'closed';
-  createdAt: string;
-}
-
-interface ConversationMessage {
-  id: string;
+  id: number;
+  userId: string;
+  email: string;
+  name?: string;
   subject: string;
   message: string;
   createdAt: string;
-  isFromUser: boolean;
+  emailSent: boolean;
+  attachmentPath?: string;
   referenceNumber?: string;
-  attachments: MessageAttachment[];
-  links: MessageLink[];
-}
-
-interface MessageAttachment {
-  id: string;
-  fileName: string;
-  fileType: string;
-  fileUrl: string;
-}
-
-interface MessageLink {
-  id: string;
-  url: string;
-  description?: string;
+  links?: string;
 }
 
 interface Attachment {
   file: File;
   previewUrl?: string;
-  type: 'document' | 'image';
+  type: "document" | "image";
 }
 
 interface FormState {
@@ -58,36 +49,59 @@ interface FormStatus {
 }
 
 export default function Contact() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { addNotification } = useNotifications();
   const [email, setEmail] = useState(user?.email || "");
   const [name, setName] = useState(user?.name || user?.userName || "");
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setEmail(user?.email || "");
-    setName(user?.name || user?.userName || "");
-  }, [user]);
-
-  useEffect(() => {
-    if (user) {
-      // Fetch user's conversation history
-      fetchConversations();
+  const fetchConversations = useCallback(async () => {
+    if (!user?.id || !token) {
+      console.log("No user ID or token available for fetching conversations");
+      return;
     }
-  }, [user]);
 
-  const fetchConversations = async () => {
-    if (!user?.id) return;
-    
+    console.log(
+      "Fetching conversations for user:",
+      user.id,
+      "with token:",
+      token.substring(0, 10) + "..."
+    );
+    // CORE_API_BASE already includes /api, so we don't need to add it again
+    const apiUrl = `${CORE_API_BASE}/email/conversations`;
+    console.log("Full API URL:", apiUrl);
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_CORE_API_URL}/conversations/${user.id}`);
-      const data = await response.json();
+      const data = await apiGet<Conversation[]>("/email/conversations", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Conversations API response:", data);
+      console.log("Number of conversations:", data?.length || 0);
+
       setConversations(data);
     } catch (error) {
-      console.error('Failed to fetch conversations:', error);
+      console.error("Failed to fetch conversations:", error);
     }
-  };
+  }, [user?.id, token]);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (user) {
+        setEmail(user?.email || "");
+        setName(user?.name || user?.userName || "");
+        await fetchConversations();
+      }
+    }
+    fetchData();
+  }, [user, fetchConversations]);
+
+  useEffect(() => {
+    console.info("Conversations:", conversations);
+  }, [conversations]);
 
   const [formData, setFormData] = useState<FormState>({
     name: name || "",
@@ -95,15 +109,15 @@ export default function Contact() {
     subject: "Website Contact",
     message: "",
     attachments: [],
-    links: []
+    links: [],
   });
 
   // Update form data when user auth state changes
   useEffect(() => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       name: name || prev.name,
-      email: email || prev.email
+      email: email || prev.email,
     }));
   }, [name, email]);
 
@@ -111,41 +125,43 @@ export default function Contact() {
     const files = event.target.files;
     if (!files) return;
 
-    const newAttachments: Attachment[] = Array.from(files).map(file => ({
+    const newAttachments: Attachment[] = Array.from(files).map((file) => ({
       file,
-      type: file.type.startsWith('image/') ? 'image' : 'document',
-      previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined
+      type: file.type.startsWith("image/") ? "image" : "document",
+      previewUrl: file.type.startsWith("image/")
+        ? URL.createObjectURL(file)
+        : undefined,
     }));
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      attachments: [...prev.attachments, ...newAttachments]
+      attachments: [...prev.attachments, ...newAttachments],
     }));
   };
 
   const handleRemoveAttachment = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index)
+      attachments: prev.attachments.filter((_, i) => i !== index),
     }));
   };
 
   const handleAddLink = () => {
-    const link = prompt('Please enter a URL:');
+    const link = prompt("Please enter a URL:");
     if (link && isValidUrl(link)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        links: [...prev.links, link]
+        links: [...prev.links, link],
       }));
     } else if (link) {
-      addNotification('error', 'Please enter a valid URL');
+      addNotification("error", "Please enter a valid URL");
     }
   };
 
   const handleRemoveLink = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      links: prev.links.filter((_, i) => i !== index)
+      links: prev.links.filter((_, i) => i !== index),
     }));
   };
 
@@ -188,15 +204,18 @@ export default function Contact() {
     // The email service will handle the formatting of attachments and links
 
     try {
-      const emailResponse = await sendEmail({
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        attachments: formData.attachments,
-        links: formData.links,
-        referenceNumber: formData.referenceNumber
-      });
+      const emailResponse = await sendEmail(
+        {
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          attachments: formData.attachments,
+          links: formData.links,
+          referenceNumber: formData.referenceNumber,
+        },
+        token
+      );
 
       if (emailResponse.success) {
         // Show success notification
@@ -219,7 +238,7 @@ export default function Contact() {
           subject: "Website Contact",
           message: "",
           attachments: [],
-          links: []
+          links: [],
         });
       } else {
         throw new Error(emailResponse.message || "Failed to send message");
@@ -248,10 +267,13 @@ export default function Contact() {
       <div className="container">
         {/* Hero Section */}
         <div className="web-contact-hero">
-          <h1 className="web-contact-title">Let's Build Something Amazing Together</h1>
+          <h1 className="web-contact-title">
+            Let's Build Something Amazing Together
+          </h1>
           <p className="web-contact-subtitle">
-            As a fullstack developer specializing in .NET and React, I'm ready to help bring your project to life. 
-            Whether you need a scalable API, an interactive web application, or end-to-end development.
+            As a fullstack developer specializing in .NET and React, I'm ready
+            to help bring your project to life. Whether you need a scalable API,
+            an interactive web application, or end-to-end development.
           </p>
         </div>
 
@@ -259,15 +281,21 @@ export default function Contact() {
         <div className="web-contact-services">
           <div className="web-contact-service-card">
             <h3 className="web-contact-service-title">Backend Development</h3>
-            <p className="web-contact-service-desc">ASP.NET Core APIs, Entity Framework, SQL databases</p>
+            <p className="web-contact-service-desc">
+              ASP.NET Core APIs, Entity Framework, SQL databases
+            </p>
           </div>
           <div className="web-contact-service-card">
             <h3 className="web-contact-service-title">Frontend Development</h3>
-            <p className="web-contact-service-desc">React, TypeScript, Tailwind, Modern UI/UX</p>
+            <p className="web-contact-service-desc">
+              React, TypeScript, Tailwind, Modern UI/UX
+            </p>
           </div>
           <div className="web-contact-service-card">
             <h3 className="web-contact-service-title">Full Project Delivery</h3>
-            <p className="web-contact-service-desc">End-to-end solutions with CI/CD and cloud deployment</p>
+            <p className="web-contact-service-desc">
+              End-to-end solutions with CI/CD and cloud deployment
+            </p>
           </div>
         </div>
 
@@ -276,8 +304,8 @@ export default function Contact() {
           {/* Form Column */}
           <div className="web-contact-form-container">
             <h2 className="web-contact-form-title">
-              {formData.referenceNumber 
-                ? `Reply to Conversation ${formData.referenceNumber}` 
+              {formData.referenceNumber
+                ? `Reply to Conversation ${formData.referenceNumber}`
                 : "Start New Conversation"}
             </h2>
 
@@ -294,7 +322,7 @@ export default function Contact() {
                     name="referenceNumber"
                     className="web-contact-input"
                     placeholder="e.g., CONV-20250923-0001"
-                    value={formData.referenceNumber || ''}
+                    value={formData.referenceNumber || ""}
                     onChange={handleChange}
                   />
                   {formData.referenceNumber && (
@@ -302,7 +330,10 @@ export default function Contact() {
                       type="button"
                       className="web-contact-reference-clear"
                       onClick={() => {
-                        setFormData(prev => ({ ...prev, referenceNumber: '' }));
+                        setFormData((prev) => ({
+                          ...prev,
+                          referenceNumber: "",
+                        }));
                       }}
                     >
                       Clear Reference
@@ -311,7 +342,7 @@ export default function Contact() {
                 </div>
               </div>
             )}
-            
+
             <form className="web-contact-form" onSubmit={handleSubmit}>
               <div className="web-contact-input-group">
                 <div className="web-contact-field">
@@ -413,8 +444,13 @@ export default function Contact() {
                   <div className="web-contact-attachment-list">
                     {formData.attachments.map((attachment, index) => (
                       <div key={index} className="web-contact-attachment-item">
-                        {attachment.type === 'image' && attachment.previewUrl ? (
-                          <img src={attachment.previewUrl} alt="Preview" className="web-contact-attachment-preview" />
+                        {attachment.type === "image" &&
+                        attachment.previewUrl ? (
+                          <img
+                            src={attachment.previewUrl}
+                            alt="Preview"
+                            className="web-contact-attachment-preview"
+                          />
                         ) : (
                           <div className="web-contact-attachment-icon">📄</div>
                         )}
@@ -436,7 +472,13 @@ export default function Contact() {
                   <div className="web-contact-link-list">
                     {formData.links.map((link, index) => (
                       <div key={index} className="web-contact-link-item">
-                        <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+                        <a
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {link}
+                        </a>
                         <button
                           type="button"
                           className="web-contact-link-remove"
@@ -455,7 +497,9 @@ export default function Contact() {
                 className="web-contact-submit"
                 disabled={status.submitting}
               >
-                {status.submitting ? "Sending..." : "Let's Discuss Your Project"}
+                {status.submitting
+                  ? "Sending..."
+                  : "Let's Discuss Your Project"}
               </button>
             </form>
           </div>
@@ -463,69 +507,71 @@ export default function Contact() {
           {/* Conversations Column */}
           {user && (
             <div className="web-contact-conversations">
-              <h2 className="web-contact-conversations-title">Your Conversations</h2>
-              {conversations.length > 0 ? (
+              <h2 className="web-contact-conversations-title">
+                Your Conversations
+              </h2>
+              {conversations && conversations?.length > 0 ? (
                 <div className="web-contact-conversations-list">
                   {conversations.map((conv) => (
-                    <div key={conv.id} className="web-contact-conversation-item">
+                    <div
+                      key={conv.id}
+                      className="web-contact-conversation-item"
+                    >
                       <div className="web-contact-conversation-header">
                         <div className="web-contact-conversation-ref">
-                          <span className="web-contact-ref-label">Ref:</span>
-                          <span className="web-contact-ref-number">{conv.referenceNumber}</span>
+                          {conv.referenceNumber && (
+                            <>
+                              <span className="web-contact-ref-label">
+                                Ref:
+                              </span>
+                              <span className="web-contact-ref-number">
+                                {conv.referenceNumber}
+                              </span>
+                            </>
+                          )}
                         </div>
-                        <span className={`web-contact-status web-contact-status-${conv.status}`}>
-                          {conv.status}
+                        <span className="web-contact-status">
+                          {conv.emailSent ? "Sent" : "Draft"}
                         </span>
                       </div>
 
-                      <div className="web-contact-messages">
-                        {conv.messages.map((msg, index) => (
-                          <div 
-                            key={msg?.id || index} 
-                            className={`web-contact-message ${msg.isFromUser ? 'user' : 'admin'}`}
-                          >
-                            <div className="web-contact-message-content">
-                              <h4 className="web-contact-message-subject">{msg.subject}</h4>
-                              <p className="web-contact-message-text">{msg.message}</p>
-                              
-                              {msg.referenceNumber && (
-                                <div className="web-contact-message-reference">
-                                  References: {msg.referenceNumber}
+                      <div className="web-contact-message">
+                        <div className="web-contact-message-content">
+                          <h4 className="web-contact-message-subject">
+                            {conv.subject}
+                          </h4>
+                          <p className="web-contact-message-text">
+                            {conv.message}
+                          </p>
+
+                          {(conv.attachmentPath || conv.links) && (
+                            <div className="web-contact-message-attachments">
+                              {conv.attachmentPath && (
+                                <div className="web-contact-attachment-item">
+                                  📎 {conv.attachmentPath}
                                 </div>
                               )}
-
-                              {(msg.attachments.length > 0 || msg.links.length > 0) && (
-                                <div className="web-contact-message-attachments">
-                                  {msg.attachments.map((att) => (
-                                    <a 
-                                      key={att.id}
-                                      href={att.fileUrl}
-                                      className="web-contact-attachment-link"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      📎 {att.fileName}
-                                    </a>
-                                  ))}
-                                  {msg.links.map((link) => (
+                              {conv.links && (
+                                <div className="web-contact-link-list">
+                                  {conv.links.split(", ").map((link, index) => (
                                     <a
-                                      key={link.id}
-                                      href={link.url}
+                                      key={index}
+                                      href={link}
                                       className="web-contact-link"
                                       target="_blank"
                                       rel="noopener noreferrer"
                                     >
-                                      🔗 {link.description || link.url}
+                                      🔗 {link}
                                     </a>
                                   ))}
                                 </div>
                               )}
                             </div>
-                            <time className="web-contact-message-time">
-                              {new Date(msg.createdAt).toLocaleString()}
-                            </time>
-                          </div>
-                        ))}
+                          )}
+                        </div>
+                        <time className="web-contact-message-time">
+                          {new Date(conv.createdAt).toLocaleString()}
+                        </time>
                       </div>
 
                       <div className="web-contact-conversation-actions">
@@ -533,10 +579,11 @@ export default function Contact() {
                           type="button"
                           className="web-contact-reply-btn"
                           onClick={() => {
-                            setFormData(prev => ({
+                            setFormData((prev) => ({
                               ...prev,
-                              referenceNumber: conv.referenceNumber,
-                              subject: `Re: ${conv.messages[0].subject}`
+                              referenceNumber:
+                                conv.referenceNumber || `REF-${conv.id}`,
+                              subject: `Re: ${conv.subject}`,
                             }));
                           }}
                         >
@@ -559,19 +606,27 @@ export default function Contact() {
               <ul className="web-contact-features">
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
-                  <p className="web-contact-feature-text">Expert in both frontend and backend development</p>
+                  <p className="web-contact-feature-text">
+                    Expert in both frontend and backend development
+                  </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
-                  <p className="web-contact-feature-text">Strong background in scientific applications</p>
+                  <p className="web-contact-feature-text">
+                    Strong background in scientific applications
+                  </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
-                  <p className="web-contact-feature-text">Experience with complex data visualization</p>
+                  <p className="web-contact-feature-text">
+                    Experience with complex data visualization
+                  </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
-                  <p className="web-contact-feature-text">Proven track record in project delivery</p>
+                  <p className="web-contact-feature-text">
+                    Proven track record in project delivery
+                  </p>
                 </li>
               </ul>
             </div>
@@ -581,7 +636,9 @@ export default function Contact() {
               <div className="web-contact-details">
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Email</h3>
-                  <p className="web-contact-detail-value">contact@asafarim.com</p>
+                  <p className="web-contact-detail-value">
+                    contact@asafarim.com
+                  </p>
                 </div>
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Location</h3>
@@ -589,7 +646,9 @@ export default function Contact() {
                 </div>
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Availability</h3>
-                  <p className="web-contact-detail-value">Available for freelance projects</p>
+                  <p className="web-contact-detail-value">
+                    Available for freelance projects
+                  </p>
                 </div>
               </div>
             </div>
