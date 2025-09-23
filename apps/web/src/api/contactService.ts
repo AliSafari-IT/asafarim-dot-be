@@ -10,6 +10,12 @@ export interface ContactRequest {
   name: string;
   from_name?: string;
   reply_to?: string;
+  attachments?: Array<{
+    file: File;
+    type: 'document' | 'image';
+  }>;
+  links?: string[];
+  referenceNumber?: string;
 }
 
 export interface ContactResponse {
@@ -29,12 +35,15 @@ const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
  */
 export async function submitContactForm(data: ContactRequest): Promise<ContactResponse> {
   try {
+    // Format the message with attachments and links information
+    const formattedMessage = formatEmailContent(data);
+
     // Prepare the template parameters
     const templateParams = {
       from_name: data.name || data.from_name,
       reply_to: data.email || data.reply_to,
       subject: data.subject || 'Website Contact',
-      message: data.message,
+      message: formattedMessage,
     };
 
     // Send the email using EmailJS
@@ -58,4 +67,37 @@ export async function submitContactForm(data: ContactRequest): Promise<ContactRe
  */
 export function initEmailJS(): void {
   emailjs.init(PUBLIC_KEY);
+}
+
+/**
+ * Formats the email content with all the necessary information
+ * @param data Contact form data
+ * @returns Formatted email content
+ */
+function formatEmailContent(data: ContactRequest): string {
+  let content = `Message from: ${data.name} <${data.email}>\n\n`;
+
+  // Add reference number if provided
+  if (data.referenceNumber) {
+    content += `Reference Number: ${data.referenceNumber}\n\n`;
+  }
+
+  // Add the main message
+  content += `${data.message}\n`;
+
+  // Add attachments information if any
+  if (data.attachments && data.attachments.length > 0) {
+    content += '\nAttachments:\n';
+    content += data.attachments
+      .map(att => `- ${att.file.name} (${att.type})`)
+      .join('\n');
+  }
+
+  // Add links if any
+  if (data.links && data.links.length > 0) {
+    content += '\n\nLinks:\n';
+    content += data.links.map(link => `- ${link}`).join('\n');
+  }
+
+  return content;
 }

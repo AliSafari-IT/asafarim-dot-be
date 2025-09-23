@@ -1,12 +1,53 @@
-import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
-import { submitContactForm, initEmailJS } from "../api/contactService";
+import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from "react";
+import { sendEmail } from "../api/emailService";
 import { useAuth, useNotifications } from "@asafarim/shared-ui-react";
+
+interface Conversation {
+  id: string;
+  referenceNumber: string;
+  messages: ConversationMessage[];
+  status: 'open' | 'replied' | 'closed';
+  createdAt: string;
+}
+
+interface ConversationMessage {
+  id: string;
+  subject: string;
+  message: string;
+  createdAt: string;
+  isFromUser: boolean;
+  referenceNumber?: string;
+  attachments: MessageAttachment[];
+  links: MessageLink[];
+}
+
+interface MessageAttachment {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileUrl: string;
+}
+
+interface MessageLink {
+  id: string;
+  url: string;
+  description?: string;
+}
+
+interface Attachment {
+  file: File;
+  previewUrl?: string;
+  type: 'document' | 'image';
+}
 
 interface FormState {
   name: string;
   email: string;
   subject: string;
   message: string;
+  attachments: Attachment[];
+  links: string[];
+  referenceNumber?: string; // Optional reference to another conversation
 }
 
 interface FormStatus {
@@ -21,18 +62,101 @@ export default function Contact() {
   const { addNotification } = useNotifications();
   const [email, setEmail] = useState(user?.email || "");
   const [name, setName] = useState(user?.name || user?.userName || "");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setEmail(user?.email || "");
     setName(user?.name || user?.userName || "");
   }, [user]);
 
+  useEffect(() => {
+    if (user) {
+      // Fetch user's conversation history
+      fetchConversations();
+    }
+  }, [user]);
+
+  const fetchConversations = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_CORE_API_URL}/conversations/${user.id}`);
+      const data = await response.json();
+      setConversations(data);
+    } catch (error) {
+      console.error('Failed to fetch conversations:', error);
+    }
+  };
+
   const [formData, setFormData] = useState<FormState>({
-    name: name,
-    email: email,
+    name: name || "",
+    email: email || "",
     subject: "Website Contact",
     message: "",
+    attachments: [],
+    links: []
   });
+
+  // Update form data when user auth state changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      name: name || prev.name,
+      email: email || prev.email
+    }));
+  }, [name, email]);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const newAttachments: Attachment[] = Array.from(files).map(file => ({
+      file,
+      type: file.type.startsWith('image/') ? 'image' : 'document',
+      previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined
+    }));
+
+    setFormData(prev => ({
+      ...prev,
+      attachments: [...prev.attachments, ...newAttachments]
+    }));
+  };
+
+  const handleRemoveAttachment = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleAddLink = () => {
+    const link = prompt('Please enter a URL:');
+    if (link && isValidUrl(link)) {
+      setFormData(prev => ({
+        ...prev,
+        links: [...prev.links, link]
+      }));
+    } else if (link) {
+      addNotification('error', 'Please enter a valid URL');
+    }
+  };
+
+  const handleRemoveLink = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      links: prev.links.filter((_, i) => i !== index)
+    }));
+  };
+
+  const isValidUrl = (string: string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   const [status, setStatus] = useState<FormStatus>({
     submitting: false,
@@ -40,11 +164,6 @@ export default function Contact() {
     error: null,
     success: false,
   });
-
-  // Initialize EmailJS when component mounts
-  useEffect(() => {
-    initEmailJS();
-  }, []);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -66,13 +185,20 @@ export default function Contact() {
       success: false,
     });
 
-    formData.name =
-      email + " <" + (formData.name + " reply to: " + formData.email) + ">";
+    // The email service will handle the formatting of attachments and links
 
     try {
-      const response = await submitContactForm(formData);
+      const emailResponse = await sendEmail({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        attachments: formData.attachments,
+        links: formData.links,
+        referenceNumber: formData.referenceNumber
+      });
 
-      if (response.status === 200) {
+      if (emailResponse.success) {
         // Show success notification
         addNotification(
           "success",
@@ -92,9 +218,11 @@ export default function Contact() {
           email: email,
           subject: "Website Contact",
           message: "",
+          attachments: [],
+          links: []
         });
       } else {
-        throw new Error("Failed to send message");
+        throw new Error(emailResponse.message || "Failed to send message");
       }
     } catch (error) {
       // Show error notification
@@ -143,11 +271,46 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Contact Form Section */}
+        {/* Main Content Section */}
         <div className="web-contact-layout">
           {/* Form Column */}
           <div className="web-contact-form-container">
-            <h2 className="web-contact-form-title">Start Your Project</h2>
+            <h2 className="web-contact-form-title">
+              {formData.referenceNumber 
+                ? `Reply to Conversation ${formData.referenceNumber}` 
+                : "Start New Conversation"}
+            </h2>
+
+            {/* Reference Number Input */}
+            {user && (
+              <div className="web-contact-reference">
+                <label htmlFor="referenceNumber" className="web-contact-label">
+                  Reference Number (Optional)
+                </label>
+                <div className="web-contact-reference-input">
+                  <input
+                    type="text"
+                    id="referenceNumber"
+                    name="referenceNumber"
+                    className="web-contact-input"
+                    placeholder="e.g., CONV-20250923-0001"
+                    value={formData.referenceNumber || ''}
+                    onChange={handleChange}
+                  />
+                  {formData.referenceNumber && (
+                    <button
+                      type="button"
+                      className="web-contact-reference-clear"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, referenceNumber: '' }));
+                      }}
+                    >
+                      Clear Reference
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
             
             <form className="web-contact-form" onSubmit={handleSubmit}>
               <div className="web-contact-input-group">
@@ -214,6 +377,79 @@ export default function Contact() {
                 ></textarea>
               </div>
 
+              {/* Attachments Section */}
+              <div className="web-contact-attachments">
+                <div className="web-contact-attachment-header">
+                  <h3 className="web-contact-label">Attachments & Links</h3>
+                  <div className="web-contact-attachment-actions">
+                    <button
+                      type="button"
+                      className="web-contact-attachment-btn"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Add File
+                    </button>
+                    <button
+                      type="button"
+                      className="web-contact-attachment-btn"
+                      onClick={handleAddLink}
+                    >
+                      Add Link
+                    </button>
+                  </div>
+                </div>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handleFileUpload}
+                  multiple
+                  accept=".pdf,.doc,.docx,.txt,image/*"
+                />
+
+                {/* Attachments Preview */}
+                {formData.attachments.length > 0 && (
+                  <div className="web-contact-attachment-list">
+                    {formData.attachments.map((attachment, index) => (
+                      <div key={index} className="web-contact-attachment-item">
+                        {attachment.type === 'image' && attachment.previewUrl ? (
+                          <img src={attachment.previewUrl} alt="Preview" className="web-contact-attachment-preview" />
+                        ) : (
+                          <div className="web-contact-attachment-icon">📄</div>
+                        )}
+                        <span>{attachment.file.name}</span>
+                        <button
+                          type="button"
+                          className="web-contact-attachment-remove"
+                          onClick={() => handleRemoveAttachment(index)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Links Preview */}
+                {formData.links.length > 0 && (
+                  <div className="web-contact-link-list">
+                    {formData.links.map((link, index) => (
+                      <div key={index} className="web-contact-link-item">
+                        <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+                        <button
+                          type="button"
+                          className="web-contact-link-remove"
+                          onClick={() => handleRemoveLink(index)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <button
                 type="submit"
                 className="web-contact-submit"
@@ -224,7 +460,99 @@ export default function Contact() {
             </form>
           </div>
 
-          {/* Info Column */}
+          {/* Conversations Column */}
+          {user && (
+            <div className="web-contact-conversations">
+              <h2 className="web-contact-conversations-title">Your Conversations</h2>
+              {conversations.length > 0 ? (
+                <div className="web-contact-conversations-list">
+                  {conversations.map((conv) => (
+                    <div key={conv.id} className="web-contact-conversation-item">
+                      <div className="web-contact-conversation-header">
+                        <div className="web-contact-conversation-ref">
+                          <span className="web-contact-ref-label">Ref:</span>
+                          <span className="web-contact-ref-number">{conv.referenceNumber}</span>
+                        </div>
+                        <span className={`web-contact-status web-contact-status-${conv.status}`}>
+                          {conv.status}
+                        </span>
+                      </div>
+
+                      <div className="web-contact-messages">
+                        {conv.messages.map((msg, index) => (
+                          <div 
+                            key={msg?.id || index} 
+                            className={`web-contact-message ${msg.isFromUser ? 'user' : 'admin'}`}
+                          >
+                            <div className="web-contact-message-content">
+                              <h4 className="web-contact-message-subject">{msg.subject}</h4>
+                              <p className="web-contact-message-text">{msg.message}</p>
+                              
+                              {msg.referenceNumber && (
+                                <div className="web-contact-message-reference">
+                                  References: {msg.referenceNumber}
+                                </div>
+                              )}
+
+                              {(msg.attachments.length > 0 || msg.links.length > 0) && (
+                                <div className="web-contact-message-attachments">
+                                  {msg.attachments.map((att) => (
+                                    <a 
+                                      key={att.id}
+                                      href={att.fileUrl}
+                                      className="web-contact-attachment-link"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      📎 {att.fileName}
+                                    </a>
+                                  ))}
+                                  {msg.links.map((link) => (
+                                    <a
+                                      key={link.id}
+                                      href={link.url}
+                                      className="web-contact-link"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      🔗 {link.description || link.url}
+                                    </a>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <time className="web-contact-message-time">
+                              {new Date(msg.createdAt).toLocaleString()}
+                            </time>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="web-contact-conversation-actions">
+                        <button
+                          type="button"
+                          className="web-contact-reply-btn"
+                          onClick={() => {
+                            setFormData(prev => ({
+                              ...prev,
+                              referenceNumber: conv.referenceNumber,
+                              subject: `Re: ${conv.messages[0].subject}`
+                            }));
+                          }}
+                        >
+                          Reply to this conversation
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="web-contact-conversations-empty">
+                  No conversations yet. Start one by sending a message!
+                </p>
+              )}
+            </div>
+          )}
           <div className="web-contact-info-wrapper">
             <div className="web-contact-info">
               <h2 className="web-contact-info-title">Why Work With Me?</h2>

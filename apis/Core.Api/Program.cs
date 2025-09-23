@@ -36,7 +36,9 @@ var developmentOrigins = new[]
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5175",
-    "http://localhost:5101"
+    "http://localhost:5101",
+    "http://web.asafarim.local:5175",  // Your web app
+    "http://localhost:5102"  // Core API
 };
 
 // Combine origins based on environment
