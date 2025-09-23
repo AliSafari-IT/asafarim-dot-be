@@ -5,6 +5,9 @@
 @import "./styles/ToolCard.css";
 @import "./styles/JobTools.css";
 @import "./styles/ResumeMaker.css";
+@import "./styles/WebAbout.css";
+@import "./styles/WebContact.css";
+
 
 /* Use central theme variables */
 body {

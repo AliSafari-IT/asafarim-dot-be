@@ -1,6 +1,6 @@
-import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
-import { submitContactForm, initEmailJS } from '../api/contactService';
-import { useAuth, useNotifications } from '@asafarim/shared-ui-react';
+import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
+import { submitContactForm, initEmailJS } from "../api/contactService";
+import { useAuth, useNotifications } from "@asafarim/shared-ui-react";
 
 interface FormState {
   name: string;
@@ -19,24 +19,26 @@ interface FormStatus {
 export default function Contact() {
   const { user } = useAuth();
   const { addNotification } = useNotifications();
-  const [email, setEmail] = useState(user?.email || '');
-  
+  const [email, setEmail] = useState(user?.email || "");
+  const [name, setName] = useState(user?.name || user?.userName || "");
+
   useEffect(() => {
-    setEmail(user?.email || '');    
+    setEmail(user?.email || "");
+    setName(user?.name || user?.userName || "");
   }, [user]);
 
   const [formData, setFormData] = useState<FormState>({
-    name: '',
+    name: name,
     email: email,
-    subject: 'Website Contact',
-    message: ''
+    subject: "Website Contact",
+    message: "",
   });
-  
+
   const [status, setStatus] = useState<FormStatus>({
     submitting: false,
     submitted: false,
     error: null,
-    success: false
+    success: false,
   });
 
   // Initialize EmailJS when component mounts
@@ -44,154 +46,223 @@ export default function Contact() {
     initEmailJS();
   }, []);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     setStatus({
       submitting: true,
       submitted: false,
       error: null,
-      success: false
+      success: false,
     });
 
-    formData.name = email + " <" + (formData.name +  ' reply to: ' + formData.email) + ">";
+    formData.name =
+      email + " <" + (formData.name + " reply to: " + formData.email) + ">";
 
     try {
       const response = await submitContactForm(formData);
-      
+
       if (response.status === 200) {
         // Show success notification
-        addNotification('success', 'Thank you for your message! We\'ve received your inquiry and will get back to you soon.');
-        
+        addNotification(
+          "success",
+          "Thank you for your message! We've received your inquiry and will get back to you soon."
+        );
+
         setStatus({
           submitting: false,
           submitted: true,
           error: null,
-          success: true
+          success: true,
         });
-        
+
         // Reset form after successful submission
         setFormData({
-          name: '',
+          name: name,
           email: email,
-          subject: 'Website Contact',
-          message: ''
+          subject: "Website Contact",
+          message: "",
         });
       } else {
-        throw new Error('Failed to send message');
+        throw new Error("Failed to send message");
       }
     } catch (error) {
       // Show error notification
-      addNotification('error', error instanceof Error ? error.message : 'An unexpected error occurred');
-      
+      addNotification(
+        "error",
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
+
       setStatus({
         submitting: false,
         submitted: true,
-        error: error instanceof Error ? error.message : 'An unexpected error occurred',
-        success: false
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+        success: false,
       });
     }
   };
 
   return (
-    <section className="section">
+    <section className="web-contact">
       <div className="container">
-        <h1 className="mb-4 text-2xl font-bold text-phosphor">Contact Us</h1>
-        <p className="text-lg mb-8">
-          Have questions about our services or want to discuss a project? Reach out to us using the form below.
-        </p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-          <div className="p-4 bg-background shadow-sm rounded-lg">
-            <h2 className="text-primary mb-4 text-lg font-semibold">Send a Message</h2>
+        {/* Hero Section */}
+        <div className="web-contact-hero">
+          <h1 className="web-contact-title">Let's Build Something Amazing Together</h1>
+          <p className="web-contact-subtitle">
+            As a fullstack developer specializing in .NET and React, I'm ready to help bring your project to life. 
+            Whether you need a scalable API, an interactive web application, or end-to-end development.
+          </p>
+        </div>
+
+        {/* Services Grid */}
+        <div className="web-contact-services">
+          <div className="web-contact-service-card">
+            <h3 className="web-contact-service-title">Backend Development</h3>
+            <p className="web-contact-service-desc">ASP.NET Core APIs, Entity Framework, SQL databases</p>
+          </div>
+          <div className="web-contact-service-card">
+            <h3 className="web-contact-service-title">Frontend Development</h3>
+            <p className="web-contact-service-desc">React, TypeScript, Tailwind, Modern UI/UX</p>
+          </div>
+          <div className="web-contact-service-card">
+            <h3 className="web-contact-service-title">Full Project Delivery</h3>
+            <p className="web-contact-service-desc">End-to-end solutions with CI/CD and cloud deployment</p>
+          </div>
+        </div>
+
+        {/* Contact Form Section */}
+        <div className="web-contact-layout">
+          {/* Form Column */}
+          <div className="web-contact-form-container">
+            <h2 className="web-contact-form-title">Start Your Project</h2>
             
-            <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
-                <div className="flex flex-col gap-sm">
-                  <label htmlFor="name" className="form-label">Name</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    name="name" 
-                    className="form-input" 
-                    value={formData.name}
-                    onChange={handleChange}
-                    required 
-                  />
-                </div>
-                
-                <div className="flex flex-col gap-sm">
-                  <label htmlFor="email" className="form-label">Email</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    className="form-input" 
-                    value={formData.email || email}
-                    onChange={handleChange}
-                    required 
-                  />
-                </div>
-                
-                <div className="flex flex-col gap-sm">
-                  <label htmlFor="subject" className="form-label">Subject</label>
-                  <input 
-                    type="text" 
-                    id="subject" 
-                    name="subject" 
-                    className="form-input" 
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required 
-                  />
-                </div>
-                
-                <div className="flex flex-col gap-sm">
-                  <label htmlFor="message" className="form-label">Message</label>
-                  <textarea 
-                    id="message" 
-                    name="message" 
-                    rows={5} 
-                    className="form-input" 
-                    value={formData.message}
+            <form className="web-contact-form" onSubmit={handleSubmit}>
+              <div className="web-contact-input-group">
+                <div className="web-contact-field">
+                  <label htmlFor="name" className="web-contact-label">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="web-contact-input"
+                    value={formData.name || name}
                     onChange={handleChange}
                     required
-                  ></textarea>
+                  />
                 </div>
-                
-                <button 
-                  type="submit" 
-                  className="btn-submit" 
-                  disabled={status.submitting}
-                >
-                  {status.submitting ? 'Sending...' : 'Send Message'}
-                </button>
-              </form>
+
+                <div className="web-contact-field">
+                  <label htmlFor="email" className="web-contact-label">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="web-contact-input"
+                    value={formData.email || email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="web-contact-field">
+                <label htmlFor="subject" className="web-contact-label">
+                  Project Type
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  className="web-contact-input"
+                  placeholder="e.g., Full-stack Application, API Development, Frontend UI"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="web-contact-field">
+                <label htmlFor="message" className="web-contact-label">
+                  Project Details
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={6}
+                  className="web-contact-textarea"
+                  placeholder="Please describe your project, timeline, and any specific requirements..."
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                className="web-contact-submit"
+                disabled={status.submitting}
+              >
+                {status.submitting ? "Sending..." : "Let's Discuss Your Project"}
+              </button>
+            </form>
           </div>
-          
-          <div className="p-4 bg-background shadow-sm rounded-lg">
-            <h2 className="text-primary mb-4 text-xl font-semibold">Contact Information</h2>
-            <div className="flex flex-col gap-md">
-              <div>
-                <h3 className="text-lg font-semibold mb-1">Email</h3>
-                <p>contact@asafarim.be</p>
-              </div>
-              
-              <div>
-                <h3 className="text-lg font-semibold mb-1">Location</h3>
-                <p>Kermt, België</p>
-              </div>
-              
-              <div>
-                <h3 className="text-lg font-semibold mb-1">Working Hours</h3>
-                <p>Monday - Friday: 9AM - 5PM</p>
+
+          {/* Info Column */}
+          <div className="web-contact-info-wrapper">
+            <div className="web-contact-info">
+              <h2 className="web-contact-info-title">Why Work With Me?</h2>
+              <ul className="web-contact-features">
+                <li className="web-contact-feature">
+                  <span className="web-contact-feature-icon">✓</span>
+                  <p className="web-contact-feature-text">Expert in both frontend and backend development</p>
+                </li>
+                <li className="web-contact-feature">
+                  <span className="web-contact-feature-icon">✓</span>
+                  <p className="web-contact-feature-text">Strong background in scientific applications</p>
+                </li>
+                <li className="web-contact-feature">
+                  <span className="web-contact-feature-icon">✓</span>
+                  <p className="web-contact-feature-text">Experience with complex data visualization</p>
+                </li>
+                <li className="web-contact-feature">
+                  <span className="web-contact-feature-icon">✓</span>
+                  <p className="web-contact-feature-text">Proven track record in project delivery</p>
+                </li>
+              </ul>
+            </div>
+
+            <div className="web-contact-info">
+              <h2 className="web-contact-info-title">Contact Information</h2>
+              <div className="web-contact-details">
+                <div className="web-contact-detail">
+                  <h3 className="web-contact-detail-label">Email</h3>
+                  <p className="web-contact-detail-value">contact@asafarim.com</p>
+                </div>
+                <div className="web-contact-detail">
+                  <h3 className="web-contact-detail-label">Location</h3>
+                  <p className="web-contact-detail-value">Hasselt, België</p>
+                </div>
+                <div className="web-contact-detail">
+                  <h3 className="web-contact-detail-label">Availability</h3>
+                  <p className="web-contact-detail-value">Available for freelance projects</p>
+                </div>
               </div>
             </div>
           </div>

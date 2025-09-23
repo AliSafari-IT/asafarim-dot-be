@@ -610,6 +610,11 @@ article { margin: 2rem 0; }
 .mr-4 { margin-right: 4rem; }
 .mb-4 { margin-bottom: 4rem; }
 .ml-4 { margin-left: 4rem; }
+.m-6 { margin: 6rem; }
+.mt-6 { margin-top: 6rem; }
+.mr-6 { margin-right: 6rem; }
+.mb-6 { margin-bottom: 6rem; }
+.ml-6 { margin-left: 6rem; }
 .m-8 { margin: 8rem; }
 .mt-8 { margin-top: 8rem; }
 .mr-8 { margin-right: 8rem; }
@@ -657,6 +662,21 @@ article { margin: 2rem 0; }
 .list-reverse { list-style-position: reverse; }
 .list-item { list-style-position: item; }
 .no-underline { text-decoration: none; }
+.underline { text-decoration: underline; }
+.italic { font-style: italic; }
+.underline-dotted { text-decoration: underline dotted; }
+.underline-dashed { text-decoration: underline dashed; }
+.underline-solid { text-decoration: underline solid; }
+.underline-double { text-decoration: underline double; }
+.underline-wavy { text-decoration: underline wavy; }
+.underline-thick { text-decoration-thickness: 2px; }
+.underline-thin { text-decoration-thickness: 1px; }
+.underline-from-font { text-decoration-thickness: from-font; }
+.underline-auto { text-decoration-thickness: auto; }
+.underline-inherit { text-decoration-thickness: inherit; }
+
+
+
 
 .row h1, .row h2, .row h3, .row h4, .row h5, .row h6 {
   color: var(--color-foreground);

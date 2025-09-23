@@ -49,8 +49,8 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   console.log("meEndpoint", meEndpoint);
   const logoutEndpoint = options?.logoutEndpoint ?? '/auth/logout';
   console.log("logoutEndpoint", logoutEndpoint);
-  const defaultIdentityLogin = isProd ? 'https://identity.asafarim.be/login' : 'http://identity.asafarim.local:5101/login';
-  const defaultIdentityRegister = isProd ? 'https://identity.asafarim.be/register' : 'http://identity.asafarim.local:5101/register';
+  const defaultIdentityLogin = isProd ? 'https://identity.asafarim.be/login' : 'http://identity.asafarim.local:5177/login';
+  const defaultIdentityRegister = isProd ? 'https://identity.asafarim.be/register' : 'http://identity.asafarim.local:5177/register';
   const identityLoginUrl = options?.identityLoginUrl ?? defaultIdentityLogin;
   const identityRegisterUrl = options?.identityRegisterUrl ?? defaultIdentityRegister;
 
