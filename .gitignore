@@ -124,4 +124,5 @@ pnpm-lock.yaml
 appsettings*.json
 launchSettings*.json
 .env
+.env.local
 .env.*
