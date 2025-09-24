@@ -75,6 +75,10 @@ public class EmailController : ControllerBase
             {
                 messageBody += $"Reference Number: {request.ReferenceNumber}\n\n";
             }
+            if (!string.IsNullOrEmpty(request.ReferingToConversation))
+            {
+                messageBody += $"Referring to Conversation: {request.ReferingToConversation}\n\n";
+            }
             messageBody += request.Message;
 
             // Add links if any
@@ -156,6 +160,7 @@ public class EmailController : ControllerBase
                             ? string.Join(", ", request.Attachments.Select(a => a.FileName))
                             : null,
                     ReferenceNumber = request.ReferenceNumber,
+                    ReferingToConversation = request.ReferingToConversation,
                     Links = request.Links?.Any() == true ? string.Join(", ", request.Links) : null,
                 };
 
@@ -205,6 +210,7 @@ public class EmailController : ControllerBase
         public required string Subject { get; set; }
         public required string Message { get; set; }
         public string? ReferenceNumber { get; set; }
+        public string? ReferingToConversation { get; set; }
         public List<EmailAttachment>? Attachments { get; set; }
         public List<string>? Links { get; set; }
     }

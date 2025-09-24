@@ -22,10 +22,12 @@ public class Contact
     public bool EmailSent { get; set; }
 
     public string? AttachmentPath { get; set; }
-    
+
     public string? Name { get; set; }
-    
+
     public string? ReferenceNumber { get; set; }
-    
+
+    public string? ReferingToConversation { get; set; }
+
     public string? Links { get; set; }
 }

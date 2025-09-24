@@ -5,9 +5,8 @@ namespace Core.Api.Data;
 
 public class CoreDbContext : DbContext
 {
-    public CoreDbContext(DbContextOptions<CoreDbContext> options) : base(options)
-    {
-    }
+    public CoreDbContext(DbContextOptions<CoreDbContext> options)
+        : base(options) { }
 
     public DbSet<Contact> Contacts { get; set; } = null!;
 

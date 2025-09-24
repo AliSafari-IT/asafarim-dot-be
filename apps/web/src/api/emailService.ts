@@ -10,7 +10,8 @@ export interface EmailRequest {
     type: 'document' | 'image';
   }>;
   links?: string[];
-  referenceNumber?: string;
+  referenceNumber?: string; // The unique ID for this conversation
+  referingToConversation?: string; // Reference to another conversation
 }
 
 export interface EmailResponse {
@@ -74,6 +75,7 @@ export async function sendEmail(data: EmailRequest, token?: string | null): Prom
         subject: data.subject,
         message: data.message,
         referenceNumber: data.referenceNumber,
+        referingToConversation: data.referingToConversation,
         attachments,
         links: data.links,
       }),

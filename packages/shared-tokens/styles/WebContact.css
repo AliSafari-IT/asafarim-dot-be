@@ -212,6 +212,104 @@
   gap: var(--global-spacing-unit);
 }
 
+.web-contact-reference-actions {
+  display: flex;
+  gap: var(--global-spacing-unit);
+}
+
+.web-contact-input-readonly {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary);
+  opacity: 0.9;
+}
+
+/* Reference Dropdown Styles */
+.web-contact-reference-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  margin-top: 4px;
+  background-color: var(--color-background-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--global-border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-height: 300px;
+  overflow-y: auto;
+  backdrop-filter: blur(5px);
+}
+
+.web-contact-reference-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--global-spacing-unit) var(--global-spacing-unit-2x);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.web-contact-reference-dropdown-header h4 {
+  margin: 0;
+  font-size: var(--global-font-size);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.web-contact-reference-dropdown-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.web-contact-reference-dropdown-list {
+  padding: var(--global-spacing-unit);
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-background-secondary);
+}
+
+.web-contact-reference-dropdown-item {
+  padding: var(--global-spacing-unit) var(--global-spacing-unit-2x);
+  border-radius: var(--global-border-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: var(--global-spacing-unit);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background-secondary);
+}
+
+.web-contact-reference-dropdown-item:hover {
+  background-color: var(--color-background-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary);
+}
+
+.web-contact-reference-dropdown-item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--global-spacing-unit-half);
+}
+
+.web-contact-reference-dropdown-item-ref {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.web-contact-reference-dropdown-item-date {
+  font-size: var(--global-font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.web-contact-reference-dropdown-item-subject {
+  font-size: var(--global-font-size);
+  color: var(--color-text-primary);
+}
+
 .web-contact-reference-clear {
   padding: var(--global-spacing-unit) var(--global-spacing-unit-2x);
   background: var(--color-error-light);
@@ -232,36 +330,83 @@
 .web-contact-conversations {
   background: var(--bg-secondary);
   border-radius: var(--global-border-radius-lg);
-  padding: var(--global-spacing-unit-3x);
+  padding: var(--global-spacing-unit-2x);
 }
 
 .web-contact-conversations-title {
   font-size: var(--global-font-size-xl);
   font-weight: var(--global-font-weight-bold);
   color: var(--color-primary);
-  margin-bottom: var(--global-spacing-unit-3x);
+  margin-bottom: var(--global-spacing-unit-2x);
 }
 
+/* Conversation List */
 .web-contact-conversations-list {
   display: flex;
   flex-direction: column;
-  gap: var(--global-spacing-unit-3x);
+  gap: var(--global-spacing-unit);
 }
 
+/* Conversation Item */
 .web-contact-conversation-item {
   background: var(--bg-primary);
   border-radius: var(--global-border-radius-md);
-  padding: var(--global-spacing-unit-2x);
+  padding: var(--global-spacing-unit);
   border: 1px solid var(--border-color);
 }
 
+/* Conversation Header */
 .web-contact-conversation-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--global-spacing-unit-2x);
-  padding-bottom: var(--global-spacing-unit-2x);
-  border-bottom: 1px solid var(--border-color);
+  padding: var(--global-spacing-unit) var(--global-spacing-unit-2x);
+  background-color: var(--color-background-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.web-contact-conversation-header:hover {
+  background-color: var(--color-background-hover);
+}
+
+/* Conversation Summary */
+.web-contact-conversation-summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* ref | subject | date */
+  align-items: center;
+  gap: var(--global-spacing-unit);
+  min-width: 0; /* allow ellipsis */
+}
+
+.web-contact-conversation-subject {
+  font-weight: 600;
+  font-size: 0.95em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.web-contact-conversation-date {
+  color: var(--color-text-secondary);
+  font-size: 0.85em;
+}
+
+/* Conversation Details */
+.web-contact-conversation-details {
+  padding: var(--global-spacing-unit);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-background-primary);
+}
+
+/* Chevron Icon */
+.web-contact-conversation-chevron {
+  margin-left: 0.25rem;
+  transition: transform 0.2s ease;
+}
+
+.web-contact-conversation-header[aria-expanded="true"] .web-contact-conversation-chevron {
+  transform: rotate(180deg);
 }
 
 .web-contact-conversation-ref {
@@ -590,6 +735,23 @@
   text-align: center;
   color: var(--text-secondary);
   padding: var(--global-spacing-unit-3x) 0;
+}
+
+/* Input Focus Highlight Effect */
+@keyframes input-highlight {
+  0%, 100% {
+    box-shadow: 0 0 0 2px var(--color-phosphor);
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--warning);
+  }
+}
+
+.web-contact-input-highlight {
+  animation: input-highlight 1.5s ease-in-out 2;
+}
+.web-contact-input-highlight {
+  transition: input-highlight 2s ease-in-out;
 }
 
 /* Responsive Styles */

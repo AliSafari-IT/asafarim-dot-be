@@ -7,9 +7,21 @@ import {
   type ChangeEvent,
 } from "react";
 import { sendEmail } from "../api/emailService";
-import { useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import { apiGet, CORE_API_BASE } from "../api/core";
 import React from "react";
+
+// Generate a unique reference number for new conversations
+const generateReferenceNumber = (): string => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const random = Math.floor(Math.random() * 10000)
+    .toString()
+    .padStart(4, "0");
+  return `CONV-${year}${month}${day}-${random}`;
+};
 
 interface Conversation {
   id: number;
@@ -22,6 +34,7 @@ interface Conversation {
   emailSent: boolean;
   attachmentPath?: string;
   referenceNumber?: string;
+  referingToConversation?: string;
   links?: string;
 }
 
@@ -38,7 +51,8 @@ interface FormState {
   message: string;
   attachments: Attachment[];
   links: string[];
-  referenceNumber?: string; // Optional reference to another conversation
+  referenceNumber?: string; // Auto-generated for new conversations
+  referingToConversation?: string; // Reference to another conversation
 }
 
 interface FormStatus {
@@ -55,6 +69,30 @@ export default function Contact() {
   const [name, setName] = useState(user?.name || user?.userName || "");
   const [conversations, setConversations] = useState<Conversation[]>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [referringToConversation, setReferringToConversation] = useState<
+    string | undefined
+  >();
+  const [showReferenceDropdown, setShowReferenceDropdown] = useState(false);
+  const [expandedConversations, setExpandedConversations] = useState<
+    Record<number, boolean>
+  >({});
+
+    // ✅ Ref for Project Type input
+    const projectTypeRef = useRef<HTMLInputElement>(null);
+
+    // ✅ Scroll & highlight function
+    const scrollToProjectType = () => {
+      const el = projectTypeRef.current;
+      if (!el) return;
+  
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.focus({ preventScroll: true });
+  
+      // Add a temporary highlight class
+      el.classList.add("web-contact-input-highlight");
+      setTimeout(() => el.classList.remove("web-contact-input-highlight"), 2000);
+    };
+  
 
   const fetchConversations = useCallback(async () => {
     if (!user?.id || !token) {
@@ -103,6 +141,14 @@ export default function Contact() {
     console.info("Conversations:", conversations);
   }, [conversations]);
 
+  // Function to toggle conversation expanded/collapsed state
+  const toggleConversation = (id: number) => {
+    setExpandedConversations((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const [formData, setFormData] = useState<FormState>({
     name: name || "",
     email: email || "",
@@ -110,6 +156,7 @@ export default function Contact() {
     message: "",
     attachments: [],
     links: [],
+    referenceNumber: user ? generateReferenceNumber() : undefined,
   });
 
   // Update form data when user auth state changes
@@ -118,8 +165,13 @@ export default function Contact() {
       ...prev,
       name: name || prev.name,
       email: email || prev.email,
+      // Generate a reference number if user is logged in and there isn't one already
+      referenceNumber:
+        user && !prev.referenceNumber
+          ? generateReferenceNumber()
+          : prev.referenceNumber,
     }));
-  }, [name, email]);
+  }, [name, email, user]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -213,6 +265,7 @@ export default function Contact() {
           attachments: formData.attachments,
           links: formData.links,
           referenceNumber: formData.referenceNumber,
+          referingToConversation: formData.referingToConversation,
         },
         token
       );
@@ -239,7 +292,10 @@ export default function Contact() {
           message: "",
           attachments: [],
           links: [],
+          referenceNumber: generateReferenceNumber(), // Generate a new reference number
+          referingToConversation: undefined,
         });
+        setReferringToConversation(undefined);
       } else {
         throw new Error(emailResponse.message || "Failed to send message");
       }
@@ -311,35 +367,97 @@ export default function Contact() {
 
             {/* Reference Number Input */}
             {user && (
-              <div className="web-contact-reference">
+              <div
+                className="web-contact-reference"
+                style={{ position: "relative" }}
+              >
                 <label htmlFor="referenceNumber" className="web-contact-label">
-                  Reference Number (Optional)
+                  Reference Number
                 </label>
                 <div className="web-contact-reference-input">
                   <input
                     type="text"
                     id="referenceNumber"
                     name="referenceNumber"
-                    className="web-contact-input"
-                    placeholder="e.g., CONV-20250923-0001"
+                    className="web-contact-input web-contact-input-readonly"
                     value={formData.referenceNumber || ""}
-                    onChange={handleChange}
+                    readOnly
                   />
-                  {formData.referenceNumber && (
-                    <button
-                      type="button"
-                      className="web-contact-reference-clear"
-                      onClick={() => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          referenceNumber: "",
-                        }));
-                      }}
-                    >
-                      Clear Reference
-                    </button>
-                  )}
+                  <div className="web-contact-reference-actions">
+                    {referringToConversation ? (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setReferringToConversation(undefined);
+                          setFormData((prev) => ({
+                            ...prev,
+                            referenceNumber: generateReferenceNumber(),
+                            referingToConversation: undefined,
+                            subject: "Website Contact",
+                          }));
+                        }}
+                      >
+                        New Conversation
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          setShowReferenceDropdown(!showReferenceDropdown)
+                        }
+                      >
+                        Reference Previous
+                      </Button>
+                    )}
+                  </div>
                 </div>
+
+                {/* Dropdown for selecting previous conversations */}
+                {showReferenceDropdown &&
+                  conversations &&
+                  conversations.length > 0 && (
+                    <div className="web-contact-reference-dropdown">
+                      <div className="web-contact-reference-dropdown-header">
+                        <h4>Select a conversation to reference</h4>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => setShowReferenceDropdown(false)}
+                        >
+                          ×
+                        </Button>
+                      </div>
+                      <div className="web-contact-reference-dropdown-list">
+                        {conversations.map((conv) => (
+                          <div
+                            key={conv.id}
+                            className="web-contact-reference-dropdown-item"
+                            onClick={() => {
+                              const refNumber =
+                                conv.referenceNumber || `REF-${conv.id}`;
+                              setFormData((prev) => ({
+                                ...prev,
+                                referingToConversation: refNumber,
+                              }));
+                              setShowReferenceDropdown(false);
+                            }}
+                          >
+                            <div className="web-contact-reference-dropdown-item-header">
+                              <span className="web-contact-reference-dropdown-item-ref">
+                                {conv.referenceNumber || `REF-${conv.id}`}
+                              </span>
+                              <span className="web-contact-reference-dropdown-item-date">
+                                {new Date(conv.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="web-contact-reference-dropdown-item-subject">
+                              {conv.subject}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
               </div>
             )}
 
@@ -383,6 +501,7 @@ export default function Contact() {
                 <input
                   type="text"
                   id="subject"
+                  ref={projectTypeRef} 
                   name="subject"
                   className="web-contact-input"
                   placeholder="e.g., Full-stack Application, API Development, Frontend UI"
@@ -512,91 +631,141 @@ export default function Contact() {
               </h2>
               {conversations && conversations?.length > 0 ? (
                 <div className="web-contact-conversations-list">
-                  {conversations.map((conv) => (
-                    <div
-                      key={conv.id}
-                      className="web-contact-conversation-item"
-                    >
-                      <div className="web-contact-conversation-header">
-                        <div className="web-contact-conversation-ref">
-                          {conv.referenceNumber && (
-                            <>
-                              <span className="web-contact-ref-label">
-                                Ref:
-                              </span>
-                              <span className="web-contact-ref-number">
-                                {conv.referenceNumber}
-                              </span>
-                            </>
-                          )}
+                  {conversations.map((conv) => {
+                    const isExpanded = expandedConversations[conv.id] || false;
+                    const refNumber = conv.referenceNumber || `REF-${conv.id}`;
+
+                    return (
+                      <div
+                        id={`conversation-${conv.id}`}
+                        key={conv.id}
+                        className="web-contact-conversation-item"
+                      >
+                        <div
+                          className="web-contact-conversation-header"
+                          aria-expanded={isExpanded}
+                          onClick={() => toggleConversation(conv.id)}
+                        >
+                          <div className="web-contact-conversation-summary">
+                            <span className="web-contact-ref-number">
+                              {refNumber}
+                            </span>
+                            <span
+                              className="web-contact-conversation-subject"
+                              title={conv.subject}
+                            >
+                              {conv.subject}
+                            </span>
+                            <span className="web-contact-conversation-date">
+                              {new Date(conv.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="web-contact-conversation-chevron">
+                            {isExpanded ? "▲" : "▼"}
+                          </div>
                         </div>
-                        <span className="web-contact-status">
-                          {conv.emailSent ? "Sent" : "Draft"}
-                        </span>
-                      </div>
 
-                      <div className="web-contact-message">
-                        <div className="web-contact-message-content">
-                          <h4 className="web-contact-message-subject">
-                            {conv.subject}
-                          </h4>
-                          <p className="web-contact-message-text">
-                            {conv.message}
-                          </p>
-
-                          {(conv.attachmentPath || conv.links) && (
-                            <div className="web-contact-message-attachments">
-                              {conv.attachmentPath && (
-                                <div className="web-contact-attachment-item">
-                                  📎 {conv.attachmentPath}
+                        {isExpanded && (
+                          <div className="web-contact-conversation-details">
+                            <div className="web-contact-message">
+                              <p className="web-contact-message-text">
+                                {conv.message}
+                              </p>
+                              {conv.referingToConversation && (
+                                <div className="web-contact-message-reference">
+                                  <strong>Referring to conversation: </strong>
+                                  <a 
+                                    href="#" 
+                                    className="web-contact-reference-link"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      // Find the conversation with this reference number
+                                      const referencedConv = conversations?.find(
+                                        c => c.referenceNumber === conv.referingToConversation || 
+                                             `REF-${c.id}` === conv.referingToConversation
+                                      );
+                                      
+                                      if (referencedConv) {
+                                        // Expand the referenced conversation if it's not already expanded
+                                        setExpandedConversations(prev => ({
+                                          ...prev,
+                                          [referencedConv.id]: true
+                                        }));
+                                        
+                                        // Scroll to the referenced conversation
+                                        setTimeout(() => {
+                                          const element = document.getElementById(`conversation-${referencedConv.id}`);
+                                          if (element) {
+                                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                            // Add a highlight effect
+                                            element.classList.add('web-contact-conversation-highlight');
+                                            setTimeout(() => {
+                                              element.classList.remove('web-contact-conversation-highlight');
+                                            }, 2000);
+                                          }
+                                        }, 100);
+                                      }
+                                    }}
+                                  >
+                                    {conv.referingToConversation}
+                                  </a>
                                 </div>
                               )}
-                              {conv.links && (
-                                <div className="web-contact-link-list">
-                                  {conv.links.split(", ").map((link, index) => (
-                                    <a
-                                      key={index}
-                                      href={link}
-                                      className="web-contact-link"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      🔗 {link}
-                                    </a>
-                                  ))}
+                              {conv.links && conv.links.length > 0 && (
+                                <div className="web-contact-message-links">
+                                  <strong>Links:</strong>
+                                  <div className="web-contact-link-list">
+                                    {conv.links.split(',').map((link, index) => (
+                                      <a 
+                                        key={index} 
+                                        href={link.trim()} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="web-contact-link"
+                                      >
+                                        {link.trim()}
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {conv.attachmentPath && (
+                                <div className="web-contact-message-attachments">
+                                  <strong>Attachments:</strong>
+                                  <div className="web-contact-attachment-link">
+                                    <span className="web-contact-attachment-icon">📄</span>
+                                    {conv.attachmentPath.split('/').pop()}
+                                  </div>
                                 </div>
                               )}
                             </div>
-                          )}
-                        </div>
-                        <time className="web-contact-message-time">
-                          {new Date(conv.createdAt).toLocaleString()}
-                        </time>
+                            <div className="web-contact-conversation-actions">
+                              <Button
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setReferringToConversation(refNumber);
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    referenceNumber: generateReferenceNumber(),
+                                    referingToConversation: refNumber,
+                                    subject: `Re: ${conv.subject}`,
+                                  }));
+                                  scrollToProjectType();
+                                }}
+                              >
+                                Reply to this conversation
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
-
-                      <div className="web-contact-conversation-actions">
-                        <button
-                          type="button"
-                          className="web-contact-reply-btn"
-                          onClick={() => {
-                            setFormData((prev) => ({
-                              ...prev,
-                              referenceNumber:
-                                conv.referenceNumber || `REF-${conv.id}`,
-                              subject: `Re: ${conv.subject}`,
-                            }));
-                          }}
-                        >
-                          Reply to this conversation
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
-                <p className="web-contact-conversations-empty">
-                  No conversations yet. Start one by sending a message!
-                </p>
+                <p>No conversations found</p>
               )}
             </div>
           )}
