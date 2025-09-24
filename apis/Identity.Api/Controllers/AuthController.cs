@@ -55,7 +55,8 @@ public class AuthController : ControllerBase
         var roleNames = await _userManager.GetRolesAsync(user);
         var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
         var refresh = Guid.NewGuid().ToString("N");
-        SetAuthCookies(Response, access, refresh, opts);
+        // Registration flow: default to persistent cookies
+        SetAuthCookies(Response, access, refresh, opts, persistent: true);
 
         // Return user info along with tokens to match frontend expectations
         return Ok(
@@ -104,7 +105,8 @@ public class AuthController : ControllerBase
         var roleNamesLogin = await _userManager.GetRolesAsync(user);
         var access = TokenService.CreateAccessToken(user, roleNamesLogin.ToArray(), opts);
         var refresh = Guid.NewGuid().ToString("N"); // stub: store/rotate in DB for real usage
-        SetAuthCookies(Response, access, refresh, opts);
+        // Use RememberMe to decide persistence
+        SetAuthCookies(Response, access, refresh, opts, persistent: req.RememberMe);
 
         // Return user info along with tokens to match frontend expectations
         return Ok(
@@ -252,7 +254,8 @@ public class AuthController : ControllerBase
         var roleNames = await _userManager.GetRolesAsync(user);
         var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
         var refresh = Guid.NewGuid().ToString("N");
-        SetAuthCookies(Response, access, refresh, opts);
+        // After setting password, default to persistent cookies
+        SetAuthCookies(Response, access, refresh, opts, persistent: true);
 
         // Return user info along with tokens
         return Ok(
@@ -277,7 +280,8 @@ public class AuthController : ControllerBase
         HttpResponse response,
         string accessToken,
         string refreshToken,
-        AuthOptions opts
+        AuthOptions opts,
+        bool persistent
     )
     {
         var isProdDomain =
@@ -290,32 +294,32 @@ public class AuthController : ControllerBase
         // For local development, use Lax to ensure cookies work across subdomains
         var sameSite = isProdDomain && isHttps ? SameSiteMode.None : SameSiteMode.Lax;
 
-        response.Cookies.Append(
-            "atk",
-            accessToken,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = useSecure,
-                SameSite = sameSite,
-                Domain = opts.CookieDomain,
-                Path = "/",
-                Expires = DateTime.UtcNow.AddMinutes(opts.AccessMinutes),
-            }
-        );
+        var accessCookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = useSecure,
+            SameSite = sameSite,
+            Domain = opts.CookieDomain,
+            Path = "/",
+        };
+        if (persistent)
+        {
+            accessCookieOptions.Expires = DateTime.UtcNow.AddMinutes(opts.AccessMinutes);
+        }
+        response.Cookies.Append("atk", accessToken, accessCookieOptions);
 
-        response.Cookies.Append(
-            "rtk",
-            refreshToken,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = useSecure,
-                SameSite = sameSite,
-                Domain = opts.CookieDomain,
-                Path = "/",
-                Expires = DateTime.UtcNow.AddDays(opts.RefreshDays),
-            }
-        );
+        var refreshCookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = useSecure,
+            SameSite = sameSite,
+            Domain = opts.CookieDomain,
+            Path = "/",
+        };
+        if (persistent)
+        {
+            refreshCookieOptions.Expires = DateTime.UtcNow.AddDays(opts.RefreshDays);
+        }
+        response.Cookies.Append("rtk", refreshToken, refreshCookieOptions);
     }
 }

@@ -334,6 +334,9 @@
 }
 
 .web-contact-conversations-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: var(--global-font-size-xl);
   font-weight: var(--global-font-weight-bold);
   color: var(--color-primary);
@@ -485,9 +488,15 @@
 
 .web-contact-message-reference {
   font-size: var(--global-font-size-sm);
-  color: var(--color-primary);
+  color: var(--color-text-secondary);
   margin-bottom: var(--global-spacing-unit);
   font-family: var(--global-font-family-mono);
+}
+
+.web-contact-reference-link {
+  color: var(--color-info);
+  text-decoration: none;
+  line-height: 2.5;
 }
 
 .web-contact-message-attachments {

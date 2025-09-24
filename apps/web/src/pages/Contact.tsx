@@ -7,7 +7,7 @@ import {
   type ChangeEvent,
 } from "react";
 import { sendEmail } from "../api/emailService";
-import { Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { Button, Eye, EyeOff, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import { apiGet, CORE_API_BASE } from "../api/core";
 import React from "react";
 
@@ -69,6 +69,7 @@ export default function Contact() {
   const [name, setName] = useState(user?.name || user?.userName || "");
   const [conversations, setConversations] = useState<Conversation[]>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [displayConversations, setDisplayConversations] = useState(false);
   const [referringToConversation, setReferringToConversation] = useState<
     string | undefined
   >();
@@ -623,146 +624,155 @@ export default function Contact() {
           {/* Conversations Column */}
           {user && (
             <div className="web-contact-conversations">
-              <h2 className="web-contact-conversations-title">
-                Your Conversations
-              </h2>
-              {conversations && conversations?.length > 0 ? (
-                <div className="web-contact-conversations-list">
-                  {conversations.map((conv) => {
-                    const isExpanded = expandedConversations[conv.id] || false;
-                    const refNumber = conv.referenceNumber || `REF-${conv.id}`;
-
-                    return (
-                      <div
-                        id={`conversation-${conv.id}`}
-                        key={conv.id}
-                        className="web-contact-conversation-item"
-                      >
+              <div className="web-contact-conversations-title">
+                <div>My Conversations</div>
+                <Button
+                variant="outline"
+                onClick={() => setDisplayConversations(!displayConversations)}
+                title={displayConversations ? "Hide Conversations" : "Show Conversations"}
+              >
+                {displayConversations ? <EyeOff /> : <Eye />}
+              </Button>
+              </div>
+              
+              {displayConversations && (
+                conversations && conversations?.length > 0 ? (
+                  <div className="web-contact-conversations-list">
+                    {conversations.map((conv) => {
+                      const isExpanded = expandedConversations[conv.id] || false;
+                      const refNumber = conv.referenceNumber || `REF-${conv.id}`;  
+                      return (
                         <div
-                          className="web-contact-conversation-header"
-                          aria-expanded={isExpanded}
-                          onClick={() => toggleConversation(conv.id)}
+                          id={`conversation-${conv.id}`}
+                          key={conv.id}
+                          className="web-contact-conversation-item"
                         >
-                          <div className="web-contact-conversation-summary">
-                            <span className="web-contact-ref-number">
-                              {refNumber}
-                            </span>
-                            <span
-                              className="web-contact-conversation-subject"
-                              title={conv.subject}
-                            >
-                              {conv.subject}
-                            </span>
-                            <span className="web-contact-conversation-date">
-                              {new Date(conv.createdAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <div className="web-contact-conversation-chevron">
-                            {isExpanded ? "▲" : "▼"}
-                          </div>
-                        </div>
-
-                        {isExpanded && (
-                          <div className="web-contact-conversation-details">
-                            <div className="web-contact-message">
-                              <p className="web-contact-message-text">
-                                {conv.message}
-                              </p>
-                              {conv.referingToConversation && (
-                                <div className="web-contact-message-reference">
-                                  <strong>Referring to conversation: </strong>
-                                  <a 
-                                    href="#" 
-                                    className="web-contact-reference-link"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      // Find the conversation with this reference number
-                                      const referencedConv = conversations?.find(
-                                        c => c.referenceNumber === conv.referingToConversation || 
-                                             `REF-${c.id}` === conv.referingToConversation
-                                      );
-                                      
-                                      if (referencedConv) {
-                                        // Expand the referenced conversation if it's not already expanded
-                                        setExpandedConversations(prev => ({
-                                          ...prev,
-                                          [referencedConv.id]: true
-                                        }));
-                                        
-                                        // Scroll to the referenced conversation
-                                        setTimeout(() => {
-                                          const element = document.getElementById(`conversation-${referencedConv.id}`);
-                                          if (element) {
-                                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                            // Add a highlight effect
-                                            element.classList.add('web-contact-conversation-highlight');
-                                            setTimeout(() => {
-                                              element.classList.remove('web-contact-conversation-highlight');
-                                            }, 2000);
-                                          }
-                                        }, 100);
-                                      }
-                                    }}
-                                  >
-                                    {conv.referingToConversation}
-                                  </a>
-                                </div>
-                              )}
-                              {conv.links && conv.links.length > 0 && (
-                                <div className="web-contact-message-links">
-                                  <strong>Links:</strong>
-                                  <div className="web-contact-link-list">
-                                    {conv.links.split(',').map((link, index) => (
-                                      <a 
-                                        key={index} 
-                                        href={link.trim()} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="web-contact-link"
-                                      >
-                                        {link.trim()}
-                                      </a>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              {conv.attachmentPath && (
-                                <div className="web-contact-message-attachments">
-                                  <strong>Attachments:</strong>
-                                  <div className="web-contact-attachment-link">
-                                    <span className="web-contact-attachment-icon">📄</span>
-                                    {conv.attachmentPath.split('/').pop()}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            <div className="web-contact-conversation-actions">
-                              <Button
-                                variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setReferringToConversation(refNumber);
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    referenceNumber: generateReferenceNumber(),
-                                    referingToConversation: refNumber,
-                                    subject: `Re: ${conv.subject}`,
-                                  }));
-                                  scrollToProjectType();
-                                }}
+                          <div
+                            className="web-contact-conversation-header"
+                            aria-expanded={isExpanded}
+                            onClick={() => toggleConversation(conv.id)}
+                          >
+                            <div className="web-contact-conversation-summary">
+                              <span className="web-contact-ref-number">
+                                {refNumber}
+                              </span>
+                              <span
+                                className="web-contact-conversation-subject"
+                                title={conv.subject}
                               >
-                                Reply to this conversation
-                              </Button>
+                                {conv.subject}
+                              </span>
+                              <span className="web-contact-conversation-date">
+                                {new Date(conv.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="web-contact-conversation-chevron">
+                              {isExpanded ? "▲" : "▼"}
                             </div>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p>No conversations found</p>
+  
+                          {isExpanded && (
+                            <div className="web-contact-conversation-details">
+                              <div className="web-contact-message">
+                                <p className="web-contact-message-text">
+                                  {conv.message}
+                                </p>
+                                {conv.referingToConversation && (
+                                  <div className="web-contact-message-reference">
+                                    <strong>Referring to conversation: </strong>
+                                    <a 
+                                      href="#" 
+                                      className="web-contact-reference-link"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        // Find the conversation with this reference number
+                                        const referencedConv = conversations?.find(
+                                          c => c.referenceNumber === conv.referingToConversation || 
+                                               `REF-${c.id}` === conv.referingToConversation
+                                        );
+                                        
+                                        if (referencedConv) {
+                                          // Expand the referenced conversation if it's not already expanded
+                                          setExpandedConversations(prev => ({
+                                            ...prev,
+                                            [referencedConv.id]: true
+                                          }));
+                                          
+                                          // Scroll to the referenced conversation
+                                          setTimeout(() => {
+                                            const element = document.getElementById(`conversation-${referencedConv.id}`);
+                                            if (element) {
+                                              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                              // Add a highlight effect
+                                              element.classList.add('web-contact-conversation-highlight');
+                                              setTimeout(() => {
+                                                element.classList.remove('web-contact-conversation-highlight');
+                                              }, 2000);
+                                            }
+                                          }, 100);
+                                        }
+                                      }}
+                                    >
+                                      {conv.referingToConversation}
+                                    </a>
+                                  </div>
+                                )}
+                                {conv.links && conv.links.length > 0 && (
+                                  <div className="web-contact-message-links">
+                                    <strong>Links:</strong>
+                                    <div className="web-contact-link-list">
+                                      {conv.links.split(',').map((link, index) => (
+                                        <a 
+                                          key={index} 
+                                          href={link.trim()} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="web-contact-link"
+                                        >
+                                          {link.trim()}
+                                        </a>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {conv.attachmentPath && (
+                                  <div className="web-contact-message-attachments">
+                                    <strong>Attachments:</strong>
+                                    <div className="web-contact-attachment-link">
+                                      <span className="web-contact-attachment-icon">📄</span>
+                                      {conv.attachmentPath.split('/').pop()}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="web-contact-conversation-actions">
+                                <Button
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setReferringToConversation(refNumber);
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      referenceNumber: generateReferenceNumber(),
+                                      referingToConversation: refNumber,
+                                      subject: `Re: ${conv.subject}`,
+                                    }));
+                                    scrollToProjectType();
+                                  }}
+                                >
+                                  Reply to this conversation
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p>No conversations found</p>
+                )
               )}
             </div>
           )}

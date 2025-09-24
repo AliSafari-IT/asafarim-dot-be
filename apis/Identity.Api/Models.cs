@@ -2,7 +2,7 @@ namespace Identity.Api;
 
 public record RegisterRequest(string Email, string Password, string? UserName);
 
-public record LoginRequest(string Email, string Password);
+public record LoginRequest(string Email, string Password, bool RememberMe = false);
 
 public record MeResponse(string Id, string? Email, string? UserName, string[] Roles);
 
@@ -17,6 +17,11 @@ public record ChangePasswordRequest(
 // Admin DTOs
 public record AdminUserDto(string Id, string? Email, string? UserName, string[] Roles);
 
-public record AdminUserUpsert(string Email, string? UserName, string? Password, string[]? Roles = null);
+public record AdminUserUpsert(
+    string Email,
+    string? UserName,
+    string? Password,
+    string[]? Roles = null
+);
 
 public record SetUserRolesRequest(string[] Roles);
