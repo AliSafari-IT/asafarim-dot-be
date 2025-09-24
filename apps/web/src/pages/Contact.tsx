@@ -245,16 +245,13 @@ export default function Contact() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     setStatus({
       submitting: true,
       submitted: false,
       error: null,
       success: false,
     });
-
-    // The email service will handle the formatting of attachments and links
-
+  
     try {
       const emailResponse = await sendEmail(
         {
@@ -269,21 +266,24 @@ export default function Contact() {
         },
         token
       );
-
+  
       if (emailResponse.success) {
         // Show success notification
         addNotification(
           "success",
           "Thank you for your message! We've received your inquiry and will get back to you soon."
         );
-
+  
         setStatus({
           submitting: false,
           submitted: true,
           error: null,
           success: true,
         });
-
+  
+        // Refresh the conversations list
+        await fetchConversations();
+  
         // Reset form after successful submission
         setFormData({
           name: name,
@@ -292,7 +292,7 @@ export default function Contact() {
           message: "",
           attachments: [],
           links: [],
-          referenceNumber: generateReferenceNumber(), // Generate a new reference number
+          referenceNumber: generateReferenceNumber(),
           referingToConversation: undefined,
         });
         setReferringToConversation(undefined);
@@ -305,14 +305,11 @@ export default function Contact() {
         "error",
         error instanceof Error ? error.message : "An unexpected error occurred"
       );
-
+  
       setStatus({
         submitting: false,
         submitted: true,
-        error:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
+        error: error instanceof Error ? error.message : "An unexpected error occurred",
         success: false,
       });
     }

@@ -53,12 +53,17 @@ namespace Core.Api.Controllers
             }
 
             // Prepare GitHub request with optional token to avoid 403 rate limits
-            var uri = new Uri($"https://api.github.com/repos/AliSafari-IT/asafarim-dot-be/commits?per_page={pageSize}&page={page}");
+            var uri = new Uri(
+                $"https://api.github.com/repos/AliSafari-IT/asafarim-dot-be/commits?per_page={pageSize}&page={page}"
+            );
             var req = new HttpRequestMessage(HttpMethod.Get, uri);
             req.Headers.UserAgent.Add(new ProductInfoHeaderValue("asafarim-core-api", "1.0"));
-            req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+            req.Headers.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/vnd.github+json")
+            );
 
-            var token = _config["GitHub:Token"] ?? Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+            var token =
+                _config["GitHub:Token"] ?? Environment.GetEnvironmentVariable("GITHUB_TOKEN");
             if (!string.IsNullOrWhiteSpace(token))
             {
                 req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -70,16 +75,23 @@ namespace Core.Api.Controllers
                 if (!res.IsSuccessStatusCode)
                 {
                     var body = await res.Content.ReadAsStringAsync();
-                    var limit = res.Headers.TryGetValues("x-ratelimit-remaining", out var rem) ? string.Join(',', rem) : null;
-                    var reset = res.Headers.TryGetValues("x-ratelimit-reset", out var rst) ? string.Join(',', rst) : null;
-                    return StatusCode((int)res.StatusCode, new
-                    {
-                        error = "GitHub API error",
-                        status = (int)res.StatusCode,
-                        response = body,
-                        rateRemaining = limit,
-                        rateReset = reset
-                    });
+                    var limit = res.Headers.TryGetValues("x-ratelimit-remaining", out var rem)
+                        ? string.Join(',', rem)
+                        : null;
+                    var reset = res.Headers.TryGetValues("x-ratelimit-reset", out var rst)
+                        ? string.Join(',', rst)
+                        : null;
+                    return StatusCode(
+                        (int)res.StatusCode,
+                        new
+                        {
+                            error = "GitHub API error",
+                            status = (int)res.StatusCode,
+                            response = body,
+                            rateRemaining = limit,
+                            rateReset = reset,
+                        }
+                    );
                 }
 
                 await using var stream = await res.Content.ReadAsStreamAsync();
@@ -119,10 +131,14 @@ namespace Core.Api.Controllers
                     Items = items,
                 };
                 // Cache for a short time to reduce rate limit pressure
-                _cache.Set(cacheKey, response, new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
-                });
+                _cache.Set(
+                    cacheKey,
+                    response,
+                    new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2),
+                    }
+                );
                 return Ok(response);
             }
             catch (Exception ex)

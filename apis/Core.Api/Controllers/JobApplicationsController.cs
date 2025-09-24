@@ -1,3 +1,4 @@
+using Core.Api.Data;
 using Core.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
