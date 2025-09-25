@@ -1,6 +1,6 @@
 {
   "name": "@asafarim/jobs-ui",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host jobs.asafarim.local --port 4200",
