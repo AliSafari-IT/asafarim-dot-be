@@ -1,11 +1,13 @@
 using Core.Api.Data;
 using Core.Api.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Api.Controllers;
 
 [ApiController]
 [Route("contact")]
+[EnableCors("frontend")]
 public sealed class ContactController : ControllerBase
 {
     private readonly ILogger<ContactController> _logger;
@@ -17,7 +19,20 @@ public sealed class ContactController : ControllerBase
         _context = context;
     }
 
+    [HttpGet]
+    [EnableCors("frontend")]
+    public IActionResult Get()
+    {
+        // Return a simple response indicating the contact endpoint is available
+        return Ok(new { 
+            message = "Contact endpoint is available", 
+            methods = new[] { "POST" },
+            description = "Send a POST request with email, subject, and message to submit a contact form"
+        });
+    }
+
     [HttpPost]
+    [EnableCors("frontend")]
     public async Task<IActionResult> Post([FromBody] ContactRequest req)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);

@@ -51,7 +51,12 @@ builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(
         "frontend",
-        p => p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+        p => p
+            .WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .SetIsOriginAllowedToAllowWildcardSubdomains() // Allow wildcard subdomains
     );
 });
 
@@ -125,12 +130,15 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
+// IMPORTANT: UseCors must be called before UseAuthentication and UseAuthorization
 app.UseCors("frontend");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
