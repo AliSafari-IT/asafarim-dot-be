@@ -2,11 +2,18 @@ import { CentralNavbar } from "@asafarim/shared-ui-react";
 import { useAuth } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink } from "react-router-dom";
+import { isProduction } from "@asafarim/shared-ui-react";
 
 // Define your navigation links
 const navLinks: NavLinkItem[] = [
-  { to: "https://www.asafarim.be/about", label: "About" },
-  { to: "https://www.asafarim.be/contact", label: "Contact" },
+  {
+    to: isProduction ? "https://www.asafarim.be/contact" : "http://web.asafarim.local:5175/contact",
+    label: "Contact",
+  },
+  {
+    to: isProduction ? "https://www.asafarim.be/about" : "http://web.asafarim.local:5175/about",
+    label: "About",
+  },
 ];
 
 // Custom render function for React Router links

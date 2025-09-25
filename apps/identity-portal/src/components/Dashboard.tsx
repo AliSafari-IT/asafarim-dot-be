@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './dashboard.css';
 import { Button } from '@asafarim/shared-ui-react';
 import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab } from '../utils/appUrls';
@@ -6,18 +6,8 @@ import ChangePasswordModal from './ChangePasswordModal';
 import useAuth from '../hooks/useAuth';
 
 export const Dashboard = () => {
-  const { isAuthenticated, user, isLoading: loading } = useAuth();
+  const { user } = useAuth();
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-
-  useEffect(() => {
-    // first clear the auth leftover tokens from local storage      
-    if (!isAuthenticated && !loading) {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('refresh_token');
-      // then redirect to login
-      window.location.href = '/login';      
-    }
-  }, [isAuthenticated, loading]);
 
   const roles = (user?.roles || ['Viewer']).join(', ');
 

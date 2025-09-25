@@ -4,7 +4,6 @@ import { NavLink } from "react-router-dom";
 
 // Define navigation links for Identity Portal
 const navLinks: NavLinkItem[] = [
-  { to: "/dashboard", label: "Dashboard" },
   { to: "/admin/users", label: "Users" },
   { to: "/me", label: "My Profile" },
   // External example (docs, etc.)
@@ -42,7 +41,19 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
 };
 
 export default function Navbar() {
-  const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
+  const { isAuthenticated, user, loading, signOut } = useAuth();
+  
+  // Create a signIn function that matches the shared-ui-react interface
+  const signIn = () => {
+    window.location.href = "/login";
+  };
+  
+  // Adapt user object to match the expected format for CentralNavbar
+  const adaptedUser = user ? {
+    ...user,
+    name: user.firstName || user.userName
+    // No need to specify email as it's already in the user object
+  } : undefined;
 
   return (
     <CentralNavbar
@@ -54,7 +65,7 @@ export default function Navbar() {
       }}
       auth={{
         isAuthenticated,
-        user,
+        user: adaptedUser,
         loading,
         onSignIn: signIn,
         onSignOut: signOut,

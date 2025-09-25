@@ -1,11 +1,12 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { Arrow, Button, Lock } from "@asafarim/shared-ui-react";
 
 
 export const LoginForm = () => {
   const { login, error, clearError, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -33,7 +34,7 @@ export const LoginForm = () => {
         console.log('Login successful! Redirecting to dashboard...');
         // get returnUrl from query params
         const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-        window.location.href = returnUrl || '/dashboard';
+        navigate(returnUrl || '/dashboard', { replace: true });
       }
     } catch {
       // Error is handled by the auth context

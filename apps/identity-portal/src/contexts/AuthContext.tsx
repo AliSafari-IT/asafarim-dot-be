@@ -24,40 +24,61 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [passwordSetupRequired, setPasswordSetupRequired] = useState<{ userId: string; email: string } | null>(null);
+  const [forceAuthenticated, setForceAuthenticated] = useState<boolean>(false);
 
   // Check if user is already logged in on mount
   useEffect(() => {
     const initAuth = async () => {
+      console.log('[AuthContext] Initializing auth state...');
       const storedUser = localStorage.getItem("user_info");
       const token = localStorage.getItem("auth_token");
+      console.log('[AuthContext] Initial storage check:', { 
+        hasStoredUser: !!storedUser, 
+        hasToken: !!token 
+      });
 
       if (storedUser && token) {
         try {
           // Parse stored user info
           const userInfo = JSON.parse(storedUser) as UserInfo;
+          console.log('[AuthContext] Setting initial user from localStorage:', userInfo.email);
+          
+          // CRITICAL: Set user AND force authenticated flag synchronously
+          // This MUST happen before any async operations to prevent redirect loops
           setUser(userInfo);
+          setForceAuthenticated(true);
+          setIsLoading(false);
+          console.log('[AuthContext] Auth state established synchronously');
 
-          // Optionally validate the token with the server
-          // This could be done by calling getProfile() to verify the token is still valid
-          try {
-            const profile = await identityService.getProfile();
-            setUser(profile); // Update with latest user info
-          } catch (err) {
-            console.warn('Profile fetch failed, will attempt to refresh token but keep session:', err);
+          // Background validation - this runs after the component has rendered
+          // and won't affect the initial authentication state
+          setTimeout(async () => {
             try {
-              await refreshAuthToken();
-            } catch (refreshErr) {
-              console.warn('Token refresh failed; keeping local session to avoid redirect loop:', refreshErr);
-              // Intentionally do not logout here to prevent redirect loops
+              console.log('[AuthContext] Background validation starting...');
+              const profile = await identityService.getProfile();
+              console.log('[AuthContext] Profile fetch successful, updating user');
+              setUser(profile); // Update with latest user info
+            } catch (err) {
+              console.warn('Profile fetch failed, will attempt to refresh token but keep session:', err);
+              try {
+                const refreshed = await refreshAuthToken();
+                console.log('[AuthContext] Token refresh attempt result:', refreshed ? 'success' : 'failed');
+                // Even if refresh fails, we keep the local session active
+              } catch (refreshErr) {
+                console.warn('Token refresh failed; keeping local session to avoid redirect loop:', refreshErr);
+                // Intentionally do not logout here to prevent redirect loops
+              }
             }
-          }
+          }, 1000); // Small delay to ensure this runs after initial render
         } catch (error) {
           console.error("Failed to restore authentication state:", error);
+          setIsLoading(false);
           await logout(); // Clear invalid auth state
         }
+      } else {
+        console.log('[AuthContext] No stored credentials found');
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     };
 
     initAuth();
@@ -66,6 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Handle successful authentication
   const handleAuthSuccess = useCallback((authResponse: AuthResponse) => {
     const { token, refreshToken, user } = authResponse;
+    console.log('[AuthContext] Auth success, storing tokens and user info', { email: user.email });
 
     // Store tokens and user info
     localStorage.setItem("auth_token", token);
@@ -73,7 +95,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.setItem("user_info", JSON.stringify(user));
 
     setUser(user);
+    setForceAuthenticated(true);
     setError(null);
+    console.log('[AuthContext] User state updated after successful auth');
   }, []);
   const updateUser = useCallback((next: UserInfo) => {
     setUser(next);
@@ -147,7 +171,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(null);
       
       console.log('Registering user with data:', { ...data, password: '***' });
-      console.log('API URL:', import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5001/api');
 
       try {
         const authResponse = await identityService.register(data);
@@ -180,6 +203,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.removeItem("refresh_token");
       localStorage.removeItem("user_info");
       setUser(null);
+      setForceAuthenticated(false);
       setIsLoading(false);
     }
   }, []);
@@ -199,6 +223,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.warn('forceSignOut localStorage cleanup failed', e);
     }
     setUser(null);
+    setForceAuthenticated(false);
     setIsLoading(false);
     setError(null);
   }, []);
@@ -230,11 +255,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null);
   }, []);
 
+  // CRITICAL: Consider authenticated if either user object exists OR auth token exists OR forceAuthenticated flag is set
+  // This prevents false negatives during page refresh or initial load
+  const authToken = localStorage.getItem("auth_token");
+  const hasToken = !!authToken;
+  const isAuthenticated = !!user || hasToken || forceAuthenticated;
+  
+  console.log('[AuthContext] Provider render - Auth state:', {
+    hasUser: !!user,
+    hasToken,
+    tokenValue: authToken ? authToken.substring(0, 10) + '...' : 'null',
+    forceAuthenticated,
+    isAuthenticated,
+    isLoading,
+    allLocalStorageKeys: Object.keys(localStorage)
+  });
+  
   return (
     <AuthContextCreated.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        isAuthenticated,
         isLoading,
         error,
         passwordSetupRequired,

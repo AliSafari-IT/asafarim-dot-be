@@ -74,7 +74,7 @@ export interface ApiError {
 
 // Base API URL from environment variable
 // Remove the /api prefix as the endpoints don't include it
-const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
+const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101';
 
 /**
  * Handle API responses and errors
@@ -109,10 +109,18 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 /**
- * Default JSON headers. We rely on HttpOnly cookies for auth, not Authorization header.
+ * Default JSON headers with Authorization if token exists
  */
 function getJsonHeaders(): HeadersInit {
-  return { 'Content-Type': 'application/json' };
+  const headers: HeadersInit = { 'Content-Type': 'application/json' };
+  
+  // Add Authorization header if token exists in localStorage
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
 }
 
 /**
@@ -278,9 +286,18 @@ export const identityService = {
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
     console.log('Attempting to refresh token...');
     try {
+      // Get current auth token if available
+      const authToken = localStorage.getItem('auth_token');
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      
+      // Include auth token in header if available
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
       const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         credentials: 'include',  // Important: include cookies in the request
         body: JSON.stringify({ refreshToken })
       });

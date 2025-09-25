@@ -189,15 +189,24 @@ public class AuthController : ControllerBase
     [HttpGet("token")]
     public IActionResult GetToken()
     {
-        // Get the token from the Authorization header
-        string authHeader = HttpContext.Request.Headers["Authorization"];
-        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+        // Prefer the HttpOnly cookie set by the server
+        if (Request.Cookies.TryGetValue("atk", out var cookieToken) && !string.IsNullOrWhiteSpace(cookieToken))
         {
-            return Unauthorized();
+            return Ok(new { token = cookieToken });
         }
 
-        string token = authHeader.Substring("Bearer ".Length).Trim();
-        return Ok(new { token });
+        // Fallback: allow Authorization header if provided and not empty/null
+        var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+        if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            var headerToken = authHeader.Substring("Bearer ".Length).Trim();
+            if (!string.IsNullOrWhiteSpace(headerToken) && !string.Equals(headerToken, "null", StringComparison.OrdinalIgnoreCase))
+            {
+                return Ok(new { token = headerToken });
+            }
+        }
+
+        return Unauthorized();
     }
 
     [HttpPost("setup-password")]

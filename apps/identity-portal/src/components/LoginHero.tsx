@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Hero } from '@asafarim/shared-ui-react';
 import LoginForm from './LoginForm';
 import PasswordSetupForm from './PasswordSetupForm';
@@ -13,6 +14,7 @@ interface LoginHeroProps {
 }
 
 export const LoginHero: React.FC<LoginHeroProps> = ({ passwordSetupRequired, returnUrl }) => {
+  const navigate = useNavigate();
   const kicker = "Identity Portal";
   const title = "Welcome to ASafariM";
   const subtitle = "Access all your applications and services with a single account";
@@ -39,7 +41,7 @@ export const LoginHero: React.FC<LoginHeroProps> = ({ passwordSetupRequired, ret
         userId={passwordSetupRequired.userId}
         email={passwordSetupRequired.email}
         onSuccess={() => {
-          window.location.href = returnUrl || '/dashboard';
+          navigate(returnUrl || '/dashboard', { replace: true });
         }}
         onCancel={() => {
           // Go back to login form

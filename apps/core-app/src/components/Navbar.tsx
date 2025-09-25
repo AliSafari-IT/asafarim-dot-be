@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CentralNavbar, useAuth } from "@asafarim/shared-ui-react";
+import { CentralNavbar, isProduction, useAuth } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./Navbar.css";
@@ -15,11 +15,11 @@ const navLinks: NavLinkItem[] = [
     label: "Job Tracker",
   },
   {
-    to: "https://www.asafarim.be/contact",
+    to: isProduction ? "https://www.asafarim.be/contact" : "http://web.asafarim.local:5175/contact",
     label: "Contact",
   },
   {
-    to: "https://www.asafarim.be/about",
+    to: isProduction ? "https://www.asafarim.be/about" : "http://web.asafarim.local:5175/about",
     label: "About",
   },
 ];
