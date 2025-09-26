@@ -41,7 +41,15 @@ export const LoginHero: React.FC<LoginHeroProps> = ({ passwordSetupRequired, ret
         userId={passwordSetupRequired.userId}
         email={passwordSetupRequired.email}
         onSuccess={() => {
-          navigate(returnUrl || '/dashboard', { replace: true });
+          // Check if returnUrl is an external URL
+          if (returnUrl && (returnUrl.startsWith('http://') || returnUrl.startsWith('https://'))) {
+            console.log('Redirecting to external URL after password setup:', returnUrl);
+            window.location.href = returnUrl;
+          } else {
+            // Internal navigation using React Router
+            console.log('Navigating to internal path after password setup:', returnUrl || '/dashboard');
+            navigate(returnUrl || '/dashboard', { replace: true });
+          }
         }}
         onCancel={() => {
           // Go back to login form

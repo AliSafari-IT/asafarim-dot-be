@@ -31,10 +31,19 @@ export const LoginForm = () => {
       const success = await login(formData);
       if (success) {
         // Show success notification
-        console.log('Login successful! Redirecting to dashboard...');
+        console.log('Login successful! Redirecting...');
         // get returnUrl from query params
         const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-        navigate(returnUrl || '/dashboard', { replace: true });
+        
+        // Check if returnUrl is an external URL
+        if (returnUrl && (returnUrl.startsWith('http://') || returnUrl.startsWith('https://'))) {
+          console.log('Redirecting to external URL:', returnUrl);
+          window.location.href = returnUrl;
+        } else {
+          // Internal navigation using React Router
+          console.log('Navigating to internal path:', returnUrl || '/dashboard');
+          navigate(returnUrl || '/dashboard', { replace: true });
+        }
       }
     } catch {
       // Error is handled by the auth context

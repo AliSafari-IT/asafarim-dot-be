@@ -11,8 +11,17 @@ export const Login = () => {
   // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated && !isLoading && !passwordSetupRequired) {
-      console.log('[Login] Already authenticated, navigating to:', returnUrl || '/dashboard');
-      navigate(returnUrl || '/dashboard', { replace: true });
+      console.log('[Login] Already authenticated, redirecting to:', returnUrl || '/dashboard');
+      
+      // Check if returnUrl is an external URL
+      if (returnUrl && (returnUrl.startsWith('http://') || returnUrl.startsWith('https://'))) {
+        console.log('[Login] Redirecting to external URL:', returnUrl);
+        window.location.href = returnUrl;
+      } else {
+        // Internal navigation using React Router
+        console.log('[Login] Navigating to internal path:', returnUrl || '/dashboard');
+        navigate(returnUrl || '/dashboard', { replace: true });
+      }
     }
   }, [isAuthenticated, returnUrl, isLoading, passwordSetupRequired, navigate]);
 
