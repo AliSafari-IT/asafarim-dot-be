@@ -4,6 +4,7 @@ using Core.Api.Models;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MimeKit;
@@ -13,6 +14,7 @@ namespace Core.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableCors("frontend")]
 public class EmailController : ControllerBase
 {
     private readonly IConfiguration _configuration;
@@ -32,6 +34,7 @@ public class EmailController : ControllerBase
 
     [HttpPost("send")]
     [AllowAnonymous]
+    [EnableCors("frontend")]
     public async Task<IActionResult> SendEmail([FromBody] EmailRequest request)
     {
         try
@@ -187,6 +190,7 @@ public class EmailController : ControllerBase
     }
 
     [HttpGet("conversations")]
+    [EnableCors("frontend")]
     public async Task<IActionResult> GetConversations()
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
