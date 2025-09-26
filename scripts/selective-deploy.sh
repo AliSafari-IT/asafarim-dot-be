@@ -251,8 +251,8 @@ if [ ${#selected_frontends[@]} -eq 0 ] && [ ${#selected_apis[@]} -eq 0 ]; then
 fi
 
 echo ""
-read -p "Continue with deployment? (y/N): " confirm
-if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+read -p "Continue with deployment? (Y/n): " confirm
+if [[ "$confirm" =~ ^[Nn]$ ]]; then
     print_info "Deployment cancelled by user"
     exit 0
 fi
