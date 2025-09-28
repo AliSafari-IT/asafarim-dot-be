@@ -2,9 +2,12 @@ import { CentralNavbar } from "@asafarim/shared-ui-react";
 import { useAuth } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink } from "react-router-dom";
+import DDMenu, { DDMenuWrapper } from "@asafarim/dd-menu";
+import "@asafarim/dd-menu/index.css";
 
 // Define your navigation links
 const navLinks: NavLinkItem[] = [
+  { to: "#", label: "projects-dropdown" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
@@ -65,9 +68,54 @@ export default function Navbar() {
           welcome: (email?: string) => `Welcome ${email || "User"}!`,
         },
       }}
-      renderLink={renderLink}
+      renderLink={(link, isMobile) => {
+        if (link.label === "projects-dropdown") {
+          return (
+            <div className="navbar-item">
+              <DDMenuWrapper
+                key="projects-dropdown"
+                children={
+                  <DDMenu
+                    className={`nav-link ${isMobile ? "nav-link--mobile" : ""}`}
+                    trigger={<span>Projects</span>}
+                    variant="minimal"
+                    placement="bottom-start"
+                    items={[
+                      {
+                        id: "projects",
+                        label: "Projects",
+                        link: "/projects",
+                        icon: "🚀",
+                      },
+                      {
+                        id: "npm-packages",
+                        label: "NPM Packages",
+                        link: "https://www.npmjs.com/~asafarim",
+                        icon: "📦",
+                      },
+                      {
+                        id: "skills",
+                        label: "Skills",
+                        link: "/skills",
+                        icon: "💻",
+                      },
+                      {
+                        id: "portfolio",
+                        label: "Portfolio",
+                        link: "/portfolio",
+                        icon: "📂",
+                      },
+                    ]}
+                  />
+                }
+              />
+            </div>
+          );
+        }
+        return renderLink(link, isMobile);
+      }}
       breakpoint={768}
-      mobileMenuBreakpoint={520}      
+      mobileMenuBreakpoint={520}
     />
   );
 }

@@ -1,6 +1,7 @@
 # Workspace CSS Synchronization Guide
 
 ## Problem
+
 When developing in a monorepo, changes to CSS in `@asafarim/shared-ui-react` are not automatically reflected in consuming apps like `@asafarim/ai-ui`, `@asafarim/core-app`, `@asafarim/web`, etc.
 
 ## Solutions
@@ -8,6 +9,7 @@ When developing in a monorepo, changes to CSS in `@asafarim/shared-ui-react` are
 ### Solution 1: Automatic CSS Synchronization (Recommended)
 
 **All frontend apps now have proper workspace configuration:**
+
 - ✅ `@asafarim/ai-ui` - Vite with workspace aliases
 - ✅ `@asafarim/core-app` - Vite with workspace aliases  
 - ✅ `@asafarim/web` - Vite with workspace aliases
@@ -16,6 +18,7 @@ When developing in a monorepo, changes to CSS in `@asafarim/shared-ui-react` are
 - ⚠️ `@asafarim/jobs-ui` - Angular app (different build system)
 
 **What this provides:**
+
 - Direct workspace aliases ensure no caching issues
 - CSS changes automatically reflect across all apps
 - No manual rebuilds needed during development
@@ -24,6 +27,7 @@ When developing in a monorepo, changes to CSS in `@asafarim/shared-ui-react` are
 ### Solution 2: Manual Workspace Rebuild
 
 **When you make changes to shared-ui-react:**
+
 ```bash
 # From root workspace
 pnpm --filter @asafarim/shared-ui-react build
@@ -39,6 +43,7 @@ pnpm dev:identity-portal  # for identity-portal
 ### Solution 3: Use the Main Dev Script
 
 **Start all apps with CSS synchronization:**
+
 ```bash
 # From root workspace - starts all frontend apps
 pnpm dev
@@ -54,12 +59,14 @@ pnpm dev:identity-portal
 ## Current Setup
 
 **All apps import CSS via:**
+
 ```css
 /* apps/*/src/index.css or similar */
 @import url("@asafarim/shared-ui-react/index.css");
 ```
 
 **Vite apps include workspace configuration:**
+
 ```typescript
 resolve: {
   alias: {
@@ -82,6 +89,7 @@ optimizeDeps: {
 ## Troubleshooting
 
 **If CSS changes don't reflect:**
+
 1. Verify you're using the updated Vite configurations
 2. Check that workspace linking is working
 3. Clear Vite cache: `rm -rf node_modules/.vite`

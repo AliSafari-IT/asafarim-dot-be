@@ -1,0 +1,122 @@
+:root {
+  --dd-bg: #ffffff;
+  --dd-text: #111827;
+  --dd-border: #e5e7eb;
+  --dd-bg-hover: #f9fafb;
+  --dd-bg-active: #f3f4f6;
+  --dd-accent: #3b82f6;
+}
+
+[data-theme="dark"] {
+  --dd-bg: #18181b;
+  --dd-text: #ffffff;
+  --dd-border: #3f3f46;
+  --dd-bg-hover: #27272a;
+  --dd-bg-active: #3f3f46;
+  --dd-accent: #60a5fa;
+}
+
+/* Hide the default dropdown button */
+.my-custom-menu button {
+  display: none !important;
+}
+
+/* Style the dropdown menu container */
+.my-custom-menu {
+  /* Primary styling */
+  --dd-accent: #4f46e5; /* Indigo color that works well in both light/dark modes */
+  --dd-radius-md: 8px;
+  --dd-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Refined styling */
+  box-shadow: var(--dd-shadow);
+  border: 1px solid var(--dd-border);
+  transition: all 0.2s ease;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  z-index: 999;
+  min-width: 200px;
+  background-color: var(--dd-bg);
+  border-radius: var(--dd-radius-md);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+/* Show the menu when parent is hovered */
+.dropdown-container:hover .my-custom-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Add hover effect to the menu trigger */
+.my-custom-menu:hover {
+  --dd-accent: #4338ca; /* Slightly darker on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 15px 20px -3px rgba(0, 0, 0, 0.1), 0 8px 10px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Style the dropdown trigger */
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.dropdown-trigger:hover {
+  background-color: var(--dd-bg-hover);
+  color: var(--dd-accent);
+}
+
+.dropdown-trigger svg {
+  transition: transform 0.2s ease;
+}
+
+.dropdown-trigger:hover svg {
+  transform: translateY(2px);
+}
+
+/* Style the menu items */
+.my-custom-menu .dd-menu__item {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 4px;
+  margin: 4px;
+  transition: all 0.15s ease;
+  color: var(--dd-text);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+/* Add subtle hover effect to menu items */
+.my-custom-menu .dd-menu__item:hover {
+  background-color: var(--dd-bg-hover);
+  transform: translateX(2px);
+  color: var(--dd-accent);
+}
+
+/* Style the icons in menu items */
+.my-custom-menu .dd-menu__item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 1.1em;
+  width: 24px;
+}
+
+/* Add a subtle divider between items */
+.my-custom-menu .dd-menu__item:not(:last-child) {
+  border-bottom: 1px solid var(--dd-border);
+  padding-bottom: 10px;
+  margin-bottom: 6px;
+}

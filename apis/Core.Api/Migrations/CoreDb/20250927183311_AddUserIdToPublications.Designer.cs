@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Core.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Core.Api.Migrations.CoreDb
 {
     [DbContext(typeof(CoreDbContext))]
-    partial class CoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250927183311_AddUserIdToPublications")]
+    partial class AddUserIdToPublications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -315,9 +318,6 @@ namespace Core.Api.Migrations.CoreDb
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<bool>("ShowImage")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Size")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -330,7 +330,7 @@ namespace Core.Api.Migrations.CoreDb
                         .HasColumnType("text");
 
                     b.Property<List<string>>("Tags")
-                        .HasColumnType("text[]");
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Title")
                         .IsRequired()

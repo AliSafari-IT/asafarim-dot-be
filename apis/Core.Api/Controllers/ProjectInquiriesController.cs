@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Core.Api.Data;
 using Core.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Core.Api.Controllers;
 
@@ -17,7 +17,8 @@ public class ProjectInquiriesController : ControllerBase
 
     public ProjectInquiriesController(
         CoreDbContext context,
-        ILogger<ProjectInquiriesController> logger)
+        ILogger<ProjectInquiriesController> logger
+    )
     {
         _context = context;
         _logger = logger;
@@ -32,8 +33,8 @@ public class ProjectInquiriesController : ControllerBase
             return Unauthorized(new { error = "User not authenticated" });
         }
 
-        var inquiries = await _context.ProjectInquiries
-            .Where(p => p.UserId == userId)
+        var inquiries = await _context
+            .ProjectInquiries.Where(p => p.UserId == userId)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
@@ -49,8 +50,8 @@ public class ProjectInquiriesController : ControllerBase
             return Unauthorized(new { error = "User not authenticated" });
         }
 
-        var inquiry = await _context.ProjectInquiries
-            .Include(p => p.Messages)
+        var inquiry = await _context
+            .ProjectInquiries.Include(p => p.Messages)
             .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
         if (inquiry == null)
@@ -95,9 +96,9 @@ public class ProjectInquiriesController : ControllerBase
                     SenderName = userName,
                     Message = request.Message,
                     CreatedAt = DateTime.UtcNow,
-                    IsFromClient = true
-                }
-            }
+                    IsFromClient = true,
+                },
+            },
         };
 
         _context.ProjectInquiries.Add(inquiry);
@@ -107,7 +108,10 @@ public class ProjectInquiriesController : ControllerBase
     }
 
     [HttpPost("{id}/messages")]
-    public async Task<IActionResult> AddMessage(int id, [FromBody] ProjectInquiryMessageRequest request)
+    public async Task<IActionResult> AddMessage(
+        int id,
+        [FromBody] ProjectInquiryMessageRequest request
+    )
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId))
@@ -115,8 +119,9 @@ public class ProjectInquiriesController : ControllerBase
             return Unauthorized(new { error = "User not authenticated" });
         }
 
-        var inquiry = await _context.ProjectInquiries
-            .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+        var inquiry = await _context.ProjectInquiries.FirstOrDefaultAsync(p =>
+            p.Id == id && p.UserId == userId
+        );
 
         if (inquiry == null)
         {
@@ -132,14 +137,14 @@ public class ProjectInquiriesController : ControllerBase
             SenderName = userName,
             Message = request.Message,
             CreatedAt = DateTime.UtcNow,
-            IsFromClient = true
+            IsFromClient = true,
         };
 
         _context.ProjectInquiryMessages.Add(message);
-        
+
         // Update the inquiry status and timestamp
         inquiry.UpdatedAt = DateTime.UtcNow;
-        
+
         await _context.SaveChangesAsync();
 
         return Ok(message);

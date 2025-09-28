@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
-    "rm:nm": "rimraf --glob apps/**/node_modules",
+    "rm:nm": "pnpm rm -r node_modules && pnpm rm -r apps/**/node_modules && pnpm rm -r apis/**/node_modules",
     "predev": "kill-port 3000 4200 5173 5174 5175 5177",
     "kill:identity": "kill-port 5101 5177",
     "kill:core": "kill-port 5102 5174",

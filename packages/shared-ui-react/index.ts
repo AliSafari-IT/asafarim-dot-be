@@ -5,12 +5,14 @@ export { default as LayoutContainer } from "./components/LayoutContainer";
 export { Button } from "./components/Button";
 export { default as Hero } from "./components/Hero";
 export { default as ShowcaseCard } from "./components/ShowcaseCard";
+export { ContentCard } from "./components/ContentCard";
+export { ContentCardExample } from "./components/ContentCardExample";
+export type { ContentCardProps } from "./components/ContentCard";
 
 // Auth
 export { default as AuthStatus } from "./components/Auth/AuthStatus";
 export type { AuthStatusProps } from "./components/Auth/AuthStatus";
 export { AuthSyncProvider } from "./contexts/AuthProvider";
-
 // Not Found
 export { default as NotFound } from "./components/NotFound/NotFound";
 

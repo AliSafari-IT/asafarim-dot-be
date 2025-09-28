@@ -1,0 +1,391 @@
+/* Portfolio Pages Styling */
+
+/* General Portfolio Styles */
+.portfolio-page,
+.resume-page,
+.publications-page,
+.research-page,
+.projects-page {
+  --portfolio-primary: var(--color-primary, #4f46e5);
+  --portfolio-secondary: var(--color-secondary, #60a5fa);
+  --portfolio-accent: var(--color-accent, #f59e0b);
+  --portfolio-bg: var(--color-background, #ffffff);
+  --portfolio-text: var(--color-foreground, #111827);
+  --portfolio-card-bg: var(--color-surface, #ffffff);
+  --portfolio-card-border: rgba(0, 0, 0, 0.1);
+  --portfolio-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --section-spacing: 4rem;
+  --content-max-width: 1200px;
+  --card-border-radius: 0.75rem;
+}
+
+/* Main content layout improvements */
+.portfolio-page,
+.resume-page,
+.publications-page,
+.research-page,
+.projects-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Container styling */
+.portfolio-page .container,
+.resume-page .container,
+.publications-page .container,
+.research-page .container,
+.projects-page .container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Card hover effects */
+.portfolio-card {
+  transition: all 0.3s ease;
+}
+
+.portfolio-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Featured work image placeholders */
+.featured-item .h-48,
+.featured-project .h-48,
+.project-card .h-40 {
+  background-image: linear-gradient(135deg, var(--portfolio-primary) 0%, var(--portfolio-secondary) 100%);
+  opacity: 0.8;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark mode image placeholders */
+.dark .featured-item .h-48,
+.dark .featured-project .h-48,
+.dark .project-card .h-40 {
+  background-image: linear-gradient(135deg, var(--portfolio-primary) 0%, var(--portfolio-secondary) 100%);
+  opacity: 0.6;
+}
+
+.featured-item .h-48::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Section styling */
+.portfolio-page section,
+.resume-page section,
+.publications-page section,
+.research-page section,
+.projects-page section {
+  margin-bottom: var(--section-spacing);
+  position: relative;
+}
+
+/* Section headings */
+.portfolio-page section h2,
+.resume-page section h2,
+.publications-page section h2,
+.research-page section h2,
+.projects-page section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.portfolio-page section h2::after,
+.resume-page section h2::after,
+.publications-page section h2::after,
+.research-page section h2::after,
+.projects-page section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
+  left: 0;
+  width: 3rem;
+  height: 0.25rem;
+  background-color: var(--portfolio-primary);
+  border-radius: 0.125rem;
+}
+
+/* Card styling for all portfolio pages */
+.portfolio-page .bg-white,
+.resume-page .bg-white,
+.publications-page .bg-white,
+.research-page .bg-white,
+.projects-page .bg-white,
+.featured-project,
+.project-card {
+  background-color: var(--portfolio-card-bg) !important;
+  border: 1px solid var(--portfolio-card-border);
+  box-shadow: var(--portfolio-card-shadow);
+  color: var(--portfolio-text);
+  border-radius: var(--card-border-radius);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.portfolio-page .bg-white:hover,
+.resume-page .bg-white:hover,
+.publications-page .bg-white:hover,
+.research-page .bg-white:hover,
+.projects-page .bg-white:hover,
+.featured-project:hover,
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Text colors */
+.portfolio-page,
+.resume-page,
+.publications-page,
+.research-page,
+.projects-page {
+  color: var(--portfolio-text);
+  background-color: var(--portfolio-bg);
+}
+
+/* Dark mode card styling */
+.dark .portfolio-page .bg-white,
+.dark .resume-page .bg-white,
+.dark .publications-page .bg-white,
+.dark .research-page .bg-white,
+.dark .projects-page .bg-white,
+.dark .featured-project,
+.dark .project-card,
+.dark .bg-white {
+  background-color: var(--portfolio-card-bg) !important;
+  border: 1px solid var(--portfolio-card-border);
+}
+
+/* Fix dark mode background colors */
+.dark .bg-gray-200,
+.dark .bg-gray-100 {
+  background-color: rgba(31, 41, 55, 0.5) !important;
+}
+
+.dark .bg-gray-800 {
+  background-color: var(--portfolio-card-bg) !important;
+}
+
+/* Fix button styling in dark mode */
+.dark .portfolio-page button,
+.dark .resume-page button,
+.dark .publications-page button,
+.dark .research-page button,
+.dark .projects-page button {
+  background-color: var(--portfolio-primary);
+  color: white;
+}
+
+.dark .portfolio-page button:hover,
+.dark .resume-page button:hover,
+.dark .publications-page button:hover,
+.dark .research-page button:hover,
+.dark .projects-page button:hover {
+  background-color: var(--portfolio-secondary);
+}
+
+/* Publications page specific styles */
+.publications-page a.inline-block {
+  transition: all 0.2s ease;
+}
+
+.publications-page a.inline-block:hover {
+  transform: translateY(-2px);
+}
+
+/* Research page specific styles */
+.research-page .list-decimal li {
+  margin-bottom: 0.75rem;
+}
+
+/* Dark mode adjustments */
+.dark .portfolio-page,
+.dark .resume-page,
+.dark .publications-page,
+.dark .research-page,
+.dark .projects-page {
+  --portfolio-primary: var(--color-primary-dark, #6366f1);
+  --portfolio-secondary: var(--color-secondary-dark, #93c5fd);
+  --portfolio-accent: var(--color-accent-dark, #fbbf24);
+  --portfolio-bg: var(--color-background-dark, #111827);
+  --portfolio-text: var(--color-foreground-dark, #f3f4f6);
+  --portfolio-card-bg: var(--color-surface-dark, #1f2937);
+  --portfolio-card-border: rgba(255, 255, 255, 0.1);
+  --portfolio-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Fix text colors in dark mode */
+.dark .portfolio-page h2,
+.dark .resume-page h2,
+.dark .publications-page h2,
+.dark .research-page h2,
+.dark .projects-page h2,
+.dark .portfolio-page h3,
+.dark .resume-page h3,
+.dark .publications-page h3,
+.dark .research-page h3,
+.dark .projects-page h3,
+.dark .portfolio-page p,
+.dark .resume-page p,
+.dark .publications-page p,
+.dark .research-page p,
+.dark .projects-page p,
+.dark .portfolio-page li,
+.dark .resume-page li,
+.dark .publications-page li,
+.dark .research-page li,
+.dark .projects-page li,
+.dark .portfolio-page span:not(.text-blue-600):not(.text-gray-600),
+.dark .resume-page span:not(.text-blue-600):not(.text-gray-600),
+.dark .publications-page span:not(.text-blue-600):not(.text-gray-600),
+.dark .research-page span:not(.text-blue-600):not(.text-gray-600),
+.dark .projects-page span:not(.text-blue-600):not(.text-gray-600) {
+  color: var(--portfolio-text);
+}
+
+/* Fix link colors in dark mode */
+.dark .portfolio-page a,
+.dark .resume-page a,
+.dark .publications-page a,
+.dark .research-page a,
+.dark .projects-page a {
+  color: var(--portfolio-secondary);
+}
+
+/* Fix specific text color classes */
+.dark .text-gray-600 {
+  color: #d1d5db !important; /* Light gray for dark mode */
+}
+
+.dark .text-blue-600 {
+  color: var(--portfolio-secondary) !important;
+}
+
+.dark .text-gray-800 {
+  color: #f3f4f6 !important;
+}
+
+.dark .text-blue-800 {
+  color: #bfdbfe !important;
+}
+
+/* Fix tag colors in dark mode */
+.dark .px-3.py-1.bg-blue-100 {
+  background-color: rgba(99, 102, 241, 0.2) !important;
+  color: var(--portfolio-secondary) !important;
+}
+
+.dark .px-2.py-1.bg-blue-100 {
+  background-color: rgba(99, 102, 241, 0.2) !important;
+  color: var(--portfolio-secondary) !important;
+}
+
+.dark .px-3.py-1.bg-gray-100,
+.dark .px-2.py-1.bg-gray-100 {
+  background-color: rgba(75, 85, 99, 0.3) !important;
+  color: #e5e7eb !important;
+}
+
+/* Hero component styling */
+.portfolio-page .hero,
+.resume-page .hero,
+.publications-page .hero,
+.research-page .hero,
+.projects-page .hero {
+  background: linear-gradient(to bottom, rgba(79, 70, 229, 0.1) 0%, transparent 100%);
+  padding: 3rem 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Skills section styling */
+.resume-page .skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.resume-page .skill-card {
+  border-top: 4px solid var(--portfolio-primary);
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.resume-page .skill-card h3 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--portfolio-primary);
+}
+
+.resume-page .skill-card ul {
+  padding-left: 1.25rem;
+}
+
+.resume-page .skill-card li {
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+/* Experience section styling */
+.resume-page .experience-item,
+.publications-page .publication-item,
+.research-page .research-item {
+  position: relative;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--portfolio-primary);
+}
+
+.resume-page .experience-item .position,
+.resume-page .education-item .degree {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--portfolio-primary);
+}
+
+.dark .portfolio-page .hero,
+.dark .resume-page .hero,
+.dark .publications-page .hero,
+.dark .research-page .hero,
+.dark .projects-page .hero {
+  background: linear-gradient(to bottom, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+}
+
+/* Hero component text colors */
+.dark .portfolio-page .hero h1,
+.dark .resume-page .hero h1,
+.dark .publications-page .hero h1,
+.dark .research-page .hero h1,
+.dark .projects-page .hero h1,
+.dark .portfolio-page .hero h2,
+.dark .resume-page .hero h2,
+.dark .publications-page .hero h2,
+.dark .research-page .hero h2,
+.dark .projects-page .hero h2,
+.dark .portfolio-page .hero p,
+.dark .resume-page .hero p,
+.dark .publications-page .hero p,
+.dark .research-page .hero p,
+.dark .projects-page .hero p {
+  color: var(--portfolio-text);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .portfolio-sections .grid {
+    grid-template-columns: 1fr;
+  }
+}

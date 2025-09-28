@@ -45,6 +45,10 @@
   --color-border-rgb: 226, 232, 240;
 
   --color-brand-50: #f2fbff;
+  --color-brand-100: #eef2ff;
+  --color-brand-200: #cbd5e1;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
   --color-brand-500: #0ea5e9;
   --color-brand-600: #0284c7;
   --color-brand-900: #0b3b56;
@@ -75,10 +79,6 @@
   
   --border-color: #e2e8f0;
   --border-hover: #3b82f6;
-
-  /* Brand helpers used in components */
-  --color-brand-50: 219, 234, 254; /* rgb */
-  --color-brand-500: 59, 130, 246; /* rgb */
 
   /* Card */
   --card-text-color: var(--color-foreground);
@@ -294,6 +294,22 @@ body.dark,
   --color-sky-variant-dark: #1867e7;
   --color-sky-variant: var(--color-sky-variant-dark);
   --color-brand: #3b82f6;
+  --color-brand-dark: #3b82f6;
+  --color-brand-hover: #5c8cf5;
+  --color-brand-active: #4882fd;
+  --color-brand-disabled: #4882fd;
+/* In the dark theme override section */
+--color-brand-50:  #0b1220;  /* very dark */
+--color-brand-100: #0f1a30;
+--color-brand-200: #10243a;
+--color-brand-300: #1e3a8a;  /* deep blue */
+--color-brand-400: #2563eb;  /* primary hover */
+--color-brand-500: #3b82f6;  /* primary */
+--color-brand-600: #60a5fa;
+--color-brand-700: #93c5fd;
+--color-brand-800: #bfdbfe;
+--color-brand-900: #dbeafe;  /* light accents on dark */
+  
   --color-phosphor: #d1f550;
 
   /* Hint browsers to render native controls in dark palette */
@@ -340,9 +356,6 @@ body.dark,
   /* Inputs slightly more elevated than cards */
   --input-bg: rgba(255, 255, 255, 0);
   --input-border-color: #64748b;
-
-  --color-brand-50: 30, 41, 59;
-  --color-brand-500: 96, 165, 250;
 
   /* Chat preview variables (dark overrides) */
   --chat-window-bg: rgba(255,255,255,0.04);

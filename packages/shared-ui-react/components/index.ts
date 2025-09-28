@@ -9,3 +9,5 @@ export { default as NotFound } from './NotFound/NotFound';
 export * from './Notifications';
 export * from './Hero';
 export * from './ShowcaseCard';
+export * from './ContentCard';
+export * from './ContentCardExample';

@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using Core.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Core.Api.Data;
 
@@ -15,6 +18,8 @@ public class CoreDbContext : DbContext
     public DbSet<MessageLink> MessageLinks { get; set; } = null!;
     public DbSet<ProjectInquiry> ProjectInquiries { get; set; } = null!;
     public DbSet<ProjectInquiryMessage> ProjectInquiryMessages { get; set; } = null!;
+    public DbSet<Publication> Publications { get; set; } = null!;
+    public DbSet<PublicationMetric> PublicationMetrics { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,57 +31,98 @@ public class CoreDbContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.EmailSent).HasDefaultValue(false);
         });
-        
+
         modelBuilder.Entity<UserConversation>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.Status).HasMaxLength(50);
-            entity.HasMany(e => e.Messages)
-                  .WithOne()
-                  .HasForeignKey(e => e.ConversationId)
-                  .OnDelete(DeleteBehavior.Cascade);
+            entity
+                .HasMany(e => e.Messages)
+                .WithOne()
+                .HasForeignKey(e => e.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         modelBuilder.Entity<ConversationMessage>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
-            entity.HasMany(e => e.Attachments)
-                  .WithOne()
-                  .HasForeignKey(e => e.MessageId)
-                  .OnDelete(DeleteBehavior.Cascade);
-            entity.HasMany(e => e.Links)
-                  .WithOne()
-                  .HasForeignKey(e => e.MessageId)
-                  .OnDelete(DeleteBehavior.Cascade);
+            entity
+                .HasMany(e => e.Attachments)
+                .WithOne()
+                .HasForeignKey(e => e.MessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity
+                .HasMany(e => e.Links)
+                .WithOne()
+                .HasForeignKey(e => e.MessageId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         modelBuilder.Entity<MessageAttachment>(entity =>
         {
             entity.HasKey(e => e.Id);
         });
-        
+
         modelBuilder.Entity<MessageLink>(entity =>
         {
             entity.HasKey(e => e.Id);
         });
-        
+
         modelBuilder.Entity<ProjectInquiry>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.Status).HasMaxLength(50);
-            entity.HasMany(e => e.Messages)
-                  .WithOne()
-                  .HasForeignKey(e => e.ProjectInquiryId)
-                  .OnDelete(DeleteBehavior.Cascade);
+            entity
+                .HasMany(e => e.Messages)
+                .WithOne()
+                .HasForeignKey(e => e.ProjectInquiryId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         modelBuilder.Entity<ProjectInquiryMessage>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+        });
+
+        modelBuilder.Entity<Publication>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.Title).IsRequired();
+            entity.Property(e => e.Variant).HasMaxLength(50);
+            entity.Property(e => e.Year).HasMaxLength(10);
+            entity.Property(e => e.DOI).HasMaxLength(100);
+            entity.Property(e => e.PublicationType).HasMaxLength(50);
+
+            // Configure Tags as PostgreSQL array instead of JSON
+            entity
+                .Property(e => e.Tags)
+                .HasColumnType("text[]")
+                .HasConversion(v => v, v => v == null ? new List<string>() : v.ToList())
+                .Metadata.SetValueComparer(
+                    new ValueComparer<List<string>>(
+                        (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2),
+                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                        c => c.ToList()
+                    )
+                );
+            // Configure one-to-many relationship with PublicationMetric
+            entity
+                .HasMany(e => e.Metrics)
+                .WithOne(m => m.Publication)
+                .HasForeignKey(m => m.PublicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PublicationMetric>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Label).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Value).IsRequired().HasMaxLength(100);
         });
     }
 }

@@ -17,5 +17,11 @@ export default defineConfig({
   optimizeDeps: {
     // Ensure workspace packages are properly optimized
     include: ['@asafarim/shared-ui-react'],
+    force: true, // Force dependency optimization on each build
+  },
+  build: {
+    commonjsOptions: {
+      include: [/shared-ui-react/],
+    },
   },
 })

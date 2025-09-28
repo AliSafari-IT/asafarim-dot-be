@@ -14,9 +14,12 @@ This document serves as the central reference for all port configurations across
 
 | Frontend App     | Development Port |
 |------------------|------------------|
-| identity-portal  | 5101             |
+| identity-portal  | 5177             |
 | core-app         | 5174             |
 | ai-ui            | 5173             |
+| web              | 5175             |
+| blog             | 3000             |
+| jobs-ui          | 4200             |
 
 ## Nginx Configuration
 
