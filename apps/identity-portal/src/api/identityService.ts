@@ -74,7 +74,7 @@ export interface ApiError {
 
 // Base API URL from environment variable
 // Remove the /api prefix as the endpoints don't include it
-const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101';
+const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
 
 /**
  * Handle API responses and errors

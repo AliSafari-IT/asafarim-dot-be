@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
-import { useAuth } from '@asafarim/shared-ui-react';
+import { useAuth } from '../hooks/useAuth';
 import RegisterHero from '../components/RegisterHero';
 
 export const Register = () => {

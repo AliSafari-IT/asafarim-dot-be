@@ -4,32 +4,35 @@ import { useAuth } from '../hooks/useAuth';
 import LoginHero from '../components/LoginHero';
 
 export const Login = () => {
-  const { isAuthenticated, isLoading, passwordSetupRequired } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   
   // Redirect to dashboard if already authenticated
   useEffect(() => {
-    if (isAuthenticated && !isLoading && !passwordSetupRequired) {
-      console.log('[Login] Already authenticated, redirecting to:', returnUrl || '/dashboard');
-      
-      // Check if returnUrl is an external URL
-      if (returnUrl && (returnUrl.startsWith('http://') || returnUrl.startsWith('https://'))) {
-        console.log('[Login] Redirecting to external URL:', returnUrl);
-        window.location.href = returnUrl;
-      } else {
-        // Internal navigation using React Router
-        console.log('[Login] Navigating to internal path:', returnUrl || '/dashboard');
-        navigate(returnUrl || '/dashboard', { replace: true });
-      }
+    if (isAuthenticated && !loading) {
+      const redirectTo = returnUrl || '/dashboard';
+      console.log('Already authenticated, redirecting to:', redirectTo);
+      navigate(redirectTo, { replace: true });
     }
-  }, [isAuthenticated, returnUrl, isLoading, passwordSetupRequired, navigate]);
+  }, [isAuthenticated, loading, navigate, returnUrl]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="auth-loading">
+        <div className="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
-    <LoginHero 
-      passwordSetupRequired={passwordSetupRequired}
-      returnUrl={returnUrl}
-    />
+    <div className="login-page">
+      <LoginHero 
+        returnUrl={returnUrl}
+      />
+    </div>
   );
 };
 

@@ -17,7 +17,7 @@ export default function EditUserPage() {
     
     // Check if user has admin role (case-insensitive)
     const userRoles = user?.roles || [];
-    const isAdmin = userRoles.some(role => role.toLowerCase() === 'admin');
+    const isAdmin = userRoles.some((role: string) => role.toLowerCase() === 'admin');
     if (!isAdmin) {
       navigate('/dashboard');
     }

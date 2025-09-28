@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ToastProvider, Toaster } from '@asafarim/toast';
 import '@asafarim/toast/styles.css';
 import { ThemeProvider } from '@asafarim/shared-ui-react';
-import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotificationProvider from './contexts/NotificationProvider';
 import NotificationContainer from './components/Notifications/NotificationContainer';
@@ -24,7 +23,6 @@ function App() {
       <ThemeProvider>
         <ToastProvider>
           <NotificationProvider>
-            <AuthProvider>
               <Router>
               <NotificationContainer />
               <Toaster />
@@ -121,7 +119,6 @@ function App() {
               <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
               </Router>
-            </AuthProvider>
           </NotificationProvider>
         </ToastProvider>
       </ThemeProvider>

@@ -1,6 +1,7 @@
-import { CentralNavbar, useAuth } from "@asafarim/shared-ui-react";
+import { CentralNavbar } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from '../hooks/useAuth';
 
 // Define navigation links for Identity Portal
 const navLinks: NavLinkItem[] = [
@@ -51,9 +52,11 @@ export default function Navbar() {
   // Adapt user object to match the expected format for CentralNavbar
   const adaptedUser = user ? {
     ...user,
-    name: user.firstName || user.userName
-    // No need to specify email as it's already in the user object
+    name: user.firstName || user.userName || user.name,
+    email: user.email
   } : undefined;
+  
+  console.log('[Navbar] Auth state:', { isAuthenticated, user: adaptedUser, loading });
 
   return (
     <CentralNavbar
