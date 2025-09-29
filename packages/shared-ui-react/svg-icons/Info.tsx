@@ -8,6 +8,8 @@ function Info({
   stroke = "currentColor",
   strokeWidth = 2,
   strokeLinecap = "round",
+  onClick,
+  className,
 }: SvgIconProps) {
   return (
     <svg
@@ -19,6 +21,8 @@ function Info({
       strokeWidth={strokeWidth}
       strokeLinecap={strokeLinecap}
       xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
+      className={className}
     >
       <path
         fillRule="evenodd"

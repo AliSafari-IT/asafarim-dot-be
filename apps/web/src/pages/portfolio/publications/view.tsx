@@ -85,6 +85,13 @@ export default function ViewPublication() {
           )}
         </div>
         
+        {/** TODO: add image */}
+        {publication?.imageUrl && (
+          <div className="publication-view-image">
+            <img src={publication.imageUrl} alt={publication.title} />
+          </div>
+        )}
+
         {publication?.description && (
           <div className="publication-view-description">
             <h3>Description</h3>
@@ -110,11 +117,7 @@ export default function ViewPublication() {
           <div className="publication-view-tags">
             <h3>Tags</h3>
             <div className="publication-view-tag-list">
-              {publication.tags.map((tag, index) => (
-                <span key={index} className="publication-view-tag">
-                  {tag}
-                </span>
-              ))}
+              {publication.tags.join(', ')}
             </div>
           </div>
         )}

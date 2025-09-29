@@ -167,14 +167,17 @@ public class PublicationsController : ControllerBase
             }
 
             // Reload the publication with metrics
-            publication = await _context
-                .Publications.Include(p => p.Metrics)
-                .FirstOrDefaultAsync(p => p.Id == publication.Id);
+            if (publication != null)
+            {
+                publication = await _context
+                    .Publications.Include(p => p.Metrics)
+                    .FirstOrDefaultAsync(p => p.Id == publication.Id);
+            }
 
             return CreatedAtAction(
                 nameof(GetPublication),
-                new { id = publication.Id },
-                MapToDto(publication)
+                new { id = publication?.Id ?? 0 },
+                publication != null ? MapToDto(publication) : null
             );
         }
         catch (Exception ex)
@@ -212,8 +215,20 @@ public class PublicationsController : ControllerBase
             return NotFound();
         }
 
-        // Check if the user owns this publication
-        if (publication.UserId != userId)
+        // Check if the user owns this publication or is an admin
+        bool isAdmin = User.IsInRole("admin") || User.IsInRole("Admin");
+        bool isAdminEdit = Request.Query.ContainsKey("isAdminEdit") || 
+                          Request.Headers.ContainsKey("X-Admin-Edit");
+
+        _logger.LogInformation(
+            "Update permission check - UserId: {UserId}, PublicationUserId: {PublicationUserId}, IsAdmin: {IsAdmin}, IsAdminEdit: {IsAdminEdit}",
+            userId,
+            publication.UserId,
+            isAdmin,
+            isAdminEdit
+        );
+
+        if (publication.UserId != userId && !(isAdmin && isAdminEdit))
         {
             return Forbid("You do not have permission to update this publication");
         }
@@ -297,8 +312,20 @@ public class PublicationsController : ControllerBase
             return NotFound();
         }
 
-        // Check if the user owns this publication
-        if (publication.UserId != userId)
+        // Check if the user owns this publication or is an admin
+        bool isAdmin = User.IsInRole("admin") || User.IsInRole("Admin");
+        bool isAdminEdit = Request.Query.ContainsKey("isAdminEdit") || 
+                          Request.Headers.ContainsKey("X-Admin-Edit");
+
+        _logger.LogInformation(
+            "Delete permission check - UserId: {UserId}, PublicationUserId: {PublicationUserId}, IsAdmin: {IsAdmin}, IsAdminEdit: {IsAdminEdit}",
+            userId,
+            publication.UserId,
+            isAdmin,
+            isAdminEdit
+        );
+
+        if (publication.UserId != userId && !(isAdmin && isAdminEdit))
         {
             return Forbid("You do not have permission to delete this publication");
         }

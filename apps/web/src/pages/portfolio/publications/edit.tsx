@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchPublicationById, updatePublication } from "../../../services/publicationService";
 import type { PublicationDto } from "../../../services/publicationService";
+import { useAuth } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
 
 const EditPublication: React.FC = () => {
@@ -9,11 +10,16 @@ const EditPublication: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const publicationId = parseInt(id || '0', 10);
   
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  // Use the shared auth hook to get user and admin status
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
+  const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
+  
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState<boolean>(false);
+  // Store the original userId to preserve ownership
+  const [originalUserId, setOriginalUserId] = useState<string>("");
   
   // Form state
   const [formData, setFormData] = useState<Omit<PublicationDto, 'id'> & { userId?: string }>({
@@ -42,16 +48,14 @@ const EditPublication: React.FC = () => {
     userId: ""
   });
 
-  // Check if user is logged in
+  // Check if user is authenticated
   useEffect(() => {
-    const token = document.cookie.includes('atk=') || localStorage.getItem('auth_token');
-    setIsLoggedIn(!!token);
-    
-    if (!token) {
+    // Only redirect after authentication check is complete
+    if (!authLoading && !isAuthenticated) {
       // Redirect to the identity subdomain login page
       window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(window.location.href)}`;
     }
-  }, [id]);
+  }, [authLoading, isAuthenticated, id]);
 
   // Load publication data
   useEffect(() => {
@@ -70,6 +74,11 @@ const EditPublication: React.FC = () => {
           setNotFound(true);
           return;
         }
+        
+        // Store the original userId for admin updates
+        const pubUserId = (publication as unknown as { userId?: string }).userId || "";
+        setOriginalUserId(pubUserId);
+        console.log('Original publication userId:', pubUserId);
         
         // Convert publication to form data
         setFormData({
@@ -94,7 +103,8 @@ const EditPublication: React.FC = () => {
           journalName: publication.journalName || "",
           conferenceName: publication.conferenceName || "",
           publicationType: publication.publicationType || "academic",
-          showImage: (publication as unknown as { showImage?: boolean }).showImage || false,
+          // Make sure to properly read the showImage property
+          showImage: publication.showImage !== undefined ? publication.showImage : false,
           userId: (publication as unknown as { userId?: string }).userId || "" // Type-safe casting
         });
         
@@ -107,10 +117,10 @@ const EditPublication: React.FC = () => {
       }
     };
 
-    if (isLoggedIn && publicationId) {
+    if (isAuthenticated && publicationId) {
       loadPublication();
     }
-  }, [isLoggedIn, publicationId]);
+  }, [isAuthenticated, publicationId]);
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -144,7 +154,31 @@ const EditPublication: React.FC = () => {
     setError(null);
     
     try {
-      const success = await updatePublication(publicationId, formData);
+      // Prepare the data for submission
+      // Convert empty strings to undefined to avoid sending empty values
+      const preparedData = Object.fromEntries(
+        Object.entries(formData).map(([key, value]) => {
+          // Convert empty strings to undefined
+          if (value === "") return [key, undefined];
+          // Keep other values as is
+          return [key, value];
+        })
+      ) as Omit<PublicationDto, 'id'>;
+      
+      // If admin is editing someone else's publication, ensure we preserve the original userId
+      if (isAdmin && originalUserId && originalUserId !== user?.id) {
+        console.log('Admin is editing another user\'s publication. Preserving original userId:', originalUserId);
+        preparedData.userId = originalUserId;
+      }
+      
+      // Add admin flag to the request if the user is an admin
+      if (isAdmin) {
+        (preparedData as any).isAdminEdit = true;
+      }
+      
+      console.log('Submitting publication data:', preparedData);
+      
+      const success = await updatePublication(publicationId, preparedData);
       if (success) {
         navigate('/portfolio/publications/manage');
       } else {
@@ -158,7 +192,7 @@ const EditPublication: React.FC = () => {
     }
   };
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
     return <div className="edit-publication">Redirecting to login...</div>;
   }
 
@@ -201,7 +235,7 @@ const EditPublication: React.FC = () => {
             {error}
           </div>
         )}
-        
+      
         <form onSubmit={handleSubmit} className="edit-publication-form">
           <div className="form-grid">
             {/* Basic Information */}

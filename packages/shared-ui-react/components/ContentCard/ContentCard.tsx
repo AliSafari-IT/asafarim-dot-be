@@ -102,6 +102,10 @@ export interface ContentCardProps {
    */
   userId?: string;
   /** 
+   * Whether to show the image
+   */
+  showImage?: boolean;
+  /** 
    * Additional props
    */
   [key: string]: any;
@@ -131,6 +135,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   headerContent,
   footerContent,
   userId,
+  showImage = false,
   ...props
 }) => {
   // Combine all classes
@@ -153,7 +158,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   // Card content
   const cardContent = (
     <>
-      {(imageUrl || useGradient) && (
+      {showImage && (imageUrl || useGradient) && (
         <div className="content-card__media">
           {imageUrl ? (
             <img src={imageUrl} alt={title} className="content-card__image" />

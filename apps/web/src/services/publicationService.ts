@@ -49,6 +49,7 @@ export const mapToContentCardProps = (publication: PublicationDto): ContentCardP
     bordered: publication.bordered,
     clickable: publication.clickable,
     featured: publication.featured,
+    showImage: publication.showImage,
     userId: publication.userId,
   };
 };
@@ -171,25 +172,49 @@ export const createPublication = async (publication: Omit<PublicationDto, 'id'>)
 };
 
 // Update an existing publication
-export const updatePublication = async (id: number, publication: Omit<PublicationDto, 'id'>): Promise<boolean> => {
+export const updatePublication = async (id: number, publication: Omit<PublicationDto, 'id'> & { isAdminEdit?: boolean }): Promise<boolean> => {
   try {
     // Get token from both cookie and localStorage for maximum compatibility
     const token = getCookie('atk') || localStorage.getItem('auth_token');
     console.log('Using token for API call:', token ? 'Token exists' : 'No token');
     
-    const response = await fetch(`${API_BASE_URL}/publications/${id}`, {
+    // Extract admin flag before cleaning
+    const isAdminEdit = publication.isAdminEdit;
+    
+    // Clean up the publication object to remove any undefined or null values
+    // and remove the isAdminEdit property which is only for client-side use
+    const cleanedPublication = Object.fromEntries(
+      Object.entries(publication)
+        .filter(([key, value]) => key !== 'isAdminEdit' && value !== undefined && value !== null)
+    );
+    
+    console.log('Updating publication with data:', cleanedPublication);
+    console.log('Is admin edit:', isAdminEdit ? 'Yes' : 'No');
+    
+    // Add admin flag as a query parameter if it's an admin edit
+    let url = `${API_BASE_URL}/publications/${id}`;
+    if (isAdminEdit) {
+      url += '?isAdminEdit=true';
+    }
+    
+    const response = await fetch(url, {
       method: 'PUT',
       credentials: 'include', // Include cookies in the request
       headers: {
         'Content-Type': 'application/json',
         // Include auth token if available from either source
         ...(token && { 'Authorization': `Bearer ${token}` }),
+        // Add admin flag as a header as well for redundancy
+        ...(isAdminEdit && { 'X-Admin-Edit': 'true' }),
       },
-      body: JSON.stringify(publication),
+      body: JSON.stringify(cleanedPublication),
     });
     
     if (!response.ok) {
-      throw new Error(`Error updating publication: ${response.statusText}`);
+      // Try to get more detailed error information
+      const errorText = await response.text();
+      console.error('Server response:', errorText);
+      throw new Error(`Error updating publication: ${response.status} ${response.statusText}\n${errorText}`);
     }
     
     return true;

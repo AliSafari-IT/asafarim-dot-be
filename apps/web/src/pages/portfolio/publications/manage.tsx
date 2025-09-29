@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchPublications, deletePublication } from "../../../services/publicationService";
-import { Button, Info, type ContentCardProps, useAuth } from "@asafarim/shared-ui-react";
+import { Button, type ContentCardProps, useAuth, Eye, Remove } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
 
 const ManagePublications: React.FC = () => {
@@ -157,17 +157,14 @@ const ManagePublications: React.FC = () => {
                 <tr key={pub.id || index}>
                   <td className="table-cell">
                     <div className="table-cell-content">
-                      <div className="table-icon">
-                        <Info />
-                      </div>
-                      <div className="table-text">
+                      <div className="table-title-wrapper">
+                        <Eye onClick={() => handleView(pub.id as unknown as number, pub.userId as unknown as string)} className="table-icon"/>
                         <div className="table-title">{pub.title}</div>
-                        <div className="table-subtitle">{pub.variant}</div>
                       </div>
                     </div>
                   </td>
                   <td className="table-cell">
-                    <div className="table-text">{pub.type}</div>
+                    <div className="table-text">{pub.variant}</div>
                   </td>
                   <td className="table-cell">
                     <div className="table-text">{pub.year}</div>
@@ -192,11 +189,12 @@ const ManagePublications: React.FC = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(pub.id as unknown as number, pub.userId as string)}
-                        className="action-button delete"
                         disabled={isDeleting || (!isAdmin && user?.id !== pub.userId)}
                         aria-label="Delete publication"
+                        title="Delete publication"
+                        className="action-button delete"
                       >
-                        Delete
+                        <Remove/>
                       </button>
                     </div>
                   </td>
