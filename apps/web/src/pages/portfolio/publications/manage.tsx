@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchPublications, deletePublication } from "../../../services/publicationService";
-import type { ContentCardProps } from "@asafarim/shared-ui-react";
+import { Button, Info, type ContentCardProps } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
 
 const ManagePublications: React.FC = () => {
@@ -46,11 +46,11 @@ const ManagePublications: React.FC = () => {
   }, [isLoggedIn]);
 
   // Handle delete publication
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number | string) => {
     if (window.confirm('Are you sure you want to delete this publication?')) {
       setIsDeleting(true);
       try {
-        const success = await deletePublication(id);
+        const success = await deletePublication(id as number);
         if (success) {
           // Remove from state
           setPublications(publications.filter(pub => pub.id !== id));
@@ -86,6 +86,10 @@ const ManagePublications: React.FC = () => {
       </div>
     );
   }
+
+  const handleView = (id: number, userId: string): void => {
+    navigate(`/portfolio/${userId}/publications/view/${id}`);
+  };
 
   return (
     <div className="manage-publications">
@@ -133,17 +137,7 @@ const ManagePublications: React.FC = () => {
                   <td className="table-cell">
                     <div className="table-cell-content">
                       <div className="table-icon">
-                        <svg
-                          className="icon"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 012 0v6a1 1 0 11-2 0V9zm4-2.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        <Info />
                       </div>
                       <div className="table-text">
                         <div className="table-title">{pub.title}</div>
@@ -160,7 +154,15 @@ const ManagePublications: React.FC = () => {
                   <td className="table-cell">
                     <div className="table-actions">
                       <button
-                        onClick={() => handleEdit(pub.id as number)}
+                        onClick={() => handleView(pub.id as unknown as number, pub.userId as unknown as string)}
+                        className="action-button view"
+                        disabled={isDeleting}
+                        aria-label="View publication"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleEdit(pub.id as unknown as number)}
                         className="action-button edit"
                         disabled={isDeleting}
                         aria-label="Edit publication"
@@ -168,7 +170,7 @@ const ManagePublications: React.FC = () => {
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(pub.id as number)}
+                        onClick={() => handleDelete(pub.id as unknown as number)}
                         className="action-button delete"
                         disabled={isDeleting}
                         aria-label="Delete publication"
@@ -185,12 +187,12 @@ const ManagePublications: React.FC = () => {
       )}
 
       <div className="back-button-wrapper">
-        <button
+        <Button
           onClick={() => navigate("/portfolio/publications")}
-          className="action-button"
+          variant="link"
         >
           Back to Publications
-        </button>
+        </Button>
       </div>
     </div>
   </div>

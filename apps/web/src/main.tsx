@@ -16,6 +16,7 @@ import Projects from "./pages/Projects";
 import NewPublication from "./pages/portfolio/publications/new";
 import ManagePublications from "./pages/portfolio/publications/manage";
 import EditPublication from "./pages/portfolio/publications/edit";
+import ViewPublication from "./pages/portfolio/publications/view";
 
 const router = createBrowserRouter([
   {
@@ -27,13 +28,17 @@ const router = createBrowserRouter([
       { path: "contact", element: <Contact /> },
       { path: "what-is-building", element: <WhatIsBuilding /> },
       { path: "portfolio", element: <Portfolio /> },
+      { path: "projects", element: <Projects /> },
       { path: "portfolio/resume", element: <Resume /> },
       { path: "portfolio/publications", element: <Publications /> },
       { path: "portfolio/publications/new", element: <NewPublication /> },
       { path: "portfolio/publications/manage", element: <ManagePublications /> },
       { path: "portfolio/publications/edit/:id", element: <EditPublication /> },
       { path: "portfolio/research", element: <Research /> },
-      { path: "projects", element: <Projects /> },
+
+      // dynamic routes
+      { path: "portfolio/:userId/publications/view/:id", element: <ViewPublication /> },
+      
       { path: "*", element: <NotFound /> },
     ]
   }

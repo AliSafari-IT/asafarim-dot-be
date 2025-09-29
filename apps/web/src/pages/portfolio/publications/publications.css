@@ -3,6 +3,48 @@
 /* Page layout */
 .publications-page {
   width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Publication actions bar - horizontal top menu */
+.publication-actions-bar {
+  width: 100%;
+  background-color: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-200);
+  padding: 1rem 0;
+  margin-bottom: 0;
+}
+
+.actions-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+.actions-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Responsive adjustments for actions bar */
+@media (max-width: 768px) {
+  .actions-right,
+  .actions-center {
+    padding: 0 1rem;
+  }
+  
+  .publication-actions-bar {
+    padding: 0.75rem 0;
+  }
 }
 
 /* Hero section customization */
@@ -15,13 +57,16 @@
 }
 
 /* Loading state */
-.publications-loading {
+.publications-loading,
+.loading-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 3rem 1rem;
   text-align: center;
+  font-size: 1.125rem;
+  color: var(--color-gray-600);
 }
 
 .loading-spinner {
@@ -41,8 +86,10 @@
 
 .publications-container {
   width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 3rem 1rem;
+  box-sizing: border-box;
 }
 
 .publications-section {
@@ -65,7 +112,7 @@
 @media (min-width: 768px) {
   .publications-container {
     max-width: 1200px;
-    padding: 3rem 2rem;
+    padding: 3rem 1.5rem; /* Reduced padding to prevent overflow */
   }
   
   .publications-grid {
@@ -87,6 +134,126 @@
 .publication-actions {
   position: relative;
   display: inline-block;
+}
+
+/* Horizontal layout adjustments for actions bar */
+.publication-actions-bar .publication-actions {
+  margin: 0;
+}
+
+.publication-actions-bar .action-button {
+  margin: 0;
+}
+
+.publication-actions-bar .dropdown-menu {
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Direct action buttons for authenticated users */
+.actions-buttons-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.action-button-direct {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background-color: var(--color-brand-600);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.action-button-direct:hover {
+  background-color: var(--color-brand-700);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-button-direct:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.action-button-direct:active {
+  transform: translateY(0);
+}
+
+/* Secondary action button variant */
+.action-button-direct.secondary {
+  background-color: var(--color-gray-700);
+  color: white;
+  border: 1px solid var(--color-gray-600);
+}
+
+.action-button-direct.secondary:hover {
+  background-color: var(--color-gray-800);
+  border-color: var(--color-gray-500);
+}
+
+/* Light theme specific adjustments - multiple selectors for compatibility */
+[data-theme="light"] .action-button-direct.secondary,
+.light-theme .action-button-direct.secondary,
+body.light .action-button-direct.secondary {
+  background-color: var(--color-gray-800);
+  color: white;
+  border: 1px solid var(--color-gray-700);
+}
+
+[data-theme="light"] .action-button-direct.secondary:hover,
+.light-theme .action-button-direct.secondary:hover,
+body.light .action-button-direct.secondary:hover {
+  background-color: var(--color-gray-900);
+  border-color: var(--color-gray-600);
+}
+
+/* Alternative approach using CSS custom properties for theme-aware colors */
+.action-button-direct.secondary {
+  background-color: var(--button-secondary-bg, var(--color-gray-700));
+  color: var(--button-secondary-text, white);
+  border: 1px solid var(--button-secondary-border, var(--color-gray-600));
+}
+
+.action-button-direct.secondary:hover {
+  background-color: var(--button-secondary-bg-hover, var(--color-gray-800));
+  border-color: var(--button-secondary-border-hover, var(--color-gray-500));
+}
+
+/* Responsive adjustments for action buttons */
+@media (max-width: 768px) {
+  .actions-buttons-group {
+    gap: 0.5rem;
+  }
+  
+  .action-button-direct {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Extra small screens - stack buttons vertically if needed */
+@media (max-width: 480px) {
+  .actions-buttons-group {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .action-button-direct {
+    width: 100%;
+    max-width: 200px;
+  }
 }
 
 .action-button {
@@ -162,10 +329,11 @@
   border-radius: 6px;
   padding: 8px 10px;
   position: absolute;
-  z-index: 1;
-  bottom: 125%;
+  z-index: 9999; /* High z-index to appear above navbar */
+  top: 100%; /* Position below the button instead of above */
   left: 50%;
   margin-left: -80px;
+  margin-top: 8px; /* Small gap between button and tooltip */
   opacity: 0;
   transition: opacity 0.3s;
   font-size: 0.875rem;
@@ -176,12 +344,12 @@
 .tooltip .tooltip-text::after {
   content: "";
   position: absolute;
-  top: 100%;
+  bottom: 100%; /* Position arrow at top of tooltip */
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent; /* Arrow pointing up */
 }
 
 .tooltip:hover .tooltip-text {

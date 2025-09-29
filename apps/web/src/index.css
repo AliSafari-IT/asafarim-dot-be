@@ -1,1 +1,17 @@
 @import url("@asafarim/shared-ui-react/index.css");
+
+/* Global fixes for horizontal scrolling issues */
+html, body {
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure all containers respect viewport width */
+.container, 
+[class*="container"] {
+  max-width: 100%;
+  box-sizing: border-box;
+}

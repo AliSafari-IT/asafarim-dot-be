@@ -2,54 +2,108 @@ import React from 'react';
 import './ContentCard.css';
 
 export interface ContentCardProps {
-  /** Title of the content card */
+  /** 
+   * publication id
+   */
+  id?: string;
+  /** 
+   * Title of the content card
+   */
   title: string;
-  /** Subtitle or author information */
+  /** 
+   * Subtitle or author information
+   */
   subtitle?: string;
-  /** Publication date, journal name, or other secondary information */
+  /** 
+   * Publication date, journal name, or other secondary information
+   */
   meta?: string;
-  /** Main content or abstract */
+  /** 
+   * Main content or abstract
+   */
   description?: string;
-  /** URL for the content, if clickable */
+  /** 
+   * URL for the content, if clickable
+   */
   link?: string;
-  /** Image URL for thumbnail */
+  /** 
+   * Image URL for thumbnail
+   */
   imageUrl?: string;
-  /** Alternative to imageUrl, shows a colored gradient background */
+  /** 
+   * Alternative to imageUrl, shows a colored gradient background
+   */
   useGradient?: boolean;
-  /** Tags or categories for the content */
+  /** 
+   * Tags or categories for the content
+   */
   tags?: string[];
-  /** Citation count or other metrics */
+  /** 
+   * Citation count or other metrics
+   */
   metrics?: {
     label: string;
     value: string | number;
   }[];
-  /** Content type: project, article, publication, report */
+  /** 
+   * Content type: project, article, publication, report
+   */
   variant?: 'project' | 'article' | 'publication' | 'report' | 'default';
-  /** Card size */
+  /** 
+   * Card size
+   */
   size?: 'sm' | 'md' | 'lg';
-  /** Additional CSS classes */
+  /** 
+   * Additional CSS classes
+   */
   className?: string;
-  /** Whether the card should take full width */
+  /** 
+   * Whether the card should take full width
+   */
   fullWidth?: boolean;
-  /** Whether the card should be elevated */
+  /** 
+   * Whether the card should be elevated
+   */
   elevated?: boolean;
-  /** Whether to show a border */
+  /** 
+   * Whether to show a border
+   */
   bordered?: boolean;
-  /** Custom action button */
+  /** 
+   * Custom action button
+   */
   actionButton?: React.ReactNode;
-  /** Icon to display next to title */
+  /** 
+   * Icon to display next to title
+   */
   icon?: React.ReactNode;
-  /** Year of publication or creation */
+  /** 
+   * Year of publication or creation
+   */
   year?: string | number;
-  /** Whether the card is clickable as a whole */
+  /** 
+   * Whether the card is clickable as a whole
+   */
   clickable?: boolean;
-  /** Whether the card is featured */
+  /** 
+   * Whether the card is featured
+   */
   featured?: boolean;
-  /** Custom header content */
+  /** 
+   * Custom header content
+   */
   headerContent?: React.ReactNode;
-  /** Custom footer content */
+  /** 
+   * Custom footer content
+   */
   footerContent?: React.ReactNode;
-  /** Additional props */
+  /** 
+   * userId of the user who created the publication
+   */
+  userId?: string;
+  /** 
+   * Additional props
+   */
   [key: string]: any;
 }
 
@@ -76,6 +130,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   featured = false,
   headerContent,
   footerContent,
+  userId,
   ...props
 }) => {
   // Combine all classes
@@ -91,8 +146,9 @@ const ContentCard: React.FC<ContentCardProps> = ({
     className
   ].filter(Boolean).join(' ');
 
-  // Determine if we should render as a link
-  const isLink = Boolean(link && clickable);
+  // Determine if we should show the View Publication button
+  const hasViewRoute = Boolean(userId && props.id);
+  const viewPublicationUrl = hasViewRoute ? `/portfolio/${userId}/publications/view/${props.id}` : undefined;
   
   // Card content
   const cardContent = (
@@ -126,6 +182,32 @@ const ContentCard: React.FC<ContentCardProps> = ({
         {meta && <div className="content-card__meta">{meta}</div>}
         
         {description && <p className="content-card__description">{description}</p>}
+        
+        {/* External link (if available) - display as hyperlink under description */}
+        {link && (
+          <div className="content-card__external-link">
+            <a 
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="content-card__link"
+            >
+              {link}
+            </a>
+          </div>
+        )}
+        
+        {/* View Publication button - placed before tags */}
+        {hasViewRoute && (
+          <div className="content-card__view-action">
+            <a 
+              href={viewPublicationUrl}
+              className="content-card__view-button"
+            >
+              View Publication
+            </a>
+          </div>
+        )}
         
         {tags.length > 0 && (
           <div className="content-card__tags">
@@ -163,37 +245,10 @@ const ContentCard: React.FC<ContentCardProps> = ({
     </>
   );
 
-  // Render as link if clickable and has link
-  if (isLink) {
-    return (
-      <a 
-        href={link} 
-        className={cardClasses}
-        target={link?.startsWith('http') ? '_blank' : undefined}
-        rel={link?.startsWith('http') ? 'noopener noreferrer' : undefined}
-        {...props}
-      >
-        {cardContent}
-      </a>
-    );
-  }
-
-  // Regular card
+  // Always render as regular card (no clickable wrapper)
   return (
     <div className={cardClasses} {...props}>
       {cardContent}
-      {link && !clickable && (
-        <a 
-          href={link}
-          className="content-card__link"
-          target={link.startsWith('http') ? '_blank' : undefined}
-          rel={link.startsWith('http') ? 'noopener noreferrer' : undefined}
-        >
-          View {variant === 'publication' ? 'Publication' : 
-                variant === 'article' ? 'Article' : 
-                variant === 'report' ? 'Report' : 'Project'}
-        </a>
-      )}
     </div>
   );
 };

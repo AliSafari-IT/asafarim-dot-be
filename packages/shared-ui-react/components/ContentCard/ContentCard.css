@@ -232,6 +232,66 @@
   transition: color 0.2s ease;
 }
 
+/* External link inside card */
+.content-card__external-link {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.content-card__external-link .content-card__link {
+  font-size: var(--global-font-size-sm, 0.875rem);
+  color: var(--color-primary, #3b82f6);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.content-card__external-link .content-card__link:hover {
+  color: var(--color-primary-dark, #2563eb);
+}
+
+/* View Publication button */
+.content-card__view-action {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.content-card__view-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary, #3b82f6);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--global-border-radius-sm, 4px);
+  font-size: var(--global-font-size-sm, 0.875rem);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.content-card__view-button:hover {
+  background-color: var(--color-primary-dark, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content-card__view-button:active {
+  transform: translateY(0);
+}
+
+.content-card__read-more {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--global-font-size-xs, 0.75rem);
+  color: var(--color-primary, #3b82f6);
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  z-index: 2; /* Ensure it's above the card for clickability */
+}
+
 .content-card__link:hover {
   color: var(--color-primary-dark, #2563eb);
   text-decoration: underline;
@@ -274,6 +334,16 @@
   background-color: rgba(var(--color-primary-rgb, 96, 165, 250), 0.2);
 }
 
+[data-theme="dark"] .content-card__view-button,
+.dark .content-card__view-button {
+  background-color: var(--color-primary, #60a5fa);
+}
+
+[data-theme="dark"] .content-card__view-button:hover,
+.dark .content-card__view-button:hover {
+  background-color: var(--color-primary-dark, #3b82f6);
+}
+
 [data-theme="dark"] .content-card__header,
 [data-theme="dark"] .content-card__footer,
 .dark .content-card__header,
@@ -308,7 +378,8 @@
 @media (prefers-reduced-motion: reduce) {
   .content-card,
   .content-card__image,
-  .content-card__link::after {
+  .content-card__link::after,
+  .content-card__view-button {
     transition: none;
   }
   
@@ -317,6 +388,11 @@
   }
   
   .content-card--clickable:hover .content-card__image {
+    transform: none;
+  }
+  
+  .content-card__view-button:hover,
+  .content-card__view-button:active {
     transform: none;
   }
 }

@@ -1,7 +1,7 @@
 import type { ContentCardProps } from "@asafarim/shared-ui-react";
 
 export interface PublicationDto {
-  id: number;
+  id: number | string;
   title: string;
   subtitle?: string;
   meta?: string;
@@ -25,12 +25,13 @@ export interface PublicationDto {
   publicationType?: string;
   isPublished?: boolean;
   showImage?: boolean;
+  userId?: string;
 }
 
 // Convert API response to ContentCardProps
-export const mapToContentCardProps = (publication: PublicationDto): ContentCardProps & { id: number } => {
+export const mapToContentCardProps = (publication: PublicationDto): ContentCardProps & { id: number | string } => {
   return {
-    id: publication.id,
+    id: publication.id.toString(),
     title: publication.title,
     subtitle: publication.subtitle,
     meta: publication.meta,
@@ -48,6 +49,7 @@ export const mapToContentCardProps = (publication: PublicationDto): ContentCardP
     bordered: publication.bordered,
     clickable: publication.clickable,
     featured: publication.featured,
+    userId: publication.userId,
   };
 };
 
@@ -55,7 +57,7 @@ export const mapToContentCardProps = (publication: PublicationDto): ContentCardP
 const API_BASE_URL = import.meta.env.VITE_CORE_API_URL || 'http://core-api.asafarim.local:5102/api';
 
 // Fetch all publications
-export const fetchPublications = async (variant?: string, featured?: boolean, myPublications?: boolean): Promise<(ContentCardProps & { id: number })[]> => {
+export const fetchPublications = async (variant?: string, featured?: boolean, myPublications?: boolean): Promise<(ContentCardProps & { id: number | string })[]> => {
   try {
     let url = `${API_BASE_URL}/publications`;
     
@@ -84,7 +86,7 @@ export const fetchPublications = async (variant?: string, featured?: boolean, my
 };
 
 // Fetch a single publication by ID
-export const fetchPublicationById = async (id: number): Promise<ContentCardProps | null> => {
+export const fetchPublicationById = async (id: number | string): Promise<ContentCardProps | null> => {
   try {
     const response = await fetch(`${API_BASE_URL}/publications/${id}`);
     

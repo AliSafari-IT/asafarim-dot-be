@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchPublicationById, updatePublication } from "../../../services/publicationService";
 import type { PublicationDto } from "../../../services/publicationService";
+import "./pub-styles.css";
 
 const EditPublication: React.FC = () => {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ const EditPublication: React.FC = () => {
     journalName: "",
     conferenceName: "",
     publicationType: "academic",
+    showImage: false,
     userId: ""
   });
 
@@ -92,6 +94,7 @@ const EditPublication: React.FC = () => {
           journalName: publication.journalName || "",
           conferenceName: publication.conferenceName || "",
           publicationType: publication.publicationType || "academic",
+          showImage: (publication as unknown as { showImage?: boolean }).showImage || false,
           userId: (publication as unknown as { userId?: string }).userId || "" // Type-safe casting
         });
         
@@ -156,108 +159,113 @@ const EditPublication: React.FC = () => {
   };
 
   if (!isLoggedIn) {
-    return <div className="p-8 text-center">Redirecting to login...</div>;
+    return <div className="edit-publication">Redirecting to login...</div>;
   }
 
   if (isLoading) {
     return (
-      <div className="edit-publication p-8">
-        <h1 className="text-2xl font-bold mb-6">Edit Publication</h1>
-        <div className="loading-spinner"></div>
-        <p>Loading publication data...</p>
+      <div className="edit-publication">
+        <div className="edit-publication-container">
+          <h1 className="edit-publication-title">Edit Publication</h1>
+          <div className="loading-spinner"></div>
+          <p>Loading publication data...</p>
+        </div>
       </div>
     );
   }
 
   if (notFound) {
     return (
-      <div className="edit-publication p-8">
-        <h1 className="text-2xl font-bold mb-6">Publication Not Found</h1>
-        <p>The publication you're trying to edit could not be found or you don't have permission to edit it.</p>
-        <button
-          onClick={() => navigate('/portfolio/publications/manage')}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Back to Manage Publications
-        </button>
+      <div className="edit-publication">
+        <div className="edit-publication-container">
+          <h1 className="edit-publication-title">Publication Not Found</h1>
+          <p>The publication you're trying to edit could not be found or you don't have permission to edit it.</p>
+          <button
+            onClick={() => navigate('/portfolio/publications/manage')}
+            className="form-button form-button-primary"
+          >
+            Back to Manage Publications
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="edit-publication p-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Edit Publication</h1>
+    <div className="edit-publication">
+      <div className="edit-publication-container">
+        <h1 className="edit-publication-title">Edit Publication</h1>
         
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="edit-publication-error">
             {error}
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="edit-publication-form">
+          <div className="form-grid">
             {/* Basic Information */}
-            <div className="space-y-4 md:col-span-2">
-              <h2 className="text-xl font-semibold">Basic Information</h2>
+            <div className="form-field-full form-section">
+              <h2 className="form-section-title">Basic Information</h2>
               
-              <div>
-                <label className="block mb-1">Title *</label>
+              <div className="form-field">
+                <label className="form-label required-field">Title</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
                   required
                 />
               </div>
               
-              <div>
-                <label className="block mb-1">Subtitle / Authors</label>
+              <div className="form-field">
+                <label className="form-label">Subtitle / Authors</label>
                 <input
                   type="text"
                   name="subtitle"
                   value={formData.subtitle || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
                 />
               </div>
               
-              <div>
-                <label className="block mb-1">Meta Information (Journal, Date, etc.)</label>
+              <div className="form-field">
+                <label className="form-label">Meta Information</label>
                 <input
                   type="text"
                   name="meta"
                   value={formData.meta || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
+                  placeholder="Brief summary or keywords (e.g. Journal Name, Date, etc.)"
                 />
               </div>
-              
-              <div>
-                <label className="block mb-1">Description</label>
+
+              <div className="form-field">
+                <label className="form-label">Description</label>
                 <textarea
                   name="description"
                   value={formData.description || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-textarea"
                   rows={4}
                 />
               </div>
             </div>
             
             {/* Publication Details */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Publication Details</h2>
+            <div className="form-field-full form-section">
+              <h2 className="form-section-title">Publication Details</h2>
               
-              <div>
-                <label className="block mb-1">Type</label>
+              <div className="form-field">
+                <label className="form-label">Type</label>
                 <select
                   name="variant"
                   value={formData.variant}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-select"
                 >
                   <option value="publication">Academic Publication</option>
                   <option value="project">Project / Presentation</option>
@@ -267,95 +275,99 @@ const EditPublication: React.FC = () => {
                 </select>
               </div>
               
-              <div>
-                <label className="block mb-1">Year</label>
+              <div className="form-field">
+                <label className="form-label">Year</label>
                 <input
                   type="text"
                   name="year"
                   value={formData.year || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
                 />
               </div>
               
-              <div>
-                <label className="block mb-1">DOI (for academic publications)</label>
+              <div className="form-field">
+                <label className="form-label">DOI (for academic publications)</label>
                 <input
                   type="text"
                   name="doi"
                   value={formData.doi || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
+                  placeholder="e.g., 10.1000/xyz123"
                 />
               </div>
               
-              <div>
-                <label className="block mb-1">Journal Name</label>
+              <div className="form-field">
+                <label className="form-label">Journal Name</label>
                 <input
                   type="text"
                   name="journalName"
                   value={formData.journalName || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
                 />
               </div>
               
-              <div>
-                <label className="block mb-1">Conference Name</label>
+              <div className="form-field">
+                <label className="form-label">Conference Name</label>
                 <input
                   type="text"
                   name="conferenceName"
                   value={formData.conferenceName || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
                 />
               </div>
             </div>
             
             {/* Display Options */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Display Options</h2>
+            <div className="form-field-full form-section">
+              <h2 className="form-section-title">Display Options</h2>
               
-              <div>
-                <label className="block mb-1">Link URL</label>
+              <div className="form-field">
+                <label className="form-label">Link URL</label>
                 <input
                   type="url"
                   name="link"
                   value={formData.link || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
+                  placeholder="https://"
                 />
               </div>
               
-              <div>
-                <label className="block mb-1">Image URL</label>
+              <div className="form-field">
+                <label className="form-label">Image URL</label>
                 <input
                   type="url"
                   name="imageUrl"
                   value={formData.imageUrl || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
+                  placeholder="https://"
                 />
               </div>
               
-              <div>
-                <label className="block mb-1">Tags (comma-separated)</label>
+              <div className="form-field">
+                <label className="form-label">Tags (comma-separated)</label>
                 <input
                   type="text"
                   name="tags"
                   value={formData.tags?.join(', ') || ''}
                   onChange={handleTagsChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-input"
+                  placeholder="e.g., web, research, javascript"
                 />
               </div>
               
-              <div>
-                <label className="block mb-1">Size</label>
+              <div className="form-field">
+                <label className="form-label">Size</label>
                 <select
                   name="size"
                   value={formData.size}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded"
+                  className="form-select"
                 >
                   <option value="sm">Small</option>
                   <option value="md">Medium</option>
@@ -363,86 +375,98 @@ const EditPublication: React.FC = () => {
                 </select>
               </div>
               
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center">
+              <div className="form-field">
+                <div className="form-checkbox-wrapper">
                   <input
                     type="checkbox"
                     id="elevated"
                     name="elevated"
                     checked={formData.elevated}
                     onChange={handleChange}
-                    className="mr-2"
+                    className="form-checkbox"
                   />
                   <label htmlFor="elevated">Elevated</label>
                 </div>
                 
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="bordered"
-                    name="bordered"
-                    checked={formData.bordered}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  <label htmlFor="bordered">Bordered</label>
-                </div>
-                
-                <div className="flex items-center">
+                <div className="form-checkbox-wrapper">
                   <input
                     type="checkbox"
                     id="clickable"
                     name="clickable"
                     checked={formData.clickable}
                     onChange={handleChange}
-                    className="mr-2"
+                    className="form-checkbox"
                   />
                   <label htmlFor="clickable">Clickable</label>
                 </div>
                 
-                <div className="flex items-center">
+                <div className="form-checkbox-wrapper">
+                  <input
+                    type="checkbox"
+                    id="fullWidth"
+                    name="fullWidth"
+                    checked={formData.fullWidth}
+                    onChange={handleChange}
+                    className="form-checkbox"
+                  />
+                  <label htmlFor="fullWidth">Full Width</label>
+                </div>
+                
+                <div className="form-checkbox-wrapper">
                   <input
                     type="checkbox"
                     id="featured"
                     name="featured"
                     checked={formData.featured}
                     onChange={handleChange}
-                    className="mr-2"
+                    className="form-checkbox"
                   />
                   <label htmlFor="featured">Featured</label>
                 </div>
                 
-                <div className="flex items-center">
+                <div className="form-checkbox-wrapper">
                   <input
                     type="checkbox"
                     id="useGradient"
                     name="useGradient"
                     checked={formData.useGradient}
                     onChange={handleChange}
-                    className="mr-2"
+                    className="form-checkbox"
                   />
                   <label htmlFor="useGradient">Use Gradient</label>
                 </div>
+                
+                <div className="form-checkbox-wrapper">
+                  <input
+                    type="checkbox"
+                    id="showImage"
+                    name="showImage"
+                    checked={formData.showImage}
+                    onChange={handleChange}
+                    className="form-checkbox"
+                  />
+                  <label htmlFor="showImage">Show Image</label>
+                </div>
               </div>
             </div>
-          </div>
           
-          <div className="flex justify-end space-x-4 pt-4">
+          <div className="form-buttons">
             <button
               type="button"
               onClick={() => navigate('/portfolio/publications/manage')}
-              className="px-4 py-2 border rounded"
+              className="form-button form-button-secondary"
               disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="form-button form-button-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Saving...' : 'Update Publication'}
+              {isSubmitting ? 'Updating...' : 'Update Publication'}
             </button>
+          </div>
           </div>
         </form>
       </div>
