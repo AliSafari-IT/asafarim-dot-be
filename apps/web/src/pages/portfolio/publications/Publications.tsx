@@ -13,7 +13,10 @@ import { useAuth } from "@asafarim/shared-ui-react";
 
 // Component for publication management actions bar
 const PublicationActionsBar: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
+  
+  // Check if user is admin based on roles in the user object
+  const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
 
   // Handle login redirect
   const handleLoginRedirect = () => {
@@ -34,8 +37,14 @@ const PublicationActionsBar: React.FC = () => {
     window.location.href = "/portfolio/publications?myPublications=true";
   };
 
-  const handleManagePublications = () => {
+  const handleManagePublications = () => {   
+    // Navigate directly to the manage page
+    // The manage page will handle authentication checks properly
     window.location.href = "/portfolio/publications/manage";
+  };
+  
+  const handleAllPublications = () => {
+    window.location.href = "/portfolio/publications";
   };
 
   // Determine alignment class based on authentication status
@@ -44,7 +53,7 @@ const PublicationActionsBar: React.FC = () => {
   return (
     <div className="publication-actions-bar">
       <div className={alignmentClass}>
-        {!isAuthenticated ? (
+        {!isAuthenticated || authLoading ? (
           // Show login button when not authenticated
           <div className="publication-actions tooltip">
             <Button
@@ -73,9 +82,18 @@ const PublicationActionsBar: React.FC = () => {
             >
               My Publications
             </Button>
+            {isAdmin && (
+              <Button
+                onClick={handleAllPublications}
+                aria-label="View all publications"
+                variant="info"
+              >
+                All Publications
+              </Button>
+            )}
             <Button
               onClick={handleManagePublications}
-              aria-label="Manage all publications"
+              aria-label="Manage publications"
               variant="success"
             >
               Manage Publications
@@ -117,11 +135,15 @@ const PUBLICATION_VARIANTS = [
 ] as const;
 
 const Publications: React.FC = () => {
+  const { user, loading: authLoading } = useAuth();
   const [publicationsByVariant, setPublicationsByVariant] = useState<
     Record<string, ContentCardProps[]>
   >({});
   const [loading, setLoading] = useState(true);
 
+  // Check if user is admin based on roles in the user object
+  const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
+  
   // Get query parameters
   const [searchParams] = useState(new URLSearchParams(window.location.search));
   const myPublications = searchParams.get("myPublications") === "true";
@@ -133,12 +155,22 @@ const Publications: React.FC = () => {
         const publicationsData: Record<string, ContentCardProps[]> = {};
 
         // Fetch publications for each variant
+        // If myPublications is true, always show only the user's publications
+        // If user is admin, show all publications when not viewing myPublications
+        // If user is not admin, show only public publications when not viewing myPublications
+        const filterByUser = myPublications || !isAdmin;
+        // When filterByUser is true:
+        // - For admin: only when explicitly requesting myPublications
+        // - For non-admin: always filter (either myPublications or public only)
+        
+        console.log("Loading publications, authLoading:", authLoading, "isAdmin:", isAdmin);
+        
         await Promise.all(
           PUBLICATION_VARIANTS.map(async ({ variant }) => {
             const data = await fetchPublications(
               variant,
               undefined,
-              myPublications
+              filterByUser
             );
             publicationsData[variant] = data;
           })
@@ -152,8 +184,11 @@ const Publications: React.FC = () => {
       }
     };
 
-    loadPublications();
-  }, [myPublications]);
+    // Only load publications once authentication loading is complete
+    if (!authLoading) {
+      loadPublications();
+    }
+  }, [myPublications, isAdmin, authLoading]);
 
   return (
     <div className="publications-page">

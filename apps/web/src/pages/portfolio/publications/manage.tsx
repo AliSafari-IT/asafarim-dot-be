@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchPublications, deletePublication } from "../../../services/publicationService";
-import { Button, Info, type ContentCardProps } from "@asafarim/shared-ui-react";
+import { Button, Info, type ContentCardProps, useAuth } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
 
 const ManagePublications: React.FC = () => {
@@ -9,44 +9,55 @@ const ManagePublications: React.FC = () => {
   const [publications, setPublications] = useState<ContentCardProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  // Check if user is admin based on roles in the user object
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
+  const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
 
-  // Check if user is logged in
+  // Only redirect if not authenticated after loading is complete
   useEffect(() => {
-    const token = document.cookie.includes('atk=') || localStorage.getItem('auth_token');
-    setIsLoggedIn(!!token);
-    
-    if (!token) {
-      // Redirect to the identity subdomain login page
+    // Only check authentication after the loading state is complete
+    if (!authLoading && !isAuthenticated) {
+      console.log("Authentication check complete, not authenticated. Redirecting to login.");
       window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(window.location.href)}`;
     }
-  }, []);
+  }, [authLoading, isAuthenticated]);
 
-  // Load user's publications
+  // Load publications based on user role
   useEffect(() => {
     const loadPublications = async () => {
       try {
         setLoading(true);
-        // Fetch all publications owned by the current user
-        const data = await fetchPublications(undefined, undefined, true);
+        console.log("Fetching publications, isAdmin:", isAdmin);
+        // For non-admin users, always fetch only their own publications
+        // For admin users, fetch all publications if isAdmin is true, otherwise fetch only their own
+        const data = await fetchPublications(undefined, undefined, !isAdmin);
+        console.log("Publications fetched:", data.length);
         setPublications(data);
         setError(null);
       } catch (err) {
-        setError('Failed to load your publications');
+        setError('Failed to load publications');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    if (isLoggedIn) {
+    if (isAuthenticated) {
       loadPublications();
     }
-  }, [isLoggedIn]);
+  }, [isAuthenticated, isAdmin]);
 
   // Handle delete publication
-  const handleDelete = async (id: number | string) => {
+  const handleDelete = async (id: number | string, publicationUserId?: string) => {
+    // Check if user has permission to delete (admin or owner)
+    const canDelete = isAdmin || (user?.id === publicationUserId);
+    
+    if (!canDelete) {
+      setError('You do not have permission to delete this publication');
+      return;
+    }
+    
     if (window.confirm('Are you sure you want to delete this publication?')) {
       setIsDeleting(true);
       try {
@@ -67,11 +78,19 @@ const ManagePublications: React.FC = () => {
   };
 
   // Handle edit publication
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: number, publicationUserId?: string) => {
+    // Check if user has permission to edit (admin or owner)
+    const canEdit = isAdmin || (user?.id === publicationUserId);
+    
+    if (!canEdit) {
+      setError('You do not have permission to edit this publication');
+      return;
+    }
+    
     navigate(`/portfolio/publications/edit/${id}`);
   };
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
     return <div className="manage-publications">Redirecting to login...</div>;
   }
 
@@ -95,7 +114,9 @@ const ManagePublications: React.FC = () => {
     <div className="manage-publications">
       <div className="manage-publications-container">
         <div className="manage-header">
-          <h1 className="manage-publications-title">Manage Your Publications</h1>
+          <h1 className="manage-publications-title">
+            {isAdmin ? 'Manage All Publications' : 'Manage Your Publications'}
+          </h1>
           <button 
             onClick={() => navigate('/portfolio/publications/new')}
             className="form-button form-button-primary"
@@ -162,17 +183,17 @@ const ManagePublications: React.FC = () => {
                         View
                       </button>
                       <button
-                        onClick={() => handleEdit(pub.id as unknown as number)}
+                        onClick={() => handleEdit(pub.id as unknown as number, pub.userId as string)}
                         className="action-button edit"
-                        disabled={isDeleting}
+                        disabled={isDeleting || (!isAdmin && user?.id !== pub.userId)}
                         aria-label="Edit publication"
                       >
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(pub.id as unknown as number)}
+                        onClick={() => handleDelete(pub.id as unknown as number, pub.userId as string)}
                         className="action-button delete"
-                        disabled={isDeleting}
+                        disabled={isDeleting || (!isAdmin && user?.id !== pub.userId)}
                         aria-label="Delete publication"
                       >
                         Delete

@@ -71,7 +71,18 @@ export const fetchPublications = async (variant?: string, featured?: boolean, my
       url += `?${params.toString()}`;
     }
     
-    const response = await fetch(url);
+    // Get token from both cookie and localStorage for maximum compatibility
+    const token = getCookie('atk') || localStorage.getItem('auth_token');
+    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
+    
+    const response = await fetch(url, {
+      credentials: 'include', // Include cookies for authentication
+      headers: {
+        'Content-Type': 'application/json',
+        // Include auth token if available from either source
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
+    });
     
     if (!response.ok) {
       throw new Error(`Error fetching publications: ${response.statusText}`);
@@ -88,7 +99,18 @@ export const fetchPublications = async (variant?: string, featured?: boolean, my
 // Fetch a single publication by ID
 export const fetchPublicationById = async (id: number | string): Promise<ContentCardProps | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/publications/${id}`);
+    // Get token from both cookie and localStorage for maximum compatibility
+    const token = getCookie('atk') || localStorage.getItem('auth_token');
+    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
+    
+    const response = await fetch(`${API_BASE_URL}/publications/${id}`, {
+      credentials: 'include', // Include cookies for authentication
+      headers: {
+        'Content-Type': 'application/json',
+        // Include auth token if available from either source
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
+    });
     
     if (!response.ok) {
       throw new Error(`Error fetching publication: ${response.statusText}`);
@@ -119,15 +141,19 @@ export const createPublication = async (publication: Omit<PublicationDto, 'id'>)
     
     console.log('Sending publication data:', publicationToSend);
     
+    // Get token from both cookie and localStorage for maximum compatibility
+    const token = getCookie('atk') || localStorage.getItem('auth_token');
+    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
+    
     const response = await fetch(`${API_BASE_URL}/publications`, {
       method: 'POST',
+      credentials: 'include', // Include cookies in the request
       headers: {
         'Content-Type': 'application/json',
-        // Include auth token if available
-        ...(document.cookie.includes('atk=') && { 'Authorization': `Bearer ${getCookie('atk')}` }),
+        // Include auth token if available from either source
+        ...(token && { 'Authorization': `Bearer ${token}` }),
       },
       body: JSON.stringify(publicationToSend),
-      credentials: 'include', // Include cookies in the request
     });
     
     if (!response.ok) {
@@ -147,15 +173,19 @@ export const createPublication = async (publication: Omit<PublicationDto, 'id'>)
 // Update an existing publication
 export const updatePublication = async (id: number, publication: Omit<PublicationDto, 'id'>): Promise<boolean> => {
   try {
+    // Get token from both cookie and localStorage for maximum compatibility
+    const token = getCookie('atk') || localStorage.getItem('auth_token');
+    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
+    
     const response = await fetch(`${API_BASE_URL}/publications/${id}`, {
       method: 'PUT',
+      credentials: 'include', // Include cookies in the request
       headers: {
         'Content-Type': 'application/json',
-        // Include auth token if available
-        ...(document.cookie.includes('atk=') && { 'Authorization': `Bearer ${getCookie('atk')}` }),
+        // Include auth token if available from either source
+        ...(token && { 'Authorization': `Bearer ${token}` }),
       },
       body: JSON.stringify(publication),
-      credentials: 'include', // Include cookies in the request
     });
     
     if (!response.ok) {
@@ -172,13 +202,18 @@ export const updatePublication = async (id: number, publication: Omit<Publicatio
 // Delete a publication
 export const deletePublication = async (id: number): Promise<boolean> => {
   try {
+    // Get token from both cookie and localStorage for maximum compatibility
+    const token = getCookie('atk') || localStorage.getItem('auth_token');
+    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
+    
     const response = await fetch(`${API_BASE_URL}/publications/${id}`, {
       method: 'DELETE',
-      headers: {
-        // Include auth token if available
-        ...(document.cookie.includes('atk=') && { 'Authorization': `Bearer ${getCookie('atk')}` }),
-      },
       credentials: 'include', // Include cookies in the request
+      headers: {
+        'Content-Type': 'application/json',
+        // Include auth token if available from either source
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
     });
     
     if (!response.ok) {
