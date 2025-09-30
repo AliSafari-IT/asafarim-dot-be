@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchPublications, deletePublication } from "../../../services/publicationService";
 import { Button, type ContentCardProps, useAuth, Eye, Remove } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
+import PublicationActionsBar from "./components/PublicationActionsBar";
 
 const ManagePublications: React.FC = () => {
   const navigate = useNavigate();
@@ -112,6 +113,12 @@ const ManagePublications: React.FC = () => {
 
   return (
     <div className="manage-publications">
+      <PublicationActionsBar 
+        onAddPublication={() => navigate('/portfolio/publications/new')}
+        onViewMyPublications={() => navigate('/portfolio/publications?myPublications=true')}
+        onViewAllPublications={() => navigate('/portfolio/publications')}
+        onManagePublications={() => navigate('/portfolio/publications/manage')}
+      />
       <div className="manage-publications-container">
         <div className="manage-header">
           <h1 className="manage-publications-title">

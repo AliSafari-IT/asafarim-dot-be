@@ -3,10 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { fetchPublicationById, updatePublication } from "../../../services/publicationService";
 import type { PublicationDto } from "../../../services/publicationService";
 import { useAuth } from "@asafarim/shared-ui-react";
+import { useToast } from "@asafarim/toast";
 import "./pub-styles.css";
+import PublicationActionsBar from "./components/PublicationActionsBar";
 
 const EditPublication: React.FC = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const { id } = useParams<{ id: string }>();
   const publicationId = parseInt(id || '0', 10);
   
@@ -155,15 +158,33 @@ const EditPublication: React.FC = () => {
     
     try {
       // Prepare the data for submission
-      // Convert empty strings to undefined to avoid sending empty values
-      const preparedData = Object.fromEntries(
-        Object.entries(formData).map(([key, value]) => {
-          // Convert empty strings to undefined
-          if (value === "") return [key, undefined];
-          // Keep other values as is
-          return [key, value];
-        })
-      ) as Omit<PublicationDto, 'id'>;
+      // Make a copy of the form data
+      const preparedData = { ...formData } as Omit<PublicationDto, 'id'>;
+      
+      // Ensure DOI and JournalName are explicitly included in the request
+      // even if they're empty strings - this forces them to be updated in the database
+      if (formData.doi === "") {
+        preparedData.doi = ""; // Keep empty string to ensure it's sent to API
+      }
+      
+      if (formData.journalName === "") {
+        preparedData.journalName = ""; // Keep empty string to ensure it's sent to API
+      }
+      
+      // Convert other empty strings to undefined to avoid sending empty values
+      // Create a new object without the empty strings
+      const cleanedData: Record<string, string | number | boolean | string[] | { label: string; value: string | number }[] | undefined> = {};
+      
+      for (const key in preparedData) {
+        if (key !== 'doi' && key !== 'journalName' && preparedData[key as keyof typeof preparedData] === "") {
+          // Skip empty strings
+        } else {
+          cleanedData[key] = preparedData[key as keyof typeof preparedData];
+        }
+      }
+      
+      // Replace preparedData with the cleaned version
+      Object.assign(preparedData, cleanedData);
       
       // If admin is editing someone else's publication, ensure we preserve the original userId
       if (isAdmin && originalUserId && originalUserId !== user?.id) {
@@ -173,19 +194,25 @@ const EditPublication: React.FC = () => {
       
       // Add admin flag to the request if the user is an admin
       if (isAdmin) {
-        (preparedData as any).isAdminEdit = true;
+        // Use the same type that updatePublication expects
+        (preparedData as Omit<PublicationDto, 'id'> & { isAdminEdit?: boolean }).isAdminEdit = true;
       }
       
       console.log('Submitting publication data:', preparedData);
+      console.log('DOI value:', preparedData.doi);
+      console.log('JournalName value:', preparedData.journalName);
       
       const success = await updatePublication(publicationId, preparedData);
+      toast.success("Publication updated successfully");
       if (success) {
         navigate('/portfolio/publications/manage');
       } else {
         setError("Failed to update publication");
+        toast.error("Failed to update publication");
       }
     } catch (err) {
       setError("An error occurred while updating the publication");
+      toast.error("An error occurred while updating the publication");
       console.error(err);
     } finally {
       setIsSubmitting(false);
@@ -227,6 +254,7 @@ const EditPublication: React.FC = () => {
 
   return (
     <div className="edit-publication">
+      <PublicationActionsBar />
       <div className="edit-publication-container">
         <h1 className="edit-publication-title">Edit Publication</h1>
         

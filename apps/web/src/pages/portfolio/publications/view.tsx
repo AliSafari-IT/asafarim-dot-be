@@ -4,6 +4,7 @@ import { Button } from "@asafarim/shared-ui-react";
 import { fetchPublicationById } from "../../../services/publicationService";
 import type { ContentCardProps } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
+import PublicationActionsBar from "./components/PublicationActionsBar";
 
 export default function ViewPublication() {
   const { id } = useParams<{ id: string }>();
@@ -66,6 +67,12 @@ export default function ViewPublication() {
 
   return (
     <div className="publication-view-container">
+      <PublicationActionsBar 
+        onAddPublication={() => navigate('/portfolio/publications/new')}
+        onViewMyPublications={() => navigate('/portfolio/publications?myPublications=true')}
+        onViewAllPublications={() => navigate('/portfolio/publications')}
+        onManagePublications={() => navigate('/portfolio/publications/manage')}
+      />
       <div className="publication-view-header">
         <Button onClick={handleBack} variant="secondary">← Back</Button>
         <h1 className="publication-view-title">Publication Details</h1>

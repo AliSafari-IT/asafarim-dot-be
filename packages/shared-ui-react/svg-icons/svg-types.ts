@@ -10,4 +10,5 @@ export type SvgIconProps = {
     strokeLinecap?: "butt" | "round" | "square" | "inherit";
     onClick?: () => void;
     className?: string;
+    title?: string;
 };

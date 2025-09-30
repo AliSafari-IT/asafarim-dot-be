@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createPublication } from "../../../services/publicationService";
 import type { PublicationDto } from "../../../services/publicationService";
 import "./pub-styles.css";
+import PublicationActionsBar from "./components/PublicationActionsBar";
 
 const NewPublication: React.FC = () => {
   const navigate = useNavigate();
@@ -98,6 +99,7 @@ const NewPublication: React.FC = () => {
 
   return (
     <div className="new-publication">
+      <PublicationActionsBar />
       <div className="new-publication-container">
         <h1 className="new-publication-title">Add New Publication</h1>
         

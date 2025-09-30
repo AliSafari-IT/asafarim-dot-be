@@ -183,7 +183,10 @@ public class PublicationsController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating publication: {Message}", ex.Message);
-            return StatusCode(500, "An error occurred while creating the publication. Please try again later.");
+            return StatusCode(
+                500,
+                "An error occurred while creating the publication. Please try again later."
+            );
         }
     }
 
@@ -217,15 +220,18 @@ public class PublicationsController : ControllerBase
 
         // Check if the user owns this publication or is an admin
         bool isAdmin = User.IsInRole("admin") || User.IsInRole("Admin");
-        bool isAdminEdit = Request.Query.ContainsKey("isAdminEdit") || 
-                          Request.Headers.ContainsKey("X-Admin-Edit");
+        bool isAdminEdit =
+            Request.Query.ContainsKey("isAdminEdit") || Request.Headers.ContainsKey("X-Admin-Edit");
 
         _logger.LogInformation(
-            "Update permission check - UserId: {UserId}, PublicationUserId: {PublicationUserId}, IsAdmin: {IsAdmin}, IsAdminEdit: {IsAdminEdit}",
+            "Update permission check - UserId: {UserId}, PublicationUserId: {PublicationUserId}, IsAdmin: {IsAdmin}, IsAdminEdit: {IsAdminEdit}, doi: {Doi}, journalName: {JournalName}, conferenceName: {ConferenceName}",
             userId,
             publication.UserId,
             isAdmin,
-            isAdminEdit
+            isAdminEdit,
+            publication.DOI,
+            publication.JournalName,
+            publication.ConferenceName
         );
 
         if (publication.UserId != userId && !(isAdmin && isAdminEdit))
@@ -314,8 +320,8 @@ public class PublicationsController : ControllerBase
 
         // Check if the user owns this publication or is an admin
         bool isAdmin = User.IsInRole("admin") || User.IsInRole("Admin");
-        bool isAdminEdit = Request.Query.ContainsKey("isAdminEdit") || 
-                          Request.Headers.ContainsKey("X-Admin-Edit");
+        bool isAdminEdit =
+            Request.Query.ContainsKey("isAdminEdit") || Request.Headers.ContainsKey("X-Admin-Edit");
 
         _logger.LogInformation(
             "Delete permission check - UserId: {UserId}, PublicationUserId: {PublicationUserId}, IsAdmin: {IsAdmin}, IsAdminEdit: {IsAdminEdit}",

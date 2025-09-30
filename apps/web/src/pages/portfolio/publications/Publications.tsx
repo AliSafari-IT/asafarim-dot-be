@@ -1,109 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  Hero,
-  ContentCard,
-  LoginArrow,
-  isProduction,
-  Button,
-} from "@asafarim/shared-ui-react";
+import { Hero, ContentCard } from "@asafarim/shared-ui-react";
 import type { ContentCardProps } from "@asafarim/shared-ui-react";
 import { fetchPublications } from "../../../services/publicationService";
 import "./publications.css";
 import { useAuth } from "@asafarim/shared-ui-react";
-
-// Component for publication management actions bar
-const PublicationActionsBar: React.FC = () => {
-  const { isAuthenticated, user, loading: authLoading } = useAuth();
-  
-  // Check if user is admin based on roles in the user object
-  const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
-
-  // Handle login redirect
-  const handleLoginRedirect = () => {
-    const baseUrl = isProduction
-      ? "https://identity.asafarim.be/login"
-      : "http://identity.asafarim.local:5177/login";
-    window.location.href = `${baseUrl}?returnUrl=${encodeURIComponent(
-      window.location.href
-    )}`;
-  };
-
-  // Handle navigation actions
-  const handleAddPublication = () => {
-    window.location.href = "/portfolio/publications/new";
-  };
-
-  const handleMyPublications = () => {
-    window.location.href = "/portfolio/publications?myPublications=true";
-  };
-
-  const handleManagePublications = () => {   
-    // Navigate directly to the manage page
-    // The manage page will handle authentication checks properly
-    window.location.href = "/portfolio/publications/manage";
-  };
-  
-  const handleAllPublications = () => {
-    window.location.href = "/portfolio/publications";
-  };
-
-  // Determine alignment class based on authentication status
-  const alignmentClass = isAuthenticated ? "actions-center" : "actions-right";
-
-  return (
-    <div className="publication-actions-bar">
-      <div className={alignmentClass}>
-        {!isAuthenticated || authLoading ? (
-          // Show login button when not authenticated
-          <div className="publication-actions tooltip">
-            <Button
-              onClick={handleLoginRedirect}
-              aria-label="Login"
-              variant="outline"
-            >
-              <LoginArrow />
-            </Button>
-            <span className="tooltip-text">Login to manage publications</span>
-          </div>
-        ) : (
-          // Show direct action buttons when authenticated
-          <div className="actions-buttons-group">
-            <Button
-              onClick={handleAddPublication}
-              aria-label="Add new publication"
-              variant="brand"
-            >
-              Add Publication
-            </Button>
-            <Button
-              onClick={handleMyPublications}
-              aria-label="View my publications"
-              variant="info"
-            >
-              My Publications
-            </Button>
-            {isAdmin && (
-              <Button
-                onClick={handleAllPublications}
-                aria-label="View all publications"
-                variant="info"
-              >
-                All Publications
-              </Button>
-            )}
-            <Button
-              onClick={handleManagePublications}
-              aria-label="Manage publications"
-              variant="success"
-            >
-              Manage Publications
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+import PublicationActionsBar from "./components/PublicationActionsBar";
 
 // Configuration for publication variants
 const PUBLICATION_VARIANTS = [
@@ -128,6 +29,11 @@ const PUBLICATION_VARIANTS = [
     description: "Technical reports and white papers",
   },
   {
+    variant: "certificate",
+    title: "Certificates",
+    description: "Certificates of attendance and other certificates",
+  },
+  {
     variant: "default",
     title: "Other Publications",
     description: "Miscellaneous publications and documents",
@@ -142,8 +48,10 @@ const Publications: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   // Check if user is admin based on roles in the user object
-  const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
-  
+  const isAdmin =
+    user?.roles?.map((role: string) => role.toLowerCase()).includes("admin") ||
+    false;
+
   // Get query parameters
   const [searchParams] = useState(new URLSearchParams(window.location.search));
   const myPublications = searchParams.get("myPublications") === "true";
@@ -162,9 +70,14 @@ const Publications: React.FC = () => {
         // When filterByUser is true:
         // - For admin: only when explicitly requesting myPublications
         // - For non-admin: always filter (either myPublications or public only)
-        
-        console.log("Loading publications, authLoading:", authLoading, "isAdmin:", isAdmin);
-        
+
+        console.log(
+          "Loading publications, authLoading:",
+          authLoading,
+          "isAdmin:",
+          isAdmin
+        );
+
         await Promise.all(
           PUBLICATION_VARIANTS.map(async ({ variant }) => {
             const data = await fetchPublications(

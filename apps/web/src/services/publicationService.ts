@@ -29,7 +29,7 @@ export interface PublicationDto {
 }
 
 // Convert API response to ContentCardProps
-export const mapToContentCardProps = (publication: PublicationDto): ContentCardProps & { id: number | string } => {
+export const mapToContentCardProps = (publication: PublicationDto): ContentCardProps & { id: number | string; doi?: string; journalName?: string; conferenceName?: string } => {
   return {
     id: publication.id.toString(),
     title: publication.title,
@@ -51,6 +51,10 @@ export const mapToContentCardProps = (publication: PublicationDto): ContentCardP
     featured: publication.featured,
     showImage: publication.showImage,
     userId: publication.userId,
+    // Include these fields to ensure they're available when editing
+    doi: publication.doi,
+    journalName: publication.journalName,
+    conferenceName: publication.conferenceName,
   };
 };
 
@@ -181,11 +185,17 @@ export const updatePublication = async (id: number, publication: Omit<Publicatio
     // Extract admin flag before cleaning
     const isAdminEdit = publication.isAdminEdit;
     
-    // Clean up the publication object to remove any undefined or null values
+    // Clean up the publication object to remove any undefined values
     // and remove the isAdminEdit property which is only for client-side use
+    // BUT keep empty strings for doi and journalName to ensure they're updated
     const cleanedPublication = Object.fromEntries(
       Object.entries(publication)
-        .filter(([key, value]) => key !== 'isAdminEdit' && value !== undefined && value !== null)
+        .filter(([key, value]) => {
+          // Always include doi and journalName even if they're empty strings
+          if (key === 'doi' || key === 'journalName') return true;
+          // For other fields, filter out undefined and null values
+          return key !== 'isAdminEdit' && value !== undefined && value !== null;
+        })
     );
     
     console.log('Updating publication with data:', cleanedPublication);
