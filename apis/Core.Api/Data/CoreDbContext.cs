@@ -20,6 +20,8 @@ public class CoreDbContext : DbContext
     public DbSet<ProjectInquiryMessage> ProjectInquiryMessages { get; set; } = null!;
     public DbSet<Publication> Publications { get; set; } = null!;
     public DbSet<PublicationMetric> PublicationMetrics { get; set; } = null!;
+    public DbSet<WorkExperience> WorkExperiences { get; set; } = null!;
+    public DbSet<WorkAchievement> WorkAchievements { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -123,6 +125,40 @@ public class CoreDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Label).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Value).IsRequired().HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<WorkExperience>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("WorkExperiences", "public");
+
+            entity.Property(e => e.JobTitle).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.CompanyName).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Location).HasMaxLength(100);
+
+            entity.Property(e => e.Description).HasMaxLength(2000);
+
+            entity.Property(e => e.StartDate).IsRequired();
+            entity.Property(e => e.EndDate);
+
+            entity.Property(e => e.IsCurrent).HasDefaultValue(false);
+            entity.Property(e => e.IsPublished).HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+
+            // one-to-many relationship with WorkAchievement
+            entity
+                .HasMany(e => e.Achievements)
+                .WithOne(a => a.WorkExperience)
+                .HasForeignKey(a => a.WorkExperienceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<WorkAchievement>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("WorkAchievements", "public");
+            entity.Property(e => e.Text).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         });
     }
 }

@@ -17,6 +17,7 @@ import NewPublication from "./pages/portfolio/publications/new";
 import ManagePublications from "./pages/portfolio/publications/manage";
 import EditPublication from "./pages/portfolio/publications/edit";
 import ViewPublication from "./pages/portfolio/publications/view";
+import ManageWorkExperience from "./pages/portfolio/work-experiences/ManageWorkExperience";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       { path: "portfolio/publications/manage", element: <ManagePublications /> },
       { path: "portfolio/publications/edit/:id", element: <EditPublication /> },
       { path: "portfolio/research", element: <Research /> },
+      { path: "portfolio/work-experiences", element: <ManageWorkExperience /> },
 
       // dynamic routes
       { path: "portfolio/:userId/publications/view/:id", element: <ViewPublication /> },
