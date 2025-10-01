@@ -1,0 +1,423 @@
+/* Entity Management Styles */
+.entity-management {
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  transition: background-color 0.3s ease;
+}
+
+.entity-management-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.entity-management-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.entity-management-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--color-brand-900);
+  margin: 0 0 0.5rem 0;
+  transition: color 0.3s ease;
+}
+
+.entity-management-subtitle {
+  font-size: clamp(1rem, 3vw, 1.125rem);
+  color: var(--color-foreground-muted);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+/* Entity Grid */
+.entity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.entity-card {
+  background: var(--color-background-alt);
+  border-radius: 1rem;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid var(--color-border);
+}
+
+.entity-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-brand-500);
+}
+
+.entity-card:focus {
+  outline: none;
+  border-color: var(--color-brand-600);
+  box-shadow: 0 0 0 3px var(--color-brand-200);
+}
+
+.entity-card-icon {
+  font-size: clamp(2.5rem, 6vw, 3rem);
+  margin-bottom: 1rem;
+  text-align: center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.entity-card-title {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-weight: 600;
+  color: var(--color-foreground);
+  margin: 0 0 0.5rem 0;
+  transition: color 0.3s ease;
+}
+
+.entity-card-description {
+  font-size: clamp(0.875rem, 2.5vw, 0.95rem);
+  color: var(--color-foreground-muted);
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+  min-height: 3rem;
+  transition: color 0.3s ease;
+}
+
+.entity-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  transition: border-color 0.3s ease;
+}
+
+.entity-card-action {
+  font-size: clamp(0.875rem, 2.5vw, 0.95rem);
+  font-weight: 600;
+  color: var(--color-brand-600);
+  transition: color 0.2s ease;
+}
+
+.entity-card:hover .entity-card-action {
+  color: var(--color-brand-700);
+}
+
+/* Entity Table View */
+.entity-table-view {
+  width: 100%;
+  min-height: 100vh;
+  padding: clamp(1rem, 3vw, 2rem) 1rem;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  transition: background-color 0.3s ease;
+}
+
+.entity-table-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.entity-table-header {
+  background: var(--color-brand-50);
+  border-radius: 1rem;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: background 0.3s ease;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  flex-wrap: wrap;
+}
+
+.header-title-section {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  flex: 1;
+  min-width: 250px;
+}
+
+.entity-icon {
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.entity-table-title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: var(--color-brand-900);
+  margin: 0 0 0.25rem 0;
+  transition: color 0.3s ease;
+}
+
+.entity-table-subtitle {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  color: var(--color-brand-700);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+/* Table Styles */
+.entity-table-wrapper {
+  background: var(--color-background-alt);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.entity-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+}
+
+.entity-table thead {
+  background-color: var(--color-brand-50);
+  transition: background-color 0.3s ease;
+}
+
+.entity-table th {
+  padding: clamp(0.75rem, 2vw, 1rem);
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-brand-900);
+  border-bottom: 2px solid var(--color-brand-200);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.entity-table td {
+  padding: clamp(0.75rem, 2vw, 1rem);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+  color: var(--color-foreground);
+  transition: all 0.3s ease;
+}
+
+.entity-table tbody tr:hover {
+  background-color: var(--color-brand-50);
+}
+
+.entity-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.record-name {
+  font-weight: 500;
+  color: var(--color-foreground);
+  transition: color 0.3s ease;
+}
+
+.user-id-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-700);
+  border-radius: 0.5rem;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  font-family: monospace;
+  transition: all 0.3s ease;
+}
+
+.table-actions {
+  display: flex;
+  gap: clamp(0.25rem, 1vw, 0.5rem);
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.5rem, 2vw, 0.75rem);
+  border-radius: 0.375rem;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.action-button:hover:not(:disabled) {
+  background-color: var(--color-brand-50);
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-button.view {
+  color: var(--color-brand-600);
+  border-color: var(--color-brand-200);
+}
+
+.action-button.view:hover:not(:disabled) {
+  border-color: var(--color-brand-600);
+}
+
+.action-button.edit {
+  color: var(--color-brand-600);
+  border-color: var(--color-brand-200);
+}
+
+.action-button.edit:hover:not(:disabled) {
+  border-color: var(--color-brand-600);
+}
+
+.action-button.delete {
+  color: var(--color-error-600);
+  border-color: var(--color-error-200);
+}
+
+.action-button.delete:hover:not(:disabled) {
+  background-color: var(--color-error-50);
+  border-color: var(--color-error-600);
+}
+
+.table-footer {
+  padding: clamp(0.75rem, 2vw, 1rem);
+  background: var(--color-background-alt);
+  border-radius: 0 0 1rem 1rem;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.record-count {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  color: var(--color-foreground-muted);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+/* Loading and Error States */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 6vw, 4rem) 2rem;
+  text-align: center;
+}
+
+.loading-state p {
+  margin-top: 1rem;
+  color: var(--color-foreground-muted);
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  transition: color 0.3s ease;
+}
+
+.error-message {
+  background-color: var(--color-error-100);
+  border: 1px solid var(--color-error-300);
+  color: var(--color-error-700);
+  padding: clamp(0.75rem, 2vw, 1rem);
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  transition: all 0.3s ease;
+}
+
+.empty-state {
+  text-align: center;
+  padding: clamp(2rem, 6vw, 4rem) 2rem;
+  background-color: var(--color-background-alt);
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  transition: background-color 0.3s ease;
+}
+
+.empty-state-message {
+  font-size: clamp(1rem, 3vw, 1.125rem);
+  color: var(--color-foreground-muted);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .entity-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .entity-management-header {
+    margin-bottom: 2rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-title-section {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .entity-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .entity-table {
+    min-width: 600px;
+  }
+
+  .table-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+  }
+
+  .action-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .entity-card {
+    padding: 1.5rem;
+  }
+
+  .entity-card-description {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .entity-management,
+  .entity-table-view {
+    padding: 1rem 0.5rem;
+  }
+
+  .entity-table th,
+  .entity-table td {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .action-button {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}

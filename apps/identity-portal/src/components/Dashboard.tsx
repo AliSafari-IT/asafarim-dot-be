@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './dashboard.css';
 import { Button } from '@asafarim/shared-ui-react';
-import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab, PUBLICATIONS_URL } from '../utils/appUrls';
+import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab, PUBLICATIONS_URL, RESUME_URL } from '../utils/appUrls';
 import ChangePasswordModal from './ChangePasswordModal';
 import useAuth from '../hooks/useAuth';
 
@@ -81,6 +81,10 @@ export const Dashboard = () => {
             {/** my publications */}
             <Button onClick={() => openInNewTab(PUBLICATIONS_URL)} variant="info">
               My publications
+            </Button>
+            {/** resume */}
+            <Button onClick={() => openInNewTab(RESUME_URL)} variant="info">
+              Resume
             </Button>
           </div>
         </section>

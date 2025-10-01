@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Api.Controllers.Dtos;
 using Core.Api.Data;
-using Core.Api.Models;
+using Core.Api.Models.Resume;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,19 +43,36 @@ public class WorkExperiencesController : ControllerBase
             myExperiences
         );
 
-        var query = _context.WorkExperiences.Include(w => w.Achievements).AsQueryable();
+        var query = _context
+            .WorkExperiences.Include(w => w.Achievements)
+            .Include(w => w.WorkExperienceTechnologies)
+            .ThenInclude(wt => wt.Technology)
+            .AsQueryable();
+
+        // Get current user ID for filtering
+        var userId =
+            User.FindFirst("sub")?.Value
+            ?? User.FindFirst(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            )?.Value;
+
+        _logger.LogInformation(
+            "Current user ID: {UserId}, IsAuthenticated: {IsAuthenticated}",
+            userId,
+            User.Identity?.IsAuthenticated
+        );
 
         // Filter by current user if requested
         if (myExperiences == true && User.Identity?.IsAuthenticated == true)
         {
-            var userId =
-                User.FindFirst("sub")?.Value
-                ?? User.FindFirst(
-                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-                )?.Value;
             if (!string.IsNullOrEmpty(userId))
             {
+                _logger.LogInformation("Filtering work experiences for user: {UserId}", userId);
                 query = query.Where(w => w.UserId == userId);
+            }
+            else
+            {
+                _logger.LogWarning("myExperiences=true but userId is null or empty");
             }
         }
 
@@ -69,8 +87,12 @@ public class WorkExperiencesController : ControllerBase
             query = query.Where(w => w.JobTitle.Contains(title));
         }
 
-        // Only return published items
-        query = query.Where(w => w.IsPublished);
+        // Only return published items if NOT requesting user's own experiences
+        // Users should see all their own experiences (published and unpublished)
+        if (myExperiences != true)
+        {
+            query = query.Where(w => w.IsPublished);
+        }
 
         // Order by sort order and then by start date descending
         query = query.OrderBy(w => w.SortOrder).ThenByDescending(w => w.StartDate);
@@ -82,12 +104,14 @@ public class WorkExperiencesController : ControllerBase
 
     // GET: api/work-experiences/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<WorkExperienceDto>> GetWorkExperience(int id)
+    public async Task<ActionResult<WorkExperienceDto>> GetWorkExperience(Guid id)
     {
         _logger.LogInformation("Getting work experience with id: {Id}", id);
 
         var workExperience = await _context
             .WorkExperiences.Include(w => w.Achievements)
+            .Include(w => w.WorkExperienceTechnologies)
+            .ThenInclude(wt => wt.Technology)
             .FirstOrDefaultAsync(w => w.Id == id);
 
         if (workExperience == null)
@@ -131,8 +155,10 @@ public class WorkExperiencesController : ControllerBase
                 JobTitle = request.JobTitle,
                 CompanyName = request.CompanyName,
                 Location = request.Location,
-                StartDate = request.StartDate,
-                EndDate = request.EndDate,
+                StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc),
+                EndDate = request.EndDate.HasValue
+                    ? DateTime.SpecifyKind(request.EndDate.Value, DateTimeKind.Utc)
+                    : null,
                 IsCurrent = request.IsCurrent,
                 Description = request.Description,
                 SortOrder = request.SortOrder,
@@ -146,7 +172,7 @@ public class WorkExperiencesController : ControllerBase
             await _context.SaveChangesAsync();
 
             // Add achievements if provided
-            if (request.Achievements != null && request.Achievements.Any())
+            if (request.Achievements != null && request.Achievements.Count > 0)
             {
                 foreach (var achievement in request.Achievements)
                 {
@@ -172,7 +198,7 @@ public class WorkExperiencesController : ControllerBase
 
             return CreatedAtAction(
                 nameof(GetWorkExperience),
-                new { id = workExperience?.Id ?? 0 },
+                new { id = workExperience?.Id ?? Guid.Empty },
                 workExperience != null ? MapToDto(workExperience) : null
             );
         }
@@ -189,7 +215,7 @@ public class WorkExperiencesController : ControllerBase
     // PUT: api/work-experiences/5
     [HttpPut("{id}")]
     [Authorize] // Any authenticated user can update their own work experiences
-    public async Task<IActionResult> UpdateWorkExperience(int id, WorkExperienceRequest request)
+    public async Task<IActionResult> UpdateWorkExperience(Guid id, WorkExperienceRequest request)
     {
         _logger.LogInformation("Updating work experience with id: {Id}", id);
 
@@ -236,8 +262,10 @@ public class WorkExperiencesController : ControllerBase
         workExperience.JobTitle = request.JobTitle;
         workExperience.CompanyName = request.CompanyName;
         workExperience.Location = request.Location;
-        workExperience.StartDate = request.StartDate;
-        workExperience.EndDate = request.EndDate;
+        workExperience.StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
+        workExperience.EndDate = request.EndDate.HasValue
+            ? DateTime.SpecifyKind(request.EndDate.Value, DateTimeKind.Utc)
+            : null;
         workExperience.IsCurrent = request.IsCurrent;
         workExperience.Description = request.Description;
         workExperience.SortOrder = request.SortOrder;
@@ -343,35 +371,14 @@ public class WorkExperiencesController : ControllerBase
             UserId = workExperience.UserId,
             CreatedAt = workExperience.CreatedAt,
             UpdatedAt = workExperience.UpdatedAt,
+            Technologies =
+                workExperience.WorkExperienceTechnologies?.Select(wt => wt.Technology.Name).ToList()
+                ?? new List<string>(),
         };
     }
 }
 
-// DTOs
-public class WorkExperienceDto
-{
-    public int Id { get; set; }
-    public string JobTitle { get; set; } = string.Empty;
-    public string CompanyName { get; set; } = string.Empty;
-    public string? Location { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
-    public bool IsCurrent { get; set; }
-    public string? Description { get; set; }
-    public List<WorkAchievementDto>? Achievements { get; set; }
-    public int SortOrder { get; set; }
-    public bool Highlighted { get; set; }
-    public bool IsPublished { get; set; }
-    public string? UserId { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-}
-
-public class WorkAchievementDto
-{
-    public int Id { get; set; }
-    public string Text { get; set; } = string.Empty;
-}
+// DTOs (WorkExperienceDto, WorkAchievementDto) are now in Core.Api.Controllers.Resume.ResumeDtos.cs
 
 public class WorkExperienceRequest
 {

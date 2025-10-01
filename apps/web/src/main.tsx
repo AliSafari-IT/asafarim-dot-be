@@ -18,6 +18,11 @@ import ManagePublications from "./pages/portfolio/publications/manage";
 import EditPublication from "./pages/portfolio/publications/edit";
 import ViewPublication from "./pages/portfolio/publications/view";
 import ManageWorkExperience from "./pages/portfolio/work-experiences/ManageWorkExperience";
+import {NewWorkExperience} from "./pages/portfolio/work-experiences";
+import {EditWorkExperience} from "./pages/portfolio/work-experiences";
+import {ViewWorkExperience} from "./pages/portfolio/work-experiences";
+import {EntityManagement, EntityTableView} from "./pages/admin";
+import {ResumeList} from "./pages/admin/resume";
 
 const router = createBrowserRouter([
   {
@@ -35,11 +40,21 @@ const router = createBrowserRouter([
       { path: "portfolio/publications/new", element: <NewPublication /> },
       { path: "portfolio/publications/manage", element: <ManagePublications /> },
       { path: "portfolio/publications/edit/:id", element: <EditPublication /> },
+       { path: "portfolio/publications/view/:id", element: <ViewPublication /> },
       { path: "portfolio/research", element: <Research /> },
       { path: "portfolio/work-experiences", element: <ManageWorkExperience /> },
+      { path: "portfolio/work-experiences/new", element: <NewWorkExperience /> },
+      { path: "portfolio/work-experiences/edit/:id", element: <EditWorkExperience /> },
+      { path: "portfolio/work-experiences/view/:id", element: <ViewWorkExperience /> },
+
+      // Admin routes
+      { path: "admin/entities", element: <EntityManagement /> },
+      { path: "admin/entities/:entityType", element: <EntityTableView /> },
+      { path: "admin/resume", element: <ResumeList /> },
 
       // dynamic routes
       { path: "portfolio/:userId/publications/view/:id", element: <ViewPublication /> },
+      { path: "portfolio/:userId/work-experiences/view/:id", element: <ViewWorkExperience /> },
       
       { path: "*", element: <NotFound /> },
     ]

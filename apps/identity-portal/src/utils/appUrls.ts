@@ -14,6 +14,7 @@ export const AI_URL = env.VITE_AI_URL || (isProd ? 'https://ai.asafarim.be' : 'h
 export const CORE_URL = env.VITE_CORE_URL || (isProd ? 'https://core.asafarim.be' : 'http://core.asafarim.local:5174');
 // http://web.asafarim.local:5175/portfolio/publications
 export const PUBLICATIONS_URL = env.VITE_PUBLICATIONS_URL || (isProd ? 'https://asafarim.be/portfolio/publications' : 'http://web.asafarim.local:5175/portfolio/publications');
+export const RESUME_URL = env.VITE_RESUME_URL || (isProd ? 'https://asafarim.be/portfolio/resume' : 'http://web.asafarim.local:5175/portfolio/resume');
 
 export function openInNewTab(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');

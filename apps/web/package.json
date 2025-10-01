@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "app": "cd ../../ && pnpm app",
+    "app:web": "cd ../../ && pnpm app:web",
     "dev": "vite",
     "prestart": "npx kill-port 5175",
     "start": "vite --host web.asafarim.local --port 5175",

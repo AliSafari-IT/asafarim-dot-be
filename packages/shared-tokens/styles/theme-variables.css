@@ -298,17 +298,18 @@ body.dark,
   --color-brand-hover: #5c8cf5;
   --color-brand-active: #4882fd;
   --color-brand-disabled: #4882fd;
-/* In the dark theme override section */
---color-brand-50:  #0b1220;  /* very dark */
---color-brand-100: #0f1a30;
---color-brand-200: #10243a;
---color-brand-300: #1e3a8a;  /* deep blue */
---color-brand-400: #2563eb;  /* primary hover */
---color-brand-500: #3b82f6;  /* primary */
---color-brand-600: #60a5fa;
---color-brand-700: #93c5fd;
---color-brand-800: #bfdbfe;
---color-brand-900: #dbeafe;  /* light accents on dark */
+  
+  /* Dark theme brand colors */
+  --color-brand-50:  #0b1220;  /* very dark */
+  --color-brand-100: #0f1a30;
+  --color-brand-200: #10243a;
+  --color-brand-300: #1e3a8a;  /* deep blue */
+  --color-brand-400: #2563eb;  /* primary hover */
+  --color-brand-500: #3b82f6;  /* primary */
+  --color-brand-600: #60a5fa;
+  --color-brand-700: #93c5fd;
+  --color-brand-800: #bfdbfe;
+  --color-brand-900: #dbeafe;  /* light accents on dark */
   
   --color-phosphor: #d1f550;
 

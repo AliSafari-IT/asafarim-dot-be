@@ -42,6 +42,11 @@ export interface WorkExperienceRequest {
   isAdminEdit?: boolean;
 }
 
+// Fetch current user's work experiences
+export const fetchCurrentUsersWorkExperiences = async (): Promise<WorkExperienceDto[]> => {
+  return await fetchWorkExperiences(undefined, undefined, true);
+}
+
 // Fetch all work experiences
 export const fetchWorkExperiences = async (
   companyName?: string,
