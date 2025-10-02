@@ -8,6 +8,7 @@ import {
   getEntityDisplayName,
   type EntityRecord,
 } from "../../services/entityService";
+import { EntityActionsBar } from "./components";
 import "./entity-management.css";
 
 const EntityTableView: React.FC = () => {
@@ -103,15 +104,7 @@ const EntityTableView: React.FC = () => {
 
   const handleView = (recordId: number | string) => {
     // Navigate to entity-specific view page
-    if (entityType === "resumes") {
-      navigate(`/admin/resume/${recordId}`);
-    } else if (entityType === "work-experiences") {
-      navigate(`/portfolio/work-experiences/view/${recordId}`);
-    } else if (entityType === "publications") {
-      navigate(`/portfolio/publications/view/${recordId}`);
-    } else {
-      navigate(`/admin/entities/${entityType}/${recordId}`);
-    }
+    navigate(`/admin/entities/${entityType}/${recordId}`);
   };
 
   const handleEdit = (recordId: number | string, recordUserId?: string) => {
@@ -124,13 +117,7 @@ const EntityTableView: React.FC = () => {
     }
 
     // Navigate to entity-specific edit page
-    if (entityType === "work-experiences") {
-      navigate(`/portfolio/work-experiences/edit/${recordId}`);
-    } else if (entityType === "publications") {
-      navigate(`/portfolio/publications/edit/${recordId}`);
-    } else {
-      navigate(`/admin/entities/${entityType}/${recordId}/edit`);
-    }
+    navigate(`/admin/entities/${entityType}/${recordId}/edit`);
   };
 
   const formatDate = (dateString: string) => {
@@ -181,6 +168,22 @@ const EntityTableView: React.FC = () => {
   return (
     <div className="entity-table-view">
       <div className="entity-table-container">
+        <EntityActionsBar
+          entityType={`${entityType}`}
+          entityDisplayName={entity.displayName}
+          onAddEntity={() => navigate(`/admin/entities/${entityType}/new`)}
+          onViewMyEntities={() => {
+            // Already filtered by default for non-admins
+            window.location.reload();
+          }}
+          onViewAllEntities={() => {
+            // Reload to show all entities (admin only)
+            window.location.reload();
+          }}
+          onManageEntities={() => {
+            navigate(`/admin/entities/${entityType}`);
+          }}
+        />
         <header className="entity-table-header">
           <div className="header-content">
             <div className="header-title-section">
@@ -248,7 +251,7 @@ const EntityTableView: React.FC = () => {
                           aria-label="View record"
                           title="View"
                         >
-                          <Eye width={16} height={16} /> View
+                          <Eye width={16} height={16} /> 
                         </button>
                         <button
                           onClick={() => handleEdit(record.id, record.userId)}
@@ -260,7 +263,7 @@ const EntityTableView: React.FC = () => {
                           aria-label="Edit record"
                           title="Edit"
                         >
-                          <Edit width={16} height={16} /> Edit
+                          <Edit width={16} height={16} /> 
                         </button>
                         <button
                           onClick={() => handleDelete(record.id, record.userId)}

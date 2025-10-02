@@ -38,7 +38,7 @@ const EditWorkExperience: React.FC = () => {
       
       try {
         setIsLoading(true);
-        const data = await fetchWorkExperienceById(parseInt(id));
+        const data = await fetchWorkExperienceById(id);
         
         if (data) {
           setFormData({
@@ -164,7 +164,7 @@ const EditWorkExperience: React.FC = () => {
         workExperienceToSubmit.endDate = undefined;
       }
       
-      const result = await updateWorkExperience(parseInt(id), workExperienceToSubmit);
+      const result = await updateWorkExperience(id, workExperienceToSubmit);
       
       if (result) {
         navigate("/portfolio/work-experiences");

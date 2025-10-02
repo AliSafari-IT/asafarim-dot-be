@@ -8,6 +8,282 @@
   transition: background-color 0.3s ease;
 }
 
+/* Entity Actions Bar */
+.entity-actions-bar {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--color-background-alt);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.entity-actions-bar .actions-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.entity-actions-bar .actions-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.entity-actions-bar .actions-buttons-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.entity-actions-bar .entity-actions {
+  position: relative;
+  display: inline-flex;
+}
+
+.entity-actions-bar .tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.entity-actions-bar .tooltip-text {
+  visibility: hidden;
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+  text-align: center;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.875rem;
+}
+
+.entity-actions-bar .tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .entity-actions-bar .actions-buttons-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .entity-actions-bar .actions-buttons-group button {
+    width: 100%;
+  }
+}
+
+/* Entity Form Styles */
+.entity-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.entity-form-container header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.entity-form-container h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-brand-900);
+  margin: 0;
+}
+
+.entity-form {
+  background: var(--color-background-alt);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-foreground);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--color-brand-600);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-brand-700);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: var(--color-destructive);
+  color: white;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+/* Checkbox styling */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.checkbox-group span {
+  font-weight: 600;
+}
+
+/* Achievements section */
+.achievement-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  align-items: center;
+}
+
+.achievement-item input {
+  flex: 1;
+}
+
+.btn-remove {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-destructive);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: opacity 0.2s ease;
+}
+
+.btn-remove:hover {
+  opacity: 0.8;
+}
+
+.btn-secondary {
+  background-color: var(--color-muted);
+  color: var(--color-foreground);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-muted-foreground);
+}
+
+@media (max-width: 768px) {
+  .entity-form-container {
+    padding: 1rem;
+  }
+  
+  .entity-form-container header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .achievement-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .achievement-item input {
+    width: 100%;
+  }
+}
+
 .entity-management-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -351,6 +627,228 @@
   color: var(--color-foreground-muted);
   margin: 0;
   transition: color 0.3s ease;
+}
+
+/* Entity View Styles */
+.entity-view-content {
+  padding: clamp(1rem, 3vw, 2rem) 1rem;
+  background-color: var(--color-surface);
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  color: var(--color-foreground);
+}
+
+.entity-view-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.entity-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Entity View Section Styles */
+.entity-view-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.entity-view-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.entity-view-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-foreground);
+}
+
+.entity-view-section-content {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+}
+
+.entity-view-section-content-item {
+  display: contents;
+}
+
+.entity-view-section-content-item-label {
+  font-weight: 500;
+  color: var(--color-foreground-muted);
+}
+
+.entity-view-section-content-item-value {
+  color: var(--color-foreground);
+}
+
+.entity-view-section-content-item-value code {
+  background-color: var(--color-surface-elevated);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: var(--global-font-family-monospace);
+  font-size: 0.875rem;
+}
+
+.entity-view-section-content-item-value a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.entity-view-section-content-item-value a:hover {
+  text-decoration: underline;
+  color: var(--color-primary-hover);
+}
+
+/* Resume specific styles */
+.resume-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.resume-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-foreground);
+}
+
+.resume-work-experience-item,
+.resume-education-item,
+.resume-skill-item,
+.resume-certificate-item,
+.resume-project-item,
+.resume-language-item,
+.resume-award-item,
+.resume-reference-item {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: var(--color-surface-elevated);
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border);
+}
+
+.resume-work-experience-title,
+.resume-education-title,
+.resume-skill-name,
+.resume-certificate-name,
+.resume-project-name,
+.resume-language-name,
+.resume-award-title,
+.resume-reference-name {
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-foreground);
+}
+
+.resume-work-experience-company,
+.resume-education-institution,
+.resume-certificate-issuer,
+.resume-reference-relationship {
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.resume-work-experience-location,
+.resume-education-location,
+.resume-reference-contact-info {
+  font-size: 0.875rem;
+  color: var(--color-foreground-muted);
+  margin-bottom: 0.5rem;
+}
+
+.resume-work-experience-description,
+.resume-education-description,
+.resume-project-description,
+.resume-award-description {
+  margin-top: 0.75rem;
+  white-space: pre-wrap;
+  color: var(--color-foreground);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .entity-view-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .entity-view-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .entity-view-section-content {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .entity-view-section-content-item-label {
+    margin-top: 0.75rem;
+  }
+  
+  .entity-view-section-content-item-label:first-child {
+    margin-top: 0;
+  }
+}
+
+/* Dark theme adjustments */
+html[data-theme="dark"] .entity-view-content,
+body[data-theme="dark"] .entity-view-content,
+.dark .entity-view-content {
+  background-color: var(--color-brand-100);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="dark"] .entity-view-section-content-item-value code,
+body[data-theme="dark"] .entity-view-section-content-item-value code,
+.dark .entity-view-section-content-item-value code {
+  background-color: var(--color-brand-200);
+  color: var(--color-foreground);
+}
+
+html[data-theme="dark"] .resume-work-experience-item,
+body[data-theme="dark"] .resume-work-experience-item,
+.dark .resume-work-experience-item,
+html[data-theme="dark"] .resume-education-item,
+body[data-theme="dark"] .resume-education-item,
+.dark .resume-education-item,
+html[data-theme="dark"] .resume-skill-item,
+body[data-theme="dark"] .resume-skill-item,
+.dark .resume-skill-item,
+html[data-theme="dark"] .resume-certificate-item,
+body[data-theme="dark"] .resume-certificate-item,
+.dark .resume-certificate-item,
+html[data-theme="dark"] .resume-project-item,
+body[data-theme="dark"] .resume-project-item,
+.dark .resume-project-item,
+html[data-theme="dark"] .resume-language-item,
+body[data-theme="dark"] .resume-language-item,
+.dark .resume-language-item,
+html[data-theme="dark"] .resume-award-item,
+body[data-theme="dark"] .resume-award-item,
+.dark .resume-award-item,
+html[data-theme="dark"] .resume-reference-item,
+body[data-theme="dark"] .resume-reference-item,
+.dark .resume-reference-item {
+  background-color: var(--color-brand-200);
+  border-color: var(--color-brand-300);
 }
 
 /* Responsive Design */

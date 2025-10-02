@@ -308,29 +308,34 @@ public class ResumesController : ControllerBase
                     CredentialUrl = c.CredentialUrl,
                 })
                 .ToList(),
-            WorkExperiences = resume.WorkExperiences.Select(w => new WorkExperienceDto
-            {
-                Id = w.Id,
-                JobTitle = w.JobTitle,
-                CompanyName = w.CompanyName,
-                Location = w.Location,
-                StartDate = w.StartDate,
-                EndDate = w.EndDate,
-                IsCurrent = w.IsCurrent,
-                Description = w.Description,
-                Achievements = w.Achievements?.Select(a => new WorkAchievementDto 
-                { 
-                    Id = a.Id, 
-                    Text = a.Text 
-                }).ToList(),
-                SortOrder = w.SortOrder,
-                Highlighted = w.Highlighted,
-                IsPublished = w.IsPublished,
-                UserId = w.UserId,
-                CreatedAt = w.CreatedAt,
-                UpdatedAt = w.UpdatedAt
-            }).ToList(),
-            Projects = resume.Projects.Select(p => new ProjectDto
+            WorkExperiences = resume
+                .WorkExperiences.Select(w => new WorkExperienceDto
+                {
+                    Id = w.Id,
+                    JobTitle = w.JobTitle,
+                    CompanyName = w.CompanyName,
+                    Location = w.Location,
+                    StartDate = w.StartDate,
+                    EndDate = w.EndDate,
+                    IsCurrent = w.IsCurrent,
+                    Description = w.Description,
+                    Achievements = w
+                        .Achievements?.Select(a => new WorkAchievementDto
+                        {
+                            Id = a.Id,
+                            Text = a.Text,
+                        })
+                        .ToList(),
+                    SortOrder = w.SortOrder,
+                    Highlighted = w.Highlighted,
+                    IsPublished = w.IsPublished,
+                    UserId = w.UserId,
+                    CreatedAt = w.CreatedAt,
+                    UpdatedAt = w.UpdatedAt,
+                })
+                .ToList(),
+            Projects = resume
+                .Projects.Select(p => new ProjectDto
                 {
                     Id = p.Id,
                     Name = p.Name,

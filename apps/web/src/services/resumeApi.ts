@@ -107,7 +107,7 @@ export interface ReferenceDto {
 
 export interface CreateResumeRequest {
   title: string;
-  summary: string;
+  summary?: string ;
   contact?: {
     fullName: string;
     email: string;
@@ -118,7 +118,7 @@ export interface CreateResumeRequest {
 
 export interface UpdateResumeRequest {
   title: string;
-  summary: string;
+  summary?: string;
   contact?: {
     fullName: string;
     email: string;

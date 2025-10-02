@@ -28,7 +28,7 @@ const ViewWorkExperience: React.FC = () => {
       
       try {
         setIsLoading(true);
-        const data = await fetchWorkExperienceById(parseInt(id));
+        const data = await fetchWorkExperienceById(id);
         
         if (data) {
           setWorkExperience(data);

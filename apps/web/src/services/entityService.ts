@@ -50,23 +50,10 @@ export const ENTITY_TYPES: EntityType[] = [
     description: 'Manage research publications and articles',
     icon: '📚',
     endpoint: '/publications'
-  },
-  {
-    id: 'projects',
-    name: 'projects',
-    displayName: 'Projects',
-    description: 'Manage portfolio projects',
-    icon: '🚀',
-    endpoint: '/projects'
-  },
-  {
-    id: 'skills',
-    name: 'skills',
-    displayName: 'Skills',
-    description: 'Manage technical and professional skills',
-    icon: '⚡',
-    endpoint: '/skills'
   }
+  // Note: The following are NOT standalone entities in the API:
+  // - Skills: managed as sub-resources of resumes at /resumes/{resumeId}/skills
+  // - Projects: no dedicated endpoint yet (TODO: create ProjectsController if needed)
 ];
 
 // Fetch all records for an entity type

@@ -27,7 +27,9 @@ public class TechnologiesController : ControllerBase
 
     // GET: api/technologies
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TechnologyDto>>> GetTechnologies([FromQuery] string? category = null)
+    public async Task<ActionResult<IEnumerable<TechnologyDto>>> GetTechnologies(
+        [FromQuery] string? category = null
+    )
     {
         var query = _context.Technologies.AsQueryable();
 
@@ -36,10 +38,7 @@ public class TechnologiesController : ControllerBase
             query = query.Where(t => t.Category == category);
         }
 
-        var technologies = await query
-            .OrderBy(t => t.Category)
-            .ThenBy(t => t.Name)
-            .ToListAsync();
+        var technologies = await query.OrderBy(t => t.Category).ThenBy(t => t.Name).ToListAsync();
 
         return Ok(technologies.Select(MapToDto));
     }
@@ -64,8 +63,9 @@ public class TechnologiesController : ControllerBase
     public async Task<ActionResult<TechnologyDto>> CreateTechnology(CreateTechnologyRequest request)
     {
         // Check if technology already exists
-        var existing = await _context.Technologies
-            .FirstOrDefaultAsync(t => t.Name.ToLower() == request.Name.ToLower());
+        var existing = await _context.Technologies.FirstOrDefaultAsync(t =>
+            t.Name.ToLower() == request.Name.ToLower()
+        );
 
         if (existing != null)
         {
@@ -76,13 +76,17 @@ public class TechnologiesController : ControllerBase
         {
             Id = Guid.NewGuid(),
             Name = request.Name,
-            Category = request.Category
+            Category = request.Category,
         };
 
         _context.Technologies.Add(technology);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetTechnology), new { id = technology.Id }, MapToDto(technology));
+        return CreatedAtAction(
+            nameof(GetTechnology),
+            new { id = technology.Id },
+            MapToDto(technology)
+        );
     }
 
     // PUT: api/technologies/{id}
@@ -129,7 +133,7 @@ public class TechnologiesController : ControllerBase
         {
             Id = technology.Id,
             Name = technology.Name,
-            Category = technology.Category
+            Category = technology.Category,
         };
     }
 }

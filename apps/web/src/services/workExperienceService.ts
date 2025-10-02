@@ -1,12 +1,12 @@
 import { CORE_API_BASE, getCookie } from '../api/core';
 
 export interface WorkAchievementDto {
-  id: number;
+  id: string;
   text: string;
 }
 
 export interface WorkExperienceDto {
-  id: number;
+  id: string;
   jobTitle: string;
   companyName: string;
   location?: string;
@@ -28,6 +28,7 @@ export interface WorkAchievementRequest {
 }
 
 export interface WorkExperienceRequest {
+  resumeId?: string;
   jobTitle: string;
   companyName: string;
   location?: string;
@@ -91,7 +92,7 @@ export const fetchWorkExperiences = async (
 };
 
 // Fetch a single work experience by ID
-export const fetchWorkExperienceById = async (id: number): Promise<WorkExperienceDto | null> => {
+export const fetchWorkExperienceById = async (id: string): Promise<WorkExperienceDto | null> => {
   try {
     // Get token from both cookie and localStorage for maximum compatibility
     const token = getCookie('atk') || localStorage.getItem('auth_token');
@@ -158,7 +159,7 @@ export const createWorkExperience = async (workExperience: WorkExperienceRequest
 
 // Update an existing work experience
 export const updateWorkExperience = async (
-  id: number, 
+  id: string, 
   workExperience: WorkExperienceRequest
 ): Promise<boolean> => {
   try {
@@ -211,7 +212,7 @@ export const updateWorkExperience = async (
 };
 
 // Delete a work experience
-export const deleteWorkExperience = async (id: number, isAdminEdit?: boolean): Promise<boolean> => {
+export const deleteWorkExperience = async (id: string, isAdminEdit?: boolean): Promise<boolean> => {
   try {
     // Get token from both cookie and localStorage for maximum compatibility
     const token = getCookie('atk') || localStorage.getItem('auth_token');

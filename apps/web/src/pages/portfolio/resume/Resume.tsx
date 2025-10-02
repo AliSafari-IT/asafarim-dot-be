@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Hero, useAuth } from '@asafarim/shared-ui-react';
-import { fetchCurrentUsersWorkExperiences, type WorkExperienceDto } from '../../services/workExperienceService';
+import { fetchCurrentUsersWorkExperiences, type WorkExperienceDto } from '../../../services/workExperienceService';
 
 const Resume: React.FC = () => {
   // Resume sections

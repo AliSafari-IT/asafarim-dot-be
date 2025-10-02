@@ -150,8 +150,46 @@ public class WorkExperiencesController : ControllerBase
                 return Unauthorized("User ID not found in token");
             }
 
+            // Check if user is admin
+            bool isAdmin = User.IsInRole("admin") || User.IsInRole("Admin");
+
+            // Handle resume - use provided ID or find/create user's resume
+            Models.Resume.Resume? resume = null;
+
+            if (request.ResumeId.HasValue && request.ResumeId.Value != Guid.Empty)
+            {
+                resume = await _context.Resumes.FirstOrDefaultAsync(r =>
+                    r.Id == request.ResumeId.Value
+                );
+                if (resume == null)
+                    return BadRequest("Resume not found.");
+                if (!isAdmin && resume.UserId != userId)
+                    return Forbid("You cannot add work experiences to this resume.");
+            }
+            else
+            {
+                // No resume provided - find or create default
+                resume = await _context.Resumes.FirstOrDefaultAsync(r => r.UserId == userId);
+                if (resume == null)
+                {
+                    resume = new Models.Resume.Resume
+                    {
+                        UserId = userId,
+                        Title = "Untitled Resume",
+                        Summary = "",
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                    };
+                    _context.Resumes.Add(resume);
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Created default resume for user: {UserId}", userId);
+                }
+            }
+
             var workExperience = new WorkExperience
             {
+                Id = Guid.NewGuid(), // Explicitly generate a new ID
+                ResumeId = resume.Id, // Use the validated/created resume ID
                 JobTitle = request.JobTitle,
                 CompanyName = request.CompanyName,
                 Location = request.Location,
@@ -273,30 +311,42 @@ public class WorkExperiencesController : ControllerBase
         workExperience.IsPublished = request.IsPublished;
         workExperience.UpdatedAt = DateTime.UtcNow;
 
-        // Update achievements
+        // Mark the entity as modified and save work experience updates
+        _context.Entry(workExperience).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+        
+        // Handle achievements separately
         if (request.Achievements != null)
         {
-            // Remove existing achievements
-            if (workExperience.Achievements != null && workExperience.Achievements.Any())
+            // Delete existing achievements
+            var existingAchievements = await _context.WorkAchievements
+                .Where(a => a.WorkExperienceId == id)
+                .ToListAsync();
+                
+            if (existingAchievements.Any())
             {
-                _context.WorkAchievements.RemoveRange(workExperience.Achievements);
+                _context.WorkAchievements.RemoveRange(existingAchievements);
+                await _context.SaveChangesAsync();
             }
-
+            
             // Add new achievements
-            foreach (var achievement in request.Achievements)
+            if (request.Achievements.Any())
             {
-                _context.WorkAchievements.Add(
-                    new WorkAchievement
-                    {
-                        WorkExperienceId = workExperience.Id,
-                        Text = achievement.Text,
-                        CreatedAt = DateTime.UtcNow,
-                    }
-                );
+                foreach (var achievement in request.Achievements)
+                {
+                    _context.WorkAchievements.Add(
+                        new WorkAchievement
+                        {
+                            Id = Guid.NewGuid(),
+                            WorkExperienceId = id,
+                            Text = achievement.Text,
+                            CreatedAt = DateTime.UtcNow,
+                        }
+                    );
+                }
+                await _context.SaveChangesAsync();
             }
         }
-
-        await _context.SaveChangesAsync();
 
         return NoContent();
     }
@@ -304,7 +354,7 @@ public class WorkExperiencesController : ControllerBase
     // DELETE: api/work-experiences/5
     [HttpDelete("{id}")]
     [Authorize] // Any authenticated user can delete their own work experiences
-    public async Task<IActionResult> DeleteWorkExperience(int id)
+    public async Task<IActionResult> DeleteWorkExperience(Guid id)
     {
         _logger.LogInformation("Deleting work experience with id: {Id}", id);
 
@@ -382,6 +432,7 @@ public class WorkExperiencesController : ControllerBase
 
 public class WorkExperienceRequest
 {
+    public Guid? ResumeId { get; set; }
     public string JobTitle { get; set; } = string.Empty;
     public string CompanyName { get; set; } = string.Empty;
     public string? Location { get; set; }

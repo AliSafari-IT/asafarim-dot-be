@@ -9,7 +9,7 @@ import Contact from "./pages/Contact";
 import { NotificationProvider, NotFound } from "@asafarim/shared-ui-react";
 import WhatIsBuilding from "./pages/WhatIsBuilding";
 import Portfolio from "./pages/Portfolio";
-import Resume from "./pages/portfolio/Resume";
+import Resume from "./pages/portfolio/resume/Resume";
 import Publications from "./pages/portfolio/publications/Publications";
 import Research from "./pages/portfolio/Research";
 import Projects from "./pages/Projects";
@@ -21,8 +21,8 @@ import ManageWorkExperience from "./pages/portfolio/work-experiences/ManageWorkE
 import {NewWorkExperience} from "./pages/portfolio/work-experiences";
 import {EditWorkExperience} from "./pages/portfolio/work-experiences";
 import {ViewWorkExperience} from "./pages/portfolio/work-experiences";
-import {EntityManagement, EntityTableView} from "./pages/admin";
-import {ResumeList} from "./pages/admin/resume";
+import {EntityManagement, EntityTableView, AddNewEntity, EditEntity, ViewEntity} from "./pages/admin";
+import {ResumeList, ViewResume, EditResume, NewResume} from "./pages/admin/resume";
 
 const router = createBrowserRouter([
   {
@@ -50,7 +50,15 @@ const router = createBrowserRouter([
       // Admin routes
       { path: "admin/entities", element: <EntityManagement /> },
       { path: "admin/entities/:entityType", element: <EntityTableView /> },
+      { path: "admin/entities/:entityType/new", element: <AddNewEntity /> },
+      { path: "admin/entities/:entityType/:id/edit", element: <EditEntity /> },
+      { path: "admin/entities/:entityType/:id", element: <ViewEntity /> },
+      
+      // Resume-specific routes
       { path: "admin/resume", element: <ResumeList /> },
+      { path: "admin/resume/new", element: <NewResume /> },
+      { path: "admin/resume/:id", element: <ViewResume /> },
+      { path: "admin/resume/:id/edit", element: <EditResume /> },
 
       // dynamic routes
       { path: "portfolio/:userId/publications/view/:id", element: <ViewPublication /> },
