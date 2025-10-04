@@ -30,17 +30,22 @@ public class SkillsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SkillDto>>> GetSkills(Guid resumeId)
     {
-        var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        var userId =
+            User.FindFirst("sub")?.Value
+            ?? User.FindFirst(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            )?.Value;
         var isAdmin = User.IsInRole("Admin");
 
         var resume = await _context.Resumes.FindAsync(resumeId);
-        if (resume == null) return NotFound("Resume not found");
+        if (resume == null)
+            return NotFound("Resume not found");
 
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
 
-        var skills = await _context.Skills
-            .Where(s => s.ResumeId == resumeId)
+        var skills = await _context
+            .Skills.Where(s => s.ResumeId == resumeId)
             .OrderBy(s => s.Category)
             .ThenBy(s => s.Name)
             .ToListAsync();
@@ -52,17 +57,25 @@ public class SkillsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<SkillDto>> GetSkill(Guid resumeId, Guid id)
     {
-        var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        var userId =
+            User.FindFirst("sub")?.Value
+            ?? User.FindFirst(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            )?.Value;
         var isAdmin = User.IsInRole("Admin");
 
         var resume = await _context.Resumes.FindAsync(resumeId);
-        if (resume == null) return NotFound("Resume not found");
+        if (resume == null)
+            return NotFound("Resume not found");
 
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
 
-        var skill = await _context.Skills.FirstOrDefaultAsync(s => s.Id == id && s.ResumeId == resumeId);
-        if (skill == null) return NotFound();
+        var skill = await _context.Skills.FirstOrDefaultAsync(s =>
+            s.Id == id && s.ResumeId == resumeId
+        );
+        if (skill == null)
+            return NotFound();
 
         return Ok(MapToDto(skill));
     }
@@ -71,11 +84,16 @@ public class SkillsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<SkillDto>> CreateSkill(Guid resumeId, CreateSkillRequest request)
     {
-        var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        var userId =
+            User.FindFirst("sub")?.Value
+            ?? User.FindFirst(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            )?.Value;
         var isAdmin = User.IsInRole("Admin");
 
         var resume = await _context.Resumes.FindAsync(resumeId);
-        if (resume == null) return NotFound("Resume not found");
+        if (resume == null)
+            return NotFound("Resume not found");
 
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
@@ -89,7 +107,7 @@ public class SkillsController : ControllerBase
             Level = Enum.Parse<SkillLevel>(request.Level),
             Rating = request.Rating,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            UpdatedAt = DateTime.UtcNow,
         };
 
         _context.Skills.Add(skill);
@@ -102,17 +120,25 @@ public class SkillsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateSkill(Guid resumeId, Guid id, UpdateSkillRequest request)
     {
-        var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        var userId =
+            User.FindFirst("sub")?.Value
+            ?? User.FindFirst(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            )?.Value;
         var isAdmin = User.IsInRole("Admin");
 
         var resume = await _context.Resumes.FindAsync(resumeId);
-        if (resume == null) return NotFound("Resume not found");
+        if (resume == null)
+            return NotFound("Resume not found");
 
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
 
-        var skill = await _context.Skills.FirstOrDefaultAsync(s => s.Id == id && s.ResumeId == resumeId);
-        if (skill == null) return NotFound();
+        var skill = await _context.Skills.FirstOrDefaultAsync(s =>
+            s.Id == id && s.ResumeId == resumeId
+        );
+        if (skill == null)
+            return NotFound();
 
         skill.Name = request.Name;
         skill.Category = request.Category;
@@ -129,17 +155,25 @@ public class SkillsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSkill(Guid resumeId, Guid id)
     {
-        var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        var userId =
+            User.FindFirst("sub")?.Value
+            ?? User.FindFirst(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            )?.Value;
         var isAdmin = User.IsInRole("Admin");
 
         var resume = await _context.Resumes.FindAsync(resumeId);
-        if (resume == null) return NotFound("Resume not found");
+        if (resume == null)
+            return NotFound("Resume not found");
 
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
 
-        var skill = await _context.Skills.FirstOrDefaultAsync(s => s.Id == id && s.ResumeId == resumeId);
-        if (skill == null) return NotFound();
+        var skill = await _context.Skills.FirstOrDefaultAsync(s =>
+            s.Id == id && s.ResumeId == resumeId
+        );
+        if (skill == null)
+            return NotFound();
 
         _context.Skills.Remove(skill);
         await _context.SaveChangesAsync();
@@ -153,11 +187,11 @@ public class SkillsController : ControllerBase
         {
             Id = skill.Id,
             Name = skill.Name,
-            Category = skill.Category,
+            Category = skill.Category?.ToString() ?? string.Empty,
             Level = skill.Level.ToString(),
             Rating = skill.Rating,
             CreatedAt = skill.CreatedAt,
-            UpdatedAt = skill.UpdatedAt
+            UpdatedAt = skill.UpdatedAt,
         };
     }
 }

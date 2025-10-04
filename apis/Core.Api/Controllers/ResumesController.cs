@@ -279,9 +279,11 @@ public class ResumesController : ControllerBase
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    Category = s.Category,
+                    Category = s.Category?.ToString() ?? string.Empty,
                     Level = s.Level.ToString(),
                     Rating = s.Rating,
+                    CreatedAt = s.CreatedAt,
+                    UpdatedAt = s.UpdatedAt,
                 })
                 .ToList(),
             EducationItems = resume
@@ -341,7 +343,16 @@ public class ResumesController : ControllerBase
                     Name = p.Name,
                     Description = p.Description,
                     Link = p.Link,
-                    Technologies = p.ProjectTechnologies.Select(pt => pt.Technology.Name).ToList(),
+                    StartDate = p.StartDate,
+                    EndDate = p.EndDate,
+                    Technologies = p
+                        .ProjectTechnologies.Select(pt => new TechnologyDto
+                        {
+                            Id = pt.Technology.Id,
+                            Name = pt.Technology.Name,
+                            Category = pt.Technology.Category,
+                        })
+                        .ToList(),
                 })
                 .ToList(),
             SocialLinks = resume
@@ -366,7 +377,7 @@ public class ResumesController : ControllerBase
                     Id = a.Id,
                     Title = a.Title,
                     Issuer = a.Issuer,
-                    AwardedDate = a.AwardedDate,
+                    Date = a.AwardedDate,
                     Description = a.Description,
                 })
                 .ToList(),

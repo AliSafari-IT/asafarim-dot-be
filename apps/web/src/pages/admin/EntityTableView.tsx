@@ -13,7 +13,7 @@ import "./entity-management.css";
 
 const EntityTableView: React.FC = () => {
   const navigate = useNavigate();
-  const { entityType } = useParams<{ entityType: string }>();
+  const { entityType } = useParams<{ entityType: string | undefined }>();
   const { isAuthenticated, user, loading: authLoading } = useAuth();
   const [records, setRecords] = useState<EntityRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

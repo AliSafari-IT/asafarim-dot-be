@@ -8,7 +8,7 @@ import "@asafarim/dd-menu/index.css";
 // Define your navigation links
 const navLinks: NavLinkItem[] = [
   { to: "#", label: "projects-dropdown" }, 
-  { to: "/admin/entities", label: "Entities" },
+  { to: "/admin/entities/resumes", label: "Resumes" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];

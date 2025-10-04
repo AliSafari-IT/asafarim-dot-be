@@ -23,6 +23,7 @@ const NewWorkExperience: React.FC = () => {
     isCurrent: false,
     description: "",
     achievements: [{ text: "" }],
+    technologies: [],
     sortOrder: 0,
     highlighted: false,
     isPublished: true

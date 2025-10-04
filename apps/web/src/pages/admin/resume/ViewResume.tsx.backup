@@ -1,0 +1,169 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button, useAuth } from '@asafarim/shared-ui-react';
+import { fetchResumeById, type ResumeDetailDto } from '../../../services/resumeApi';
+import './resume-styles.css';
+import './view-resume.css';
+
+const ViewResume: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const [resume, setResume] = useState<ResumeDetailDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+
+  const renderStars = (rating: number) => {
+    return (
+      <div className="skill-rating">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span key={star} className={star <= rating ? 'star filled' : 'star'}>
+            ★
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
+        window.location.href
+      )}`;
+    }
+  }, [authLoading, isAuthenticated]);
+
+  useEffect(() => {
+    const loadResume = async () => {
+      if (!id || !isAuthenticated) return;
+      
+      try {
+        setLoading(true);
+        const data = await fetchResumeById(id);
+        setResume(data);
+      } catch (err) {
+        console.error('Failed to load resume:', err);
+        setError('Failed to load resume details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadResume();
+  }, [id, isAuthenticated]);
+
+  if (loading) {
+    return (
+      <div className="resume-view">
+        <div className="resume-container">
+          <p>Loading resume...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !resume) {
+    return (
+      <div className="resume-view">
+        <div className="resume-container">
+          <div className="error-message">{error || 'Resume not found'}</div>
+          <Button onClick={() => navigate('/admin/entities/resumes')}>Back to Resumes</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="resume-view">
+      <div className="resume-container">
+        <header className="resume-header">
+          <div className="header-content">
+            <h1 className="resume-title">{resume.title}</h1>
+            <div className="header-actions">
+              <Button onClick={() => navigate('/admin/entities/resumes')} variant="secondary">
+                Back to Resumes
+              </Button>
+              <Button onClick={() => navigate(`/admin/entities/resumes/${id}/edit`)} variant="primary">
+                Edit
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <div className="resume-content">
+          {resume.contact && (
+            <section className="resume-section">
+              <h2>Contact Information</h2>
+              <div className="info-grid">
+                <div><strong>Name:</strong> {resume.contact.fullName}</div>
+                <div><strong>Email:</strong> {resume.contact.email}</div>
+                <div><strong>Phone:</strong> {resume.contact.phone || 'N/A'}</div>
+                <div><strong>Location:</strong> {resume.contact.location || 'N/A'}</div>
+              </div>
+            </section>
+          )}
+
+          {resume.summary && (
+            <section className="resume-section">
+              <h2>Professional Summary</h2>
+              <p>{resume.summary}</p>
+            </section>
+          )}
+
+          {resume.workExperiences && resume.workExperiences.length > 0 && (
+            <section className="resume-section">
+              <h2>Experiences ({resume.workExperiences.length})</h2>
+              {
+                resume.workExperiences.map((experience, index) => (
+                  <div key={index}>
+                    <h3>{experience.jobTitle}</h3>
+                    <p>{experience.companyName}</p>
+                    <p>{new Date(experience.startDate).toDateString()} - {experience.endDate ? new Date(experience.endDate).toDateString() : 'Present'}</p>
+                    <p>{experience.description}</p>
+                  </div>
+                ))
+              }
+            </section>
+          )}
+
+          {resume.skills && resume.skills.length > 0 && (
+            <section className="resume-section">
+              <h2>Skills ({resume.skills.length})</h2>
+              {
+                resume.skills.map((skill, index) => (
+                  <div key={index}>
+                    <h3>{skill.name} <span>(Category: {skill.category}, Rating: {skill.rating})</span></h3>
+                    <p>Level: {skill.level}</p>
+                  </div>
+                ))
+              }
+            </section>
+          )}
+
+          {resume.educationItems && resume.educationItems.length > 0 && (
+            <section className="resume-section">
+              <h2>Education ({resume.educationItems.length})</h2>
+              {
+                resume.educationItems.map((education, index) => (
+                  <div key={index}>
+                    <h3>{education.degree}</h3>
+                    <p>{education.institution}</p>
+                    <p>{new Date(education.startDate).toDateString()} - {education.endDate ? new Date(education.endDate).toDateString() : 'Present'}</p>
+                    <p>{education.description}</p>
+                  </div>
+                ))
+              }
+            </section>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ViewResume;

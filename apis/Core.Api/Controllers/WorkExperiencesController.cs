@@ -13,7 +13,8 @@ using Microsoft.Extensions.Logging;
 namespace Core.Api.Controllers;
 
 [ApiController]
-[Route("api/work-experiences")]
+[Route("api/resumes/{resumeId}/[controller]")]
+[Authorize]
 public class WorkExperiencesController : ControllerBase
 {
     private readonly CoreDbContext _context;
@@ -28,275 +29,203 @@ public class WorkExperiencesController : ControllerBase
         _logger = logger;
     }
 
-    // GET: api/work-experiences
+    // GET: api/resumes/{resumeId}/workexperiences
     [HttpGet]
     public async Task<ActionResult<IEnumerable<WorkExperienceDto>>> GetWorkExperiences(
-        [FromQuery] string? companyName = null,
-        [FromQuery] string? title = null,
-        [FromQuery] bool? myExperiences = null
+        Guid resumeId
     )
     {
-        _logger.LogInformation(
-            "Getting work experiences with companyName: {CompanyName}, title: {Title}, myExperiences: {MyExperiences}",
-            companyName,
-            title,
-            myExperiences
-        );
-
-        var query = _context
-            .WorkExperiences.Include(w => w.Achievements)
-            .Include(w => w.WorkExperienceTechnologies)
-            .ThenInclude(wt => wt.Technology)
-            .AsQueryable();
-
-        // Get current user ID for filtering
         var userId =
             User.FindFirst("sub")?.Value
             ?? User.FindFirst(
                 "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
             )?.Value;
+        var isAdmin = User.IsInRole("Admin");
 
-        _logger.LogInformation(
-            "Current user ID: {UserId}, IsAuthenticated: {IsAuthenticated}",
-            userId,
-            User.Identity?.IsAuthenticated
-        );
+        var resume = await _context.Resumes.FindAsync(resumeId);
+        if (resume == null)
+            return NotFound("Resume not found");
 
-        // Filter by current user if requested
-        if (myExperiences == true && User.Identity?.IsAuthenticated == true)
-        {
-            if (!string.IsNullOrEmpty(userId))
-            {
-                _logger.LogInformation("Filtering work experiences for user: {UserId}", userId);
-                query = query.Where(w => w.UserId == userId);
-            }
-            else
-            {
-                _logger.LogWarning("myExperiences=true but userId is null or empty");
-            }
-        }
+        if (!isAdmin && resume.UserId != userId)
+            return Forbid();
 
-        // Apply filters if provided
-        if (!string.IsNullOrEmpty(companyName))
-        {
-            query = query.Where(w => w.CompanyName.Contains(companyName));
-        }
+        var workExperiences = await _context
+            .WorkExperiences.Include(w => w.Achievements)
+            .Include(w => w.WorkExperienceTechnologies)
+            .ThenInclude(wt => wt.Technology)
+            .Where(w => w.ResumeId == resumeId)
+            .OrderBy(w => w.SortOrder)
+            .ThenByDescending(w => w.StartDate)
+            .ToListAsync();
 
-        if (!string.IsNullOrEmpty(title))
-        {
-            query = query.Where(w => w.JobTitle.Contains(title));
-        }
-
-        // Only return published items if NOT requesting user's own experiences
-        // Users should see all their own experiences (published and unpublished)
-        if (myExperiences != true)
-        {
-            query = query.Where(w => w.IsPublished);
-        }
-
-        // Order by sort order and then by start date descending
-        query = query.OrderBy(w => w.SortOrder).ThenByDescending(w => w.StartDate);
-
-        var workExperiences = await query.ToListAsync();
-
-        return Ok(workExperiences.Select(w => MapToDto(w)));
+        return Ok(workExperiences.Select(MapToDto));
     }
 
-    // GET: api/work-experiences/5
+    // GET: api/resumes/{resumeId}/workexperiences/{id}
     [HttpGet("{id}")]
-    public async Task<ActionResult<WorkExperienceDto>> GetWorkExperience(Guid id)
+    public async Task<ActionResult<WorkExperienceDto>> GetWorkExperience(Guid resumeId, Guid id)
     {
-        _logger.LogInformation("Getting work experience with id: {Id}", id);
+        var userId =
+            User.FindFirst("sub")?.Value
+            ?? User.FindFirst(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            )?.Value;
+        var isAdmin = User.IsInRole("Admin");
+
+        var resume = await _context.Resumes.FindAsync(resumeId);
+        if (resume == null)
+            return NotFound("Resume not found");
+
+        if (!isAdmin && resume.UserId != userId)
+            return Forbid();
 
         var workExperience = await _context
             .WorkExperiences.Include(w => w.Achievements)
             .Include(w => w.WorkExperienceTechnologies)
             .ThenInclude(wt => wt.Technology)
-            .FirstOrDefaultAsync(w => w.Id == id);
-
+            .FirstOrDefaultAsync(w => w.Id == id && w.ResumeId == resumeId);
         if (workExperience == null)
-        {
             return NotFound();
-        }
 
-        return MapToDto(workExperience);
+        return Ok(MapToDto(workExperience));
     }
 
-    // POST: api/work-experiences
+    // POST: api/resumes/{resumeId}/workexperiences
     [HttpPost]
-    [Authorize] // Any authenticated user can create work experiences
     public async Task<ActionResult<WorkExperienceDto>> CreateWorkExperience(
+        Guid resumeId,
         WorkExperienceRequest request
     )
     {
-        try
-        {
-            _logger.LogInformation(
-                "Creating new work experience: {JobTitle} at {CompanyName}",
-                request.JobTitle,
-                request.CompanyName
-            );
-            _logger.LogInformation("Request details: {@Request}", request);
-
-            // Get the current user ID from the claims
-            var userId =
-                User.FindFirst("sub")?.Value
-                ?? User.FindFirst(
-                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-                )?.Value;
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("User ID not found in token");
-            }
-
-            // Check if user is admin
-            bool isAdmin = User.IsInRole("admin") || User.IsInRole("Admin");
-
-            // Handle resume - use provided ID or find/create user's resume
-            Models.Resume.Resume? resume = null;
-
-            if (request.ResumeId.HasValue && request.ResumeId.Value != Guid.Empty)
-            {
-                resume = await _context.Resumes.FirstOrDefaultAsync(r =>
-                    r.Id == request.ResumeId.Value
-                );
-                if (resume == null)
-                    return BadRequest("Resume not found.");
-                if (!isAdmin && resume.UserId != userId)
-                    return Forbid("You cannot add work experiences to this resume.");
-            }
-            else
-            {
-                // No resume provided - find or create default
-                resume = await _context.Resumes.FirstOrDefaultAsync(r => r.UserId == userId);
-                if (resume == null)
-                {
-                    resume = new Models.Resume.Resume
-                    {
-                        UserId = userId,
-                        Title = "Untitled Resume",
-                        Summary = "",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow,
-                    };
-                    _context.Resumes.Add(resume);
-                    await _context.SaveChangesAsync();
-                    _logger.LogInformation("Created default resume for user: {UserId}", userId);
-                }
-            }
-
-            var workExperience = new WorkExperience
-            {
-                Id = Guid.NewGuid(), // Explicitly generate a new ID
-                ResumeId = resume.Id, // Use the validated/created resume ID
-                JobTitle = request.JobTitle,
-                CompanyName = request.CompanyName,
-                Location = request.Location,
-                StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc),
-                EndDate = request.EndDate.HasValue
-                    ? DateTime.SpecifyKind(request.EndDate.Value, DateTimeKind.Utc)
-                    : null,
-                IsCurrent = request.IsCurrent,
-                Description = request.Description,
-                SortOrder = request.SortOrder,
-                Highlighted = request.Highlighted,
-                IsPublished = request.IsPublished,
-                UserId = userId, // Set the user ID
-                CreatedAt = DateTime.UtcNow,
-            };
-
-            _context.WorkExperiences.Add(workExperience);
-            await _context.SaveChangesAsync();
-
-            // Add achievements if provided
-            if (request.Achievements != null && request.Achievements.Count > 0)
-            {
-                foreach (var achievement in request.Achievements)
-                {
-                    _context.WorkAchievements.Add(
-                        new WorkAchievement
-                        {
-                            WorkExperienceId = workExperience.Id,
-                            Text = achievement.Text,
-                            CreatedAt = DateTime.UtcNow,
-                        }
-                    );
-                }
-                await _context.SaveChangesAsync();
-            }
-
-            // Reload the work experience with achievements
-            if (workExperience != null)
-            {
-                workExperience = await _context
-                    .WorkExperiences.Include(w => w.Achievements)
-                    .FirstOrDefaultAsync(w => w.Id == workExperience.Id);
-            }
-
-            return CreatedAtAction(
-                nameof(GetWorkExperience),
-                new { id = workExperience?.Id ?? Guid.Empty },
-                workExperience != null ? MapToDto(workExperience) : null
-            );
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating work experience: {Message}", ex.Message);
-            return StatusCode(
-                500,
-                "An error occurred while creating the work experience. Please try again later."
-            );
-        }
-    }
-
-    // PUT: api/work-experiences/5
-    [HttpPut("{id}")]
-    [Authorize] // Any authenticated user can update their own work experiences
-    public async Task<IActionResult> UpdateWorkExperience(Guid id, WorkExperienceRequest request)
-    {
-        _logger.LogInformation("Updating work experience with id: {Id}", id);
-
-        // Get the current user ID from the claims
         var userId =
             User.FindFirst("sub")?.Value
             ?? User.FindFirst(
                 "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
             )?.Value;
+        var isAdmin = User.IsInRole("Admin");
 
-        if (string.IsNullOrEmpty(userId))
+        var resume = await _context.Resumes.FindAsync(resumeId);
+        if (resume == null)
+            return NotFound("Resume not found");
+
+        if (!isAdmin && resume.UserId != userId)
+            return Forbid();
+
+        var workExperience = new WorkExperience
         {
-            return Unauthorized("User ID not found in token");
+            Id = Guid.NewGuid(),
+            ResumeId = resumeId,
+            JobTitle = request.JobTitle,
+            CompanyName = request.CompanyName,
+            Location = request.Location,
+            StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc),
+            EndDate = request.EndDate.HasValue
+                ? DateTime.SpecifyKind(request.EndDate.Value, DateTimeKind.Utc)
+                : null,
+            IsCurrent = request.IsCurrent,
+            Description = request.Description,
+            SortOrder = request.SortOrder,
+            Highlighted = request.Highlighted,
+            IsPublished = request.IsPublished,
+            UserId = userId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        };
+
+        _context.WorkExperiences.Add(workExperience);
+        await _context.SaveChangesAsync();
+
+        // Handle achievements if provided
+        if (request.Achievements != null && request.Achievements.Any())
+        {
+            foreach (var achievementRequest in request.Achievements)
+            {
+                _context.WorkAchievements.Add(
+                    new WorkAchievement
+                    {
+                        Id = Guid.NewGuid(),
+                        WorkExperienceId = workExperience.Id,
+                        Text = achievementRequest.Text,
+                        CreatedAt = DateTime.UtcNow,
+                    }
+                );
+            }
+            await _context.SaveChangesAsync();
         }
+
+        // Handle technologies if provided
+        if (request.Technologies != null && request.Technologies.Any())
+        {
+            foreach (var techRequest in request.Technologies)
+            {
+                if (string.IsNullOrWhiteSpace(techRequest.Name))
+                    continue;
+
+                // Find or create technology
+                var technology = await _context.Technologies.FirstOrDefaultAsync(t =>
+                    t.Name.ToLower() == techRequest.Name.ToLower()
+                );
+
+                if (technology == null)
+                {
+                    technology = new Technology
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = techRequest.Name,
+                        Category = techRequest.Category ?? "Other",
+                    };
+                    _context.Technologies.Add(technology);
+                    await _context.SaveChangesAsync();
+                }
+
+                _context.WorkExperienceTechnologies.Add(
+                    new WorkExperienceTechnology
+                    {
+                        WorkExperienceId = workExperience.Id,
+                        TechnologyId = technology.Id,
+                    }
+                );
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        return CreatedAtAction(
+            nameof(GetWorkExperience),
+            new { resumeId, id = workExperience.Id },
+            MapToDto(workExperience)
+        );
+    }
+
+    // PUT: api/resumes/{resumeId}/workexperiences/{id}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateWorkExperience(
+        Guid resumeId,
+        Guid id,
+        WorkExperienceRequest request
+    )
+    {
+        var userId =
+            User.FindFirst("sub")?.Value
+            ?? User.FindFirst(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            )?.Value;
+        var isAdmin = User.IsInRole("Admin");
+
+        var resume = await _context.Resumes.FindAsync(resumeId);
+        if (resume == null)
+            return NotFound("Resume not found");
+
+        if (!isAdmin && resume.UserId != userId)
+            return Forbid();
 
         var workExperience = await _context
             .WorkExperiences.Include(w => w.Achievements)
-            .FirstOrDefaultAsync(w => w.Id == id);
-
+            .Include(w => w.WorkExperienceTechnologies)
+            .ThenInclude(wt => wt.Technology)
+            .FirstOrDefaultAsync(w => w.Id == id && w.ResumeId == resumeId);
         if (workExperience == null)
-        {
             return NotFound();
-        }
 
-        // Check if the user owns this work experience or is an admin
-        bool isAdmin = User.IsInRole("admin") || User.IsInRole("Admin");
-        bool isAdminEdit =
-            Request.Query.ContainsKey("isAdminEdit") || Request.Headers.ContainsKey("X-Admin-Edit");
-
-        _logger.LogInformation(
-            "Update permission check - UserId: {UserId}, WorkExperienceUserId: {WorkExperienceUserId}, IsAdmin: {IsAdmin}, IsAdminEdit: {IsAdminEdit}",
-            userId,
-            workExperience.UserId,
-            isAdmin,
-            isAdminEdit
-        );
-
-        if (workExperience.UserId != userId && !(isAdmin && isAdminEdit))
-        {
-            return Forbid("You do not have permission to update this work experience");
-        }
-
-        // Update work experience properties
         workExperience.JobTitle = request.JobTitle;
         workExperience.CompanyName = request.CompanyName;
         workExperience.Location = request.Location;
@@ -311,88 +240,100 @@ public class WorkExperiencesController : ControllerBase
         workExperience.IsPublished = request.IsPublished;
         workExperience.UpdatedAt = DateTime.UtcNow;
 
-        // Mark the entity as modified and save work experience updates
-        _context.Entry(workExperience).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        
-        // Handle achievements separately
-        if (request.Achievements != null)
+        // Handle achievements - remove existing and add new ones
+        if (workExperience.Achievements != null)
         {
-            // Delete existing achievements
-            var existingAchievements = await _context.WorkAchievements
-                .Where(a => a.WorkExperienceId == id)
-                .ToListAsync();
-                
-            if (existingAchievements.Any())
+            _context.WorkAchievements.RemoveRange(workExperience.Achievements);
+        }
+
+        if (request.Achievements != null && request.Achievements.Any())
+        {
+            foreach (var achievementRequest in request.Achievements)
             {
-                _context.WorkAchievements.RemoveRange(existingAchievements);
-                await _context.SaveChangesAsync();
-            }
-            
-            // Add new achievements
-            if (request.Achievements.Any())
-            {
-                foreach (var achievement in request.Achievements)
-                {
-                    _context.WorkAchievements.Add(
-                        new WorkAchievement
-                        {
-                            Id = Guid.NewGuid(),
-                            WorkExperienceId = id,
-                            Text = achievement.Text,
-                            CreatedAt = DateTime.UtcNow,
-                        }
-                    );
-                }
-                await _context.SaveChangesAsync();
+                _context.WorkAchievements.Add(
+                    new WorkAchievement
+                    {
+                        Id = Guid.NewGuid(),
+                        WorkExperienceId = workExperience.Id,
+                        Text = achievementRequest.Text,
+                        CreatedAt = DateTime.UtcNow,
+                    }
+                );
             }
         }
+
+        // Handle technologies - remove existing and add new ones
+        if (workExperience.WorkExperienceTechnologies != null)
+        {
+            _context.WorkExperienceTechnologies.RemoveRange(
+                workExperience.WorkExperienceTechnologies
+            );
+        }
+
+        if (request.Technologies != null && request.Technologies.Any())
+        {
+            foreach (var techRequest in request.Technologies)
+            {
+                if (string.IsNullOrWhiteSpace(techRequest.Name))
+                    continue;
+
+                // Find or create technology
+                var technology = await _context.Technologies.FirstOrDefaultAsync(t =>
+                    t.Name.ToLower() == techRequest.Name.ToLower()
+                );
+
+                if (technology == null)
+                {
+                    technology = new Technology
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = techRequest.Name,
+                        Category = techRequest.Category ?? "Other",
+                    };
+                    _context.Technologies.Add(technology);
+                    await _context.SaveChangesAsync();
+                }
+
+                _context.WorkExperienceTechnologies.Add(
+                    new WorkExperienceTechnology
+                    {
+                        WorkExperienceId = workExperience.Id,
+                        TechnologyId = technology.Id,
+                    }
+                );
+            }
+        }
+
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }
 
-    // DELETE: api/work-experiences/5
+    // DELETE: api/resumes/{resumeId}/workexperiences/{id}
     [HttpDelete("{id}")]
-    [Authorize] // Any authenticated user can delete their own work experiences
-    public async Task<IActionResult> DeleteWorkExperience(Guid id)
+    public async Task<IActionResult> DeleteWorkExperience(Guid resumeId, Guid id)
     {
-        _logger.LogInformation("Deleting work experience with id: {Id}", id);
-
-        // Get the current user ID from the claims
         var userId =
             User.FindFirst("sub")?.Value
             ?? User.FindFirst(
                 "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
             )?.Value;
+        var isAdmin = User.IsInRole("Admin");
 
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Unauthorized("User ID not found in token");
-        }
+        var resume = await _context.Resumes.FindAsync(resumeId);
+        if (resume == null)
+            return NotFound("Resume not found");
 
-        var workExperience = await _context.WorkExperiences.FindAsync(id);
+        if (!isAdmin && resume.UserId != userId)
+            return Forbid();
+
+        var workExperience = await _context
+            .WorkExperiences.Include(w => w.Achievements)
+            .Include(w => w.WorkExperienceTechnologies)
+            .ThenInclude(wt => wt.Technology)
+            .FirstOrDefaultAsync(w => w.Id == id && w.ResumeId == resumeId);
         if (workExperience == null)
-        {
             return NotFound();
-        }
-
-        // Check if the user owns this work experience or is an admin
-        bool isAdmin = User.IsInRole("admin") || User.IsInRole("Admin");
-        bool isAdminEdit =
-            Request.Query.ContainsKey("isAdminEdit") || Request.Headers.ContainsKey("X-Admin-Edit");
-
-        _logger.LogInformation(
-            "Delete permission check - UserId: {UserId}, WorkExperienceUserId: {WorkExperienceUserId}, IsAdmin: {IsAdmin}, IsAdminEdit: {IsAdminEdit}",
-            userId,
-            workExperience.UserId,
-            isAdmin,
-            isAdminEdit
-        );
-
-        if (workExperience.UserId != userId && !(isAdmin && isAdminEdit))
-        {
-            return Forbid("You do not have permission to delete this work experience");
-        }
 
         _context.WorkExperiences.Remove(workExperience);
         await _context.SaveChangesAsync();
@@ -422,14 +363,20 @@ public class WorkExperiencesController : ControllerBase
             CreatedAt = workExperience.CreatedAt,
             UpdatedAt = workExperience.UpdatedAt,
             Technologies =
-                workExperience.WorkExperienceTechnologies?.Select(wt => wt.Technology.Name).ToList()
-                ?? new List<string>(),
+                workExperience
+                    .WorkExperienceTechnologies?.Where(wt => wt.Technology != null)
+                    .Select(wt => new TechnologyDto
+                    {
+                        Id = wt.Technology!.Id,
+                        Name = wt.Technology!.Name,
+                        Category = wt.Technology!.Category,
+                    })
+                    .ToList() ?? new List<TechnologyDto>(),
         };
     }
 }
 
-// DTOs (WorkExperienceDto, WorkAchievementDto) are now in Core.Api.Controllers.Resume.ResumeDtos.cs
-
+// DTOs for WorkExperiencesController
 public class WorkExperienceRequest
 {
     public Guid? ResumeId { get; set; }
@@ -441,6 +388,7 @@ public class WorkExperienceRequest
     public bool IsCurrent { get; set; }
     public string? Description { get; set; }
     public List<WorkAchievementRequest>? Achievements { get; set; }
+    public List<WorkTechnologyRequest>? Technologies { get; set; }
     public int SortOrder { get; set; }
     public bool Highlighted { get; set; } = false;
     public bool IsPublished { get; set; } = true;
@@ -449,4 +397,10 @@ public class WorkExperienceRequest
 public class WorkAchievementRequest
 {
     public string Text { get; set; } = string.Empty;
+}
+
+public class WorkTechnologyRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Category { get; set; }
 }

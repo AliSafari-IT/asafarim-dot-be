@@ -27,6 +27,12 @@ export interface WorkAchievementRequest {
   text: string;
 }
 
+export interface TechnologyDto {
+  id: string;
+  name: string;
+  category: string;
+}
+
 export interface WorkExperienceRequest {
   resumeId?: string;
   jobTitle: string;
@@ -37,6 +43,7 @@ export interface WorkExperienceRequest {
   isCurrent: boolean;
   description?: string;
   achievements?: WorkAchievementRequest[];
+  technologies?: TechnologyDto[];
   sortOrder: number;
   highlighted?: boolean;
   isPublished?: boolean;

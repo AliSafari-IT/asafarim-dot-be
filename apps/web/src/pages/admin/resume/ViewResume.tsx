@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button, useAuth } from '@asafarim/shared-ui-react';
 import { fetchResumeById, type ResumeDetailDto } from '../../../services/resumeApi';
 import './resume-styles.css';
+import './view-resume.css';
 
 const ViewResume: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,7 +24,7 @@ const ViewResume: React.FC = () => {
   useEffect(() => {
     const loadResume = async () => {
       if (!id || !isAuthenticated) return;
-      
+
       try {
         setLoading(true);
         const data = await fetchResumeById(id);
@@ -41,9 +42,12 @@ const ViewResume: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="resume-view">
-        <div className="resume-container">
-          <p>Loading resume...</p>
+      <div className="resume-view-page">
+        <div className="resume-view-container">
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Loading resume...</p>
+          </div>
         </div>
       </div>
     );
@@ -51,95 +55,350 @@ const ViewResume: React.FC = () => {
 
   if (error || !resume) {
     return (
-      <div className="resume-view">
-        <div className="resume-container">
+      <div className="resume-view-page">
+        <div className="resume-view-container">
           <div className="error-message">{error || 'Resume not found'}</div>
-          <Button onClick={() => navigate('/admin/resume')}>Back to Resumes</Button>
+          <Button onClick={() => navigate('/admin/entities/resumes')}>Back to Resumes</Button>
         </div>
       </div>
     );
   }
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+
+  const renderStars = (rating: number) => {
+    console.log("rating", rating);
+    return (
+      <div className="skill-rating">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span key={star} className={star <= rating ? 'star filled' : 'star'}>
+            ★
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="resume-view">
-      <div className="resume-container">
-        <header className="resume-header">
-          <div className="header-content">
-            <h1 className="resume-title">{resume.title}</h1>
-            <div className="header-actions">
-              <Button onClick={() => navigate('/admin/resume')} variant="secondary">
-                Back to Resumes
+    <div className="resume-view-page">
+      <div className="resume-view-container">
+        {/* Header Section */}
+        <header className="resume-view-header">
+          <div className="resume-hero">
+            <div className="resume-hero-content">
+              <h1 className="resume-main-title">{resume.title}</h1>
+              {resume.contact && (
+                <div className="resume-contact-quick">
+                  <span className="contact-item">
+                    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    {resume.contact.fullName}
+                  </span>
+                  <span className="contact-item">
+                    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                      <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    {resume.contact.email}
+                  </span>
+                  {resume.contact.phone && (
+                    <span className="contact-item">
+                      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                      </svg>
+                      {resume.contact.phone}
+                    </span>
+                  )}
+                  {resume.contact.location && (
+                    <span className="contact-item">
+                      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      {resume.contact.location}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="resume-hero-actions">
+              <Button onClick={() => navigate('/admin/entities/resumes')} variant="secondary">
+                ← Back to Resumes
               </Button>
-              <Button onClick={() => navigate(`/admin/resume/${id}/edit`)} variant="primary">
-                Edit
+              <Button onClick={() => navigate(`/admin/entities/resumes/${id}/edit`)} variant="primary">
+                Edit Resume
               </Button>
             </div>
           </div>
         </header>
 
-        <div className="resume-content">
-          {resume.contact && (
-            <section className="resume-section">
-              <h2>Contact Information</h2>
-              <div className="info-grid">
-                <div><strong>Name:</strong> {resume.contact.fullName}</div>
-                <div><strong>Email:</strong> {resume.contact.email}</div>
-                <div><strong>Phone:</strong> {resume.contact.phone || 'N/A'}</div>
-                <div><strong>Location:</strong> {resume.contact.location || 'N/A'}</div>
+        {/* Main Content */}
+        <div className="resume-view-content">
+          {/* Professional Summary */}
+          {resume.summary && (
+            <section className="resume-view-section summary-section">
+              <div className="section-header">
+                <h2 className="section-title">Professional Summary</h2>
+              </div>
+              <div className="section-content">
+                <p className="summary-text">{resume.summary}</p>
               </div>
             </section>
           )}
 
-          {resume.summary && (
-            <section className="resume-section">
-              <h2>Professional Summary</h2>
-              <p>{resume.summary}</p>
-            </section>
-          )}
-
+          {/* Work Experience */}
           {resume.workExperiences && resume.workExperiences.length > 0 && (
-            <section className="resume-section">
-              <h2>Experiences ({resume.workExperiences.length})</h2>
-              {
-                resume.workExperiences.map((experience, index) => (
-                  <div key={index}>
-                    <h3>{experience.jobTitle}</h3>
-                    <p>{experience.companyName}</p>
-                    <p>{new Date(experience.startDate).toDateString()} - {experience.endDate ? new Date(experience.endDate).toDateString() : 'Present'}</p>
-                    <p>{experience.description}</p>
-                  </div>
-                ))
-              }
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Work Experience</h2>
+                <span className="section-count">{resume.workExperiences.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="timeline">
+                  {resume.workExperiences.map((exp, index) => (
+                    <div key={exp.id || index} className="timeline-item">
+                      <div className="timeline-marker"></div>
+                      <div className="timeline-content">
+                        <div className="item-header">
+                          <h3 className="item-title">{exp.jobTitle}</h3>
+                          <span className="item-date">
+                            {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
+                          </span>
+                        </div>
+                        <div className="item-subtitle">
+                          <span className="company-name">{exp.companyName}</span>
+                          {exp.location && <span className="location">• {exp.location}</span>}
+                        </div>
+                        {exp.description && <p className="item-description">{exp.description}</p>}
+                        {exp.technologies && exp.technologies.length > 0 && (
+                          <div className="tech-tags">
+                            {exp.technologies.map((tech, idx) => (
+                              <span key={idx} className="tech-tag">{tech}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </section>
           )}
 
+          {/* Skills */}
           {resume.skills && resume.skills.length > 0 && (
-            <section className="resume-section">
-              <h2>Skills ({resume.skills.length})</h2>
-              {
-                resume.skills.map((skill, index) => (
-                  <div key={index}>
-                    <h3>{skill.name} <span>(Category: {skill.category}, Rating: {skill.rating})</span></h3>
-                    <p>Level: {skill.level}</p>
-                  </div>
-                ))
-              }
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Skills</h2>
+                <span className="section-count">{resume.skills.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="skills-grid">
+                  {resume.skills.map((skill, index) => (
+                    <div key={skill.id || index} className="skill-card">
+                      <div className="skill-header">
+                        <h3 className="skill-name">{skill.name}</h3>
+                        {renderStars(skill.rating)}
+                      </div>
+                      <div className="skill-meta">
+                        <span className="skill-category">📁 {skill.category}</span>
+                        <span className="skill-level">📊 {skill.level}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </section>
           )}
 
+          {/* Education */}
           {resume.educationItems && resume.educationItems.length > 0 && (
-            <section className="resume-section">
-              <h2>Education ({resume.educationItems.length})</h2>
-              {
-                resume.educationItems.map((education, index) => (
-                  <div key={index}>
-                    <h3>{education.degree}</h3>
-                    <p>{education.institution}</p>
-                    <p>{new Date(education.startDate).toDateString()} - {education.endDate ? new Date(education.endDate).toDateString() : 'Present'}</p>
-                    <p>{education.description}</p>
-                  </div>
-                ))
-              }
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Education</h2>
+                <span className="section-count">{resume.educationItems.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="education-grid">
+                  {resume.educationItems.map((edu, index) => (
+                    <div key={edu.id || index} className="education-card">
+                      <h3 className="education-degree">{edu.degree}</h3>
+                      <div className="education-institution">{edu.institution}</div>
+                      {edu.fieldOfStudy && <div className="education-field">{edu.fieldOfStudy}</div>}
+                      <div className="education-dates">
+                        {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                      </div>
+                      {edu.description && <p className="education-description">{edu.description}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Certificates */}
+          {resume.certificates && resume.certificates.length > 0 && (
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Certificates</h2>
+                <span className="section-count">{resume.certificates.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="certificates-grid">
+                  {resume.certificates.map((cert, index) => (
+                    <div key={cert.id || index} className="certificate-card">
+                      <h3 className="certificate-name">{cert.name}</h3>
+                      <div className="certificate-issuer">{cert.issuer}</div>
+                      <div className="certificate-dates">
+                        Issued: {formatDate(cert.issueDate)}
+                        {cert.expiryDate && ` • Expires: ${formatDate(cert.expiryDate)}`}
+                      </div>
+                      {(cert.credentialId || cert.credentialUrl) && (
+                        <div className="certificate-credentials">
+                          {cert.credentialId && <div>ID: {cert.credentialId}</div>}
+                          {cert.credentialUrl && (
+                            <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer">
+                              View Certificate →
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Projects */}
+          {resume.projects && resume.projects.length > 0 && (
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Projects</h2>
+                <span className="section-count">{resume.projects.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="projects-grid">
+                  {resume.projects.map((project, index) => (
+                    <div key={project.id || index} className="project-card">
+                      <div className="project-header">
+                        <h3 className="project-name">{project.name}</h3>
+                        {project.link && (
+                          <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                            Visit →
+                          </a>
+                        )}
+                      </div>
+                      <p className="project-description">{project.description}</p>
+                      {project.technologies && project.technologies.length > 0 && (
+                        <div className="tech-tags">
+                          {project.technologies.map((tech) => (
+                            <span key={tech.id} className="tech-tag">{tech.name}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Languages */}
+          {resume.languages && resume.languages.length > 0 && (
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Languages</h2>
+                <span className="section-count">{resume.languages.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="languages-grid">
+                  {resume.languages.map((lang, index) => (
+                    <div key={lang.id || index} className="language-card">
+                      <h3 className="language-name">{lang.name}</h3>
+                      <div className="language-level">{lang.level}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Awards */}
+          {resume.awards && resume.awards.length > 0 && (
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Awards & Achievements</h2>
+                <span className="section-count">{resume.awards.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="awards-grid">
+                  {resume.awards.map((award, index) => (
+                    <div key={award.id || index} className="award-card">
+                      <div className="award-header">
+                        <h3 className="award-title">{award.title}</h3>
+                        <span className="award-date">{formatDate(award.awardedDate)}</span>
+                      </div>
+                      <div className="award-issuer">{award.issuer}</div>
+                      {award.description && <p className="award-description">{award.description}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* References */}
+          {resume.references && resume.references.length > 0 && (
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">References</h2>
+                <span className="section-count">{resume.references.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="references-grid">
+                  {resume.references.map((ref, index) => (
+                    <div key={ref.id || index} className="reference-card">
+                      <h3 className="reference-name">{ref.name}</h3>
+                      <div className="reference-relationship">{ref.relationship}</div>
+                      <div className="reference-contact">{ref.contactInfo}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Social Links */}
+          {resume.socialLinks && resume.socialLinks.length > 0 && (
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Social Links</h2>
+                <span className="section-count">{resume.socialLinks.length}</span>
+              </div>
+              <div className="section-content">
+                <div className="social-links">
+                  {resume.socialLinks.map((link, index) => (
+                    <a
+                      key={link.id || index}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-link"
+                    >
+                      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                      </svg>
+                      {link.platform}
+                    </a>
+                  ))}
+                </div>
+              </div>
             </section>
           )}
         </div>

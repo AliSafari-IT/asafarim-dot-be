@@ -3,6 +3,7 @@ import './Button.css';
 
 export interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'ghost' | 'outline' | 'link' | 'brand';
+  type?: 'button' | 'submit' | 'reset' | undefined;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -37,6 +38,7 @@ export interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
+  type = 'button',
   size = 'md',
   isLoading = false,
   leftIcon,
@@ -140,6 +142,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       className={baseClasses}
       disabled={disabled || isLoading}
+      type={type}
       {...props}
     >
       {buttonContent}

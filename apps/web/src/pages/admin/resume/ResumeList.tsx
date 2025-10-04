@@ -145,13 +145,13 @@ const ResumeList: React.FC = () => {
 
                 <div className="resume-card-actions">
                   <button
-                    onClick={() => navigate(`/admin/resume/${resume.id}`)}
+                    onClick={() => navigate(`/admin/entities/resumes/${resume.id}/resume`)}
                     className="action-button view"
                   >
                     👁️ View Details
                   </button>
                   <button
-                    onClick={() => navigate(`/admin/resume/${resume.id}/edit`)}
+                    onClick={() => navigate(`/admin/entities/resumes/${resume.id}/edit`)}
                     className="action-button edit"
                   >
                     ✏️ Edit

@@ -58,7 +58,7 @@ public class WorkExperienceDto
     public string? UserId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public List<string> Technologies { get; set; } = new(); // Technologies associated with this work experience
+    public List<TechnologyDto> Technologies { get; set; } = new(); // Technologies associated with this work experience
 }
 
 public class WorkAchievementDto
@@ -73,7 +73,9 @@ public class ProjectDto
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Link { get; set; } = string.Empty;
-    public List<string> Technologies { get; set; } = new();
+    public List<TechnologyDto> Technologies { get; set; } = new();
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
 }
 
 public class TechnologyDto

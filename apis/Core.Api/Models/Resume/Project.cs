@@ -8,6 +8,8 @@ public class Project
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Link { get; set; } = string.Empty;
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
 
     // Navigation property
     public Resume? Resume { get; set; }

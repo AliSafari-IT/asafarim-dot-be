@@ -75,7 +75,7 @@ export interface ProjectDto {
   name: string;
   description: string;
   link: string;
-  technologies: string[];
+  technologies: { id: string; name: string; category: string }[];
 }
 
 export interface SocialLinkDto {
