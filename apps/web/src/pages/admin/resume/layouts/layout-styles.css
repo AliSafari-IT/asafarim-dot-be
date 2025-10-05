@@ -1,0 +1,194 @@
+/* Layout-specific styles */
+
+/* PDF Layout - Optimized for 1-2 A4 pages */
+[data-layout="pdf"] {
+  max-width: 210mm;
+  margin: 0 auto;
+  background: white;
+  font-size: 11px;
+}
+
+[data-layout="pdf"] .resume-view-header {
+  background: #2c3e50;
+  color: white;
+  padding: 20px;
+  margin-bottom: 15px;
+}
+
+[data-layout="pdf"] .resume-main-title {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+[data-layout="pdf"] .resume-view-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 0 20px;
+}
+
+[data-layout="pdf"] .resume-view-section {
+  margin-bottom: 15px;
+  page-break-inside: avoid;
+}
+
+[data-layout="pdf"] .section-title {
+  font-size: 14px;
+  border-bottom: 2px solid #2c3e50;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+/* Print Layout */
+[data-layout="print"] {
+  max-width: 210mm;
+  margin: 0 auto;
+  background: white;
+}
+
+[data-layout="print"] .layout-selector {
+  display: none;
+}
+
+@media print {
+  /* Hide all non-resume elements */
+  body > *:not(.resume-view-page) {
+    display: none !important;
+  }
+  
+  nav, header:not(.resume-view-header), footer, 
+  .layout-selector, .resume-hero-actions, 
+  button, .navbar, .sidebar {
+    display: none !important;
+  }
+  
+  /* Reset page margins and sizing */
+  @page {
+    margin: 15mm;
+    size: A4;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .resume-view-page {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: white;
+  }
+  
+  .resume-view-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  
+  /* Optimize header for print */
+  .resume-view-header {
+    background: #2c3e50 !important;
+    color: white !important;
+    padding: 15px !important;
+    margin-bottom: 10px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .resume-main-title {
+    font-size: 24px !important;
+    margin-bottom: 5px;
+  }
+  
+  .resume-contact-quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 11px;
+  }
+  
+  /* Optimize content sections */
+  .resume-view-content {
+    padding: 0 10px;
+  }
+  
+  .resume-view-section {
+    page-break-inside: avoid;
+    margin-bottom: 12px;
+    border: none;
+    box-shadow: none;
+    padding: 8px;
+  }
+  
+  .section-title {
+    font-size: 14px;
+    border-bottom: 2px solid #2c3e50;
+    padding-bottom: 3px;
+    margin-bottom: 8px;
+  }
+  
+  .section-count {
+    display: none;
+  }
+  
+  /* Compact timeline for work experience */
+  .timeline-item {
+    margin-bottom: 10px;
+    padding-left: 15px;
+  }
+  
+  .timeline-marker {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .item-title {
+    font-size: 13px;
+  }
+  
+  .item-description {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  
+  /* Compact skills grid */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .skill-card {
+    padding: 6px;
+    font-size: 11px;
+  }
+  
+  /* Compact other sections */
+  .education-grid,
+  .certificates-grid,
+  .projects-grid {
+    gap: 8px;
+  }
+  
+  .education-card,
+  .certificate-card,
+  .project-card {
+    padding: 8px;
+    font-size: 11px;
+  }
+  
+  /* Force colors to print */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Online Layout (default) - keep existing styles */
+[data-layout="online"] .resume-view-container {
+  max-width: 1400px;
+}

@@ -99,7 +99,7 @@ const ExperienceForm: React.FC = () => {
         await createExperience(resumeId, formData);
         addNotification("success", "Experience added successfully!");
       }
-      navigate(`/admin/resumes/${resumeId}/work-experiences`);
+      navigate(`/admin/entities/resumes/${resumeId}/work-experiences`);
     } catch (err) {
       console.error("Error saving experience:", err);
       addNotification("error", `Failed to ${isEditMode ? "update" : "add"} experience`);
@@ -199,7 +199,7 @@ const ExperienceForm: React.FC = () => {
           <div className="header-actions">
             {isViewMode && (
               <Button
-                onClick={() => navigate(`/admin/resumes/${resumeId}/work-experiences/${id}/edit`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/work-experiences/${id}/edit`)}
                 variant="primary"
                 size="sm"
               >
@@ -207,7 +207,7 @@ const ExperienceForm: React.FC = () => {
               </Button>
             )}
             <Button
-              onClick={() => navigate(`/admin/resumes/${resumeId}/work-experiences`)}
+              onClick={() => navigate(`/admin/entities/resumes/${resumeId}/work-experiences`)}
               variant="secondary"
               size="sm"
             >
@@ -439,7 +439,7 @@ const ExperienceForm: React.FC = () => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => navigate(`/admin/resumes/${resumeId}/work-experiences`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/work-experiences`)}
               >
                 Cancel
               </Button>

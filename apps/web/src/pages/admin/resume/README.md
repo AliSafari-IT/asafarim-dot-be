@@ -151,15 +151,15 @@ Update your router configuration:
 
 ```typescript
 {
-  path: "/admin/resumes/:resumeId/certificates",
+  path: "/admin/entities/resumes/:resumeId/certificates",
   element: <CertificatesManagement />
 },
 {
-  path: "/admin/resumes/:resumeId/certificates/new",
+  path: "/admin/entities/resumes/:resumeId/certificates/new",
   element: <CertificateForm />
 },
 {
-  path: "/admin/resumes/:resumeId/certificates/:id/edit",
+  path: "/admin/entities/resumes/:resumeId/certificates/:id/edit",
   element: <CertificateForm />
 }
 ```
@@ -168,11 +168,11 @@ Update your router configuration:
 
 ```
 /admin/resume-sections/:resumeId          → ResumeSectionManagement (section hub)
-/admin/resumes/:resumeId/skills           → SkillsManagement (list)
-/admin/resumes/:resumeId/skills/new       → SkillForm (create)
-/admin/resumes/:resumeId/skills/:id/edit  → SkillForm (edit)
-/admin/resumes/:resumeId/educations       → EducationsManagement (list)
-/admin/resumes/:resumeId/educations/new   → EducationForm (create)
+/admin/entities/resumes/:resumeId/skills           → SkillsManagement (list)
+/admin/entities/resumes/:resumeId/skills/new       → SkillForm (create)
+/admin/entities/resumes/:resumeId/skills/:id/edit  → SkillForm (edit)
+/admin/entities/resumes/:resumeId/educations       → EducationsManagement (list)
+/admin/entities/resumes/:resumeId/educations/new   → EducationForm (create)
 ... and so on for each section
 ```
 

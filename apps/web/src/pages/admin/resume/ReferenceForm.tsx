@@ -97,7 +97,7 @@ const ReferenceForm: React.FC = () => {
         addNotification("success", "Reference added successfully!");
       }
 
-      navigate(`/admin/resumes/${resumeId}/references`);
+      navigate(`/admin/entities/resumes/${resumeId}/references`);
     } catch (err) {
       console.error("Error saving reference:", err);
       addNotification("error", `Failed to ${isEditMode ? "update" : "add"} reference`);
@@ -127,7 +127,7 @@ const ReferenceForm: React.FC = () => {
           <div className="header-actions">
             {isViewMode && (
               <Button
-                onClick={() => navigate(`/admin/resumes/${resumeId}/references/${id}/edit`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/references/${id}/edit`)}
                 variant="primary"
                 size="sm"
               >
@@ -135,7 +135,7 @@ const ReferenceForm: React.FC = () => {
               </Button>
             )}
             <Button
-              onClick={() => navigate(`/admin/resumes/${resumeId}/references`)}
+              onClick={() => navigate(`/admin/entities/resumes/${resumeId}/references`)}
               variant="secondary"
               size="sm"
             >
@@ -243,7 +243,7 @@ const ReferenceForm: React.FC = () => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => navigate(`/admin/resumes/${resumeId}/references`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/references`)}
               >
                 Cancel
               </Button>

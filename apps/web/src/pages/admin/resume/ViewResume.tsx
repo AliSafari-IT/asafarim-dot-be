@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, useAuth } from '@asafarim/shared-ui-react';
 import { fetchResumeById, type ResumeDetailDto } from '../../../services/resumeApi';
+import { LayoutSelector } from './layouts/LayoutSelector';
+import { type LayoutType } from './layouts/types.tsx';
+import { PrintLayout } from './layouts/PrintLayout';
 import './resume-styles.css';
 import './view-resume.css';
 
 const ViewResume: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [resume, setResume] = useState<ResumeDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentLayout, setCurrentLayout] = useState<LayoutType>(
+    (searchParams.get('layout') as LayoutType) || 'online'
+  );
+
+  const handleLayoutChange = (layout: LayoutType) => {
+    setCurrentLayout(layout);
+    setSearchParams({ layout });
+  };
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -82,9 +94,50 @@ const ViewResume: React.FC = () => {
     );
   };
 
+  const handleExportPDF = async () => {
+    // Dynamically import html2pdf
+    const html2pdf = (await import('html2pdf.js')).default;
+    
+    // Create a temporary container with print layout
+    const element = document.createElement('div');
+    element.innerHTML = document.querySelector('.print-layout-container')?.outerHTML || '';
+    
+    const opt = {
+      margin: 15,
+      filename: `${resume.contact?.fullName || 'resume'}_${new Date().toISOString().split('T')[0]}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+    };
+    
+    html2pdf().set(opt).from(element).save();
+  };
+
+  // Render layout-specific component
+  if (currentLayout === 'print') {
+    return (
+      <div className="resume-view-page" data-layout="print">
+        <div className="resume-view-container">
+          <LayoutSelector 
+            currentLayout={currentLayout} 
+            onLayoutChange={handleLayoutChange}
+            onExportPDF={handleExportPDF}
+          />
+          <PrintLayout resume={resume} />
+        </div>
+      </div>
+    );
+  }
+
+  // Default online/minimal/compact layouts use same structure with different CSS
   return (
-    <div className="resume-view-page">
+    <div className="resume-view-page" data-layout={currentLayout}>
       <div className="resume-view-container">
+        <LayoutSelector 
+          currentLayout={currentLayout} 
+          onLayoutChange={handleLayoutChange}
+        />
+        
         {/* Header Section */}
         <header className="resume-view-header">
           <div className="resume-hero">

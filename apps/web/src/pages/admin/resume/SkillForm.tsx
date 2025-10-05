@@ -107,7 +107,7 @@ const SkillForm: React.FC = () => {
         addNotification("success", "Skill added successfully!");
       }
 
-      navigate(`/admin/resumes/${resumeId}/skills`);
+      navigate(`/admin/entities/resumes/${resumeId}/skills`);
     } catch (err) {
       console.error("Error saving skill:", err);
       addNotification("error", `Failed to ${isEditMode ? "update" : "add"} skill`);
@@ -135,7 +135,7 @@ const SkillForm: React.FC = () => {
             <p className="resume-section-form-subtitle">Resume: {resumeTitle}</p>
           </div>
           <Button
-            onClick={() => navigate(`/admin/resumes/${resumeId}/skills`)}
+            onClick={() => navigate(`/admin/entities/resumes/${resumeId}/skills`)}
             variant="secondary"
           >
             ← Back to Skills
@@ -228,7 +228,7 @@ const SkillForm: React.FC = () => {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => navigate(`/admin/resumes/${resumeId}/skills`)}
+              onClick={() => navigate(`/admin/entities/resumes/${resumeId}/skills`)}
             >
               Cancel
             </Button>

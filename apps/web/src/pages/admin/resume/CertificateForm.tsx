@@ -99,7 +99,7 @@ const CertificateForm: React.FC = () => {
         addNotification("success", "Certificate added successfully!");
       }
 
-      navigate(`/admin/resumes/${resumeId}/certificates`);
+      navigate(`/admin/entities/resumes/${resumeId}/certificates`);
     } catch (err) {
       console.error("Error saving certificate:", err);
       addNotification(
@@ -142,7 +142,7 @@ const CertificateForm: React.FC = () => {
             {isViewMode && (
               <Button
                 onClick={() =>
-                  navigate(`/admin/resumes/${resumeId}/certificates/${id}/edit`)
+                  navigate(`/admin/entities/resumes/${resumeId}/certificates/${id}/edit`)
                 }
                 variant="primary"
                 size="sm"
@@ -152,7 +152,7 @@ const CertificateForm: React.FC = () => {
             )}
             <Button
               onClick={() =>
-                navigate(`/admin/resumes/${resumeId}/certificates`)
+                navigate(`/admin/entities/resumes/${resumeId}/certificates`)
               }
               variant="secondary"
               size="sm"
@@ -274,7 +274,7 @@ const CertificateForm: React.FC = () => {
                 type="button"
                 variant="secondary"
                 onClick={() =>
-                  navigate(`/admin/resumes/${resumeId}/certificates`)
+                  navigate(`/admin/entities/resumes/${resumeId}/certificates`)
                 }
               >
                 Cancel

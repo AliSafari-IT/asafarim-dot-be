@@ -367,6 +367,8 @@ public class CoreDbContext : DbContext
             entity.ToTable("SocialLinks", "public");
             entity.Property(e => e.Platform).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Url).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
         });
 
         modelBuilder.Entity<Language>(entity =>

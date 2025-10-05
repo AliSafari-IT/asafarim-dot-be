@@ -30,11 +30,12 @@ import Delete from "./Delete";
 import Remove from "./Remove";
 import Edit from "./Edit";
 import ArrowLeftIcon from "./ArrowLeftIcon";
+import PlusIcon from "./PlusIcon";
 
 export {
     Arrow, Spark,
     Lock, UnLock, Login, SignIn, SignOut, AuthStatusIcon, Eye, EyeOff,
     Github, Twitter, Linkedin, StackOverflow, TwitterX, Download, Html,
     MarkDown, Pdf, Email, Contact, Location, Company, Website, Phone, 
-    LoginArrow, DotsMenu, Info, Delete, Remove, Edit, ArrowLeftIcon
+    LoginArrow, DotsMenu, Info, Delete, Remove, Edit, ArrowLeftIcon, PlusIcon
 };

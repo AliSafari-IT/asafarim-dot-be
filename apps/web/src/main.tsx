@@ -17,10 +17,7 @@ import NewPublication from "./pages/portfolio/publications/new";
 import ManagePublications from "./pages/portfolio/publications/manage";
 import EditPublication from "./pages/portfolio/publications/edit";
 import ViewPublication from "./pages/portfolio/publications/view";
-import ManageWorkExperience from "./pages/portfolio/work-experiences/ManageWorkExperience";
-import { NewWorkExperience } from "./pages/portfolio/work-experiences";
-import { EditWorkExperience } from "./pages/portfolio/work-experiences";
-import { ViewWorkExperience } from "./pages/portfolio/work-experiences";
+import ResumeForm from './pages/admin/resume/ResumeForm';
 import {
   EntityManagement,
 } from "./pages/admin";
@@ -58,6 +55,8 @@ import ReferencesManagement from "./pages/admin/resume/ReferencesManagement";
 import ReferenceForm from "./pages/admin/resume/ReferenceForm";
 import ExperienceForm from "./pages/admin/resume/ExperienceForm";
 import ExperiencesManagement from "./pages/admin/resume/ExperiencesManagement";
+import SocialLinksManagement from "./pages/admin/resume/SocialLinksManagement";
+import SocialLinkForm from "./pages/admin/resume/SocialLinkForm";
 
 const router = createBrowserRouter([
   {
@@ -80,31 +79,23 @@ const router = createBrowserRouter([
       { path: "portfolio/publications/edit/:id", element: <EditPublication /> },
       { path: "portfolio/publications/view/:id", element: <ViewPublication /> },
       { path: "portfolio/research", element: <Research /> },
-      { path: "portfolio/work-experiences", element: <ManageWorkExperience /> },
-      {
-        path: "portfolio/work-experiences/new",
-        element: <NewWorkExperience />,
-      },
-      {
-        path: "portfolio/work-experiences/edit/:id",
-        element: <EditWorkExperience />,
-      },
-      {
-        path: "portfolio/work-experiences/view/:id",
-        element: <ViewWorkExperience />,
-      },
 
       // Admin routes
-      { path: "admin/entities", element: <EntityManagement /> },
+      { path: "/admin/entities", element: <EntityManagement /> },
 
       // http://web.asafarim.local:5175/admin/resumes
       { path: "/admin/entities/resumes", element: <ResumeList /> },
+      { path: "/admin/entities/resumes/new", element: <ResumeForm /> },
       { path: "/admin/entities/resumes/:id/resume", element: <ViewResume /> },
-      // Resume section hub
+
+      // Resume section hub - manages sections like work experience, skills, etc.
       {
         path: "/admin/entities/resumes/:id/edit",
         element: <ResumeSectionManagement />,
       },
+
+      // Edit basic resume details (title, summary, contact)
+      { path: "/admin/entities/resumes/:id/details", element: <ResumeForm /> },
       {
         path: "admin/entities/resumes/:resumeId/work-experiences",
         element: <ExperiencesManagement />,
@@ -145,142 +136,160 @@ const router = createBrowserRouter([
 
       // Work Experience routes
       {
-        path: "/admin/resumes/:resumeId/work-experiences",
+        path: "/admin/entities/resumes/:resumeId/work-experiences",
         element: <ExperiencesManagement />,
       },
       {
         // Add mode
-        path: "/admin/resumes/:resumeId/work-experiences/new",
+        path: "/admin/entities/resumes/:resumeId/work-experiences/new",
         element: <ExperienceForm />,
       },
       {
         // View mode
-        path: "/admin/resumes/:resumeId/work-experiences/:id",
+        path: "/admin/entities/resumes/:resumeId/work-experiences/:id",
         element: <ExperienceForm />,
       },
       {
         // Edit mode
-        path: "/admin/resumes/:resumeId/work-experiences/:id/:mode",
+        path: "/admin/entities/resumes/:resumeId/work-experiences/:id/:mode",
         element: <ExperienceForm />,
       },
 
       // Skills routes
       {
-        path: "/admin/resumes/:resumeId/skills",
+        path: "/admin/entities/resumes/:resumeId/skills",
         element: <SkillsManagement />,
       },
-      { path: "/admin/resumes/:resumeId/skills/new", element: <SkillForm /> },
-      { path: "/admin/resumes/:resumeId/skills/:id", element: <SkillForm /> },
+      { path: "/admin/entities/resumes/:resumeId/skills/new", element: <SkillForm /> },
+      { path: "/admin/entities/resumes/:resumeId/skills/:id", element: <SkillForm /> },
       {
-        path: "/admin/resumes/:resumeId/skills/:id/edit",
+        path: "/admin/entities/resumes/:resumeId/skills/:id/edit",
         element: <SkillForm />,
       },
 
       // 🎓 Education routes
       {
-        path: "/admin/resumes/:resumeId/educations",
+        path: "/admin/entities/resumes/:resumeId/educations",
         element: <EducationsManagement />,
       },
       {
-        path: "/admin/resumes/:resumeId/educations/new",
+        path: "/admin/entities/resumes/:resumeId/educations/new",
         element: <EducationForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/educations/:id",
+        path: "/admin/entities/resumes/:resumeId/educations/:id",
         element: <EducationForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/educations/:id/edit",
+        path: "/admin/entities/resumes/:resumeId/educations/:id/edit",
         element: <EducationForm />,
       },
 
       // 📜 Certificates routes
       {
-        path: "/admin/resumes/:resumeId/certificates",
+        path: "/admin/entities/resumes/:resumeId/certificates",
         element: <CertificatesManagement />,
       },
       {
-        path: "/admin/resumes/:resumeId/certificates/new",
+        path: "/admin/entities/resumes/:resumeId/certificates/new",
         element: <CertificateForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/certificates/:id",
+        path: "/admin/entities/resumes/:resumeId/certificates/:id",
         element: <CertificateForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/certificates/:id/edit",
+        path: "/admin/entities/resumes/:resumeId/certificates/:id/edit",
         element: <CertificateForm />,
       },
 
       // 🚀 Projects routes
       {
-        path: "/admin/resumes/:resumeId/projects",
+        path: "/admin/entities/resumes/:resumeId/projects",
         element: <ProjectsManagement />,
       },
       {
-        path: "/admin/resumes/:resumeId/projects/new",
+        path: "/admin/entities/resumes/:resumeId/projects/new",
         element: <ProjectForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/projects/:id",
+        path: "/admin/entities/resumes/:resumeId/projects/:id",
         element: <ProjectForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/projects/:id/edit",
+        path: "/admin/entities/resumes/:resumeId/projects/:id/edit",
         element: <ProjectForm />,
       },
 
       // 🌐 Languages routes
       {
-        path: "/admin/resumes/:resumeId/languages",
+        path: "/admin/entities/resumes/:resumeId/languages",
         element: <LanguagesManagement />,
       },
       {
-        path: "/admin/resumes/:resumeId/languages/new",
+        path: "/admin/entities/resumes/:resumeId/languages/new",
         element: <LanguageForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/languages/:id",
+        path: "/admin/entities/resumes/:resumeId/languages/:id",
         element: <LanguageForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/languages/:id/edit",
+        path: "/admin/entities/resumes/:resumeId/languages/:id/edit",
         element: <LanguageForm />,
       },
 
       // 🏆 Awards routes
       {
-        path: "/admin/resumes/:resumeId/awards",
+        path: "/admin/entities/resumes/:resumeId/awards",
         element: <AwardsManagement />,
       },
       {
-        path: "/admin/resumes/:resumeId/awards/new",
+        path: "/admin/entities/resumes/:resumeId/awards/new",
         element: <AwardForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/awards/:id",
+        path: "/admin/entities/resumes/:resumeId/awards/:id",
         element: <AwardForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/awards/:id/edit",
+        path: "/admin/entities/resumes/:resumeId/awards/:id/edit",
         element: <AwardForm />,
+      },
+
+      // 🔗 Social Links routes
+      {
+        path: "/admin/entities/resumes/:resumeId/social-links",
+        element: <SocialLinksManagement />,
+      },
+      {
+        path: "/admin/entities/resumes/:resumeId/social-links/new",
+        element: <SocialLinkForm />,
+      },
+      {
+        path: "/admin/entities/resumes/:resumeId/social-links/:id",
+        element: <SocialLinkForm />,
+      },
+      {
+        path: "/admin/entities/resumes/:resumeId/social-links/:id/edit",
+        element: <SocialLinkForm />,
       },
 
       // 👥 References routes
       {
-        path: "/admin/resumes/:resumeId/references",
+        path: "/admin/entities/resumes/:resumeId/references",
         element: <ReferencesManagement />,
       },
       {
-        path: "/admin/resumes/:resumeId/references/new",
+        path: "/admin/entities/resumes/:resumeId/references/new",
         element: <ReferenceForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/references/:id",
+        path: "/admin/entities/resumes/:resumeId/references/:id",
         element: <ReferenceForm />,
       },
       {
-        path: "/admin/resumes/:resumeId/references/:id/edit",
+        path: "/admin/entities/resumes/:resumeId/references/:id/edit",
         element: <ReferenceForm />,
       },
 
@@ -289,11 +298,6 @@ const router = createBrowserRouter([
         path: "portfolio/:userId/publications/view/:id",
         element: <ViewPublication />,
       },
-      {
-        path: "portfolio/:userId/work-experiences/view/:id",
-        element: <ViewWorkExperience />,
-      },
-
       { path: "*", element: <NotFound /> },
     ],
   },

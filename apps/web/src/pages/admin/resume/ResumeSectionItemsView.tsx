@@ -106,15 +106,15 @@ const ResumeSectionItemsView: React.FC<ResumeSectionItemsViewProps> = ({
   };
 
   const handleAdd = () => {
-    navigate(`/admin/resumes/${resumeId}/${sectionType}/new`);
+    navigate(`/admin/entities/resumes/${resumeId}/${sectionType}/new`);
   };
 
   const handleEdit = (itemId: string) => {
-    navigate(`/admin/resumes/${resumeId}/${sectionType}/${itemId}/edit`);
+    navigate(`/admin/entities/resumes/${resumeId}/${sectionType}/${itemId}/edit`);
   };
 
   const handleView = (itemId: string) => {
-    navigate(`/admin/resumes/${resumeId}/${sectionType}/${itemId}`);
+    navigate(`/admin/entities/resumes/${resumeId}/${sectionType}/${itemId}`);
   };
 
   if (!section) {

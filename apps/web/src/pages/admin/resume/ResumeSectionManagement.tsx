@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { Button, Edit, PlusIcon, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import { fetchResumes } from "../../../services/resumeApi";
 import "./resume-section-management.css";
 import { RESUME_SECTION_TYPES, type ResumeSectionType } from "./resume-section-types";
@@ -13,7 +13,7 @@ interface Resume {
 
 const ResumeSectionManagement: React.FC = () => {
   const navigate = useNavigate();
-  const { resumeId } = useParams<{ resumeId?: string }>();
+  const { id: resumeId } = useParams<{ id?: string }>();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { addNotification } = useNotifications();
   const [resumes, setResumes] = useState<Resume[]>([]);
@@ -39,8 +39,10 @@ const ResumeSectionManagement: React.FC = () => {
         const userResumes = await fetchResumes(true); // myResumes = true
         setResumes(userResumes);
 
-        // Auto-select first resume if none selected
-        if (!selectedResumeId && userResumes.length > 0) {
+        // Set selectedResumeId from URL param if available, otherwise auto-select first resume
+        if (resumeId) {
+          setSelectedResumeId(resumeId);
+        } else if (userResumes.length > 0) {
           setSelectedResumeId(userResumes[0].id);
         }
       } catch (error) {
@@ -52,7 +54,7 @@ const ResumeSectionManagement: React.FC = () => {
     };
 
     loadResumes();
-  }, [isAuthenticated, selectedResumeId, addNotification]);
+  }, [isAuthenticated, resumeId, addNotification]);
 
   const handleSectionClick = (section: ResumeSectionType) => {
     if (!selectedResumeId) {
@@ -114,7 +116,7 @@ const ResumeSectionManagement: React.FC = () => {
           </Button>
         </header>
 
-        {/* Resume Selector */}
+        {/* Resume Selector : set by default on selectedResumeId*/}
         <div className="resume-selector">
           <label htmlFor="resume-select" className="resume-selector-label">
             Select Resume:
@@ -135,9 +137,20 @@ const ResumeSectionManagement: React.FC = () => {
             onClick={handleCreateResume}
             variant="ghost"
             size="sm"
+            leftIcon={<PlusIcon />}
           >
-            + New Resume
+            New Resume
           </Button>
+          {selectedResumeId && (
+            <Button
+              onClick={() => navigate(`/admin/entities/resumes/${selectedResumeId}/details`)}
+              variant="ghost"
+              size="sm"
+              leftIcon={<Edit />}
+            >
+              Edit Details
+            </Button>
+          )}
         </div>
 
         {/* Section Grid */}

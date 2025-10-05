@@ -1,12 +1,18 @@
-namespace Core.Api.Models.Resume;
+using System;
 
-public class SocialLink
+namespace Core.Api.Models.Resume
 {
-    public Guid Id { get; set; }
-    public Guid ResumeId { get; set; }
+    public class SocialLink
+    {
+        public Guid Id { get; set; }
+        public Guid ResumeId { get; set; }
 
-    public string Platform { get; set; } = string.Empty; // e.g., "GitHub", "LinkedIn"
-    public string Url { get; set; } = string.Empty;
+        public string Platform { get; set; } = string.Empty; // e.g., "GitHub", "LinkedIn"
+        public string Url { get; set; } = string.Empty;
 
-    public Resume? Resume { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        public Resume? Resume { get; set; }
+    }
 }

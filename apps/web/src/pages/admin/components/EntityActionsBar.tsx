@@ -73,7 +73,7 @@ const EntityActionsBar: React.FC<EntityActionsBarProps> = ({
     } else if (entityType === "publications") {
       window.location.href = "/portfolio/publications/new";
     } else if (entityType === "resumes") {
-      window.location.href = "/admin/resume/new";
+      window.location.href = "/admin/entities/resumes/new";
     } else {
       window.location.href = `/admin/entities/${entityType}/new`;
     }

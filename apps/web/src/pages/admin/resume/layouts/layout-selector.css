@@ -1,0 +1,64 @@
+.layout-selector {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.layout-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.layout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.layout-btn:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.layout-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.layout-btn.export-pdf-btn {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.layout-btn.export-pdf-btn:hover {
+  background: #059669;
+  border-color: #059669;
+}
+
+.layout-icon {
+  font-size: 18px;
+}
+
+@media print {
+  .layout-selector {
+    display: none !important;
+  }
+  
+  /* Hide everything except the print layout */
+  body > *:not([data-layout="print"]) {
+    display: none !important;
+  }
+}

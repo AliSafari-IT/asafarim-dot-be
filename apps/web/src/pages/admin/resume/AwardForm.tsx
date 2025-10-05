@@ -93,7 +93,7 @@ const AwardForm: React.FC = () => {
         addNotification("success", "Award added successfully!");
       }
 
-      navigate(`/admin/resumes/${resumeId}/awards`);
+      navigate(`/admin/entities/resumes/${resumeId}/awards`);
     } catch (err) {
       console.error("Error saving award:", err);
       addNotification("error", `Failed to ${isEditMode ? "update" : "add"} award`);
@@ -123,7 +123,7 @@ const AwardForm: React.FC = () => {
           <div className="header-actions">
             {isViewMode && (
               <Button
-                onClick={() => navigate(`/admin/resumes/${resumeId}/awards/${id}/edit`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/awards/${id}/edit`)}
                 variant="primary"
                 size="sm"
               >
@@ -131,7 +131,7 @@ const AwardForm: React.FC = () => {
               </Button>
             )}
             <Button
-              onClick={() => navigate(`/admin/resumes/${resumeId}/awards`)}
+              onClick={() => navigate(`/admin/entities/resumes/${resumeId}/awards`)}
               variant="secondary"
               size="sm"
             >
@@ -209,7 +209,7 @@ const AwardForm: React.FC = () => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => navigate(`/admin/resumes/${resumeId}/awards`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/awards`)}
               >
                 Cancel
               </Button>

@@ -94,7 +94,7 @@ const EducationForm: React.FC = () => {
         addNotification("success", "Education added successfully!");
       }
 
-      navigate(`/admin/resumes/${resumeId}/educations`);
+      navigate(`/admin/entities/resumes/${resumeId}/educations`);
     } catch (err) {
       console.error("Error saving education:", err);
       addNotification("error", `Failed to ${isEditMode ? "update" : "add"} education`);
@@ -122,7 +122,7 @@ const EducationForm: React.FC = () => {
             <p className="resume-section-form-subtitle">Resume: {resumeTitle}</p>
           </div>
           <Button
-            onClick={() => navigate(`/admin/resumes/${resumeId}/educations`)}
+            onClick={() => navigate(`/admin/entities/resumes/${resumeId}/educations`)}
             variant="secondary"
           >
             ← Back to Education
@@ -213,7 +213,7 @@ const EducationForm: React.FC = () => {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => navigate(`/admin/resumes/${resumeId}/educations`)}
+              onClick={() => navigate(`/admin/entities/resumes/${resumeId}/educations`)}
             >
               Cancel
             </Button>

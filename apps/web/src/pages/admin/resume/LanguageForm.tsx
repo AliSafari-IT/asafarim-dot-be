@@ -91,7 +91,7 @@ const LanguageForm: React.FC = () => {
         addNotification("success", "Language added successfully!");
       }
 
-      navigate(`/admin/resumes/${resumeId}/languages`);
+      navigate(`/admin/entities/resumes/${resumeId}/languages`);
     } catch (err) {
       console.error("Error saving language:", err);
       addNotification("error", `Failed to ${isEditMode ? "update" : "add"} language`);
@@ -121,7 +121,7 @@ const LanguageForm: React.FC = () => {
           <div className="header-actions">
             {isViewMode && (
               <Button
-                onClick={() => navigate(`/admin/resumes/${resumeId}/languages/${id}/edit`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/languages/${id}/edit`)}
                 variant="primary"
                 size="sm"
               >
@@ -129,7 +129,7 @@ const LanguageForm: React.FC = () => {
               </Button>
             )}
             <Button
-              onClick={() => navigate(`/admin/resumes/${resumeId}/languages`)}
+              onClick={() => navigate(`/admin/entities/resumes/${resumeId}/languages`)}
               variant="secondary"
               size="sm"
             >
@@ -182,7 +182,7 @@ const LanguageForm: React.FC = () => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => navigate(`/admin/resumes/${resumeId}/languages`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/languages`)}
               >
                 Cancel
               </Button>

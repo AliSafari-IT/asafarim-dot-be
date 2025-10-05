@@ -97,7 +97,7 @@ const ProjectForm: React.FC = () => {
         addNotification("success", "Project added successfully!");
       }
 
-      navigate(`/admin/resumes/${resumeId}/projects`);
+      navigate(`/admin/entities/resumes/${resumeId}/projects`);
     } catch (err) {
       console.error("Error saving project:", err);
       addNotification("error", `Failed to ${isEditMode ? "update" : "add"} project`);
@@ -172,7 +172,7 @@ const ProjectForm: React.FC = () => {
           <div className="header-actions">
             {isViewMode && (
               <Button
-                onClick={() => navigate(`/admin/resumes/${resumeId}/projects/${id}/edit`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/projects/${id}/edit`)}
                 variant="primary"
                 size="sm"
               >
@@ -180,7 +180,7 @@ const ProjectForm: React.FC = () => {
               </Button>
             )}
             <Button
-              onClick={() => navigate(`/admin/resumes/${resumeId}/projects`)}
+              onClick={() => navigate(`/admin/entities/resumes/${resumeId}/projects`)}
               variant="secondary"
               size="sm"
             >
@@ -313,7 +313,7 @@ const ProjectForm: React.FC = () => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => navigate(`/admin/resumes/${resumeId}/projects`)}
+                onClick={() => navigate(`/admin/entities/resumes/${resumeId}/projects`)}
               >
                 Cancel
               </Button>

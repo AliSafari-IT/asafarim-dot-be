@@ -128,7 +128,7 @@ export const LoginForm = () => {
         </label>
       </div>
 
-      <Button disabled={isLoading} rightIcon={<Lock />} variant="success">
+      <Button type="submit" disabled={isLoading} rightIcon={<Lock />} variant="success">
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>
 

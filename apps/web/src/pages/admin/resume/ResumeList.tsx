@@ -103,7 +103,7 @@ const ResumeList: React.FC = () => {
               <Button onClick={() => navigate('/admin/entities')} variant="secondary">
                 ← Back to Entities
               </Button>
-              <Button onClick={() => navigate('/admin/resume/new')} variant="primary">
+              <Button onClick={() => navigate('/admin/entities/resumes/new')} variant="primary">
                 + Create Resume
               </Button>
             </div>
@@ -115,7 +115,7 @@ const ResumeList: React.FC = () => {
         {resumes.length === 0 ? (
           <div className="empty-state">
             <p className="empty-state-message">No resumes found. Create your first resume to get started!</p>
-            <Button onClick={() => navigate('/admin/resume/new')}>Create Resume</Button>
+            <Button onClick={() => navigate('/admin/entities/resumes/new')}>Create Resume</Button>
           </div>
         ) : (
           <div className="resume-grid">
