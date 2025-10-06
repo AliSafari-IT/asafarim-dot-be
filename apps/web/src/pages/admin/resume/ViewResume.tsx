@@ -1,12 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, useAuth } from '@asafarim/shared-ui-react';
-import { fetchResumeById, type ResumeDetailDto } from '../../../services/resumeApi';
-import { LayoutSelector } from './layouts/LayoutSelector';
-import { type LayoutType } from './layouts/types.tsx';
-import { PrintLayout } from './layouts/PrintLayout';
-import './resume-styles.css';
-import './view-resume.css';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Button,
+  Edit,
+  Github,
+  Google,
+  Linkedin,
+  ORCID,
+  StackOverflow,
+  useAuth,
+} from "@asafarim/shared-ui-react";
+import {
+  fetchResumeById,
+  type ResumeDetailDto,
+} from "../../../services/resumeApi";
+import { LayoutSelector } from "./layouts/LayoutSelector";
+import { type LayoutType } from "./layouts/types.tsx";
+import { PrintLayout } from "./layouts/PrintLayout";
+import "./resume-styles.css";
+import "./view-resume.css";
 
 const ViewResume: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,7 +29,7 @@ const ViewResume: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentLayout, setCurrentLayout] = useState<LayoutType>(
-    (searchParams.get('layout') as LayoutType) || 'online'
+    (searchParams.get("layout") as LayoutType) || "online"
   );
 
   const handleLayoutChange = (layout: LayoutType) => {
@@ -42,8 +54,8 @@ const ViewResume: React.FC = () => {
         const data = await fetchResumeById(id);
         setResume(data);
       } catch (err) {
-        console.error('Failed to load resume:', err);
-        setError('Failed to load resume details');
+        console.error("Failed to load resume:", err);
+        setError("Failed to load resume details");
       } finally {
         setLoading(false);
       }
@@ -69,8 +81,10 @@ const ViewResume: React.FC = () => {
     return (
       <div className="resume-view-page">
         <div className="resume-view-container">
-          <div className="error-message">{error || 'Resume not found'}</div>
-          <Button onClick={() => navigate('/admin/entities/resumes')}>Back to Resumes</Button>
+          <div className="error-message">{error || "Resume not found"}</div>
+          <Button onClick={() => navigate("/admin/entities/resumes")}>
+            Back to Resumes
+          </Button>
         </div>
       </div>
     );
@@ -78,7 +92,10 @@ const ViewResume: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      year: "numeric",
+    });
   };
 
   const renderStars = (rating: number) => {
@@ -86,7 +103,7 @@ const ViewResume: React.FC = () => {
     return (
       <div className="skill-rating">
         {[1, 2, 3, 4, 5].map((star) => (
-          <span key={star} className={star <= rating ? 'star filled' : 'star'}>
+          <span key={star} className={star <= rating ? "star filled" : "star"}>
             ★
           </span>
         ))}
@@ -96,30 +113,37 @@ const ViewResume: React.FC = () => {
 
   const handleExportPDF = async () => {
     // Dynamically import html2pdf
-    const html2pdf = (await import('html2pdf.js')).default;
-    
+    const html2pdf = (await import("html2pdf.js")).default;
+
     // Create a temporary container with print layout
-    const element = document.createElement('div');
-    element.innerHTML = document.querySelector('.print-layout-container')?.outerHTML || '';
-    
+    const element = document.createElement("div");
+    element.innerHTML =
+      document.querySelector(".print-layout-container")?.outerHTML || "";
+
     const opt = {
       margin: 15,
-      filename: `${resume.contact?.fullName || 'resume'}_${new Date().toISOString().split('T')[0]}.pdf`,
-      image: { type: 'jpeg' as const, quality: 0.98 },
+      filename: `${resume.contact?.fullName || "resume"}_${
+        new Date().toISOString().split("T")[0]
+      }.pdf`,
+      image: { type: "jpeg" as const, quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+      jsPDF: {
+        unit: "mm" as const,
+        format: "a4" as const,
+        orientation: "portrait" as const,
+      },
     };
-    
+
     html2pdf().set(opt).from(element).save();
   };
 
   // Render layout-specific component
-  if (currentLayout === 'print') {
+  if (currentLayout === "print") {
     return (
       <div className="resume-view-page" data-layout="print">
         <div className="resume-view-container">
-          <LayoutSelector 
-            currentLayout={currentLayout} 
+          <LayoutSelector
+            currentLayout={currentLayout}
             onLayoutChange={handleLayoutChange}
             onExportPDF={handleExportPDF}
           />
@@ -133,11 +157,11 @@ const ViewResume: React.FC = () => {
   return (
     <div className="resume-view-page" data-layout={currentLayout}>
       <div className="resume-view-container">
-        <LayoutSelector 
-          currentLayout={currentLayout} 
+        <LayoutSelector
+          currentLayout={currentLayout}
           onLayoutChange={handleLayoutChange}
         />
-        
+
         {/* Header Section */}
         <header className="resume-view-header">
           <div className="resume-hero">
@@ -146,14 +170,26 @@ const ViewResume: React.FC = () => {
               {resume.contact && (
                 <div className="resume-contact-quick">
                   <span className="contact-item">
-                    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      className="icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                       <circle cx="12" cy="7" r="4" />
                     </svg>
                     {resume.contact.fullName}
                   </span>
                   <span className="contact-item">
-                    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      className="icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                       <polyline points="22,6 12,13 2,6" />
                     </svg>
@@ -161,7 +197,13 @@ const ViewResume: React.FC = () => {
                   </span>
                   {resume.contact.phone && (
                     <span className="contact-item">
-                      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        className="icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                       </svg>
                       {resume.contact.phone}
@@ -169,7 +211,13 @@ const ViewResume: React.FC = () => {
                   )}
                   {resume.contact.location && (
                     <span className="contact-item">
-                      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        className="icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                         <circle cx="12" cy="10" r="3" />
                       </svg>
@@ -180,10 +228,16 @@ const ViewResume: React.FC = () => {
               )}
             </div>
             <div className="resume-hero-actions">
-              <Button onClick={() => navigate('/admin/entities/resumes')} variant="secondary">
+              <Button
+                onClick={() => navigate("/admin/entities/resumes")}
+                variant="secondary"
+              >
                 ← Back to Resumes
               </Button>
-              <Button onClick={() => navigate(`/admin/entities/resumes/${id}/edit`)} variant="primary">
+              <Button
+                onClick={() => navigate(`/admin/entities/resumes/${id}/edit`)}
+                variant="primary"
+              >
                 Edit Resume
               </Button>
             </div>
@@ -196,7 +250,15 @@ const ViewResume: React.FC = () => {
           {resume.summary && (
             <section className="resume-view-section summary-section">
               <div className="section-header">
-                <h2 className="section-title">Professional Summary</h2>
+                <h2 className="section-title">
+                  Professional Summary{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/details`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
               </div>
               <div className="section-content">
                 <p className="summary-text">{resume.summary}</p>
@@ -208,8 +270,18 @@ const ViewResume: React.FC = () => {
           {resume.workExperiences && resume.workExperiences.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Work Experience</h2>
-                <span className="section-count">{resume.workExperiences.length}</span>
+                <h2 className="section-title">
+                  Work Experience{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/work-experiences`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
+                <span className="section-count">
+                  {resume.workExperiences.length}
+                </span>
               </div>
               <div className="section-content">
                 <div className="timeline">
@@ -220,18 +292,38 @@ const ViewResume: React.FC = () => {
                         <div className="item-header">
                           <h3 className="item-title">{exp.jobTitle}</h3>
                           <span className="item-date">
-                            {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
+                            {formatDate(exp.startDate)} -{" "}
+                            {exp.endDate ? formatDate(exp.endDate) : "Present"}
                           </span>
                         </div>
                         <div className="item-subtitle">
-                          <span className="company-name">{exp.companyName}</span>
-                          {exp.location && <span className="location">• {exp.location}</span>}
+                          <span className="company-name">
+                            {exp.companyName}
+                          </span>
+                          {exp.location && (
+                            <span className="location">• {exp.location}</span>
+                          )}
                         </div>
-                        {exp.description && <p className="item-description">{exp.description}</p>}
+                        {exp.description && (
+                          <p className="item-description">{exp.description}</p>
+                        )}
+                        
+                        {exp.achievements && exp.achievements.length > 0 && (
+                          <div className="achievements-section">
+                            <ul className="achievements-list">
+                              {exp.achievements.map((ach) => (
+                                <li key={ach.id}>{ach.text}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
                         {exp.technologies && exp.technologies.length > 0 && (
                           <div className="tech-tags">
                             {exp.technologies.map((tech, idx) => (
-                              <span key={idx} className="tech-tag">{tech}</span>
+                              <span key={idx} className="tech-tag" title={tech.category || ''}>
+                                {tech.name}
+                              </span>
                             ))}
                           </div>
                         )}
@@ -247,7 +339,15 @@ const ViewResume: React.FC = () => {
           {resume.skills && resume.skills.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Skills</h2>
+                <h2 className="section-title">
+                  Skills{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/skills`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
                 <span className="section-count">{resume.skills.length}</span>
               </div>
               <div className="section-content">
@@ -259,7 +359,9 @@ const ViewResume: React.FC = () => {
                         {renderStars(skill.rating)}
                       </div>
                       <div className="skill-meta">
-                        <span className="skill-category">📁 {skill.category}</span>
+                        <span className="skill-category">
+                          📁 {skill.category}
+                        </span>
                         <span className="skill-level">📊 {skill.level}</span>
                       </div>
                     </div>
@@ -273,20 +375,41 @@ const ViewResume: React.FC = () => {
           {resume.educationItems && resume.educationItems.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Education</h2>
-                <span className="section-count">{resume.educationItems.length}</span>
+                <h2 className="section-title">
+                  Educations{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/educations`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
+                <span className="section-count">
+                  {resume.educationItems.length}
+                </span>
               </div>
               <div className="section-content">
                 <div className="education-grid">
                   {resume.educationItems.map((edu, index) => (
                     <div key={edu.id || index} className="education-card">
                       <h3 className="education-degree">{edu.degree}</h3>
-                      <div className="education-institution">{edu.institution}</div>
-                      {edu.fieldOfStudy && <div className="education-field">{edu.fieldOfStudy}</div>}
-                      <div className="education-dates">
-                        {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                      <div className="education-institution">
+                        {edu.institution}
                       </div>
-                      {edu.description && <p className="education-description">{edu.description}</p>}
+                      {edu.fieldOfStudy && (
+                        <div className="education-field">
+                          {edu.fieldOfStudy}
+                        </div>
+                      )}
+                      <div className="education-dates">
+                        {formatDate(edu.startDate)} -{" "}
+                        {edu.endDate ? formatDate(edu.endDate) : "Present"}
+                      </div>
+                      {edu.description && (
+                        <p className="education-description">
+                          {edu.description}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -298,8 +421,18 @@ const ViewResume: React.FC = () => {
           {resume.certificates && resume.certificates.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Certificates</h2>
-                <span className="section-count">{resume.certificates.length}</span>
+                <h2 className="section-title">
+                  Certificates{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/certificates`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
+                <span className="section-count">
+                  {resume.certificates.length}
+                </span>
               </div>
               <div className="section-content">
                 <div className="certificates-grid">
@@ -309,13 +442,20 @@ const ViewResume: React.FC = () => {
                       <div className="certificate-issuer">{cert.issuer}</div>
                       <div className="certificate-dates">
                         Issued: {formatDate(cert.issueDate)}
-                        {cert.expiryDate && ` • Expires: ${formatDate(cert.expiryDate)}`}
+                        {cert.expiryDate &&
+                          ` • Expires: ${formatDate(cert.expiryDate)}`}
                       </div>
                       {(cert.credentialId || cert.credentialUrl) && (
                         <div className="certificate-credentials">
-                          {cert.credentialId && <div>ID: {cert.credentialId}</div>}
+                          {cert.credentialId && (
+                            <div>ID: {cert.credentialId}</div>
+                          )}
                           {cert.credentialUrl && (
-                            <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={cert.credentialUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               View Certificate →
                             </a>
                           )}
@@ -332,7 +472,15 @@ const ViewResume: React.FC = () => {
           {resume.projects && resume.projects.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Projects</h2>
+                <h2 className="section-title">
+                  Projects{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/projects`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
                 <span className="section-count">{resume.projects.length}</span>
               </div>
               <div className="section-content">
@@ -342,19 +490,29 @@ const ViewResume: React.FC = () => {
                       <div className="project-header">
                         <h3 className="project-name">{project.name}</h3>
                         {project.link && (
-                          <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="project-link"
+                          >
                             Visit →
                           </a>
                         )}
                       </div>
-                      <p className="project-description">{project.description}</p>
-                      {project.technologies && project.technologies.length > 0 && (
-                        <div className="tech-tags">
-                          {project.technologies.map((tech) => (
-                            <span key={tech.id} className="tech-tag">{tech.name}</span>
-                          ))}
-                        </div>
-                      )}
+                      <p className="project-description">
+                        {project.description}
+                      </p>
+                      {project.technologies &&
+                        project.technologies.length > 0 && (
+                          <div className="tech-tags">
+                            {project.technologies.map((tech) => (
+                              <span key={tech.id} className="tech-tag">
+                                {tech.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>
@@ -366,7 +524,15 @@ const ViewResume: React.FC = () => {
           {resume.languages && resume.languages.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Languages</h2>
+                <h2 className="section-title">
+                  Languages{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/languages`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
                 <span className="section-count">{resume.languages.length}</span>
               </div>
               <div className="section-content">
@@ -386,7 +552,15 @@ const ViewResume: React.FC = () => {
           {resume.awards && resume.awards.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Awards & Achievements</h2>
+                <h2 className="section-title">
+                  Awards & Achievements{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/awards`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
                 <span className="section-count">{resume.awards.length}</span>
               </div>
               <div className="section-content">
@@ -395,10 +569,14 @@ const ViewResume: React.FC = () => {
                     <div key={award.id || index} className="award-card">
                       <div className="award-header">
                         <h3 className="award-title">{award.title}</h3>
-                        <span className="award-date">{formatDate(award.awardedDate)}</span>
+                        <span className="award-date">
+                          {formatDate(award.awardedDate)}
+                        </span>
                       </div>
                       <div className="award-issuer">{award.issuer}</div>
-                      {award.description && <p className="award-description">{award.description}</p>}
+                      {award.description && (
+                        <p className="award-description">{award.description}</p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -410,15 +588,27 @@ const ViewResume: React.FC = () => {
           {resume.references && resume.references.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">References</h2>
-                <span className="section-count">{resume.references.length}</span>
+                <h2 className="section-title">
+                  References{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/references`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
+                <span className="section-count">
+                  {resume.references.length}
+                </span>
               </div>
               <div className="section-content">
                 <div className="references-grid">
                   {resume.references.map((ref, index) => (
                     <div key={ref.id || index} className="reference-card">
                       <h3 className="reference-name">{ref.name}</h3>
-                      <div className="reference-relationship">{ref.relationship}</div>
+                      <div className="reference-relationship">
+                        {ref.relationship}
+                      </div>
                       <div className="reference-contact">{ref.contactInfo}</div>
                     </div>
                   ))}
@@ -431,8 +621,18 @@ const ViewResume: React.FC = () => {
           {resume.socialLinks && resume.socialLinks.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Social Links</h2>
-                <span className="section-count">{resume.socialLinks.length}</span>
+                <h2 className="section-title">
+                  Social Links{" "}
+                  <Edit
+                    onClick={() =>
+                      navigate(`/admin/entities/resumes/${id}/social-links`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
+                </h2>
+                <span className="section-count">
+                  {resume.socialLinks.length}
+                </span>
               </div>
               <div className="section-content">
                 <div className="social-links">
@@ -444,9 +644,40 @@ const ViewResume: React.FC = () => {
                       rel="noopener noreferrer"
                       className="social-link"
                     >
-                      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                      </svg>
+                      {link.platform.toLowerCase() === "linkedin" ? (
+                        <Linkedin />
+                      ) : link.platform.toLowerCase() === "github" ? (
+                        <Github />
+                      ) : link.platform.toLowerCase() === "stackoverflow" ? (
+                        <StackOverflow />
+                      ) : link.platform.toLowerCase().includes("google") ? (
+                        <Google />
+                      ) : link.platform.toLowerCase().includes("orcid") ? (
+                        <ORCID />
+                      ) : (
+                        <svg
+                          className="text-phosphor"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1"
+                          onClick={() => window.open(link.url, "_blank")}
+                          width={32}
+                          height={32}
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="m14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
                       {link.platform}
                     </a>
                   ))}

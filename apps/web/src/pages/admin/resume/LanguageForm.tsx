@@ -10,7 +10,7 @@ import {
 import { fetchResumeById } from "../../../services/resumeApi";
 import "./resume-section-form.css";
 
-const PROFICIENCY_LEVELS = ["Beginner", "Intermediate", "Advanced", "Native"];
+const PROFICIENCY_LEVELS = ["Basic", "Intermediate", "Fluent", "Native"];
 
 const LanguageForm: React.FC = () => {
   const navigate = useNavigate();
@@ -53,7 +53,8 @@ const LanguageForm: React.FC = () => {
 
   useEffect(() => {
     const loadLanguage = async () => {
-      if (!id || !resumeId || !isAuthenticated) return;
+      // Don't try to load if id is "new" or missing
+      if (!id || id === "new" || !resumeId || !isAuthenticated) return;
 
       try {
         setLoading(true);
@@ -70,8 +71,8 @@ const LanguageForm: React.FC = () => {
       }
     };
 
-    // Load data for both view and edit modes
-    if (isEditMode || isViewMode) {
+    // Load data for both view and edit modes (but not for "new")
+    if ((isEditMode || isViewMode) && id !== "new") {
       loadLanguage();
     }
   }, [id, resumeId, isAuthenticated, isEditMode, isViewMode, addNotification]);

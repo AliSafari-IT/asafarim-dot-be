@@ -1,6 +1,6 @@
 import type { SvgIconProps } from "./svg-types";
 
-function DotsMenu({
+function ORCID({
   width = 24,
   height = 24,
   viewBox = "0 0 24 24",
@@ -11,7 +11,7 @@ function DotsMenu({
   title,
   onClick,
   className,
-  style
+  style,
 }: SvgIconProps) {
   return (
     <svg
@@ -22,20 +22,25 @@ function DotsMenu({
       stroke={stroke}
       strokeWidth={strokeWidth}
       strokeLinecap={strokeLinecap}
-      xmlns="http://www.w3.org/2000/svg"
       onClick={onClick}
-      className={className}
+      className={className || "text-phosphor"}
       aria-hidden
       style={style}
     >
       <title>{title}</title>
-      <path 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
-        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" 
-      />
+      <circle cx="12" cy="12" r="10" fill="var(--warning-color)" />
+      <text
+        x="12"
+        y="16"
+        textAnchor="middle"
+        fill="white"
+        fontSize="12"
+        fontWeight="normal"
+      >
+        iD
+      </text>
     </svg>
   );
 }
 
-export default DotsMenu;
+export default ORCID;

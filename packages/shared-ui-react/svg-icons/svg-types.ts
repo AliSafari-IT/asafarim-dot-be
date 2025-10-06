@@ -11,4 +11,6 @@ export type SvgIconProps = {
     onClick?: () => void;
     className?: string;
     title?: string;
+    style?: React.CSSProperties;
+    size?: number;
 };

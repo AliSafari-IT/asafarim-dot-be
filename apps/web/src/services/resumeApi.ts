@@ -67,7 +67,8 @@ export interface WorkExperienceDto {
   endDate?: string;
   isCurrent: boolean;
   description?: string;
-  technologies: string[];
+  technologies: { id: string; name: string; category?: string }[];
+  achievements?: { id: string; text: string }[];
 }
 
 export interface ProjectDto {

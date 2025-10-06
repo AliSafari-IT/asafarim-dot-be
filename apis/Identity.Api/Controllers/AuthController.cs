@@ -209,6 +209,64 @@ public class AuthController : ControllerBase
         return Unauthorized();
     }
 
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        // Get the refresh token from cookies
+        if (!Request.Cookies.TryGetValue("rtk", out var refreshToken) || string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return Unauthorized(new { message = "No refresh token provided" });
+        }
+
+        // TODO: In a real implementation, you would validate the refresh token against a database
+        // For now, we'll just validate that it's not empty and generate a new access token
+        // In production, you should:
+        // 1. Store refresh tokens in the database with expiration
+        // 2. Validate the refresh token exists and hasn't expired
+        // 3. Generate a new refresh token and update it in the database
+        // 4. Return both new access and refresh tokens
+
+        // For this demo, we'll just check if the user is authenticated via cookies
+        if (!User.Identity?.IsAuthenticated ?? true)
+        {
+            return Unauthorized(new { message = "Invalid refresh token" });
+        }
+
+        // Get user info from the current claims
+        var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+        if (string.IsNullOrWhiteSpace(sub))
+            return Unauthorized();
+
+        var user = await _userManager.FindByIdAsync(sub);
+        if (user is null)
+            return Unauthorized();
+
+        var opts = _authOptions.Value;
+        var roleNames = await _userManager.GetRolesAsync(user);
+        var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
+
+        // Generate new refresh token (in production, you'd store and validate this)
+        var newRefresh = Guid.NewGuid().ToString("N");
+
+        // Set new cookies with updated tokens
+        SetAuthCookies(Response, access, newRefresh, opts, persistent: true);
+
+        return Ok(new
+        {
+            token = access,
+            refreshToken = newRefresh,
+            expiresAt = DateTime.UtcNow.AddMinutes(opts.AccessMinutes).ToString("o"),
+            user = new
+            {
+                id = user.Id.ToString(),
+                email = user.Email,
+                firstName = user.UserName,
+                lastName = "",
+                roles = roleNames.ToArray(),
+            },
+        });
+    }
+
     [HttpPost("setup-password")]
     public async Task<IActionResult> SetupPassword([FromBody] SetupPasswordRequest req)
     {

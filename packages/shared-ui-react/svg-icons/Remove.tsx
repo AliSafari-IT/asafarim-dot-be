@@ -11,6 +11,7 @@ function Remove({
   onClick,
   className,
   title,
+  style,
 }: SvgIconProps) {
   return (
     <svg
@@ -21,12 +22,12 @@ function Remove({
       stroke={stroke}
       strokeWidth={strokeWidth}
       strokeLinecap={strokeLinecap}
-      xmlns="http://www.w3.org/2000/svg"
       onClick={onClick}
       className={className}
       aria-hidden
+      style={style}
     >
-      {title && <title>{title}</title>}
+      <title>{title}</title>
       <path d="M3 6h18" />
       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
       <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />

@@ -328,6 +328,15 @@ public class ResumesController : ControllerBase
                             Text = a.Text,
                         })
                         .ToList(),
+                    Technologies =
+                        w.WorkExperienceTechnologies?.Where(wt => wt.Technology != null)
+                            .Select(wt => new TechnologyDto
+                            {
+                                Id = wt.Technology!.Id,
+                                Name = wt.Technology!.Name,
+                                Category = wt.Technology!.Category,
+                            })
+                            .ToList() ?? new List<TechnologyDto>(),
                     SortOrder = w.SortOrder,
                     Highlighted = w.Highlighted,
                     IsPublished = w.IsPublished,

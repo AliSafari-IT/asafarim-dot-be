@@ -8,6 +8,10 @@ function LoginArrow({
   stroke = "currentColor",
   strokeWidth = 2,
   strokeLinecap = "round",
+  title,
+  onClick,
+  className,
+  style,
 }: SvgIconProps) {
   return (
     <svg
@@ -18,8 +22,12 @@ function LoginArrow({
       stroke={stroke}
       strokeWidth={strokeWidth}
       strokeLinecap={strokeLinecap}
-      xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
+      className={className}
+      aria-hidden
+      style={style}
     >
+      <title>{title}</title>
       <path 
         strokeLinecap="round" 
         strokeLinejoin="round" 

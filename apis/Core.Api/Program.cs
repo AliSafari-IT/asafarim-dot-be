@@ -24,7 +24,7 @@ var productionOrigins = new[]
     "https://core.asafarim.be",
     "https://blog.asafarim.be",
     "https://identity.asafarim.be",
-    "https://*.asafarim.be"  // Wildcard for all subdomains
+    "https://*.asafarim.be", // Wildcard for all subdomains
 };
 
 var developmentOrigins = new[]
@@ -38,12 +38,12 @@ var developmentOrigins = new[]
     "http://localhost:5173",
     "http://localhost:5175",
     "http://localhost:5101",
-    "http://web.asafarim.local:5175",  // Your web app
-    "http://localhost:5102"  // Core API
+    "http://web.asafarim.local:5175", // Your web app
+    "http://localhost:5102", // Core API
 };
 
 // Combine origins based on environment
-string[] allowedOrigins = builder.Environment.IsProduction() 
+string[] allowedOrigins = builder.Environment.IsProduction()
     ? productionOrigins.Concat(corsOriginsEnv?.Split(',') ?? Array.Empty<string>()).ToArray()
     : developmentOrigins.Concat(productionOrigins).ToArray();
 
@@ -51,12 +51,12 @@ builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(
         "frontend",
-        p => p
-            .WithOrigins(allowedOrigins)
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
-            .SetIsOriginAllowedToAllowWildcardSubdomains() // Allow wildcard subdomains
+        p =>
+            p.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .SetIsOriginAllowedToAllowWildcardSubdomains() // Allow wildcard subdomains
     );
 });
 
@@ -69,13 +69,23 @@ builder.Services.AddMemoryCache();
 var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 if (!string.IsNullOrEmpty(defaultConnection))
 {
-    builder.Services.AddDbContext<CoreDbContext>(options => options.UseNpgsql(defaultConnection));
+    builder.Services.AddDbContext<CoreDbContext>(options =>
+        options.UseNpgsql(
+            defaultConnection,
+            npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+        )
+    );
 }
 
 var jobsConnectionString = builder.Configuration.GetConnectionString("JobsConnection");
 if (!string.IsNullOrEmpty(jobsConnectionString))
 {
-    builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(jobsConnectionString));
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(
+            jobsConnectionString,
+            npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+        )
+    );
 }
 
 if (string.IsNullOrEmpty(defaultConnection) && string.IsNullOrEmpty(jobsConnectionString))
@@ -144,14 +154,20 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Add health endpoint
-app.MapGet("/health", () => Results.Ok(new
-{
-    Status = "Healthy",
-    Service = "Core API",
-    Version = "1.0.0",
-    Environment = app.Environment.EnvironmentName,
-    Timestamp = DateTime.UtcNow
-}));
+app.MapGet(
+    "/health",
+    () =>
+        Results.Ok(
+            new
+            {
+                Status = "Healthy",
+                Service = "Core API",
+                Version = "1.0.0",
+                Environment = app.Environment.EnvironmentName,
+                Timestamp = DateTime.UtcNow,
+            }
+        )
+);
 
 // Run the app with automatic migrations
 if (builder.Configuration.GetConnectionString("DefaultConnection") != null)

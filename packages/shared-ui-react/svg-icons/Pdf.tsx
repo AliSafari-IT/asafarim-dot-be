@@ -1,6 +1,6 @@
 import type { SvgIconProps } from "./svg-types";
 
-function Pdf({ width = 24, height = 24, viewBox = "0 0 24 24", fill = "none", stroke = "currentColor", strokeWidth = 2, strokeLinecap = "round" }: SvgIconProps) {
+function Pdf({ width = 24, height = 24, viewBox = "0 0 24 24", fill = "none", stroke = "currentColor", strokeWidth = 2, strokeLinecap = "round", title, onClick, className, style }: SvgIconProps) {
   return (
     <svg
       width={width}
@@ -10,8 +10,12 @@ function Pdf({ width = 24, height = 24, viewBox = "0 0 24 24", fill = "none", st
       stroke={stroke}
       strokeWidth={strokeWidth}
       strokeLinecap={strokeLinecap}
-      xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
+      className={className}
+      aria-hidden
+      style={style}
     >
+      <title>{title}</title>
       {/* File with folded corner and PDF letters */}
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/>
       <path d="M14 2v6h6"/>

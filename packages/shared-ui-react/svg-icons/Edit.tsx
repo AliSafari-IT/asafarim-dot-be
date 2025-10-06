@@ -11,6 +11,7 @@ function Edit({
   onClick,
   className,
   title,
+  style,
 }: SvgIconProps) {
   return (
     <svg
@@ -25,14 +26,15 @@ function Edit({
       onClick={onClick}
       className={className}
       aria-hidden
+      style={style}
     >
       {title && <title>{title}</title>}
       <g id="SVGRepo_iconCarrier">
         <path
           d="M14 6L8 12V16H12L18 10M14 6L17 3L21 7L18 10M14 6L18 10M10 4L4 4L4 20L20 20V14"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></path>
       </g>
     </svg>

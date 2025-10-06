@@ -232,6 +232,41 @@
   margin: 0.75rem 0 0 0;
 }
 
+/* Achievements Section */
+.achievements-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f0fdf4;
+  border-left: 3px solid #22c55e;
+  border-radius: 0.5rem;
+}
+
+.achievements-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.achievements-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  color: #166534;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.achievements-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #22c55e;
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
 /* Tech Tags */
 .tech-tags {
   display: flex;

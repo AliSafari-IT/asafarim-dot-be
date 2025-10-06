@@ -1,6 +1,6 @@
 import type { SvgIconProps } from "./svg-types";
 
-function Login({ width = 24, height = 24, viewBox = "0 0 24 24", fill = "none", stroke = "currentColor", strokeWidth = 2, strokeLinecap = "round" }: SvgIconProps) {
+function Login({ width = 24, height = 24, viewBox = "0 0 24 24", fill = "none", stroke = "currentColor", strokeWidth = 2, strokeLinecap = "round", title, onClick, className, style }: SvgIconProps) {
   return (
     <svg
       width={width}
@@ -10,8 +10,12 @@ function Login({ width = 24, height = 24, viewBox = "0 0 24 24", fill = "none", 
       stroke={stroke}
       strokeWidth={strokeWidth}
       strokeLinecap={strokeLinecap}
-      xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
+      className={className}
+      aria-hidden
+      style={style}
     >
+      <title>{title}</title>
       <path
         d="M13 2C10.2386 2 8 4.23858 8 7C8 7.55228 8.44772 8 9 8C9.55228 8 10 7.55228 10 7C10 5.34315 11.3431 4 13 4H17C18.6569 4 20 5.34315 20 7V17C20 18.6569 18.6569 20 17 20H13C11.3431 20 10 18.6569 10 17C10 16.4477 9.55228 16 9 16C8.44772 16 8 16.4477 8 17C8 19.7614 10.2386 22 13 22H17C19.7614 22 22 19.7614 22 17V7C22 4.23858 19.7614 2 17 2H13Z"
         fill="#000000"
