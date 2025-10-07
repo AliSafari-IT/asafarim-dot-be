@@ -16,6 +16,8 @@ export interface PublicationActionsBarProps {
 
 /**
  * PublicationActionsBar - A reusable component for publication management actions
+ * this includes both publication actions for /portfolio/publications and publication 
+ * variant actions to support /portfolio/projects
  * 
  * This component displays different action buttons based on authentication status
  * and user roles. It supports custom callbacks for all actions.
@@ -28,9 +30,13 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
   onLoginRedirect,
 }) => {
   const { isAuthenticated, user, loading: authLoading } = useAuth();
+
   
   // Check if user is admin based on roles in the user object
   const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
+
+  // contentType: projects or publications
+  const contentType = window.location.pathname.includes("projects") ? "projects" : "publications"; 
 
   // Default handlers with fallbacks to the provided callbacks
   const handleLoginRedirect = () => {
@@ -55,7 +61,7 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
     }
     
     // Default behavior
-    window.location.href = "/portfolio/publications/new";
+    window.location.href = contentType === "projects" ? "/portfolio/projects/new" : "/portfolio/publications/new";
   };
 
   const handleMyPublications = () => {
@@ -65,7 +71,7 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
     }
     
     // Default behavior
-    window.location.href = "/portfolio/publications?myPublications=true";
+    window.location.href = contentType === "projects" ? "/portfolio/projects?myProjects=true" : "/portfolio/publications?myPublications=true";
   };
 
   const handleManagePublications = () => {
@@ -75,7 +81,7 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
     }
     
     // Default behavior
-    window.location.href = "/portfolio/publications/manage";
+    window.location.href = contentType === "projects" ? "/portfolio/projects/manage" : "/portfolio/publications/manage";
   };
   
   const handleAllPublications = () => {
@@ -85,8 +91,9 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
     }
     
     // Default behavior
-    window.location.href = "/portfolio/publications";
+    window.location.href = contentType === "projects" ? "/portfolio/projects" : "/portfolio/publications";
   };
+
 
   // Determine alignment class based on authentication status
   const alignmentClass = isAuthenticated ? "actions-center" : "actions-right";
@@ -104,40 +111,40 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
             >
               <LoginArrow />
             </Button>
-            <span className="tooltip-text">Login to manage publications</span>
+            <span className="tooltip-text">Login to manage {contentType}</span>
           </div>
         ) : (
           // Show direct action buttons when authenticated
           <div className="actions-buttons-group">
             <Button
               onClick={handleAddPublication}
-              aria-label="Add new publication"
+              aria-label={`Add new ${contentType}`}
               variant="brand"
             >
-              Add Publication
+              Add {contentType}
             </Button>
             <Button
               onClick={handleMyPublications}
-              aria-label="View my publications"
+              aria-label={`View my ${contentType}`}
               variant="info"
             >
-              My Publications
+              My {contentType}
             </Button>
             {isAdmin && (
               <Button
                 onClick={handleAllPublications}
-                aria-label="View all publications"
+                aria-label={`View all ${contentType}`}
                 variant="info"
               >
-                All Publications
+                All {contentType}
               </Button>
             )}
             <Button
               onClick={handleManagePublications}
-              aria-label="Manage publications"
+              aria-label={`Manage ${contentType}`}
               variant="success"
             >
-              Manage Publications
+              Manage {contentType}
             </Button>
           </div>
         )}

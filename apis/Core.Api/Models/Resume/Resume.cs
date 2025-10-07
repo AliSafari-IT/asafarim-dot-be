@@ -15,6 +15,13 @@ namespace Core.Api.Models.Resume
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+        // Publication metadata (GDPR-compliant public sharing)
+        public bool IsPublic { get; set; } = false;
+        public string? PublicSlug { get; set; }
+        public DateTime? PublishedAt { get; set; }
+        public DateTime? PublicConsentGivenAt { get; set; }
+        public string? PublicConsentIp { get; set; }
+
         // Contact info (one-to-one)
         public ContactInfo? Contact { get; set; }
 

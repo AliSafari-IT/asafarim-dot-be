@@ -54,18 +54,54 @@ To exercise these rights, please contact us at **contact@asafarim.com**. You als
 [https://www.dataprotectionauthority.be/](https://www.dataprotectionauthority.be/)
 
 ## 9. Cookies and Similar Technologies
+
 We may use cookies to remember your preferences and understand how you use the Site. You can typically manage or disable cookies in your browser settings, but doing so may affect some functionalities.
 
 ## 10. Security
+
 We take reasonable measures to protect your personal data. However, no method of transmission over the internet or electronic storage is completely secure.
 
-## 11. Children’s Privacy
+## 11. Children's Privacy
+
 The Site is not intended for children under 13. We do not knowingly collect personal data from children. If you believe we have inadvertently collected such data, please contact us to have it removed.
 
-## 12. Changes to This Policy
-We may update this Policy from time to time. The “Last Updated” date indicates the most recent changes. Continued use of the Site after changes are posted signifies your acceptance of the updated Policy.
+## 12. Publicly Shared Resumes
 
-## 13. Contact Us
+### a) What We Share
+
+Users may choose to publish their resume publicly through our platform. When you opt to publish your resume:
+
+- **Publicly Accessible Information**: Your resume title, professional summary, work experience, skills, education, projects, certificates, awards, languages, and professional social links will be accessible to anyone with the public link.
+- **Protected Information**: Your email address, phone number, personal contact information, internal system identifiers, and private reference contact details are **never** included in the public resume.
+
+### b) Legal Basis
+
+Publishing your resume is based on your **explicit consent**. Before publishing, you must:
+
+- Review what information will be made public
+- Acknowledge that you understand the implications
+- Confirm that you do not include personal data you do not wish to share publicly
+
+### c) Your Rights
+
+- **Right to Revoke**: You can unpublish your resume at any time from your account dashboard. Once unpublished, the public link will immediately stop working.
+- **Data Minimization**: We only share the minimum necessary professional information publicly.
+- **Consent Logging**: For GDPR compliance, we record the timestamp and IP address when you provide consent to publish your resume.
+
+### d) Recommendations
+
+- **Review Before Publishing**: Carefully review your resume content before publishing to ensure it does not contain sensitive personal information (e.g., passport numbers, national ID numbers, personal phone numbers you wish to keep private).
+- **Professional Use Only**: Only include information you are comfortable sharing with potential employers and professional contacts.
+- **Regular Updates**: If you update your resume, review the public version to ensure it remains appropriate.
+
+### e) Indexing by Search Engines
+
+By default, published resumes are not indexed by search engines. If you wish to make your resume discoverable via search engines, you may opt-in through your account settings.
+
+## 13. Changes to This Policy
+We may update this Policy from time to time. The "Last Updated" date indicates the most recent changes. Continued use of the Site after changes are posted signifies your acceptance of the updated Policy.
+
+## 14. Contact Us
 If you have questions or concerns about this Policy, please contact us at:
 - **Email**: contact@asafarim.com
 - **Address**: Hasselt, Belgium

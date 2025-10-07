@@ -191,6 +191,12 @@ public class CoreDbContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
 
+            // Publication fields
+            entity.Property(e => e.IsPublic).HasDefaultValue(false);
+            entity.Property(e => e.PublicSlug).HasMaxLength(100);
+            entity.Property(e => e.PublicConsentIp).HasMaxLength(50);
+            entity.HasIndex(e => e.PublicSlug).IsUnique();
+
             // One-to-one with ContactInfo
             entity
                 .HasOne(e => e.Contact)

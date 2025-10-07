@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchPublications, deletePublication } from "../../../services/publicationService";
 import { Button, type ContentCardProps, useAuth, Eye, Remove } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
 import PublicationActionsBar from "./components/PublicationActionsBar";
 
-const ManagePublications: React.FC = () => {
+const ManageDocuments: React.FC = () => {
+  const { contentType } = useParams();
   const navigate = useNavigate();
   const [publications, setPublications] = useState<ContentCardProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -88,7 +89,7 @@ const ManagePublications: React.FC = () => {
       return;
     }
     
-    navigate(`/portfolio/publications/edit/${id}`);
+    navigate(`/portfolio/${contentType}/edit/${id}`);
   };
 
   if (!isAuthenticated) {
@@ -107,8 +108,8 @@ const ManagePublications: React.FC = () => {
     );
   }
 
-  const handleView = (id: number, userId: string): void => {
-    navigate(`/portfolio/${userId}/publications/view/${id}`);
+  const handleView = (id: number): void => {
+    navigate(`/portfolio/${contentType}/view/${id}`);
   };
 
   return (
@@ -165,7 +166,7 @@ const ManagePublications: React.FC = () => {
                   <td className="table-cell">
                     <div className="table-cell-content">
                       <div className="table-title-wrapper">
-                        <Eye onClick={() => handleView(pub.id as unknown as number, pub.userId as unknown as string)} className="table-icon"/>
+                        <Eye onClick={() => handleView(pub.id as unknown as number)} className="table-icon"/>
                         <div className="table-title">{pub.title}</div>
                       </div>
                     </div>
@@ -179,7 +180,7 @@ const ManagePublications: React.FC = () => {
                   <td className="table-cell">
                     <div className="table-actions">
                       <button
-                        onClick={() => handleView(pub.id as unknown as number, pub.userId as unknown as string)}
+                        onClick={() => handleView(pub.id as unknown as number)}
                         className="action-button view"
                         disabled={isDeleting}
                         aria-label="View publication"
@@ -225,4 +226,4 @@ const ManagePublications: React.FC = () => {
   );
 };
 
-export default ManagePublications;
+export default ManageDocuments;

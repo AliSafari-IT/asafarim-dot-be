@@ -8,6 +8,9 @@ export interface ResumeDto {
   createdAt: string;
   updatedAt: string;
   contact?: ContactInfoDto;
+  isPublic?: boolean;
+  publicSlug?: string;
+  publishedAt?: string;
 }
 
 export interface ResumeDetailDto extends ResumeDto {
@@ -104,6 +107,95 @@ export interface ReferenceDto {
   name: string;
   relationship: string;
   contactInfo: string;
+}
+
+// Public Resume DTOs (GDPR-compliant, no sensitive data)
+export interface PublicResumeDto {
+  publicSlug: string;
+  title: string;
+  summary: string;
+  publishedAt?: string;
+  skills: PublicSkillDto[];
+  workExperiences: PublicWorkExperienceDto[];
+  educationItems: PublicEducationDto[];
+  projects: PublicProjectDto[];
+  certificates: PublicCertificateDto[];
+  languages: PublicLanguageDto[];
+  awards: PublicAwardDto[];
+  socialLinks: PublicSocialLinkDto[];
+}
+
+export interface PublicSkillDto {
+  name: string;
+  category: string;
+  level: string;
+  rating: number;
+}
+
+export interface PublicWorkExperienceDto {
+  jobTitle: string;
+  companyName: string;
+  location?: string;
+  startDate: string;
+  endDate?: string;
+  isCurrent: boolean;
+  description?: string;
+  achievements: string[];
+  technologies: string[];
+}
+
+export interface PublicEducationDto {
+  institution: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: string;
+  endDate?: string;
+  description: string;
+}
+
+export interface PublicProjectDto {
+  name: string;
+  description: string;
+  link: string;
+  technologies: string[];
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface PublicCertificateDto {
+  name: string;
+  issuer: string;
+  issueDate: string;
+  expiryDate?: string;
+  credentialUrl: string;
+}
+
+export interface PublicLanguageDto {
+  name: string;
+  level: string;
+}
+
+export interface PublicAwardDto {
+  title: string;
+  issuer: string;
+  awardedDate: string;
+  description: string;
+}
+
+export interface PublicSocialLinkDto {
+  platform: string;
+  url: string;
+}
+
+export interface PublishResumeRequest {
+  generateSlug?: boolean;
+  customSlug?: string;
+}
+
+export interface PublishResumeResponse {
+  shareUrl: string;
+  slug: string;
+  publishedAt: string;
 }
 
 export interface CreateResumeRequest {
@@ -211,4 +303,61 @@ export const deleteResume = async (id: string): Promise<void> => {
   });
   
   if (!response.ok) throw new Error('Failed to delete resume');
+};
+
+// Publish resume (GDPR-compliant)
+export const publishResume = async (
+  id: string,
+  request: PublishResumeRequest
+): Promise<PublishResumeResponse> => {
+  const token = getCookie('atk') || localStorage.getItem('auth_token');
+  
+  const response = await fetch(`${CORE_API_BASE}/resumes/${id}/publish`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+    },
+    body: JSON.stringify(request),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to publish resume');
+  }
+  return response.json();
+};
+
+// Unpublish resume
+export const unpublishResume = async (id: string): Promise<void> => {
+  const token = getCookie('atk') || localStorage.getItem('auth_token');
+  
+  const response = await fetch(`${CORE_API_BASE}/resumes/${id}/unpublish`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+    },
+  });
+  
+  if (!response.ok) throw new Error('Failed to unpublish resume');
+};
+
+// Fetch public resume by slug (no authentication required)
+export const fetchPublicResumeBySlug = async (slug: string): Promise<PublicResumeDto> => {
+  const response = await fetch(`${CORE_API_BASE}/resumes/public/${slug}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('Resume not found or not published');
+    }
+    throw new Error('Failed to fetch public resume');
+  }
+  return response.json();
 };

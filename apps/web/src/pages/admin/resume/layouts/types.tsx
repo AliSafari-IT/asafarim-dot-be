@@ -1,11 +1,12 @@
 import React from 'react';
-import type { ResumeDetailDto } from '../../../../services/resumeApi';
+import type { ResumeDetailDto, PublicResumeDto } from '../../../../services/resumeApi';
 
 export type LayoutType = 'online' | 'print';
 
 export interface ResumeLayoutProps {
-  resume: ResumeDetailDto;
+  resume: ResumeDetailDto | PublicResumeDto;
   children?: React.ReactNode;
+  onExportPDF?: () => void;
 }
 
 export const formatDate = (dateString: string) => {

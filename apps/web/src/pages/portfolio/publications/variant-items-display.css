@@ -1,0 +1,67 @@
+.variant-items-display {
+  /* Main container styles */
+}
+
+.variant-items-display .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.variant-items-display .loading-state {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+/* Section styles */
+.variant-section {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+/* Grid layout for items */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Responsive grid */
+@media (max-width: 768px) {
+  .items-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .variant-items-display .container {
+    padding: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Dark mode support */
+[data-theme="dark"] .variant-items-display {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .section-title {
+  color: var(--color-text);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .loading-state {
+  color: var(--color-text-muted);
+}

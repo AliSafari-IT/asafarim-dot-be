@@ -1,7 +1,7 @@
 /* Awesome 404 Not Found Component */
 import './NotFound.css';
 
-export default function NotFound() {
+export default function NotFound({ title, message }: { title?: string; message?: string }) {
   const handleGoHome = () => {
     window.location.href = '/';
   };
@@ -22,10 +22,9 @@ export default function NotFound() {
 
         {/* Main Message */}
         <div className="error-message">
-          <h1 className="error-title">Oops! Page Not Found</h1>
+          <h1 className="error-title">Oops! {title || "Page"} Not Found</h1>
           <p className="error-description">
-            The page you're looking for seems to have wandered off into the digital wilderness.
-            Don't worry, even the best explorers get lost sometimes!
+            {message || "The page you're looking for seems to have wandered off into the digital wilderness. Don't worry, even the best explorers get lost sometimes!"}
           </p>
         </div>
 

@@ -9,14 +9,18 @@ import {
   ORCID,
   StackOverflow,
   useAuth,
+  useNotifications,
 } from "@asafarim/shared-ui-react";
 import {
   fetchResumeById,
+  publishResume,
+  unpublishResume,
   type ResumeDetailDto,
 } from "../../../services/resumeApi";
 import { LayoutSelector } from "./layouts/LayoutSelector";
 import { type LayoutType } from "./layouts/types.tsx";
 import { PrintLayout } from "./layouts/PrintLayout";
+import PublishResumeModal from "./components/PublishResumeModal";
 import "./resume-styles.css";
 import "./view-resume.css";
 
@@ -25,12 +29,15 @@ const ViewResume: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const { addNotification } = useNotifications();
   const [resume, setResume] = useState<ResumeDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentLayout, setCurrentLayout] = useState<LayoutType>(
     (searchParams.get("layout") as LayoutType) || "online"
   );
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 
   const handleLayoutChange = (layout: LayoutType) => {
     setCurrentLayout(layout);
@@ -53,6 +60,10 @@ const ViewResume: React.FC = () => {
         setLoading(true);
         const data = await fetchResumeById(id);
         setResume(data);
+        // Initialize published slug if resume is already published
+        if (data.isPublic && data.publicSlug) {
+          setPublishedSlug(data.publicSlug);
+        }
       } catch (err) {
         console.error("Failed to load resume:", err);
         setError("Failed to load resume details");
@@ -135,6 +146,89 @@ const ViewResume: React.FC = () => {
     };
 
     html2pdf().set(opt).from(element).save();
+  };
+
+  const handlePublish = async (customSlug?: string) => {
+    if (!id) return;
+
+      const response = await publishResume(id, {
+        generateSlug: !customSlug,
+        customSlug,
+      });
+
+      setPublishedSlug(response.slug);
+      setShowPublishModal(false);
+
+      addNotification("success", "Resume published successfully!");
+
+      // Show share link in a separate notification
+      const shareUrl = `${window.location.origin}${response.shareUrl}`;
+      addNotification("info", `Share link: ${shareUrl}`);
+
+      // Reload resume to get updated publication status
+      const updatedResume = await fetchResumeById(id);
+      setResume(updatedResume);
+    
+  };
+
+  const handleUnpublish = async () => {
+    if (!id) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to unpublish this resume? The public link will no longer work."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await unpublishResume(id);
+      setPublishedSlug(null);
+
+      addNotification( "success", "Resume unpublished successfully");
+
+      // Reload resume to get updated publication status
+      const updatedResume = await fetchResumeById(id);
+      setResume(updatedResume);
+    } catch {
+      addNotification("error", "Failed to unpublish resume");
+    }
+  };
+
+  const copyShareLink = async () => {
+    if (!publishedSlug) return;
+
+    const shareUrl = `${window.location.origin}/portfolio/${publishedSlug}/public`;
+
+    try {
+      // Try modern Clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        addNotification("success", "Share link copied to clipboard!");
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          document.execCommand('copy');
+          addNotification("success", "Share link copied to clipboard!");
+        } catch (err) {
+          console.error('Fallback copy failed:', err);
+          addNotification("error", "Failed to copy link. Please copy manually: " + shareUrl);
+        }
+        
+        document.body.removeChild(textArea);
+      }
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      addNotification("error", "Failed to copy link. Please copy manually.");
+    }
   };
 
   // Render layout-specific component
@@ -240,6 +334,20 @@ const ViewResume: React.FC = () => {
               >
                 Edit Resume
               </Button>
+              {publishedSlug ? (
+                <>
+                  <Button onClick={copyShareLink} variant="success">
+                    📋 Copy Share Link
+                  </Button>
+                  <Button onClick={handleUnpublish} variant="danger">
+                    🔒 Unpublish
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setShowPublishModal(true)} variant="primary">
+                  🌐 Publish Resume
+                </Button>
+              )}
             </div>
           </div>
         </header>
@@ -686,6 +794,14 @@ const ViewResume: React.FC = () => {
             </section>
           )}
         </div>
+
+        {/* Publish Resume Modal */}
+        <PublishResumeModal
+          isOpen={showPublishModal}
+          onClose={() => setShowPublishModal(false)}
+          onConfirm={handlePublish}
+          resumeTitle={resume.title}
+        />
       </div>
     </div>
   );

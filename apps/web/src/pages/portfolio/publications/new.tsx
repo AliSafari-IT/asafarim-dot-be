@@ -4,15 +4,20 @@ import { createPublication } from "../../../services/publicationService";
 import type { PublicationDto } from "../../../services/publicationService";
 import "./pub-styles.css";
 import PublicationActionsBar from "./components/PublicationActionsBar";
+import { contentType, defaultContentType, PROJECT_VARIANTS, PUBLICATION_VARIANTS } from "./data";
+import { Heading } from "@asafarim/shared-ui-react";
 
-const NewPublication: React.FC = () => {
+const BASE_URL = contentType === 'projects' ? '/portfolio/projects' : '/portfolio/publications';
+const typeOptions = contentType === 'projects' ? PROJECT_VARIANTS : PUBLICATION_VARIANTS;
+const NewDocument: React.FC = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+  const [publicationType, setPublicationType] = useState<string>('academic');
+
   // Form state
-  const [formData, setFormData] = useState<Omit<PublicationDto, 'id'>>({
+  const [formData, setFormData] = useState<Omit<PublicationDto, 'id'> & { tagsInput?: string }>({
     title: "",
     subtitle: "",
     meta: "",
@@ -23,7 +28,7 @@ const NewPublication: React.FC = () => {
     tags: [],
     year: new Date().getFullYear().toString(),
     metrics: [],
-    variant: "publication",
+    variant: defaultContentType,
     size: "md",
     fullWidth: false,
     elevated: true,
@@ -33,7 +38,8 @@ const NewPublication: React.FC = () => {
     doi: "",
     journalName: "",
     conferenceName: "",
-    publicationType: "academic"
+    publicationType,
+    tagsInput: ""
   });
 
   // Check if user is logged in
@@ -47,6 +53,15 @@ const NewPublication: React.FC = () => {
     }
   }, []);
 
+  // Validate contentType and redirect if invalid
+  useEffect(() => {
+    const validContentTypes = ['projects', 'publications'];
+    if (contentType && !validContentTypes.includes(contentType)) {
+      // Redirect to publications if contentType is invalid
+      navigate('/portfolio/publications', { replace: true });
+    }
+  }, [contentType, navigate]);
+
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -57,13 +72,41 @@ const NewPublication: React.FC = () => {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+    if (name === 'variant' && value !== 'publication') {
+      setPublicationType('non-academic');
+    }
+    if (name === 'variant' && value === 'publication') {
+      setPublicationType('academic');
+    }
+    if (name === 'publicationType') {
+      setPublicationType(value);
+      if (value !== 'academic') {
+        setFormData(prev => ({ ...prev, doi: '' }));
+      }
+    }
   };
 
   // Handle tags input
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tagsString = e.target.value;
-    const tagsArray = tagsString.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-    setFormData(prev => ({ ...prev, tags: tagsArray }));
+    // For now, just store the raw input value
+    // We'll process it when the user finishes editing
+    setFormData(prev => ({ ...prev, tagsInput: e.target.value }));
+  };
+
+  // Handle tags input finish (on blur, enter, or tab)
+  const handleTagsFinish = () => {
+    if (formData.tagsInput && formData.tagsInput.trim()) {
+      const newTagsArray: string[] = formData.tagsInput
+        .split(',')
+        .map((tag: string) => tag.trim())
+        .filter((tag: string) => tag !== '');
+
+      // Combine existing tags with new tags, avoiding duplicates
+      const combinedTags = [...(formData.tags || []), ...newTagsArray];
+      const uniqueTags = Array.from(new Set(combinedTags));
+
+      setFormData(prev => ({ ...prev, tags: uniqueTags, tagsInput: '' }));
+    }
   };
 
   // Handle form submission
@@ -80,8 +123,9 @@ const NewPublication: React.FC = () => {
     
     try {
       const result = await createPublication(formData);
+
       if (result) {
-        navigate('/portfolio/publications?myPublications=true');
+        navigate(BASE_URL + '?myPublications=true');
       } else {
         setError("Failed to create publication");
       }
@@ -94,22 +138,24 @@ const NewPublication: React.FC = () => {
   };
 
   if (!isLoggedIn) {
-    return <div className="new-publication">Redirecting to login...</div>;
+    return <div className="new-document">Redirecting to login...</div>;
   }
 
   return (
-    <div className="new-publication">
+    <div className="new-document">
       <PublicationActionsBar />
-      <div className="new-publication-container">
-        <h1 className="new-publication-title">Add New Publication</h1>
+      <div className="new-document-container">
+        <Heading level={1} variant="h3" align="left" weight="bold" color="secondary" marginBottom="xs" uppercase={false}>
+          Add New {contentType === 'projects' ? 'Project' : 'Publication'}
+        </Heading>
         
         {error && (
-          <div className="new-publication-error">
+          <div className="new-document-error">
             {error}
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="new-publication-form">
+        <form onSubmit={handleSubmit} className="new-document-form">
           <div className="form-grid">
             {/* Basic Information */}
             <div className="form-field-full form-section">
@@ -162,9 +208,9 @@ const NewPublication: React.FC = () => {
               </div>
             </div>
             
-            {/* Publication Details */}
+            {/* Document Details */}
             <div className="form-field-full form-section">
-              <h2 className="form-section-title">Publication Details</h2>
+              <h2 className="form-section-title">Document Details</h2>
               
               <div className="form-field">
                 <label className="form-label">Type</label>
@@ -174,11 +220,13 @@ const NewPublication: React.FC = () => {
                   onChange={handleChange}
                   className="form-select"
                 >
-                  <option value="publication">Academic Publication</option>
-                  <option value="project">Project / Presentation</option>
-                  <option value="article">Article</option>
-                  <option value="report">Report</option>
-                  <option value="default">Other</option>
+                  {
+                    typeOptions.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.title}
+                      </option>
+                    ))
+                  }
                 </select>
               </div>
               
@@ -195,13 +243,23 @@ const NewPublication: React.FC = () => {
               
               <div className="form-field">
                 <label className="form-label">DOI (for academic publications)</label>
+                <select
+                  name="publicationType"
+                  value={publicationType}
+                  onChange={handleChange}
+                  className="form-select"
+                >
+                  <option value="academic">Academic</option>
+                  <option value="non-academic">Non-Academic</option>
+                </select>
                 <input
                   type="text"
                   name="doi"
                   value={formData.doi || ''}
                   onChange={handleChange}
                   className="form-input"
-                  placeholder="e.g., 10.1000/xyz123"
+                  placeholder="e.g., 10.1061/(ASCE)HE.1943-5584.0001141"
+                  disabled={ publicationType !== 'academic'}
                 />
               </div>
               
@@ -258,14 +316,56 @@ const NewPublication: React.FC = () => {
               
               <div className="form-field">
                 <label className="form-label">Tags (comma-separated)</label>
-                <input
-                  type="text"
-                  name="tags"
-                  value={formData.tags?.join(', ') || ''}
-                  onChange={handleTagsChange}
-                  className="form-input"
-                  placeholder="e.g., web, research, javascript"
-                />
+                <div className="tags-input-wrapper">
+                  <input
+                    type="text"
+                    name="tags"
+                    value={formData.tagsInput || ''}
+                    onChange={handleTagsChange}
+                    onBlur={handleTagsFinish}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleTagsFinish();
+                      } else if (e.key === ',') {
+                        e.preventDefault();
+                        handleTagsFinish();
+                        // Keep focus for next tag
+                      }
+                    }}
+                    className="form-input"
+                    placeholder="e.g., web, research, javascript"
+                  />
+                  {formData.tagsInput && formData.tagsInput.trim() && (
+                    <button
+                      type="button"
+                      onClick={handleTagsFinish}
+                      className="tags-add-button"
+                      title="Add tags"
+                    >
+                      +
+                    </button>
+                  )}
+                </div>
+                {formData.tags && formData.tags.length > 0 && (
+                  <div className="tags-display">
+                    {formData.tags.map((tag, index) => (
+                      <span key={index} className="tag-badge">
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newTags = formData.tags?.filter((_, i) => i !== index) || [];
+                            setFormData(prev => ({ ...prev, tags: newTags }));
+                          }}
+                          className="tag-remove"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               
               <div className="form-field">
@@ -360,7 +460,7 @@ const NewPublication: React.FC = () => {
           <div className="form-buttons">
             <button
               type="button"
-              onClick={() => navigate('/portfolio/publications')}
+              onClick={() => navigate(BASE_URL)}
               className="form-button form-button-secondary"
               disabled={isSubmitting}
             >
@@ -371,7 +471,7 @@ const NewPublication: React.FC = () => {
               className="form-button form-button-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Saving...' : 'Save Publication'}
+              {isSubmitting ? 'Saving...' : 'Save Document'}
             </button>
           </div>
           </div>
@@ -381,4 +481,4 @@ const NewPublication: React.FC = () => {
   );
 };
 
-export default NewPublication;
+export default NewDocument;

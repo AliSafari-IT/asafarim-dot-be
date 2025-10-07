@@ -31,7 +31,7 @@ const Portfolio: React.FC = () => {
       title: 'Projects',
       description: 'Browse through my personal and professional projects.',
       icon: '💻',
-      link: '/projects',
+      link: '/portfolio/projects',
     },
   ];
 

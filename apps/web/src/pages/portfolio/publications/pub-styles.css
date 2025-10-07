@@ -540,3 +540,101 @@
   margin-top: 2rem;
   text-align: right;
 }
+
+/* Tags Display Styles */
+.tags-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(var(--color-brand-rgb, 59, 130, 246), 0.1);
+  color: var(--color-brand-600);
+  border-radius: var(--global-border-radius-sm, 4px);
+  font-size: var(--global-font-size-xs, 0.75rem);
+  font-weight: 500;
+  border: 1px solid rgba(var(--color-brand-rgb, 59, 130, 246), 0.2);
+}
+
+.tag-remove {
+  background: none;
+  border: none;
+  color: var(--color-brand-600);
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 0;
+  margin-left: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.tag-remove:hover {
+  color: var(--color-brand-800);
+}
+
+/* Tags input wrapper */
+.tags-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tags-add-button {
+  position: absolute;
+  right: 0.75rem;
+  background: var(--color-brand-600);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tags-add-button:hover {
+  background: var(--color-brand-700);
+}
+
+.tags-add-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-brand-200);
+}
+
+/* Dark mode adjustments for tags */
+[data-theme="dark"] .tag-badge,
+.dark .tag-badge {
+  background-color: rgba(var(--color-brand-rgb, 96, 165, 250), 0.2);
+  color: var(--color-brand-400);
+  border-color: rgba(var(--color-brand-rgb, 96, 165, 250), 0.3);
+}
+
+[data-theme="dark"] .tag-remove,
+.dark .tag-remove {
+  color: var(--color-brand-400);
+}
+
+[data-theme="dark"] .tag-remove:hover,
+.dark .tag-remove:hover {
+  color: var(--color-brand-300);
+}
+
+[data-theme="dark"] .tags-add-button,
+.dark .tags-add-button {
+  background: var(--color-brand-500);
+}
+
+[data-theme="dark"] .tags-add-button:hover,
+.dark .tags-add-button:hover {
+  background: var(--color-brand-400);
+}

@@ -61,25 +61,46 @@ export const mapToContentCardProps = (publication: PublicationDto): ContentCardP
 // API base URL
 const API_BASE_URL = import.meta.env.VITE_CORE_API_URL || 'http://core-api.asafarim.local:5102/api';
 
-// Fetch all publications
-export const fetchPublications = async (variant?: string, featured?: boolean, myPublications?: boolean): Promise<(ContentCardProps & { id: number | string })[]> => {
+// Fetch publications or projects by variant (unified function)
+export const fetchContent = async (
+  variant?: string,
+  featured?: boolean,
+  myContent?: boolean,
+  contentType?: 'publications' | 'projects' // For backwards compatibility
+): Promise<(ContentCardProps & { id: number | string })[]> => {
   try {
+    // For projects, map frontend variants to backend publication variants
+    let mappedVariant = variant;
+
+    if (contentType === 'projects' || (variant && ['featured', 'opensource', 'commercial', 'research', 'tools'].includes(variant))) {
+      // Map project variants to publication variants in backend
+      const projectVariantMapping: Record<string, string> = {
+        'featured': 'featured',
+        'opensource': 'opensource',
+        'commercial': 'commercial',
+        'research': 'research',
+        'tools': 'tools'
+      };
+
+      mappedVariant = projectVariantMapping[variant || ''] || variant;
+    }
+
     let url = `${API_BASE_URL}/publications`;
-    
+
     // Add query parameters if provided
     const params = new URLSearchParams();
-    if (variant) params.append('variant', variant);
+    if (mappedVariant) params.append('variant', mappedVariant);
     if (featured !== undefined) params.append('featured', featured.toString());
-    if (myPublications === true) params.append('myPublications', 'true');
-    
+    if (myContent === true) params.append('myPublications', 'true');
+
     if (params.toString()) {
       url += `?${params.toString()}`;
     }
-    
+
     // Get token from both cookie and localStorage for maximum compatibility
     const token = getCookie('atk') || localStorage.getItem('auth_token');
     console.log('Using token for API call:', token ? 'Token exists' : 'No token');
-    
+
     const response = await fetch(url, {
       credentials: 'include', // Include cookies for authentication
       headers: {
@@ -88,17 +109,27 @@ export const fetchPublications = async (variant?: string, featured?: boolean, my
         ...(token && { 'Authorization': `Bearer ${token}` }),
       },
     });
-    
+
     if (!response.ok) {
-      throw new Error(`Error fetching publications: ${response.statusText}`);
+      throw new Error(`Error fetching content: ${response.statusText}`);
     }
-    
+
     const data: PublicationDto[] = await response.json();
     return data.map(mapToContentCardProps);
   } catch (error) {
-    console.error('Failed to fetch publications:', error);
+    console.error('Failed to fetch content:', error);
     return [];
   }
+};
+
+// Backwards compatibility - keep the original function
+export const fetchPublications = async (variant?: string, featured?: boolean, myPublications?: boolean): Promise<(ContentCardProps & { id: number | string })[]> => {
+  return fetchContent(variant, featured, myPublications, 'publications');
+};
+
+// New function for projects (which are just publications with project variants)
+export const fetchProjects = async (variant?: string, featured?: boolean, myProjects?: boolean): Promise<(ContentCardProps & { id: number | string })[]> => {
+  return fetchContent(variant, featured, myProjects, 'projects');
 };
 
 // Fetch a single publication by ID

@@ -1,24 +1,32 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Button } from "@asafarim/shared-ui-react";
+import { Button, Heading } from "@asafarim/shared-ui-react";
 import { fetchPublicationById } from "../../../services/publicationService";
 import type { ContentCardProps } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
 import PublicationActionsBar from "./components/PublicationActionsBar";
 
-export default function ViewPublication() {
-  const { id } = useParams<{ id: string }>();
+
+export default function ViewDocument() {
   const navigate = useNavigate();
+  const { id, contentType } = useParams<{ id: string, contentType: string }>();
   const [loading, setLoading] = useState(true);
   const [publication, setPublication] = useState<ContentCardProps | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Get publication ID from route params
-  const publicationId = id;
+  const BASE_URL = '/portfolio/' + contentType;
 
   useEffect(() => {
+    // Validate contentType - only allow 'projects' or 'publications'
+    const validContentTypes = ['projects', 'publications'];
+    if (!contentType || !validContentTypes.includes(contentType)) {
+      // Redirect to publications if contentType is invalid
+      navigate('/portfolio/publications', { replace: true });
+      return;
+    }
+
     const loadPublication = async () => {
-      if (!publicationId) {
+      if (!id) {
         setError("Publication ID is required");
         setLoading(false);
         return;
@@ -26,8 +34,8 @@ export default function ViewPublication() {
 
       try {
         setLoading(true);
-        const data = await fetchPublicationById(publicationId);
-        
+        const data = await fetchPublicationById(id);
+
         if (data) {
           setPublication(data);
         } else {
@@ -42,7 +50,7 @@ export default function ViewPublication() {
     };
 
     loadPublication();
-  }, [publicationId]);
+  }, [contentType, id, navigate]);
 
   const handleBack = () => {
     navigate(-1); // Go back to previous page
@@ -68,14 +76,14 @@ export default function ViewPublication() {
   return (
     <div className="publication-view-container">
       <PublicationActionsBar 
-        onAddPublication={() => navigate('/portfolio/publications/new')}
-        onViewMyPublications={() => navigate('/portfolio/publications?myPublications=true')}
-        onViewAllPublications={() => navigate('/portfolio/publications')}
-        onManagePublications={() => navigate('/portfolio/publications/manage')}
+        onAddPublication={() => navigate(BASE_URL + '/new')}
+        onViewMyPublications={() => navigate(BASE_URL + '?myPublications=true')}
+        onViewAllPublications={() => navigate(BASE_URL)}
+        onManagePublications={() => navigate(BASE_URL + '/manage')}
       />
       <div className="publication-view-header">
         <Button onClick={handleBack} variant="secondary">← Back</Button>
-        <h1 className="publication-view-title">Publication Details</h1>
+        <Heading level={1} variant="h3" align="left" weight="bold" color="secondary" marginBottom="xs" uppercase={false}>{contentType === 'projects' ? 'Project' : 'Publication'} Details</Heading>
       </div>
       
       <div className="publication-view-content">

@@ -10,17 +10,15 @@ import { NotificationProvider, NotFound } from "@asafarim/shared-ui-react";
 import WhatIsBuilding from "./pages/WhatIsBuilding";
 import Portfolio from "./pages/Portfolio";
 import Resume from "./pages/portfolio/resume/Resume";
-import Publications from "./pages/portfolio/publications/Publications";
+import PublicResumeView from "./pages/portfolio/resume/PublicResumeView";
 import Research from "./pages/portfolio/Research";
-import Projects from "./pages/Projects";
-import NewPublication from "./pages/portfolio/publications/new";
-import ManagePublications from "./pages/portfolio/publications/manage";
-import EditPublication from "./pages/portfolio/publications/edit";
-import ViewPublication from "./pages/portfolio/publications/view";
-import ResumeForm from './pages/admin/resume/ResumeForm';
-import {
-  EntityManagement,
-} from "./pages/admin";
+import Documents from "./pages/portfolio/publications/Documents";
+import NewDocument from "./pages/portfolio/publications/new";
+import ManageDocuments from "./pages/portfolio/publications/manage";
+import EditDocument from "./pages/portfolio/publications/edit";
+import ViewDocument from "./pages/portfolio/publications/view";
+import ResumeForm from "./pages/admin/resume/ResumeForm";
+import { EntityManagement } from "./pages/admin";
 import { ResumeList, ViewResume } from "./pages/admin/resume";
 
 // Resume section components
@@ -68,16 +66,20 @@ const router = createBrowserRouter([
       { path: "contact", element: <Contact /> },
       { path: "what-is-building", element: <WhatIsBuilding /> },
       { path: "portfolio", element: <Portfolio /> },
-      { path: "projects", element: <Projects /> },
-      { path: "portfolio/resume", element: <Resume /> },
-      { path: "portfolio/publications", element: <Publications /> },
-      { path: "portfolio/publications/new", element: <NewPublication /> },
+
+      { path: "portfolio/:contentType", element: <Documents /> },
       {
-        path: "portfolio/publications/manage",
-        element: <ManagePublications />,
+        path: "portfolio/:contentType/manage",
+        element: <ManageDocuments />,
       },
-      { path: "portfolio/publications/edit/:id", element: <EditPublication /> },
-      { path: "portfolio/publications/view/:id", element: <ViewPublication /> },
+      { path: "portfolio/:contentType/new", element: <NewDocument /> },
+      { path: "portfolio/:contentType/edit/:id", element: <EditDocument /> },
+      { path: "portfolio/:contentType/view/:id", element: <ViewDocument /> },
+
+      { path: "portfolio/resume", element: <Resume /> },
+      
+      { path: "portfolio/:publicSlug/public", element: <PublicResumeView /> },
+
       { path: "portfolio/research", element: <Research /> },
 
       // Admin routes
@@ -160,8 +162,14 @@ const router = createBrowserRouter([
         path: "/admin/entities/resumes/:resumeId/skills",
         element: <SkillsManagement />,
       },
-      { path: "/admin/entities/resumes/:resumeId/skills/new", element: <SkillForm /> },
-      { path: "/admin/entities/resumes/:resumeId/skills/:id", element: <SkillForm /> },
+      {
+        path: "/admin/entities/resumes/:resumeId/skills/new",
+        element: <SkillForm />,
+      },
+      {
+        path: "/admin/entities/resumes/:resumeId/skills/:id",
+        element: <SkillForm />,
+      },
       {
         path: "/admin/entities/resumes/:resumeId/skills/:id/edit",
         element: <SkillForm />,
@@ -294,10 +302,6 @@ const router = createBrowserRouter([
       },
 
       // dynamic routes
-      {
-        path: "portfolio/:userId/publications/view/:id",
-        element: <ViewPublication />,
-      },
       { path: "*", element: <NotFound /> },
     ],
   },

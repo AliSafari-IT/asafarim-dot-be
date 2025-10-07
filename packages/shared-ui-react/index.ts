@@ -8,6 +8,8 @@ export { default as ShowcaseCard } from "./components/ShowcaseCard";
 export { ContentCard } from "./components/ContentCard";
 export { ContentCardExample } from "./components/ContentCardExample";
 export type { ContentCardProps } from "./components/ContentCard";
+export { Heading } from "./components/Heading";
+
 
 // Auth
 export { default as AuthStatus } from "./components/Auth/AuthStatus";

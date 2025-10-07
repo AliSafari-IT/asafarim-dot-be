@@ -153,7 +153,9 @@ const ContentCard: React.FC<ContentCardProps> = ({
 
   // Determine if we should show the View Publication button
   const hasViewRoute = Boolean(userId && props.id);
-  const viewPublicationUrl = hasViewRoute ? `/portfolio/${userId}/publications/view/${props.id}` : undefined;
+  const contentType = window.location.pathname.includes("projects") ? "projects" : "publications";
+
+  const viewDocumentUrl = hasViewRoute ? `/portfolio/${contentType}/view/${props.id}` : undefined;
   
   // Card content
   const cardContent = (
@@ -206,10 +208,10 @@ const ContentCard: React.FC<ContentCardProps> = ({
         {hasViewRoute && (
           <div className="content-card__view-action">
             <a 
-              href={viewPublicationUrl}
+              href={viewDocumentUrl}
               className="content-card__view-button"
             >
-              View Publication
+              View Document
             </a>
           </div>
         )}
