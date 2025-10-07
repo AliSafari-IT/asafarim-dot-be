@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Identity.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]  // Changed from "[controller]" to "api/[controller]"
     public class HealthController : ControllerBase
     {
         private static readonly string StartTime = DateTime.UtcNow.ToString("o");
