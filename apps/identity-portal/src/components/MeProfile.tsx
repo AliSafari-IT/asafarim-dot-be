@@ -6,7 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 
 export default function MeProfile() {
   const toast = useToast();
-  const { updateUser } = useAuth();
+  const { updateProfile } = useAuth();
   const [me, setMe] = useState<UserInfo | null>(null);
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
@@ -28,7 +28,7 @@ export default function MeProfile() {
     try {
       const updated = await identityService.updateProfile({ email, userName });
       setMe(updated);
-      updateUser(updated);
+      updateProfile(updated);
       toast.success('Profile updated', { description: 'Your changes have been saved.', durationMs: 4000 });
     } finally {
       setBusy(false);

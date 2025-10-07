@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useAuth as useSharedAuth } from '@asafarim/shared-ui-react';
 import { authConfig } from '../config/auth';
-import { identityService, type LoginRequest, type RegisterRequest } from '../api/identityService';
+import { identityService, type LoginRequest, type RegisterRequest, type UpdateProfileRequest } from '../api/identityService';
 
 /**
  * Identity Portal specific authentication hook that combines:
@@ -71,6 +71,30 @@ export const useIdentityPortalAuth = () => {
     }
   }, []);
 
+  const updateProfile = useCallback(async (data: UpdateProfileRequest) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      await identityService.updateProfile(data);
+      
+      // After successful update, cookies should be set
+      console.log('Profile update successful, cookies should be set');
+      
+      // Dispatch events that the shared useAuth hook listens to
+      window.dispatchEvent(new Event('focus'));
+      window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
+      
+      return true;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
+      setError(errorMessage);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
@@ -90,6 +114,7 @@ export const useIdentityPortalAuth = () => {
     error,
     clearError,
     isLoading,
+    updateProfile,
   };
 };
 
