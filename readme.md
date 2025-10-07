@@ -1,210 +1,399 @@
 # ASafariM Monorepo
 
-Overview
-This repository hosts multiple frontend applications, backend APIs, and shared packages used across the ASafariM ecosystem. It is organized as a polyrepo-style monorepo for easier development, shared components, and consistent tooling.
+> **A comprehensive full-stack ecosystem** featuring multiple frontend applications, backend APIs, and shared packages for consistent development experience.
 
-Repository Structure
-The workspace includes the following folders (see asafarim-dot-be.code-workspace):
+## 📋 Table of Contents
 
-- Apps
-  - apps/ai-ui
-  - apps/blog
-  - apps/core-app
-  - apps/jobs-ui
-  - apps/identity-portal
-  - apps/web
-- APIs
-  - apis/Ai.Api
-  - apis/Core.Api
-  - apis/Identity.Api
-- Packages
-  - packages/shared-ui-react
-  - packages/shared-tokens
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Repository Structure](#repository-structure)
+- [Technology Stack](#technology-stack)
+- [Quick Start](#quick-start)
+- [Development](#development)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Troubleshooting](#troubleshooting)
+- [Recent Developments](#recent-developments)
 
-Apps
+## 🎯 Overview
 
-- ai-ui
-  - Description: AI-related UI application (React-based).
-  - Tech: React 19.x and modern toolchain (e.g., Vite/Next.js; see the app’s package.json).
-  - Dev: npm install && npm run dev (from apps/ai-ui).
-  - Notes: Ensure React versions are consistent across the monorepo.
+This repository hosts a **polyrepo-style monorepo** that powers the entire ASafariM ecosystem. It includes:
 
-- blog
-  - Description: ASafariM blog.
-  - Tech: Docusaurus with TypeScript.
-  - Important: Configuration files should use TypeScript extensions (.ts), e.g., docusaurus.config.ts and sidebars.ts.
-  - Dev: npm install && npm run start (from apps/blog).
-  - Initial setup command used: npx create-docusaurus@latest asafarim-blog classic --typescript.
-  - Docs/Content: Use /docs, /blog, and /static per Docusaurus conventions.
+- **6 Frontend Applications**: Web portal, blog, AI interface, job listings, identity management, and core app
+- **3 Backend APIs**: AI services, core domain logic, and identity management
+- **2 Shared Packages**: Reusable React components and design tokens
+- **Advanced Features**: Resume publishing, portfolio management, authentication, and content validation
 
-- core-app
-  - Description: Core web application for end-user experiences.
-  - Tech: React 19.x.
-  - Dev: npm install && npm run dev (from apps/core-app).
-  - Shared UI: Integrates shared-ui-react for common UI primitives and notifications.
+**Key Principles:**
 
-- jobs-ui
-  - Description: Job listings and management UI.
-  - Tech: Web framework as configured (React/Angular depending on package.json; prior work integrated React components and web components).
-  - Dev: npm install && npm run dev (from apps/jobs-ui).
-  - Integration Note: If consuming React components or web components, ensure a single React instance is used and types are properly configured (see Shared Packages section).
+- 🔒 **Type Safety**: Full TypeScript coverage across all applications
+- 🎨 **Design System**: Consistent UI/UX with shared components and tokens
+- 🔐 **Security First**: GDPR-compliant data handling and role-based access control
+- 🚀 **Developer Experience**: PnPM workspaces for efficient dependency management
 
-- identity-portal
-  - Description: Identity and access management portal.
-  - Tech: As configured in the app (Angular/React depending on package.json).
-  - Dev: npm install && npm run dev (from apps/identity-portal).
-  - Integration Note: If embedding React components, make sure all apps resolve to the same React version and that any web components are properly encapsulated.
+## 🏗️ Architecture
 
-- web
-  - Description: Public-facing website shell or landing experience.
-  - Tech: As configured (often React or static site tooling).
-  - Dev: npm install && npm run dev (from apps/web).
+### **Monorepo Structure**
 
-APIs
+```
+asafarim-dot-be/
+├── apps/                    # Frontend applications
+│   ├── web/                # Main portfolio & publications site
+│   ├── blog/               # Docusaurus-based blog
+│   ├── core-app/           # Core user experiences
+│   ├── ai-ui/              # AI interface application
+│   ├── jobs-ui/            # Job listings management
+│   └── identity-portal/    # Authentication & user management
+├── apis/                   # Backend services
+│   ├── Core.Api/           # Main business logic API
+│   ├── Identity.Api/       # Authentication & authorization
+│   └── Ai.Api/             # AI-related endpoints
+└── packages/               # Shared libraries
+    ├── shared-ui-react/    # React components & utilities
+    └── shared-tokens/      # Design system tokens
+```
 
-- Ai.Api
-  - Description: Backend API for AI-related endpoints.
-  - Tech: .NET (typical).
-  - Dev (from apis/Ai.Api):
-    - dotnet restore
-    - dotnet build
-    - dotnet run
+### **Data Flow**
 
-- Core.Api
-  - Description: Backend API for core domain services.
-  - Tech: .NET (typical).
-  - Dev (from apis/Core.Api):
-    - dotnet restore
-    - dotnet build
-    - dotnet run
+```
+Frontend Apps → APIs → Database
+     ↓           ↓       ↓
+   React UI  → .NET APIs → PostgreSQL
+     ↓           ↓       ↓
+   Shared UI ← Tokens ← Consistent UX
+```
 
-- Identity.Api
-  - Description: Backend API for identity, authentication, and authorization.
-  - Tech: .NET (typical).
-  - Dev (from apis/Identity.Api):
-    - dotnet restore
-    - dotnet build
-    - dotnet run
+## 📁 Repository Structure
 
-Shared Packages
+### **Frontend Applications**
 
-- shared-ui-react
-  - Purpose: Shared React UI components and utilities for consistent UX across apps.
-  - Key Features:
-    - Notification system with NotificationProvider, NotificationContainer, and useNotifications hook for consistent app-wide notifications.
-  - Versioning:
-    - Peer dependency on React 19.1.1 to ensure consistency and avoid invalid hook calls.
-    - All consumer apps must align to the same React version to prevent multiple React instances.
-  - Usage:
-    - Install peer dependencies in the consuming app.
-    - Wrap your root component with the NotificationProvider and render the NotificationContainer near the app root.
+| Application | Purpose | Tech Stack | Port |
+|-------------|---------|------------|------|
+| **web** | Portfolio & publications | React + TypeScript + Vite | 5175 |
+| **blog** | Technical blog | Docusaurus + TypeScript | 3000 |
+| **core-app** | Core user experiences | React + TypeScript | 5174 |
+| **ai-ui** | AI interface | React + TypeScript | 5173 |
+| **jobs-ui** | Job listings | React/Angular + TypeScript | 4200 |
+| **identity-portal** | Auth & user management | React/Angular + TypeScript | 5177 |
 
-- shared-tokens
-  - Purpose: Centralized design tokens (colors, spacing, typography, etc.) for consistent theming and style across apps.
-  - Usage:
-    - Import tokens in component styles or theme definitions within each app.
+### **Backend APIs**
 
-Prerequisites
+| API | Purpose | Tech Stack | Port |
+|-----|---------|------------|------|
+| **Core.Api** | Business logic & data | .NET 8 + Entity Framework | 5102 |
+| **Identity.Api** | Authentication & users | .NET 8 + ASP.NET Identity | 5101 |
+| **Ai.Api** | AI services | .NET 8 + ML.NET | 5103 |
 
-- Node.js (LTS recommended)
-- npm, pnpm, or yarn (use the same package manager consistently across the repo)
-- .NET SDK (for APIs)
+### **Shared Packages**
 
-Getting Started
+| Package | Purpose | Version |
+|---------|---------|---------|
+| **shared-ui-react** | Reusable React components | v0.6.0 |
+| **shared-tokens** | Design system tokens | v1.0.0 |
 
-- Clone the repo
-  - git clone [asafarim-dot-be](https://github.com/AliSafari-IT/asafarim-dot-be.git)
-  - Open in your editor using the workspace file [asafarim-dot-be.code-workspace](https://github.com/AliSafari-IT/asafarim-dot-be/blob/main/readme.md)
+## 🛠️ Technology Stack
 
-- Install dependencies
-  - Per app (example):
-    - cd apps/ai-ui
-    - npm install
-  - Repeat for each frontend app you plan to work on.
-  - For shared packages, run install at consumer app level; if using a workspace manager (e.g., npm workspaces/pnpm), follow the root setup if available in package.json.
+### **Frontend**
 
-- Run a frontend app
-  - From the app directory, run:
-    - npm run dev
-  - Or the framework-specific command specified in that app’s package.json (e.g., npm run start for Docusaurus in apps/blog).
+- **React 19.1.1** - UI framework (consistent across all apps)
+- **TypeScript** - Type safety and developer experience
+- **Vite** - Fast build tool and dev server
+- **React Router** - Client-side routing
+- **Tailwind CSS** - Utility-first styling (via shared tokens)
 
-- Run an API
-  - From the API directory, run:
-    - dotnet restore
-    - dotnet build
-    - dotnet run
-  - APIs typically expose Swagger UI in development; check console output for the local URL.
+### **Backend**
 
-- Running multiple services
-  - Use separate terminals for each app/API.
-  - Ensure ports do not conflict; adjust your app configuration or .env files if needed.
+- **.NET 8** - Cross-platform framework
+- **Entity Framework Core** - ORM and data access
+- **ASP.NET Core** - Web API framework
+- **PostgreSQL** - Primary database
 
-Conventions and Best Practices
+### **Development Tools**
 
-- React Version Consistency
-  - Ensure all React-based apps and shared packages resolve to the same React version (19.1.1 recommended in shared-ui-react).
-  - Mismatched React versions can cause “Invalid hook call” errors.
+- **PnPM** - Fast, disk-efficient package manager
+- **Workspaces** - Monorepo dependency management
+- **ESLint** - Code linting and formatting
+- **Prettier** - Code formatting
+- **Husky** - Git hooks for quality
 
-- Type Declarations for Integrations
-  - If a non-React app consumes React-based web components, ensure TypeScript declarations are available.
-  - Include minimal ambient declarations where necessary and configure tsconfig include paths for types.
+## 🚀 Quick Start
 
-- Web Components and Shadow DOM
-  - When embedding React UI via web components, prefer shadow DOM for style encapsulation.
-  - Use property binding rather than attribute binding when interacting with components across frameworks.
+### **Prerequisites**
 
-- Docusaurus (Blog)
-  - Keep configuration files in TypeScript: docusaurus.config.ts and sidebars.ts.
-  - Follow Docusaurus project structure for docs/blog/static assets.
+- **Node.js 18+** - JavaScript runtime
+- **.NET 8+** - Backend framework
+- **PostgreSQL** - Database server
+- **Git** - Version control
 
-- Notifications
-  - Prefer the shared notification system from shared-ui-react to ensure consistency across apps.
+### **Initial Setup**
 
-Environment Configuration
+```bash
+# 1. Clone the repository
+git clone https://github.com/alisafari-it/asafarim-dot-be.git
+cd asafarim-dot-be
 
-- Use .env files (not committed) per app/API for environment-specific settings (e.g., API base URLs, keys).
-- For .NET APIs, use appsettings.json and appsettings.Development.json.
-- Document required variables in each app/API README if they exist.
+# 2. Install all dependencies (pnpm workspaces)
+pnpm install
 
-Scripts and Tooling
+# 3. Set up environment variables
+# Copy .env.example files and configure your settings
+cp apis/Core.Api/appsettings.Development.json.example apis/Core.Api/appsettings.Development.json
+# Edit with your database connection strings and JWT secrets
 
-- Each application may have its own scripts in package.json, such as:
-  - dev, build, start, test, lint, format
-- APIs use standard .NET CLI commands for build/run/test.
-- If a root-level task runner (e.g., Nx/Turborepo) is added, document commands here.
+# 4. Build shared packages first
+pnpm run dev:shared
 
-Testing
+# 5. Start everything (recommended)
+pnpm run app
+```
 
-- Frontend apps: use the configured test runner (e.g., Vitest/Jest/React Testing Library).
-- APIs: use dotnet test.
-- Add CI integration to run tests and lint checks on pull requests.
+### **Alternative: Start Individual Services**
 
-Contribution Guidelines
+```bash
+# Frontend only
+pnpm run dev
 
-- Branching: feature/<name>, fix/<name>, chore/<name>
-- Commits: meaningful messages; consider Conventional Commits if desired.
-- Code Style: run lint and format before committing.
-- Pull Requests: include screenshots or short clips for UI changes; link to issues.
+# APIs only
+pnpm run api
 
-Troubleshooting
+# Specific app
+pnpm run dev:web
 
-- Invalid hook call (React)
-  - Verify a single React instance and matching versions across apps and shared-ui-react (19.1.1).
-  - Ensure node_modules are hoisted or de-duplicated appropriately by your package manager.
+# Specific API
+pnpm run dev:coreapi
+```
 
-- TypeScript errors with React 19.x
-  - If @types are incomplete for latest React, consider minimal ambient declarations or upgrade TS settings per app.
-  - Ensure tsconfig includes declaration paths.
+## 💻 Development
 
-- Web component styling or props not applied
-  - Use shadow DOM-aware styles.
-  - Bind properties (not attributes) for complex data in Angular/other frameworks.
+### **Development Commands**
 
-License
+| Command | Description | Services Started |
+|---------|-------------|------------------|
+| `pnpm app` | Full stack (clean install + build + run) | All apps + APIs |
+| `pnpm dev` | All frontend apps | web, blog, core, ai, jobs, identity |
+| `pnpm api` | All backend APIs | Core, Identity, AI APIs |
+| `pnpm dev:web` | Web app only | Portfolio site (port 5175) |
+| `pnpm dev:shared` | Build shared packages | UI components & tokens |
 
-- MIT License
+### **Port Management**
 
-Acknowledgements
+The setup includes intelligent port management:
 
-- Built with React, Docusaurus, and .NET Core.
-- Shared UI and tokens enable consistency across the ecosystem.
+```bash
+# Kill conflicting processes before starting
+pnpm run predev  # Kills all dev ports
+pnpm run kill:web   # Kills web-specific ports
+
+# Individual service killers
+pnpm run kill:identity  # Ports 5101, 5177
+pnpm run kill:core      # Ports 5102, 5174
+pnpm run kill:ai        # Ports 5103, 5173
+```
+
+### **Workspace Features**
+
+#### **PnPM Workspaces**
+
+- **Selective Installation**: `pnpm --filter @asafarim/web install`
+- **Scoped Scripts**: `pnpm --filter @asafarim/shared-ui-react build`
+- **Dependency Hoisting**: Shared dependencies in root node_modules
+
+#### **Development Workflow**
+
+1. **Make changes** in your feature branch
+2. **Test across apps** when modifying shared packages
+3. **Run linting**: `pnpm run lint` (if configured)
+4. **Commit with conventional messages**: `feat:`, `fix:`, `docs:`, etc.
+5. **Push and create PR** with screenshots for UI changes
+
+### **Environment Variables**
+
+#### **Required Variables**
+
+```bash
+# Database connections
+DATABASE_CONNECTION_STRING="Host=localhost;Port=5432;Database=asafarim;Username=postgres;Password=password"
+
+# JWT Configuration
+JWT_SECRET="your-super-secret-jwt-key-here"
+JWT_ISSUER="asafarim"
+JWT_AUDIENCE="asafarim-users"
+
+# API URLs (for frontend apps)
+VITE_API_BASE_URL="http://localhost:5102"
+VITE_IDENTITY_BASE_URL="http://localhost:5101"
+```
+
+## 🚢 Deployment
+
+### **Build Commands**
+
+```bash
+# Build all applications
+pnpm run app:build
+
+# Build specific apps
+pnpm run app:web:build
+pnpm run app:blog:build
+
+# Build all APIs
+pnpm run api:build
+```
+
+### **Production Deployment**
+
+```bash
+# 1. Clean build
+pnpm run app:build
+
+# 2. Deploy with your strategy
+# Docker, PM2, systemd, or your preferred method
+
+# 3. Run database migrations
+dotnet ef database update --project apis/Core.Api
+
+# 4. Start services
+pnpm run api  # Production APIs
+# Serve built frontend apps via nginx/Caddy/Cloudflare
+```
+
+### **Environment Setup**
+
+- **Development**: Use `appsettings.Development.json`
+- **Production**: Use `appsettings.Production.json` with proper secrets
+- **Docker**: Each service can be containerized independently
+
+## 🤝 Contributing
+
+### **Branch Strategy**
+
+```
+main ← feature/ ← your-branch
+     ← release/ ← hotfix/
+```
+
+### **Code Standards**
+
+- **TypeScript**: Strict mode enabled across all projects
+- **React**: Functional components with hooks
+- **Commits**: Follow [Conventional Commits](https://conventionalcommits.org/)
+- **PRs**: Include screenshots for UI changes
+
+### **Development Checklist**
+
+- [ ] Code passes linting (`pnpm run lint`)
+- [ ] Tests pass (`pnpm run test`)
+- [ ] Shared packages tested across consuming apps
+- [ ] Documentation updated
+- [ ] Database migrations included (if applicable)
+
+### **Pull Request Template**
+
+```markdown
+## Description
+Brief description of changes
+
+## Changes Made
+- Feature 1: Description
+- Feature 2: Description
+
+## Screenshots
+[Before/After screenshots for UI changes]
+
+## Testing
+- [ ] Manual testing completed
+- [ ] Cross-app compatibility verified
+- [ ] Database migrations tested
+```
+
+## 🔧 Troubleshooting
+
+### **Common Issues**
+
+#### **"Invalid hook call" Errors**
+
+```bash
+# Solution: Ensure React version consistency
+pnpm list react  # Check versions across workspaces
+pnpm update react@19.1.1  # Align all React versions
+```
+
+#### **Port Conflicts**
+
+```bash
+# Kill all development ports
+pnpm run predev
+
+# Or kill specific service ports
+pnpm run kill:web
+```
+
+#### **Database Connection Issues**
+
+```bash
+# Check connection string format
+# Ensure PostgreSQL is running
+# Verify database exists and user has permissions
+```
+
+#### **Build Failures**
+
+```bash
+# Clean install and rebuild
+pnpm run rm:nm  # Remove all node_modules
+pnpm install    # Fresh install
+pnpm run dev:shared  # Rebuild shared packages
+```
+
+### **Performance Optimization**
+
+#### **Development Speed**
+
+- Use `pnpm` instead of `npm` for faster installs
+- Enable workspace protocol for local packages
+- Use `pnpm run dev:shared` before starting apps
+
+#### **Production Builds**
+
+- Enable gzip compression in reverse proxy
+- Use CDN for static assets
+- Implement caching headers for API responses
+
+## 📈 Recent Developments
+
+### **Resume Publishing System** (October 2025)
+
+- **Public Resume Sharing**: GDPR-compliant resume sharing with slug-based URLs
+- **Privacy Controls**: Public/private toggle with consent tracking and IP logging
+- **Secure Slug Generation**: Automated slug generation with collision detection and sanitization
+- **Public DTOs**: Privacy-focused data transfer objects excluding sensitive information
+
+### **Enhanced Portfolio Management** (September-October 2025)
+
+- **Content Type Validation**: Fixed routing issues with invalid content types (e.g., `/portfolio/invalid/view/10`)
+- **Improved Tag Management**: Enhanced tag input with visual feedback, accumulation, and duplicate prevention
+- **Toast Notifications**: Integrated toast notifications for better user feedback
+- **Better Form Handling**: Improved form validation and error handling across all portfolio forms
+
+### **Work Experience & Technologies** (September 2025)
+
+- **Technology Tracking**: Added technology field to work experience entities
+- **Extended Database Schema**: Updated resume models to include technology relationships
+- **Achievement Management**: Enhanced work experience with achievement lists and technology stacks
+
+### **Authentication & Security** (September 2025)
+
+- **Extended Token Duration**: Increased access token lifetime to 4 hours for better UX
+- **Enhanced Logging**: Improved audit logging for publication and resume operations
+- **Role-Based Access**: Admin controls for cross-user publication management
+
+### **UI/UX Improvements** (September-October 2025)
+
+- **Heading Component**: New flexible Heading component with multiple variants and styling options
+- **Icon Enhancements**: Improved SVG icons with better accessibility and hover states
+- **Responsive Design**: Enhanced responsive behavior across all components
+- **Dark Mode Support**: Consistent dark mode implementation across all new components
+
+---
+
+**Built with ❤️ by ASafariM** | **License: CC BY 4.0** | **GitHub**: [alisafari-it/asafarim-dot-be](https://github.com/alisafari-it/asafarim-dot-be)
