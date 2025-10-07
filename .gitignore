@@ -126,3 +126,4 @@ launchSettings*.json
 .env
 .env.local
 .env.*
+deploy-production.sh
