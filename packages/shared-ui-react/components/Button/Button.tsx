@@ -34,6 +34,7 @@ export interface ButtonProps {
   'aria-haspopup'?: boolean;
   role?: string;
   tabIndex?: number;
+  style?: React.CSSProperties;
 }
 
 const Button: React.FC<ButtonProps> = ({

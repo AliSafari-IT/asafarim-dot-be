@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Core.Api.Controllers
 {
     [ApiController]
-    [Route("what-is-building")]
+    [Route("api/what-is-building")]
     public class WhatIsBuildingController : ControllerBase
     {
         private static readonly HttpClient _http = new HttpClient();

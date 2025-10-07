@@ -29,4 +29,16 @@
   --color-brand-900: #dbeafe; /* light accents on dark */
   --color-phosphor: #d1f550;
   --color-brand: #0847ad;
+
+  --color-bg: var(--color-neutral-900);
+  --color-text: var(--color-neutral-0);
+  --color-border: var(--color-neutral-700);
+
+  --color-primary-500: #589eff;
+  --color-primary-700: #1e5fd4;
+
+  --color-success: #4ade80;
+  --color-warning: #fde047;
+  --color-error: #f87171;
+  --color-info: #60a5fa;
 }

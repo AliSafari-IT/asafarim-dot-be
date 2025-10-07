@@ -10,6 +10,9 @@
 @import './tokens/radii.css';
 @import './tokens/shadows.css';
 @import './tokens/zindex.css';
+@import './globals/reset.css';
+@import './globals/base.css';
+@import './globals/utilities.css';
 
 /* Themes */
 @import './themes/light.css';

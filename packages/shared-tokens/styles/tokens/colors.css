@@ -31,5 +31,41 @@
     --gradient-white: linear-gradient(90deg, #ffffff 0%, #dc3545 100%);
     --gradient-gray: linear-gradient(90deg, #6c757d 0%, #dc3545 100%);
     --gradient-danger: linear-gradient(90deg, #dc3545 0%, #ffc107 100%);
+
+     /* Primary palette */
+  --color-primary-50: #f5f9ff;
+  --color-primary-100: #e0edff;
+  --color-primary-200: #bcd8ff;
+  --color-primary-300: #8abfff;
+  --color-primary-400: #589eff;
+  --color-primary-500: #2978ff;
+  --color-primary-600: #1e5fd4;
+  --color-primary-700: #184dad;
+  --color-primary-800: #153e8a;
+  --color-primary-900: #102c66;
+
+  /* Neutrals */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f9fafb;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-300: #d1d5db;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
+
+  /* Semantic colors */
+  --color-success: #22c55e;
+  --color-warning: #facc15;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Background / text tokens */
+  --color-bg: var(--color-neutral-0);
+  --color-text: var(--color-neutral-900);
+  --color-border: var(--color-neutral-200);
   }
   

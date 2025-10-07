@@ -127,7 +127,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
   useEffect(() => {
     let mounted = true;
-    let refreshInterval: number | null = null;
+    let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
     const checkAuth = async () => {
       const ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
