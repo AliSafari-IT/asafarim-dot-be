@@ -12,21 +12,26 @@ const Resume = () => {
   );
   const [loading, setLoading] = useState<boolean>(true);
 
-
   // Check if user is admin based on roles in the user object
   const { isAuthenticated, loading: authLoading, signIn } = useAuth();
 
+  console.log("🔐 Auth state:", { isAuthenticated, authLoading });
+
   // Only redirect if not authenticated after loading is complete
   useEffect(() => {
+    console.log("🔐 Auth effect:", { authLoading, isAuthenticated });
     // Only check authentication after the loading state is complete
     if (!authLoading && !isAuthenticated) {
       console.log(
         "Authentication check complete, not authenticated. Redirecting to login."
       );
-      isProduction? signIn(window.location.href):
-      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
-        window.location.href
-      )}`;
+      if (isProduction) {
+        signIn(window.location.href);
+      } else {
+        signIn(`http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
+          window.location.href
+        )}`);
+      }
     }
   }, [authLoading, isAuthenticated]);
 
