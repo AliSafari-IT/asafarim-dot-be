@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Hero, useAuth } from "@asafarim/shared-ui-react";
+import { Hero, isProduction, useAuth } from "@asafarim/shared-ui-react";
 import {
   fetchCurrentUsersWorkExperiences,
   type WorkExperienceDto,
@@ -12,8 +12,9 @@ const Resume = () => {
   );
   const [loading, setLoading] = useState<boolean>(true);
 
+
   // Check if user is admin based on roles in the user object
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, signIn } = useAuth();
 
   // Only redirect if not authenticated after loading is complete
   useEffect(() => {
@@ -22,6 +23,7 @@ const Resume = () => {
       console.log(
         "Authentication check complete, not authenticated. Redirecting to login."
       );
+      isProduction? signIn(window.location.href):
       window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
         window.location.href
       )}`;
