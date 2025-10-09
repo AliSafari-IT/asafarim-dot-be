@@ -22,6 +22,7 @@ export interface UseAuthResult<TUser = any> {
 
 async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> {
   try {
+    console.log(`🔍 fetchIsAuthenticated: ${base}${me}`);
     const res = await fetch(`${base}${me}`, {
       method: 'GET',
       credentials: 'include',
@@ -30,15 +31,17 @@ async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> 
         'Cache-Control': 'no-cache'
       }
     });
+    console.log(`🔍 fetchIsAuthenticated response: ${res.status}`);
     return res.status !== 401;
   } catch (error) {
-    console.error('Auth check failed:', error);
+    console.error('❌ fetchIsAuthenticated failed:', error);
     return false;
   }
 }
 
 async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | null> {
   try {
+    console.log(`👤 fetchUserInfo: ${base}${me}`);
     const res = await fetch(`${base}${me}`, {
       method: 'GET',
       credentials: 'include',
@@ -47,13 +50,16 @@ async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | n
         'Cache-Control': 'no-cache'
       }
     });
+    console.log(`👤 fetchUserInfo response: ${res.status}`);
     if (!res.ok) {
-      console.error('User info fetch failed:', res.status, res.statusText);
+      console.error('❌ User info fetch failed:', res.status, res.statusText);
       return null;
     }
-    return (await res.json()) as TUser;
+    const userData = (await res.json()) as TUser;
+    console.log('👤 User data received:', userData);
+    return userData;
   } catch (error) {
-    console.error('User info fetch error:', error);
+    console.error('❌ User info fetch error:', error);
     return null;
   }
 }
@@ -135,7 +141,7 @@ async function refreshToken(base: string): Promise<string | null> {
 export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TUser> {
   const isProd = isProduction;
   const defaultAuthBase = isProd
-    ? '/api/identity'
+    ? (import.meta as any).env?.VITE_AUTH_API_BASE ?? 'https://core.asafarim.be/api'
     : (import.meta as any).env?.VITE_IDENTITY_API_URL ?? 'http://api.asafarim.local:5102';
   console.log('shared-ui-react/hooks/useAuth.ts: defaultAuthBase: in production? ' + isProd, defaultAuthBase);
   const authApiBase = options?.authApiBase ?? defaultAuthBase;
