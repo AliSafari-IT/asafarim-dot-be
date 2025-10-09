@@ -12,15 +12,15 @@ import Root from "./theme/Root";
 
 export default function App() {
   return (
-    <ThemeProvider defaultMode="dark">
+    <ThemeProvider>
       <NotificationProvider>
         <ToastProvider>
           <Toaster />
-          <Root>
             <NotificationContainer position="top-right" />
+          <Root>
             <LayoutContainer
-              footer={<FooterContainer key={"main footer"} />}
-              header={<Navbar key={"main header"} />}
+              footer={<FooterContainer key={"web-main-footer"} />}
+              header={<Navbar key={"web-main-header"} />}
               title="Web Portal"
             >
               <Outlet />

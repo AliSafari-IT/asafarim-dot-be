@@ -1,7 +1,7 @@
 import type { UseAuthOptions } from '@asafarim/shared-ui-react';
 
 export const authConfig: UseAuthOptions = {
-  authApiBase: 'http://api.asafarim.local:5101',
+  authApiBase: 'http://api.asafarim.local:5102',
   meEndpoint: '/auth/me',
   tokenEndpoint: '/auth/token',
   logoutEndpoint: '/auth/logout',

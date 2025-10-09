@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchProjects, deleteProject, type ProjectDto } from "../../../services/projectApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const ProjectsManagement: React.FC = () => {
+const ProjectsManagement = () => {
   const getItemDisplayName = (item: ProjectDto) => item.name;
   
   const getItemSubtitle = (item: ProjectDto) => {

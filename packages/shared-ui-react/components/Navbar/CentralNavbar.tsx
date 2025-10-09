@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import type { NavLinkItem, NavbarProps } from "./types";
 import { appRegistry, getCurrentAppId, getAppById } from "./appRegistry";
 import "./CentralNavbar.css";
 
-const CentralNavbar: React.FC<NavbarProps> = ({
+const CentralNavbar = ({
   localLinks = [],
   appId: providedAppId,
   showAppSwitcher = true,
@@ -14,7 +14,7 @@ const CentralNavbar: React.FC<NavbarProps> = ({
   mobileMenuBreakpoint = 520,
   renderLink,
   brand,
-}) => {
+} : NavbarProps) => {
   const [appSwitcherOpen, setAppSwitcherOpen] = useState(false);
 
   // Auto-detect current app if not provided
@@ -161,6 +161,7 @@ const CentralNavbar: React.FC<NavbarProps> = ({
 
   return (
     <Navbar
+      appId={currentAppId}
       localLinks={combinedLinks}
       brand={
         currentApp

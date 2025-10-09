@@ -9,7 +9,7 @@ import { Heading } from "@asafarim/shared-ui-react";
 
 const BASE_URL = contentType === 'projects' ? '/portfolio/projects' : '/portfolio/publications';
 const typeOptions = contentType === 'projects' ? PROJECT_VARIANTS : PUBLICATION_VARIANTS;
-const NewDocument: React.FC = () => {
+const NewDocument = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);

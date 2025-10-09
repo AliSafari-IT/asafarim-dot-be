@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { isProduction, NotFound } from "@asafarim/shared-ui-react";
 import {
@@ -10,7 +10,7 @@ import { type LayoutType } from "../../admin/resume/layouts/types";
 import { PrintLayout } from "../../admin/resume/layouts/PrintLayout";
 import "./public-resume.css";
 
-const PublicResumeView: React.FC = () => {
+const PublicResumeView = () => {
   const { publicSlug } = useParams<{ publicSlug: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [resume, setResume] = useState<PublicResumeDto | null>(null);

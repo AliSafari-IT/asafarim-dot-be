@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Hero } from '@asafarim/shared-ui-react';
 import LoginForm from './LoginForm';
@@ -13,7 +12,7 @@ interface LoginHeroProps {
   returnUrl?: string | null;
 }
 
-export const LoginHero: React.FC<LoginHeroProps> = ({ passwordSetupRequired, returnUrl }) => {
+export const LoginHero = ({ passwordSetupRequired, returnUrl }: LoginHeroProps) => {
   const navigate = useNavigate();
   const kicker = "Identity Portal";
   const title = "Welcome to ASafariM";

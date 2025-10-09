@@ -1,4 +1,4 @@
-import { CORE_API_BASE, getCookie } from '../api/core';
+import { apiGet, apiPost, apiPut, apiDelete } from '../api/core';
 
 export interface CertificateDto {
   id: string;
@@ -32,40 +32,18 @@ export interface UpdateCertificateRequest {
 
 // Fetch all certificates for a resume
 export const fetchCertificates = async (resumeId: string): Promise<CertificateDto[]> => {
-  const token = getCookie('atk') || localStorage.getItem('auth_token');
-  
-  const response = await fetch(`${CORE_API_BASE}/resumes/${resumeId}/certificates`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-    },
+  return apiGet<CertificateDto[]>(`/resumes/${resumeId}/certificates`, {
   });
-  
-  if (!response.ok) throw new Error('Failed to fetch certificates');
-  return response.json();
 };
 
 // Fetch certificate by ID
 export const fetchCertificateById = async (resumeId: string, id: string): Promise<CertificateDto> => {
-  const token = getCookie('atk') || localStorage.getItem('auth_token');
-  
-  const response = await fetch(`${CORE_API_BASE}/resumes/${resumeId}/certificates/${id}`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-    },
+  return apiGet<CertificateDto>(`/resumes/${resumeId}/certificates/${id}`, {
   });
-  
-  if (!response.ok) throw new Error('Failed to fetch certificate');
-  return response.json();
 };
 
 // Create new certificate
 export const createCertificate = async (resumeId: string, request: CreateCertificateRequest): Promise<CertificateDto> => {
-  const token = getCookie('atk') || localStorage.getItem('auth_token');
-  
   // Convert dates to ISO format
   const cleanedRequest = {
     ...request,
@@ -75,24 +53,13 @@ export const createCertificate = async (resumeId: string, request: CreateCertifi
       : undefined,
   };
   
-  const response = await fetch(`${CORE_API_BASE}/resumes/${resumeId}/certificates`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-    },
+  return apiPost<CertificateDto>(`/resumes/${resumeId}/certificates`, {
     body: JSON.stringify(cleanedRequest),
   });
-  
-  if (!response.ok) throw new Error('Failed to create certificate');
-  return response.json();
 };
 
 // Update certificate
 export const updateCertificate = async (resumeId: string, id: string, request: UpdateCertificateRequest): Promise<void> => {
-  const token = getCookie('atk') || localStorage.getItem('auth_token');
-  
   // Convert dates to ISO format
   const cleanedRequest = {
     ...request,
@@ -102,31 +69,13 @@ export const updateCertificate = async (resumeId: string, id: string, request: U
       : undefined,
   };
   
-  const response = await fetch(`${CORE_API_BASE}/resumes/${resumeId}/certificates/${id}`, {
-    method: 'PUT',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-    },
+  await apiPut<void>(`/resumes/${resumeId}/certificates/${id}`, {
     body: JSON.stringify(cleanedRequest),
   });
-  
-  if (!response.ok) throw new Error('Failed to update certificate');
 };
 
 // Delete certificate
 export const deleteCertificate = async (resumeId: string, id: string): Promise<void> => {
-  const token = getCookie('atk') || localStorage.getItem('auth_token');
-  
-  const response = await fetch(`${CORE_API_BASE}/resumes/${resumeId}/certificates/${id}`, {
-    method: 'DELETE',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-    },
+  await apiDelete<void>(`/resumes/${resumeId}/certificates/${id}`, {
   });
-  
-  if (!response.ok) throw new Error('Failed to delete certificate');
 };

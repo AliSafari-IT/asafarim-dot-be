@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
-  Button,
+  ButtonComponent as Button,
   Edit,
   Github,
   Google,
@@ -24,7 +24,7 @@ import PublishResumeModal from "./components/PublishResumeModal";
 import "./resume-styles.css";
 import "./view-resume.css";
 
-const ViewResume: React.FC = () => {
+const ViewResume = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();

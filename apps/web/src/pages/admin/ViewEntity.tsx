@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeftIcon, Button, useAuth } from "@asafarim/shared-ui-react";
+import { ArrowLeftIcon, ButtonComponent as Button, useAuth } from "@asafarim/shared-ui-react";
 import { ENTITY_TYPES } from "../../services/entityService";
 import {
   fetchWorkExperienceById,
@@ -24,7 +24,7 @@ interface ExtendedContentCardProps extends ContentCardProps {
   userId?: string;
 }
 
-const ViewEntity: React.FC = () => {
+const ViewEntity = () => {
   const navigate = useNavigate();
   const { entityType, id } = useParams<{ entityType: string; id: string }>();
   const { isAuthenticated, loading: authLoading, user } = useAuth();
@@ -182,10 +182,10 @@ const ViewEntity: React.FC = () => {
 };
 
 // Work Experience View Component
-const WorkExperienceView: React.FC<{
+const WorkExperienceView = ({ data, formatDate }: {
   data: WorkExperienceDto;
   formatDate: (date: string) => string;
-}> = ({ data, formatDate }) => (
+}) => (
   <div className="entity-view-content">
     <section className="entity-view-section">
       <h2 className="entity-view-section-title">Job Details</h2>
@@ -335,10 +335,10 @@ const WorkExperienceView: React.FC<{
 );
 
 // Resume View Component
-const ResumeView: React.FC<{
+const ResumeView = ({ data, formatDate }: {
   data: ResumeDetailDto;
   formatDate: (date: string) => string;
-}> = ({ data, formatDate }) => (
+}) => (
   <div>
     <section className="entity-view-section">
       <h2 className="entity-view-section-title">Resume Information</h2>
@@ -584,9 +584,9 @@ const ResumeView: React.FC<{
 );
 
 // Publication View Component
-const PublicationView: React.FC<{ data: ExtendedContentCardProps }> = ({
+const PublicationView = ({
   data,
-}) => (
+}:{ data: ExtendedContentCardProps }) => (
   <div className="entity-view">
     <section className="entity-view-section">
       <h2 className="entity-view-section-title">Publication Details</h2>

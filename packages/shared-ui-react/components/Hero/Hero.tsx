@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import { Button } from "./Button";
-import { Spark, Arrow } from "../svg-icons";
-import ShowcaseCard from "./ShowcaseCard";
+import { Spark, Arrow } from "../../svg-icons";
+import ShowcaseCard from "../ShowcaseCard/index";
+import { ButtonComponent } from "../Button/ButtonComponent";
+import "./Hero.css";
 
 type Cta =
   | { label: string; to: string; href?: never }
@@ -18,7 +19,7 @@ export interface HeroProps {
   className?: string;
 }
 
-export default function Hero({
+export function Hero({
   kicker = "",
   title,
   subtitle = "",
@@ -74,24 +75,24 @@ export default function Hero({
             {/* CTAs */}
             <div className="flex flex-wrap gap-md mt-2">
               {primaryCta && (
-                <Button
+                <ButtonComponent
                   to={"to" in primaryCta ? primaryCta.to : undefined}
                   href={"href" in primaryCta ? primaryCta.href : undefined}
                   variant="brand"
                   rightIcon={<Spark />}
                 >
                   {primaryCta.label}
-                </Button>
+                </ButtonComponent>
               )}
               {secondaryCta && (
-                <Button
+                <ButtonComponent
                   to={"to" in secondaryCta ? secondaryCta.to : undefined}
                   href={"href" in secondaryCta ? secondaryCta.href : undefined}
                   variant="outline"
                   rightIcon={<Arrow />}
                 >
                   {secondaryCta.label}
-                </Button>
+                </ButtonComponent>
               )}
             </div>
           </div>

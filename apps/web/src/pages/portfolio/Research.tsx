@@ -1,7 +1,6 @@
-import React from 'react';
 import { Hero } from '@asafarim/shared-ui-react';
 
-const Research: React.FC = () => {
+const Research = () => {
   // Research areas
   const researchAreas = [
     {

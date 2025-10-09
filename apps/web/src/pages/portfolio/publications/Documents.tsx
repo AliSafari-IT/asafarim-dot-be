@@ -1,4 +1,3 @@
-import React from "react";
 import { ContentCard, Hero, Heading } from "@asafarim/shared-ui-react";
 import VariantItemsDisplay from "./VariantItemsDisplay";
 import {
@@ -14,7 +13,7 @@ import "./documents.css";
 
 import { useNavigate } from "react-router-dom";
 
-const Documents: React.FC = () => {
+const Documents = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { contentType } = useParams();

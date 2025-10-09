@@ -19,7 +19,7 @@ export default function JobTools() {
   const [letter, setLetter] = useState<string>("");
   const [loading, setLoading] = useState<LoadingState>("idle");
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated, loading: authLoading, signIn, register } = useAuth();
+  const { isAuthenticated, loading: authLoading, signIn } = useAuth();
 
   const resetState = () => {
     setExtracted(null);
@@ -27,6 +27,10 @@ export default function JobTools() {
     setLetter("");
     setError(null);
   };
+
+  function register(goto: string) {
+    signIn(goto);
+  }
 
   const handleError = (err: unknown) => {
     console.error(err);
@@ -124,10 +128,10 @@ export default function JobTools() {
           </p>
         </header>
         <div className="ai-ui-buttons">
-          <button onClick={() => signIn(goTo)} className="ai-ui-button">
+          <button onClick={() => signIn(goTo ?? "login")} className="ai-ui-button">
             Sign in
           </button>
-          <button onClick={() => register(goTo)} className="ai-ui-button">
+          <button onClick={() => register(goTo ?? "register")} className="ai-ui-button">
             Register
           </button>
         </div>

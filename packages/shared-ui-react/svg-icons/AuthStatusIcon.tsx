@@ -1,11 +1,10 @@
-import React from 'react';
 import type { SvgIconProps } from './svg-types';
 
 interface AuthStatusIconProps extends SvgIconProps {
   authenticated?: boolean;
 }
 
-export const AuthStatusIcon: React.FC<AuthStatusIconProps> = ({
+export function AuthStatusIcon({
   authenticated = false,
   className = '',
   width = 24,
@@ -18,7 +17,7 @@ export const AuthStatusIcon: React.FC<AuthStatusIconProps> = ({
   title,
   onClick,
   style,
-}) => {
+}: SvgIconProps & AuthStatusIconProps) {
   return authenticated ? (
     // Authenticated icon (user with checkmark)
     <svg
@@ -78,6 +77,6 @@ export const AuthStatusIcon: React.FC<AuthStatusIconProps> = ({
       />
     </svg>
   );
-};
+}
 
 export default AuthStatusIcon;

@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchEducations, deleteEducation, type EducationDto } from "../../../services/educationApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const EducationsManagement: React.FC = () => {
+const EducationsManagement = () => {
   const getItemDisplayName = (item: EducationDto) => item.degree;
   
   const getItemSubtitle = (item: EducationDto) => {

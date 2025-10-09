@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@asafarim/shared-ui-react';
+import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
 import identityService from '../api/identityService';
 import { useToast } from '@asafarim/toast';
 import './change-password-modal.css';

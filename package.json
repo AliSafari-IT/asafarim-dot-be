@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
-    "rm:nm": "pnpm rm -r node_modules && pnpm rm -r apps/**/node_modules && pnpm rm -r apis/**/node_modules",
+    "rm:nm": "find . -name node_modules -type d -exec rm -rf {} + 2>/dev/null || true",
     "predev": "kill-port 3000 4200 5173 5174 5175 5177",
     "kill:identity": "kill-port 5101 5177",
     "kill:core": "kill-port 5102 5174",
@@ -12,13 +12,13 @@
     "kill:jobs": "kill-port 4200",
     "kill:blog": "kill-port 3000",
     "kill:web": "kill-port 5102 5175",
-    "dev:shared": "pnpm --filter @asafarim/shared-ui-react build",
-    "dev:web": "pnpm --filter @asafarim/web start",
-    "dev:core": "pnpm --filter @asafarim/core-app start",
-    "dev:ai": "pnpm --filter @asafarim/ai-ui start",
-    "dev:jobs": "pnpm --filter @asafarim/jobs-ui start",
-    "dev:blog": "pnpm --filter @asafarim/blog start",
-    "dev:identity": "pnpm --filter @asafarim/identity-portal start",
+    "dev:shared": "cd packages/shared-ui-react/ && rm -rf node_modules dist && pnpm i && pnpm build",
+    "dev:web": "cd apps/web && rm -rf node_modules && pnpm i && pnpm start",
+    "dev:core": "cd apps/core-app && rm -rf node_modules && pnpm i && pnpm start",
+    "dev:ai": "cd apps/ai-ui && rm -rf node_modules && pnpm i && pnpm start",
+    "dev:jobs": "cd apps/jobs-ui && rm -rf node_modules && pnpm i && pnpm start",
+    "dev:blog": "cd apps/blog && rm -rf node_modules && pnpm i && pnpm start",
+    "dev:identity": "cd apps/identity-portal && rm -rf node_modules && pnpm i && pnpm start",
     "dev:aiapi": "dotnet watch --project apis/Ai.Api/Ai.Api.csproj",
     "dev": "concurrently -n web,blog,core,ai,jobs,identity -c \"blue,magenta,cyan,green,yellow,orange\" \"pnpm dev:web\" \"pnpm dev:blog\" \"pnpm dev:core\" \"pnpm dev:ai\" \"pnpm dev:jobs\" \"pnpm dev:identity\"",
     "api:ai": "pnpm --filter @asafarim/ai-api api",
@@ -43,7 +43,7 @@
     "app:core": "pnpm kill:identity &&pnpm kill:core && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\"  \"pnpm dev:core\" \"pnpm api:core\"",
     "app:jobs": "pnpm kill:identity && pnpm kill:jobs && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:jobs\" \"pnpm api:jobs\"",
     "app:blog": "pnpm kill:identity && pnpm kill:blog && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:blog\" \"pnpm api:blog\"",
-    "app:web": "pnpm kill:identity && pnpm kill:core && pnpm kill:web && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:web\"",
+    "app:web": "pnpm rm:nm && pnpm kill:identity && pnpm kill:core && pnpm kill:web && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:web\"",
     "deploy": "sudo bash -x /var/repos/asafarim-dot-be/scripts/deploy-local.sh",
     "sd": "sudo bash /var/repos/asafarim-dot-be/scripts/selective-deploy.sh"
   },
@@ -57,6 +57,16 @@
   "license": "CC BY 4.0",
   "packageManager": "pnpm@10.14.0",
   "dependencies": {
+    "cookie": "^1.0.2",
     "rimraf": "^6.0.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1",
+      "@types/react": "^18.3.18",
+      "@types/react-dom": "^18.3.5",
+      "cookie": "0.6.0"
+    }
   }
 }

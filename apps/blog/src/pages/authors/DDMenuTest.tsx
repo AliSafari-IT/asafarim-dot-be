@@ -1,7 +1,6 @@
-import React from 'react';
 import ElegantDropdownShowcase from './ElegantDropdownShowcase';
 
-const TestComponent: React.FC = () => {
+const TestComponent = () => {
   return <ElegantDropdownShowcase />;
 };
 

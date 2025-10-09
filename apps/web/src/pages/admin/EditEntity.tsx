@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import { ENTITY_TYPES } from "../../services/entityService";
 import { 
   fetchWorkExperienceById,
@@ -126,7 +126,7 @@ const FORM_SCHEMAS: Record<string, FormField[]> = {
   ]
 };
 
-const EditEntity: React.FC = () => {
+const EditEntity = () => {
   const navigate = useNavigate();
   const { entityType, id } = useParams<{ entityType: string; id: string }>();
   const { isAuthenticated, loading: authLoading } = useAuth();

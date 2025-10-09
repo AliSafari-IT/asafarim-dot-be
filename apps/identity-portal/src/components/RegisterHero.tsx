@@ -1,9 +1,8 @@
-import React from 'react';
 import { Hero } from '@asafarim/shared-ui-react';
 import RegisterForm from './RegisterForm';
 import './login-hero.css';
 
-export const RegisterHero: React.FC = () => {
+export const RegisterHero = () => {
   const kicker = "Identity Portal";
   const title = "Join ASafariM";
   const subtitle = "Create an account to access all our services and applications";

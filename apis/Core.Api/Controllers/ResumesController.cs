@@ -566,7 +566,10 @@ public class ResumesController : ControllerBase
                     Id = r.Id,
                     Name = r.Name,
                     Relationship = r.Relationship,
-                    ContactInfo = r.ContactInfo,
+                    Position = r.Position,
+                    Company = r.Company,
+                    Email = r.Email,
+                    Phone = r.Phone,
                 })
                 .ToList(),
         };

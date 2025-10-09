@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Hero, ContentCard } from "@asafarim/shared-ui-react";
 import type { ContentCardProps } from "@asafarim/shared-ui-react";
 import { fetchPublications } from "../../../services/publicationService";
@@ -8,7 +8,7 @@ import PublicationActionsBar from "./components/PublicationActionsBar";
 import VariantItemsDisplay from "./VariantItemsDisplay";
 import { PUBLICATION_VARIANTS } from "./data";
 
-const Publications: React.FC = () => {
+const Publications = () => {
   const { user } = useAuth();
 
   // Check if user is admin based on roles in the user object

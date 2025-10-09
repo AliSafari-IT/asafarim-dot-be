@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import { ENTITY_TYPES } from "../../services/entityService";
 import {
   createWorkExperience,
@@ -354,7 +354,7 @@ const FORM_SCHEMAS: Record<string, FormField[]> = {
   ],
 };
 
-const AddNewEntity: React.FC = () => {
+const AddNewEntity = () => {
   const navigate = useNavigate();
   const { entityType } = useParams<{ entityType: string }>();
   const { isAuthenticated, loading: authLoding } = useAuth();

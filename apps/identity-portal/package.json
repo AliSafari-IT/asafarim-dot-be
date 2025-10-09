@@ -12,21 +12,21 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "@asafarim/shared-ui-react": "workspace:*"
   },
   "dependencies": {
+    "@asafarim/react-themes": "workspace:*",
+    "@asafarim/shared-ui-react": "workspace:*",
     "@asafarim/toast": "1.2.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^7.8.0"
   },
   "devDependencies": {
     "@asafarim/react-privacy-consent": "^1.7.2",
-    "@asafarim/react-themes": "^1.6.1",
     "@asafarim/shared": "^1.7.4",
     "@eslint/js": "^9.33.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^5.0.0",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",

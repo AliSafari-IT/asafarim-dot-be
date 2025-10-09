@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchAwards, deleteAward, type AwardDto } from "../../../services/awardApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const AwardsManagement: React.FC = () => {
+const AwardsManagement = () => {
   const getItemDisplayName = (item: AwardDto) => item.title;
   
   const getItemSubtitle = (item: AwardDto) => {

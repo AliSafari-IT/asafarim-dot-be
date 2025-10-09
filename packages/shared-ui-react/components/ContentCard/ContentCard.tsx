@@ -111,7 +111,7 @@ export interface ContentCardProps {
   [key: string]: any;
 }
 
-const ContentCard: React.FC<ContentCardProps> = ({
+const ContentCard = ({
   title,
   subtitle,
   meta,
@@ -137,7 +137,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   userId,
   showImage = false,
   ...props
-}) => {
+}: ContentCardProps) => {
   // Combine all classes
   const cardClasses = [
     'content-card',

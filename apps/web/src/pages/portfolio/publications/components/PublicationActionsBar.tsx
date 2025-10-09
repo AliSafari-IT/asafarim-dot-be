@@ -1,6 +1,5 @@
-import React from "react";
 import {
-  Button,
+  ButtonComponent as Button,
   LoginArrow,
   isProduction,
   useAuth,
@@ -16,27 +15,30 @@ export interface PublicationActionsBarProps {
 
 /**
  * PublicationActionsBar - A reusable component for publication management actions
- * this includes both publication actions for /portfolio/publications and publication 
+ * this includes both publication actions for /portfolio/publications and publication
  * variant actions to support /portfolio/projects
- * 
+ *
  * This component displays different action buttons based on authentication status
  * and user roles. It supports custom callbacks for all actions.
  */
-const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
+const PublicationActionsBar = ({
   onAddPublication,
   onViewMyPublications,
   onViewAllPublications,
   onManagePublications,
   onLoginRedirect,
-}) => {
+}: PublicationActionsBarProps) => {
   const { isAuthenticated, user, loading: authLoading } = useAuth();
 
-  
   // Check if user is admin based on roles in the user object
-  const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
+  const isAdmin =
+    user?.roles?.map((role: string) => role.toLowerCase()).includes("admin") ||
+    false;
 
   // contentType: projects or publications
-  const contentType = window.location.pathname.includes("projects") ? "projects" : "publications"; 
+  const contentType = window.location.pathname.includes("projects")
+    ? "projects"
+    : "publications";
 
   // Default handlers with fallbacks to the provided callbacks
   const handleLoginRedirect = () => {
@@ -59,9 +61,12 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
       onAddPublication();
       return;
     }
-    
+
     // Default behavior
-    window.location.href = contentType === "projects" ? "/portfolio/projects/new" : "/portfolio/publications/new";
+    window.location.href =
+      contentType === "projects"
+        ? "/portfolio/projects/new"
+        : "/portfolio/publications/new";
   };
 
   const handleMyPublications = () => {
@@ -69,9 +74,12 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
       onViewMyPublications();
       return;
     }
-    
+
     // Default behavior
-    window.location.href = contentType === "projects" ? "/portfolio/projects?myProjects=true" : "/portfolio/publications?myPublications=true";
+    window.location.href =
+      contentType === "projects"
+        ? "/portfolio/projects?myProjects=true"
+        : "/portfolio/publications?myPublications=true";
   };
 
   const handleManagePublications = () => {
@@ -79,21 +87,26 @@ const PublicationActionsBar: React.FC<PublicationActionsBarProps> = ({
       onManagePublications();
       return;
     }
-    
+
     // Default behavior
-    window.location.href = contentType === "projects" ? "/portfolio/projects/manage" : "/portfolio/publications/manage";
+    window.location.href =
+      contentType === "projects"
+        ? "/portfolio/projects/manage"
+        : "/portfolio/publications/manage";
   };
-  
+
   const handleAllPublications = () => {
     if (onViewAllPublications) {
       onViewAllPublications();
       return;
     }
-    
-    // Default behavior
-    window.location.href = contentType === "projects" ? "/portfolio/projects" : "/portfolio/publications";
-  };
 
+    // Default behavior
+    window.location.href =
+      contentType === "projects"
+        ? "/portfolio/projects"
+        : "/portfolio/publications";
+  };
 
   // Determine alignment class based on authentication status
   const alignmentClass = isAuthenticated ? "actions-center" : "actions-right";

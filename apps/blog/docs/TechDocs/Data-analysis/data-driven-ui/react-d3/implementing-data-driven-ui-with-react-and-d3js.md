@@ -17,10 +17,9 @@ Both React and D3 are powerful libraries that can be used together to create dyn
 4. then import `D3Component` from `react-d3` in your React component.
 
 ```tsx
-import React from 'react';
 import { D3Component } from 'react-d3';
 
-const App: React.FC = () => {
+const App = () => {
     return (
         <div>
             <D3Component />

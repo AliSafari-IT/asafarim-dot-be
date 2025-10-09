@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchSocialLinks, deleteSocialLink, type SocialLinkDto } from "../../../services/socialLinkApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const SocialLinksManagement: React.FC = () => {
+const SocialLinksManagement = () => {
   const getItemDisplayName = (item: SocialLinkDto) => item.platform;
 
   const getItemSubtitle = (item: SocialLinkDto) => {

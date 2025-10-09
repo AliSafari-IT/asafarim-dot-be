@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import {
   fetchSkillById,
   createSkill,
@@ -24,7 +24,7 @@ const SKILL_CATEGORIES = [
   "Other",
 ];
 
-const SkillForm: React.FC = () => {
+const SkillForm = () => {
   const navigate = useNavigate();
   const { resumeId, id } = useParams<{ resumeId: string; id?: string }>();
   const { isAuthenticated, loading: authLoading } = useAuth();

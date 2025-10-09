@@ -1,9 +1,8 @@
-import React from 'react';
 import Notification from './Notification';
 import { useNotification } from '../../hooks/useNotification';
 import './Notification.css';
 
-const NotificationContainer: React.FC = () => {
+const NotificationContainer = () => {
   const { notifications, removeNotification } = useNotification();
 
   // remove duplicates

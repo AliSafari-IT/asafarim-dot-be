@@ -150,12 +150,12 @@ D:\repos\asafarim-dot-be\apps\web\src\pages\admin\resume\
 **ResumeList.tsx Example:**
 
 ```typescript
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@asafarim/shared-ui-react';
 import { fetchResumes, type ResumeDto } from '../../../services/resumeApi';
 
-const ResumeList: React.FC = () => {
+const ResumeList = () => {
   const [resumes, setResumes] = useState<ResumeDto[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();

@@ -56,7 +56,7 @@ export interface HeadingProps {
   [key: string]: any;
 }
 
-const Heading: React.FC<HeadingProps> = ({
+const Heading = ({
   level,
   variant,
   className = '',
@@ -70,7 +70,7 @@ const Heading: React.FC<HeadingProps> = ({
   truncate = false,
   children,
   ...props
-}) => {
+}: HeadingProps) => {
   // Determine the variant if not explicitly set
   const headingVariant = variant || `h${level}` as HeadingProps['variant'];
 

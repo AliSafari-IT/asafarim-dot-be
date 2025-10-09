@@ -71,8 +71,11 @@ public class ReferencesController : ControllerBase
             Id = Guid.NewGuid(),
             ResumeId = resumeId,
             Name = request.Name,
+            Position = request.Position,
+            Company = request.Company,
+            Email = request.Email,
+            Phone = request.Phone,
             Relationship = request.Relationship ?? string.Empty,
-            ContactInfo = request.ContactInfo ?? string.Empty,
         };
 
         _context.References.Add(reference);
@@ -112,8 +115,11 @@ public class ReferencesController : ControllerBase
             return NotFound();
 
         reference.Name = request.Name;
+        reference.Position = request.Position;
+        reference.Company = request.Company;
+        reference.Email = request.Email;
+        reference.Phone = request.Phone;
         reference.Relationship = request.Relationship ?? string.Empty;
-        reference.ContactInfo = request.ContactInfo ?? string.Empty;
 
         await _context.SaveChangesAsync();
 
@@ -154,8 +160,11 @@ public class ReferencesController : ControllerBase
         {
             Id = reference.Id,
             Name = reference.Name,
+            Position = reference.Position,
+            Company = reference.Company,
+            Email = reference.Email,
+            Phone = reference.Phone,
             Relationship = reference.Relationship,
-            ContactInfo = reference.ContactInfo,
         };
     }
 }
@@ -164,21 +173,30 @@ public class ReferencesController : ControllerBase
 public class CreateReferenceRequest
 {
     public string Name { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty;
+    public string Company { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
     public string? Relationship { get; set; }
-    public string? ContactInfo { get; set; }
 }
 
 public class UpdateReferenceRequest
 {
     public string Name { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty;
+    public string Company { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
     public string? Relationship { get; set; }
-    public string? ContactInfo { get; set; }
 }
 
 public class ReferenceDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty;
+    public string Company { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
     public string Relationship { get; set; } = string.Empty;
-    public string ContactInfo { get; set; } = string.Empty;
 }

@@ -22,7 +22,7 @@ npm install @asafarim/shared-ui-react
 ## Basic Usage
 
 ```tsx
-import { Button } from '@asafarim/shared-ui-react';
+import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
 
 function MyComponent() {
   return (

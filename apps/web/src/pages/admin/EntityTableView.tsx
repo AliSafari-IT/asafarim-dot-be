@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, useAuth, Eye, Edit, Remove } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, useAuth, Eye, Edit, Remove } from "@asafarim/shared-ui-react";
 import {
   ENTITY_TYPES,
   fetchEntityRecords,
@@ -11,7 +11,7 @@ import {
 import { EntityActionsBar } from "./components";
 import "./entity-management.css";
 
-const EntityTableView: React.FC = () => {
+const EntityTableView = () => {
   const navigate = useNavigate();
   const { entityType } = useParams<{ entityType: string | undefined }>();
   const { isAuthenticated, user, loading: authLoading } = useAuth();

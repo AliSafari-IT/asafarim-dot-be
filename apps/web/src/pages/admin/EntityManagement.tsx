@@ -4,7 +4,7 @@ import { useAuth } from "@asafarim/shared-ui-react";
 import { ENTITY_TYPES, type EntityType } from "../../services/entityService";
 import "./entity-management.css";
 
-const EntityManagement: React.FC = () => {
+const EntityManagement = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();
 

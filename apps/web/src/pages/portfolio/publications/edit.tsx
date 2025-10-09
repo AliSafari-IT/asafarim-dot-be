@@ -20,7 +20,7 @@ const typeOptions =
   contentType === "projects" ? PROJECT_VARIANTS : PUBLICATION_VARIANTS;
 const defaultVariant =
   contentType === "projects" ? "opensource" : "publication";
-const EditDocument: React.FC = () => {
+const EditDocument = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { id } = useParams<{ id: string }>();

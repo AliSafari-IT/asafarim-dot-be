@@ -103,6 +103,7 @@ export default function Navbar() {
       role="banner"
     >
       <CentralNavbar
+        appId="core-app"
         localLinks={navLinks}
         brand={{
           logo: "/logo.svg",

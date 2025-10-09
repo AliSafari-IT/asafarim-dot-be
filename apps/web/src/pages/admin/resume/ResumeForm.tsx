@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button, useAuth } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, useAuth } from "@asafarim/shared-ui-react";
 import {
   createResume,
   updateResume,
@@ -10,7 +10,7 @@ import {
 } from "../../../services/resumeApi";
 import { useToast } from "@asafarim/toast";
 
-const ResumeForm: React.FC = () => {
+const ResumeForm = () => {
   const toast = useToast();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();

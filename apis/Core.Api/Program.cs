@@ -32,14 +32,17 @@ var developmentOrigins = new[]
     "http://web.asafarim.local:5175",
     "http://ai.asafarim.local:5173",
     "http://identity.asafarim.local:5101",
+    "http://identity.asafarim.local:5177",  // Identity Portal
     "http://core.asafarim.local:5174",
+    "http://jobs.asafarim.local:4200",
     "http://localhost:5174",
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5175",
+    "http://localhost:5177",
     "http://localhost:5101",
-    "http://web.asafarim.local:5175", // Your web app
-    "http://localhost:5102", // Core API
+    "http://localhost:5102",
+    "http://localhost:4200",
 };
 
 // Combine origins based on environment
@@ -72,7 +75,8 @@ if (!string.IsNullOrEmpty(defaultConnection))
     builder.Services.AddDbContext<CoreDbContext>(options =>
         options.UseNpgsql(
             defaultConnection,
-            npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+            npgsqlOptions =>
+                npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
         )
     );
 }
@@ -83,7 +87,8 @@ if (!string.IsNullOrEmpty(jobsConnectionString))
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(
             jobsConnectionString,
-            npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+            npgsqlOptions =>
+                npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
         )
     );
 }
@@ -152,6 +157,96 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Proxy auth endpoints to Identity API
+var identityApiUrl = builder.Configuration["IdentityApiUrl"] ?? "http://localhost:5101";
+var httpClient = new HttpClient { BaseAddress = new Uri(identityApiUrl) };
+
+app.MapGet(
+    "/auth/me",
+    async (HttpContext context) =>
+    {
+        var token = context.Request.Cookies["atk"];
+        if (string.IsNullOrEmpty(token))
+            return Results.Unauthorized();
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/auth/me");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        // Forward cookies
+        if (context.Request.Headers.TryGetValue("Cookie", out var cookies))
+            request.Headers.Add("Cookie", cookies.ToString());
+
+        var response = await httpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+            return Results.Unauthorized();
+
+        var content = await response.Content.ReadAsStringAsync();
+        return Results.Content(content, "application/json");
+    }
+);
+
+app.MapGet(
+    "/auth/token",
+    async (HttpContext context) =>
+    {
+        var token = context.Request.Cookies["atk"];
+        if (string.IsNullOrEmpty(token))
+            return Results.Unauthorized();
+
+        return Results.Ok(new { token });
+    }
+);
+
+app.MapPost(
+    "/auth/logout",
+    async (HttpContext context) =>
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/auth/logout");
+
+        // Forward cookies
+        if (context.Request.Headers.TryGetValue("Cookie", out var cookies))
+            request.Headers.Add("Cookie", cookies.ToString());
+
+        var response = await httpClient.SendAsync(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        // Clear cookies on this domain too
+        context.Response.Cookies.Delete("atk");
+        context.Response.Cookies.Delete("rtk");
+
+        return Results.Ok(content);
+    }
+);
+
+app.MapPost(
+    "/auth/refresh",
+    async (HttpContext context) =>
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/auth/refresh");
+
+        // Forward cookies
+        if (context.Request.Headers.TryGetValue("Cookie", out var cookies))
+            request.Headers.Add("Cookie", cookies.ToString());
+
+        var response = await httpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+            return Results.Unauthorized();
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        // Forward Set-Cookie headers
+        if (response.Headers.TryGetValues("Set-Cookie", out var setCookies))
+        {
+            foreach (var cookie in setCookies)
+                context.Response.Headers.Append("Set-Cookie", cookie);
+        }
+
+        return Results.Content(content, "application/json");
+    }
+);
 
 // Add health endpoint
 app.MapGet(

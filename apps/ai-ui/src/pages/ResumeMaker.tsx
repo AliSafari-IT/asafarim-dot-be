@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import {
-  Button,
+  ButtonComponent as Button,
   Html,
   MarkDown,
   Pdf,
@@ -23,7 +23,7 @@ type FunctionalResumeResponse = {
 };
 
 export default function ResumeMaker() {
-  const { isAuthenticated, user, loading, signIn, register } = useAuth<{
+  const { isAuthenticated, user, loading, signIn } = useAuth<{
     id: string;
     email?: string;
     userName?: string;
@@ -292,6 +292,10 @@ ${`
     }
   }
 
+  function register(goto: string) {
+    signIn(goto);
+  }
+
   // Unauthenticated experience: intro and prompt to login/register
   if (!loading && !isAuthenticated) {
     const goTo =
@@ -313,7 +317,7 @@ ${`
             Sign in
           </button>
           <button
-            onClick={() => register(goTo)}
+            onClick={() => register(goTo ?? "register")}
             className="ai-ui-resume-maker-button"
           >
             Register

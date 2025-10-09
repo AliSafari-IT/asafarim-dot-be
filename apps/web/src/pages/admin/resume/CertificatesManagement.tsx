@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchCertificates, deleteCertificate, type CertificateDto } from "../../../services/certificateApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const CertificatesManagement: React.FC = () => {
+const CertificatesManagement = () => {
   const getItemDisplayName = (item: CertificateDto) => item.name;
   
   const getItemSubtitle = (item: CertificateDto) => {

@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchSkills, deleteSkill, type SkillDto } from "../../../services/skillApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const SkillsManagement: React.FC = () => {
+const SkillsManagement = () => {
   const getItemDisplayName = (item: SkillDto) => item.name;
   
   const getItemSubtitle = (item: SkillDto) => {

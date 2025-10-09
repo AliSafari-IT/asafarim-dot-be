@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchExperiences, deleteExperience, type ExperienceDto } from "../../../services/experienceApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const ExperiencesManagement: React.FC = () => {
+const ExperiencesManagement = () => {
   const getItemDisplayName = (item: ExperienceDto) => item.jobTitle;
   
   const getItemSubtitle = (item: ExperienceDto) => {

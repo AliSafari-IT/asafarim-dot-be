@@ -1,6 +1,6 @@
 /* App Home Page */
 import './CoreAppHome.css';
-import { Button, useAuth } from '@asafarim/shared-ui-react';
+import { ButtonComponent as Button, useAuth } from '@asafarim/shared-ui-react';
 import { useNavigate } from 'react-router-dom';
 
 import { CORE_JOBS_URL, AI_URL, BLOG_URL, openInNewTab } from '../utils/appUrls';

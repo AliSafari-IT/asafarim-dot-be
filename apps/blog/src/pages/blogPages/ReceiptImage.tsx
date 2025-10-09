@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ReceiptImage: React.FC = () => {
+const ReceiptImage = () => {
   const [showMagnifier, setShowMagnifier] = useState(false);
   const [[imgWidth, imgHeight], setImgSize] = useState([0, 0]);
   const [[x, y], setXY] = useState([0, 0]);

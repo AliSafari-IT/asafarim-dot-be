@@ -403,7 +403,10 @@ public class CoreDbContext : DbContext
             entity.ToTable("References", "public");
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Relationship).HasMaxLength(100);
-            entity.Property(e => e.ContactInfo).HasMaxLength(200);
+            entity.Property(e => e.Position).HasMaxLength(100);
+            entity.Property(e => e.Company).HasMaxLength(100);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Phone).HasMaxLength(20);
         });
     }
 }

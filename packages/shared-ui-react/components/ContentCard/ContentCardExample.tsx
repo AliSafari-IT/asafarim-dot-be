@@ -1,10 +1,9 @@
-import React from 'react';
 import ContentCard from './ContentCard';
 
 /**
  * Example component showing different ContentCard variants
  */
-export const ContentCardExample: React.FC = () => {
+export const ContentCardExample = () => {
   // Example publication card (like the one in the second image)
   const publicationExample = (
     <ContentCard

@@ -1,28 +1,28 @@
-import React, { type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { ThemeProvider as BaseThemeProvider } from '@asafarim/react-themes';
+import type { ThemeMode } from '@asafarim/react-themes';
 import useThemeSync from '../../hooks/useThemeSync';
 
 export interface ThemeProviderProps {
   children: ReactNode;
-  defaultMode?: 'light' | 'dark';
+  defaultMode?: ThemeMode;
   storageKey?: string;
-  persistMode?: boolean;
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+export const ThemeProvider= ({
   children,
-  defaultMode = 'dark',
+  defaultMode = 'system',
   storageKey = 'asafarim-theme',
-  persistMode = true,
-}) => {
+}: ThemeProviderProps) => {
   // Use the theme sync hook to keep theme in sync across subdomains
   useThemeSync({ storageKey, defaultTheme: defaultMode });
 
   return (
     <BaseThemeProvider
-      defaultMode={defaultMode}
-      storageKey={storageKey}
-      persistMode={persistMode}
+      config={{
+        defaultMode,
+        storageKey,
+      }}
     >
       {children}
     </BaseThemeProvider>

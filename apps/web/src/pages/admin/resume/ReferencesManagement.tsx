@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchReferences, deleteReference, type ReferenceDto } from "../../../services/referenceApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const ReferencesManagement: React.FC = () => {
+const ReferencesManagement = () => {
   const getItemDisplayName = (item: ReferenceDto) => item.name;
   
   const getItemSubtitle = (item: ReferenceDto) => {

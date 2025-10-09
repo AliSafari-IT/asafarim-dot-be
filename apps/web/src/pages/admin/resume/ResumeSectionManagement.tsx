@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Edit, PlusIcon, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, Edit, PlusIcon, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import { fetchResumes } from "../../../services/resumeApi";
 import "./resume-section-management.css";
 import { RESUME_SECTION_TYPES, type ResumeSectionType } from "./resume-section-types";
@@ -11,7 +11,7 @@ interface Resume {
   userId?: string;
 }
 
-const ResumeSectionManagement: React.FC = () => {
+const ResumeSectionManagement = () => {
   const navigate = useNavigate();
   const { id: resumeId } = useParams<{ id?: string }>();
   const { isAuthenticated, loading: authLoading } = useAuth();

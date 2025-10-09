@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Button, Heading } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, Heading } from "@asafarim/shared-ui-react";
 import { fetchPublicationById } from "../../../services/publicationService";
 import type { ContentCardProps } from "@asafarim/shared-ui-react";
 import "./pub-styles.css";

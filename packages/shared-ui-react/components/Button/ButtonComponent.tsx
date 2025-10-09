@@ -1,16 +1,16 @@
-import React from 'react';
-import './Button.css';
+import type { ReactNode, MouseEventHandler, FocusEventHandler, KeyboardEventHandler, CSSProperties } from 'react';
+import './ButtonComponent.css';
 
-export interface ButtonProps {
+export interface ButtonComponentProps {
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'ghost' | 'outline' | 'link' | 'brand';
   type?: 'button' | 'submit' | 'reset' | undefined;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   isLoading?: boolean;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
   fullWidth?: boolean;
   rounded?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   disabled?: boolean;
   // Link-specific props
@@ -19,13 +19,13 @@ export interface ButtonProps {
   target?: string; // For external links (e.g., "_blank")
   rel?: string; // For external links (e.g., "noopener noreferrer")
   // Common HTML attributes
-  onClick?: React.MouseEventHandler<HTMLElement>;
-  onMouseEnter?: React.MouseEventHandler<HTMLElement>;
-  onMouseLeave?: React.MouseEventHandler<HTMLElement>;
-  onFocus?: React.FocusEventHandler<HTMLElement>;
-  onBlur?: React.FocusEventHandler<HTMLElement>;
-  onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
-  onKeyUp?: React.KeyboardEventHandler<HTMLElement>;
+  onClick?: MouseEventHandler<HTMLElement>;
+  onMouseEnter?: MouseEventHandler<HTMLElement>;
+  onMouseLeave?: MouseEventHandler<HTMLElement>;
+  onFocus?: FocusEventHandler<HTMLElement>;
+  onBlur?: FocusEventHandler<HTMLElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLElement>;
+  onKeyUp?: KeyboardEventHandler<HTMLElement>;
   id?: string;
   title?: string;
   'aria-label'?: string;
@@ -34,10 +34,10 @@ export interface ButtonProps {
   'aria-haspopup'?: boolean;
   role?: string;
   tabIndex?: number;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
-const Button: React.FC<ButtonProps> = ({
+export const ButtonComponent = ({
   variant = 'primary',
   type = 'button',
   size = 'md',
@@ -46,15 +46,15 @@ const Button: React.FC<ButtonProps> = ({
   rightIcon,
   fullWidth = false,
   rounded = false,
-  children,
   className = '',
   disabled,
   to,
   href,
   target,
   rel,
+  children, 
   ...props
-}) => {
+}: ButtonComponentProps) => {
   const baseClasses = [
     'btn',
     `btn--${variant}`,
@@ -151,4 +151,3 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
-export default Button;

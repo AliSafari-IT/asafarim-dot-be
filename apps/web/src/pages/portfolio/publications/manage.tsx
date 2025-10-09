@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchPublications, deletePublication } from "../../../services/publicationService";
-import { Button, type ContentCardProps, useAuth, Eye, Remove } from "@asafarim/shared-ui-react";
+import {
+  fetchPublications,
+  deletePublication,
+} from "../../../services/publicationService";
+import {
+  ButtonComponent as Button,
+  type ContentCardProps,
+  useAuth,
+  Eye,
+  Remove,
+} from "@asafarim/shared-ui-react";
 import "./pub-styles.css";
 import PublicationActionsBar from "./components/PublicationActionsBar";
 
-const ManageDocuments: React.FC = () => {
+const ManageDocuments = () => {
   const { contentType } = useParams();
   const navigate = useNavigate();
   const [publications, setPublications] = useState<ContentCardProps[]>([]);
@@ -14,14 +23,20 @@ const ManageDocuments: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   // Check if user is admin based on roles in the user object
   const { isAuthenticated, user, loading: authLoading } = useAuth();
-  const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
+  const isAdmin =
+    user?.roles?.map((role: string) => role.toLowerCase()).includes("admin") ||
+    false;
 
   // Only redirect if not authenticated after loading is complete
   useEffect(() => {
     // Only check authentication after the loading state is complete
     if (!authLoading && !isAuthenticated) {
-      console.log("Authentication check complete, not authenticated. Redirecting to login.");
-      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(window.location.href)}`;
+      console.log(
+        "Authentication check complete, not authenticated. Redirecting to login."
+      );
+      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
+        window.location.href
+      )}`;
     }
   }, [authLoading, isAuthenticated]);
 
@@ -38,7 +53,7 @@ const ManageDocuments: React.FC = () => {
         setPublications(data);
         setError(null);
       } catch (err) {
-        setError('Failed to load publications');
+        setError("Failed to load publications");
         console.error(err);
       } finally {
         setLoading(false);
@@ -51,27 +66,30 @@ const ManageDocuments: React.FC = () => {
   }, [isAuthenticated, isAdmin]);
 
   // Handle delete publication
-  const handleDelete = async (id: number | string, publicationUserId?: string) => {
+  const handleDelete = async (
+    id: number | string,
+    publicationUserId?: string
+  ) => {
     // Check if user has permission to delete (admin or owner)
-    const canDelete = isAdmin || (user?.id === publicationUserId);
-    
+    const canDelete = isAdmin || user?.id === publicationUserId;
+
     if (!canDelete) {
-      setError('You do not have permission to delete this publication');
+      setError("You do not have permission to delete this publication");
       return;
     }
-    
-    if (window.confirm('Are you sure you want to delete this publication?')) {
+
+    if (window.confirm("Are you sure you want to delete this publication?")) {
       setIsDeleting(true);
       try {
         const success = await deletePublication(id as number);
         if (success) {
           // Remove from state
-          setPublications(publications.filter(pub => pub.id !== id));
+          setPublications(publications.filter((pub) => pub.id !== id));
         } else {
-          setError('Failed to delete publication');
+          setError("Failed to delete publication");
         }
       } catch (err) {
-        setError('An error occurred while deleting the publication');
+        setError("An error occurred while deleting the publication");
         console.error(err);
       } finally {
         setIsDeleting(false);
@@ -82,13 +100,13 @@ const ManageDocuments: React.FC = () => {
   // Handle edit publication
   const handleEdit = (id: number, publicationUserId?: string) => {
     // Check if user has permission to edit (admin or owner)
-    const canEdit = isAdmin || (user?.id === publicationUserId);
-    
+    const canEdit = isAdmin || user?.id === publicationUserId;
+
     if (!canEdit) {
-      setError('You do not have permission to edit this publication');
+      setError("You do not have permission to edit this publication");
       return;
     }
-    
+
     navigate(`/portfolio/${contentType}/edit/${id}`);
   };
 
@@ -100,7 +118,9 @@ const ManageDocuments: React.FC = () => {
     return (
       <div className="manage-publications">
         <div className="manage-publications-container">
-          <h1 className="manage-publications-title">Manage Your Publications</h1>
+          <h1 className="manage-publications-title">
+            Manage Your Publications
+          </h1>
           <div className="loading-spinner"></div>
           <p>Loading your publications...</p>
         </div>
@@ -114,36 +134,36 @@ const ManageDocuments: React.FC = () => {
 
   return (
     <div className="manage-publications">
-      <PublicationActionsBar 
-        onAddPublication={() => navigate('/portfolio/publications/new')}
-        onViewMyPublications={() => navigate('/portfolio/publications?myPublications=true')}
-        onViewAllPublications={() => navigate('/portfolio/publications')}
-        onManagePublications={() => navigate('/portfolio/publications/manage')}
+      <PublicationActionsBar
+        onAddPublication={() => navigate("/portfolio/publications/new")}
+        onViewMyPublications={() =>
+          navigate("/portfolio/publications?myPublications=true")
+        }
+        onViewAllPublications={() => navigate("/portfolio/publications")}
+        onManagePublications={() => navigate("/portfolio/publications/manage")}
       />
       <div className="manage-publications-container">
         <div className="manage-header">
           <h1 className="manage-publications-title">
-            {isAdmin ? 'Manage All Publications' : 'Manage Your Publications'}
+            {isAdmin ? "Manage All Publications" : "Manage Your Publications"}
           </h1>
-          <button 
-            onClick={() => navigate('/portfolio/publications/new')}
+          <button
+            onClick={() => navigate("/portfolio/publications/new")}
             className="form-button form-button-primary"
           >
             Add New Publication
           </button>
         </div>
 
-        {error && (
-          <div className="new-publication-error">
-            {error}
-          </div>
-        )}
+        {error && <div className="new-publication-error">{error}</div>}
 
         {publications.length === 0 ? (
           <div className="empty-state">
-            <p className="empty-state-message">You haven't created any publications yet.</p>
-            <button 
-              onClick={() => navigate('/portfolio/publications/new')}
+            <p className="empty-state-message">
+              You haven't created any publications yet.
+            </p>
+            <button
+              onClick={() => navigate("/portfolio/publications/new")}
               className="form-button form-button-primary"
             >
               Create Your First Publication
@@ -151,78 +171,99 @@ const ManageDocuments: React.FC = () => {
           </div>
         ) : (
           <div className="publications-table-wrapper">
-          <table className="publications-table">
-            <thead>
-              <tr>
-                <th className="table-header">Title</th>
-                <th className="table-header">Type</th>
-                <th className="table-header">Year</th>
-                <th className="table-header">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {publications.map((pub, index) => (
-                <tr key={pub.id || index}>
-                  <td className="table-cell">
-                    <div className="table-cell-content">
-                      <div className="table-title-wrapper">
-                        <Eye onClick={() => handleView(pub.id as unknown as number)} className="table-icon"/>
-                        <div className="table-title">{pub.title}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="table-cell">
-                    <div className="table-text">{pub.variant}</div>
-                  </td>
-                  <td className="table-cell">
-                    <div className="table-text">{pub.year}</div>
-                  </td>
-                  <td className="table-cell">
-                    <div className="table-actions">
-                      <button
-                        onClick={() => handleView(pub.id as unknown as number)}
-                        className="action-button view"
-                        disabled={isDeleting}
-                        aria-label="View publication"
-                      >
-                        View
-                      </button>
-                      <button
-                        onClick={() => handleEdit(pub.id as unknown as number, pub.userId as string)}
-                        className="action-button edit"
-                        disabled={isDeleting || (!isAdmin && user?.id !== pub.userId)}
-                        aria-label="Edit publication"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(pub.id as unknown as number, pub.userId as string)}
-                        disabled={isDeleting || (!isAdmin && user?.id !== pub.userId)}
-                        aria-label="Delete publication"
-                        title="Delete publication"
-                        className="action-button delete"
-                      >
-                        <Remove/>
-                      </button>
-                    </div>
-                  </td>
+            <table className="publications-table">
+              <thead>
+                <tr>
+                  <th className="table-header">Title</th>
+                  <th className="table-header">Type</th>
+                  <th className="table-header">Year</th>
+                  <th className="table-header">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {publications.map((pub, index) => (
+                  <tr key={pub.id || index}>
+                    <td className="table-cell">
+                      <div className="table-cell-content">
+                        <div className="table-title-wrapper">
+                          <Eye
+                            onClick={() =>
+                              handleView(pub.id as unknown as number)
+                            }
+                            className="table-icon"
+                          />
+                          <div className="table-title">{pub.title}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="table-cell">
+                      <div className="table-text">{pub.variant}</div>
+                    </td>
+                    <td className="table-cell">
+                      <div className="table-text">{pub.year}</div>
+                    </td>
+                    <td className="table-cell">
+                      <div className="table-actions">
+                        <button
+                          onClick={() =>
+                            handleView(pub.id as unknown as number)
+                          }
+                          className="action-button view"
+                          disabled={isDeleting}
+                          aria-label="View publication"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleEdit(
+                              pub.id as unknown as number,
+                              pub.userId as string
+                            )
+                          }
+                          className="action-button edit"
+                          disabled={
+                            isDeleting || (!isAdmin && user?.id !== pub.userId)
+                          }
+                          aria-label="Edit publication"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDelete(
+                              pub.id as unknown as number,
+                              pub.userId as string
+                            )
+                          }
+                          disabled={
+                            isDeleting || (!isAdmin && user?.id !== pub.userId)
+                          }
+                          aria-label="Delete publication"
+                          title="Delete publication"
+                          className="action-button delete"
+                        >
+                          <Remove />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      <div className="back-button-wrapper">
-        <Button
-          onClick={() => navigate("/portfolio/publications")}
-          variant="link"
-        >
-          Back to Publications
-        </Button>
+        <div className="back-button-wrapper">
+          <Button
+            onClick={() => navigate("/portfolio/publications")}
+            variant="link"
+          >
+            Back to Publications
+          </Button>
+        </div>
       </div>
     </div>
-  </div>
   );
 };
 

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { Button } from '../Button';
 import { SignOut } from '../../svg-icons';
+import { ButtonComponent } from '../Button/ButtonComponent';
 
 interface CentralSignOutProps {
   children?: React.ReactNode;
@@ -32,14 +32,14 @@ export const CentralSignOut = ({
   }, [signOut, onSignOut]);
 
   return (
-    <Button 
+    <ButtonComponent 
       onClick={handleSignOut}
       className={className}
       variant="ghost"
       rightIcon={<SignOut />}
     >
       {isMobile ? "" : children}
-    </Button>
+    </ButtonComponent>
   );
 };
 

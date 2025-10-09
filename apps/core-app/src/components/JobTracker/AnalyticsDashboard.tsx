@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchTimelineAnalytics, fetchJobSearchInsights } from '../../api/timelineService';
 import type { TimelineAnalytics, JobSearchInsights } from '../../types/timelineTypes';
 import './AnalyticsDashboard.css';
 
-const AnalyticsDashboard: React.FC = () => {
+const AnalyticsDashboard = () => {
   const [analytics, setAnalytics] = useState<TimelineAnalytics | null>(null);
   const [insights, setInsights] = useState<JobSearchInsights[]>([]);
   const [loading, setLoading] = useState(true);

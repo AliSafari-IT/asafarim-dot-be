@@ -1,11 +1,10 @@
-import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 
 /**
  * Wrapper component for editing resumes via /admin/resume/:id/edit
  * This redirects to the generic EditEntity with entityType="resumes"
  */
-const EditResume: React.FC = () => {
+const EditResume = () => {
   const { id } = useParams<{ id: string }>();
   
   if (!id) {

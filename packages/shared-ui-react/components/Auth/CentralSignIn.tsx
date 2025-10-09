@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { Button } from '../Button';
+import { ButtonComponent } from '../Button/ButtonComponent';
 import { SignIn } from '../../svg-icons';
 
 interface CentralSignInProps {
@@ -31,14 +31,14 @@ export const CentralSignIn = ({
   }, [signIn, onSignIn]);
 
   return (
-    <Button
+    <ButtonComponent
       onClick={handleSignIn}
       className={className}
       variant="ghost"
       rightIcon={<SignIn />}
     >
       {isMobile ? '' : children}
-    </Button>
+    </ButtonComponent>
   );
 };
 

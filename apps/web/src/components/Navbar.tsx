@@ -1,16 +1,19 @@
 import { CentralNavbar } from "@asafarim/shared-ui-react";
 import { useAuth } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
-import { NavLink } from "react-router-dom";
-import DDMenu, { DDMenuWrapper } from "@asafarim/dd-menu";
-import "@asafarim/dd-menu/index.css";
+import { Dropdown, DropdownDivider, DropdownItem } from "@asafarim/shared-ui-react";
 
 // Define your navigation links
 const navLinks: NavLinkItem[] = [
-  { to: "#", label: "projects-dropdown" }, 
-  { to: "/admin/entities/resumes", label: "Resumes" },
-  { to: "/about", label: "About" },
-  { to: "/contact", label: "Contact" },
+  { to: "#", label: "projects-dropdown", external: false, icon: "🚀" },
+  {
+    to: "/admin/entities/resumes",
+    label: "Resumes",
+    external: false,
+    icon: "📄",
+  },
+  { to: "/about", label: "About", external: false, icon: "❓" },
+  { to: "/contact", label: "Contact", external: false, icon: "📞" },
 ];
 
 // Custom render function for React Router links
@@ -23,25 +26,20 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
         rel="noopener noreferrer"
         className={`nav-link ${isMobile ? "nav-link--mobile" : ""}`}
       >
-        {link.icon && <span className="nav-link__icon">{link.icon}</span>}
+        {<span className="nav-link__icon">{link?.icon?.toString()}</span>}
         {link.label}
       </a>
     );
   }
 
   return (
-    <NavLink
-      to={link.to}
-      className={({ isActive }) =>
-        `nav-link ${isMobile ? "nav-link--mobile" : ""} ${
-          isActive ? "nav-link--active" : ""
-        }`
-      }
-      end={link.to === "/"} // Only match exactly for home link
+    <a
+      href={link.to}
+      className={`nav-link ${isMobile ? "nav-link--mobile" : ""}`}
     >
-      {link.icon && <span className="nav-link__icon">{link.icon}</span>}
+      {<span className="nav-link__icon">{link?.icon?.toString()}</span>}
       {link.label}
-    </NavLink>
+    </a>
   );
 };
 
@@ -50,6 +48,10 @@ export default function Navbar() {
 
   return (
     <CentralNavbar
+      appId="web"
+      showAppSwitcher={false}
+      className="navbar"
+      key="navbar"
       localLinks={navLinks}
       brand={{
         logo: "/logo.svg",
@@ -73,43 +75,46 @@ export default function Navbar() {
         if (link.label === "projects-dropdown") {
           return (
             <div className="navbar-item">
-              <DDMenuWrapper
-                key="projects-dropdown"
-                children={
-                  <DDMenu
-                    className={`nav-link ${isMobile ? "nav-link--mobile" : ""}`}
-                    trigger={<span>Projects</span>}
-                    variant="minimal"
-                    placement="bottom-start"
-                    items={[
-                      {
-                        id: "projects",
-                        label: "Projects",
-                        link: "/projects",
-                        icon: "🚀",
-                      },
-                      {
-                        id: "npm-packages",
-                        label: "NPM Packages",
-                        link: "https://www.npmjs.com/~asafarim",
-                        icon: "📦",
-                      },
-                      {
-                        id: "skills",
-                        label: "Skills",
-                        link: "/skills",
-                        icon: "💻",
-                      },
-                      {
-                        id: "portfolio",
-                        label: "Portfolio",
-                        link: "/portfolio",
-                        icon: "📂",
-                      },
-                    ]}
-                  />
-                }
-              />
+              <Dropdown
+                placement="bottom-end"
+                closeOnEscape={true}
+                items={[
+                  <DropdownItem
+                    key="projects"
+                    label="Projects"
+                    icon="🚀"
+                    onClick={() => (window.location.href = "http://web.asafarim.local:5175/projects")}
+                  />,
+                  <DropdownDivider key="divider-1" />,
+                  <DropdownItem
+                    key="npm-packages"
+                    label="NPM Packages"
+                    icon="📦"
+                    onClick={() => (window.location.href = "https://www.npmjs.com/~asafarim")}
+                  />,
+                  <DropdownDivider key="divider-2" />,
+                  <DropdownItem
+                    key="skills"
+                    label="Skills"
+                    icon="💻"
+                    onClick={() => (window.location.href = "http://web.asafarim.local:5175/skills")}
+                  />,
+                  <DropdownDivider key="divider-3" />,
+                  <DropdownItem
+                    key="portfolio"
+                    label="Portfolio"
+                    icon="📂"
+                    onClick={() => (window.location.href = "http://web.asafarim.local:5175/portfolio")}
+                  />,
+                ]}
+              >
+                <button
+                  className={`nav-link ${isMobile ? "nav-link--mobile" : ""}`}
+                  aria-label="Open projects menu"
+                >
+                  Projects
+                </button>
+              </Dropdown>
             </div>
           );
         }

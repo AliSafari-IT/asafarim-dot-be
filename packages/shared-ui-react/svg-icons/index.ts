@@ -38,7 +38,7 @@ export {
     Arrow, Spark,
     Lock, UnLock, Login, SignIn, SignOut, AuthStatusIcon, Eye, EyeOff,
     Github, Twitter, Linkedin, StackOverflow, TwitterX, Download, Html,
-    MarkDown, Pdf, Email, Contact, Location, Company, Website, Phone, 
-    LoginArrow, DotsMenu, Info, Delete, Remove, Edit, ArrowLeftIcon, PlusIcon, 
-    Google, ORCID
+    MarkDown, Pdf, Email, Contact, Location, Company, Website, Phone,
+    LoginArrow, DotsMenu, Info, Delete, Remove, Edit, ArrowLeftIcon,
+    PlusIcon, Google, ORCID
 };

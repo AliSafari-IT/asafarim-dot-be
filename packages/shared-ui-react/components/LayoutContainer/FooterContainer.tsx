@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import './footer.css';
-import isProduction from '../configs/isProduction';
-import { Github, Twitter, Linkedin, StackOverflow } from '../svg-icons';
+import { Github, Twitter, Linkedin, StackOverflow } from '../../svg-icons';
+import { isProduction } from '../../configs';
 
 const socialLinks = [
   { 
@@ -56,7 +56,7 @@ const footerLinks = [
   },
 ];
 
-export default function FooterContainer({ children }: PropsWithChildren) {
+export function FooterContainer({ children }: PropsWithChildren) {
   const currentYear = new Date().getFullYear();
 
   return (

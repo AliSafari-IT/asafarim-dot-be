@@ -1,7 +1,11 @@
-import React from "react";
+import  { createContext } from "react";
+import type { ReactNode } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
-export function AuthProvider({ children }: { children: React.ReactNode }): React.ReactElement {
+interface AuthProviderProps {
+    children: ReactNode;
+}
+export function AuthProvider({ children }: AuthProviderProps) {
     const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
 
   return (
@@ -11,7 +15,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
   );
 }
 
-export const AuthContext = React.createContext<{
+export const AuthContext = createContext<{
   isAuthenticated: boolean;
   user: any | null;
   loading: boolean;
@@ -19,5 +23,6 @@ export const AuthContext = React.createContext<{
   signIn: (redirectUrl?: string) => Promise<void>;
 } | null>(null);
 
-export const AuthSyncProvider = React.memo(AuthProvider);
+// Export AuthProvider directly without React.memo to avoid JSX compatibility issues
+export const AuthSyncProvider = AuthProvider;
 

@@ -1,3 +1,4 @@
+import { apiGet, apiPost, apiPut, apiDelete } from '../api/core';
 import type { ContentCardProps } from "@asafarim/shared-ui-react";
 
 export interface PublicationDto {
@@ -58,8 +59,14 @@ export const mapToContentCardProps = (publication: PublicationDto): ContentCardP
   };
 };
 
-// API base URL
-const API_BASE_URL = import.meta.env.VITE_CORE_API_URL || 'http://core-api.asafarim.local:5102/api';
+// API base URL - ensure it includes /api suffix
+const getApiBaseUrl = () => {
+  const baseUrl = import.meta.env.VITE_CORE_API_URL || 'http://api.asafarim.local:5102';
+  // Ensure the URL ends with /api
+  return baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Fetch publications or projects by variant (unified function)
 export const fetchContent = async (
@@ -97,17 +104,8 @@ export const fetchContent = async (
       url += `?${params.toString()}`;
     }
 
-    // Get token from both cookie and localStorage for maximum compatibility
-    const token = getCookie('atk') || localStorage.getItem('auth_token');
-    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
-
     const response = await fetch(url, {
-      credentials: 'include', // Include cookies for authentication
-      headers: {
-        'Content-Type': 'application/json',
-        // Include auth token if available from either source
-        ...(token && { 'Authorization': `Bearer ${token}` }),
-      },
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -135,28 +133,13 @@ export const fetchProjects = async (variant?: string, featured?: boolean, myProj
 // Fetch a single publication by ID
 export const fetchPublicationById = async (id: number | string): Promise<ContentCardProps | null> => {
   try {
-    // Get token from both cookie and localStorage for maximum compatibility
-    const token = getCookie('atk') || localStorage.getItem('auth_token');
-    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
-    
-    const response = await fetch(`${API_BASE_URL}/publications/${id}`, {
-      credentials: 'include', // Include cookies for authentication
-      headers: {
-        'Content-Type': 'application/json',
-        // Include auth token if available from either source
-        ...(token && { 'Authorization': `Bearer ${token}` }),
-      },
+    const response = await apiGet<PublicationDto>(`/publications/${id}`, {
     });
-    
-    if (!response.ok) {
-      throw new Error(`Error fetching publication: ${response.statusText}`);
-    }
-    
-    const data: PublicationDto = await response.json();
-    return mapToContentCardProps(data);
+
+    return mapToContentCardProps(response);
   } catch (error) {
     console.error(`Failed to fetch publication with ID ${id}:`, error);
-    return null;
+    return null;  
   }
 };
 
@@ -177,29 +160,11 @@ export const createPublication = async (publication: Omit<PublicationDto, 'id'>)
     
     console.log('Sending publication data:', publicationToSend);
     
-    // Get token from both cookie and localStorage for maximum compatibility
-    const token = getCookie('atk') || localStorage.getItem('auth_token');
-    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
-    
-    const response = await fetch(`${API_BASE_URL}/publications`, {
-      method: 'POST',
-      credentials: 'include', // Include cookies in the request
-      headers: {
-        'Content-Type': 'application/json',
-        // Include auth token if available from either source
-        ...(token && { 'Authorization': `Bearer ${token}` }),
-      },
+    const response = await apiPost<PublicationDto>(`/publications`, {
       body: JSON.stringify(publicationToSend),
     });
-    
-    if (!response.ok) {
-      // Try to get more detailed error information
-      const errorText = await response.text();
-      console.error('Server response:', errorText);
-      throw new Error(`Error creating publication: ${response.status} ${response.statusText}\n${errorText}`);
-    }
-    
-    return await response.json();
+        
+    return response;
   } catch (error) {
     console.error('Failed to create publication:', error);
     return null;
@@ -209,10 +174,6 @@ export const createPublication = async (publication: Omit<PublicationDto, 'id'>)
 // Update an existing publication
 export const updatePublication = async (id: number, publication: Omit<PublicationDto, 'id'> & { isAdminEdit?: boolean }): Promise<boolean> => {
   try {
-    // Get token from both cookie and localStorage for maximum compatibility
-    const token = getCookie('atk') || localStorage.getItem('auth_token');
-    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
-    
     // Extract admin flag before cleaning
     const isAdminEdit = publication.isAdminEdit;
     
@@ -233,32 +194,18 @@ export const updatePublication = async (id: number, publication: Omit<Publicatio
     console.log('Is admin edit:', isAdminEdit ? 'Yes' : 'No');
     
     // Add admin flag as a query parameter if it's an admin edit
-    let url = `${API_BASE_URL}/publications/${id}`;
+    let url = `/publications/${id}`;
     if (isAdminEdit) {
       url += '?isAdminEdit=true';
     }
     
-    const response = await fetch(url, {
-      method: 'PUT',
-      credentials: 'include', // Include cookies in the request
-      headers: {
-        'Content-Type': 'application/json',
-        // Include auth token if available from either source
-        ...(token && { 'Authorization': `Bearer ${token}` }),
-        // Add admin flag as a header as well for redundancy
-        ...(isAdminEdit && { 'X-Admin-Edit': 'true' }),
-      },
+    const response = await apiPut<PublicationDto>(url, {
       body: JSON.stringify(cleanedPublication),
     });
-    
-    if (!response.ok) {
-      // Try to get more detailed error information
-      const errorText = await response.text();
-      console.error('Server response:', errorText);
-      throw new Error(`Error updating publication: ${response.status} ${response.statusText}\n${errorText}`);
-    }
-    
-    return true;
+    if (response) {
+      return true;
+    }  
+    return false;
   } catch (error) {
     console.error(`Failed to update publication with ID ${id}:`, error);
     return false;
@@ -268,24 +215,8 @@ export const updatePublication = async (id: number, publication: Omit<Publicatio
 // Delete a publication
 export const deletePublication = async (id: number): Promise<boolean> => {
   try {
-    // Get token from both cookie and localStorage for maximum compatibility
-    const token = getCookie('atk') || localStorage.getItem('auth_token');
-    console.log('Using token for API call:', token ? 'Token exists' : 'No token');
-    
-    const response = await fetch(`${API_BASE_URL}/publications/${id}`, {
-      method: 'DELETE',
-      credentials: 'include', // Include cookies in the request
-      headers: {
-        'Content-Type': 'application/json',
-        // Include auth token if available from either source
-        ...(token && { 'Authorization': `Bearer ${token}` }),
-      },
+    await apiDelete<void>(`/publications/${id}`, {
     });
-    
-    if (!response.ok) {
-      throw new Error(`Error deleting publication: ${response.statusText}`);
-    }
-    
     return true;
   } catch (error) {
     console.error(`Failed to delete publication with ID ${id}:`, error);
@@ -293,10 +224,3 @@ export const deletePublication = async (id: number): Promise<boolean> => {
   }
 };
 
-// Helper function to get cookie value
-function getCookie(name: string): string | undefined {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift();
-  return undefined;
-}

@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Button } from "@asafarim/shared-ui-react";
 import { apiGet } from "../api/core";
 import type { PagedResponse } from "../api/core";
 
-export default function WhatIsBuilding() {
+function WhatIsBuilding() {
   type Item = { id: string; title: string; date: string; link?: string };
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,12 +73,14 @@ export default function WhatIsBuilding() {
               <div className="emoji">📭</div>
               <h3>No updates yet</h3>
               <p>New builds will appear here soon. Stay tuned!</p>
-              <Button
-                href="https://github.com/AliSafari-IT/asafarim-dot-be"
-                variant="primary"
+              <button
+                aria-label="View Repository"
+                id="view-repository"
+                type="button"
+                onClick={() => window.open("https://github.com/AliSafari-IT/asafarim-dot-be", "_blank")}
               >
                 View Repository →
-              </Button>
+              </button>
             </div>
           ) : (
             <>
@@ -91,9 +92,14 @@ export default function WhatIsBuilding() {
                       <span>{formatter.format(new Date(item.date))}</span>
                     </div>
                     {item.link && (
-                      <Button href={item.link} variant="outline">
+                      <button
+                        aria-label="View Details"
+                        id="view-details"
+                        type="button"
+                        onClick={() => window.open(item.link, "_blank")}
+                      >
                         🔗 View Details
-                      </Button>
+                      </button>
                     )}
                   </div>
                 ))}
@@ -101,23 +107,27 @@ export default function WhatIsBuilding() {
 
               {total && total > pageSize && (
                 <div className="pagination">
-                  <Button
-                    variant="outline"
+                  <button
+                    aria-label="Previous Page"
+                    id="previous-page"
+                    type="button"
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
                     ← Previous
-                  </Button>
+                  </button>
                   <span>
                     Page {page} of {Math.ceil(total / pageSize)}
                   </span>
-                  <Button
-                    variant="outline"
+                  <button
+                    aria-label="Next Page"
+                    id="next-page"
+                    type="button"
                     disabled={page >= Math.ceil(total / pageSize)}
                     onClick={() => setPage((p) => p + 1)}
                   >
                     Next →
-                  </Button>
+                  </button>
                 </div>
               )}
             </>
@@ -127,3 +137,5 @@ export default function WhatIsBuilding() {
     </section>
   );
 }
+
+export default WhatIsBuilding;

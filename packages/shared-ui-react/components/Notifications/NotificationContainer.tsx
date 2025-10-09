@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNotifications } from '../../hooks/useNotifications';
 import type { Notification } from '../../contexts/NotificationProvider/notificationContext';
 import './Notifications.css';
@@ -8,10 +8,10 @@ export interface NotificationContainerProps {
   className?: string;
 }
 
-export const NotificationContainer: React.FC<NotificationContainerProps> = ({ 
+export const NotificationContainer = ({ 
   position = 'top-right',
   className = ''
-}) => {
+}: NotificationContainerProps) => {
   const { notifications, removeNotification } = useNotifications();
   const [removing, setRemoving] = useState<Record<string, boolean>>({});
 

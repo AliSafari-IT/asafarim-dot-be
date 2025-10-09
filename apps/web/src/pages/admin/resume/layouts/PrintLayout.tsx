@@ -1,9 +1,8 @@
-import React from 'react';
 import type { ResumeLayoutProps } from './types.tsx';
 import { formatDate, renderDots } from './types.tsx';
 import './print-layout.css';
 
-export const PrintLayout: React.FC<ResumeLayoutProps> = ({ resume }) => {
+export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
   return (
     <div className="print-layout-container">
       {/* Export PDF Button - completely removed for print layout */}

@@ -48,7 +48,7 @@ export default function Root({ children }: RootProps): React.ReactElement {
   }, []);
   
   return (
-    <ThemeProvider defaultMode={initialTheme} storageKey="asafarim-theme" persistMode={true}>
+    <ThemeProvider config={{ defaultMode: initialTheme, storageKey: 'asafarim-theme', }}>
       <AuthSyncProvider>
         {children}
       </AuthSyncProvider>

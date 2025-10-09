@@ -1,9 +1,8 @@
-import React from "react";
 import ResumeSectionItemsView, { type ResumeSectionItem } from "./ResumeSectionItemsView";
 import { fetchLanguages, deleteLanguage, type LanguageDto } from "../../../services/languageApi";
 import { convertToResumeSectionItems } from "./utils";
 
-const LanguagesManagement: React.FC = () => {
+const LanguagesManagement = () => {
   const getItemDisplayName = (item: LanguageDto) => item.name;
   
   const getItemSubtitle = (item: LanguageDto) => item.level;

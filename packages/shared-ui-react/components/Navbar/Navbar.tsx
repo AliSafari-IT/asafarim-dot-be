@@ -4,7 +4,7 @@ import { ThemeToggle } from '@asafarim/react-themes';
 import type { NavbarProps, NavLinkItem } from './types';
 import './Navbar.css';
 
-const defaultRenderLink = (link: NavLinkItem, isMobile = false) => {
+const defaultRenderLink = (link: NavLinkItem, isMobile = false): React.ReactNode => {
   if (link.external) {
     return (
       <a
@@ -33,14 +33,14 @@ const defaultRenderLink = (link: NavLinkItem, isMobile = false) => {
   );
 };
 
-const defaultRenderBrand = (brand: { logo?: string; text: string; href?: string }) => (
+const defaultRenderBrand = (brand: { logo?: string; text: string; href?: string }): React.ReactNode => (
   <a href={brand?.href || '/'} className="brand" aria-label="Home">
     {brand.logo && <img src={brand.logo} alt="logo" className="brand__logo" />}
     <span className="brand__text">{brand.text}</span>
   </a>
 );
 
-export const Navbar: React.FC<NavbarProps> = ({
+export const Navbar = ({
   localLinks: links,
   brand,
   breakpoint = 768,
@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   auth,
   renderLink = defaultRenderLink,
   renderBrand = defaultRenderBrand,
-}) => {
+}: NavbarProps): React.ReactNode => {
   const [open, setOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -70,7 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       className={`nav-list ${vertical ? 'nav-list--vertical' : ''}`}
       role="list"
     >
-      {links.map((link, index) => (
+      {links?.map((link, index) => (
         <li
           key={index}
           onClick={(e) => {
@@ -119,14 +119,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
             
             <div className={`theme-in-header ${open ? 'is-hidden' : ''}`}>
-              <ThemeToggle
-                showLabels={false}
-                style={{
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              />
+              <ThemeToggle className="navbar-theme-toggle" />
             </div>
 
             {/* Hamburger (mobile only) */}
@@ -151,14 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="mobile-inner">
           <Links vertical />
           <div className="theme-in-menu">
-            <ThemeToggle
-              showLabels={false}
-              style={{
-                backgroundColor: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            />
+            <ThemeToggle className="navbar-theme-toggle" />
             {auth && showAuthInMenu && (
               <AuthStatus
                 isAuthenticated={auth.isAuthenticated}

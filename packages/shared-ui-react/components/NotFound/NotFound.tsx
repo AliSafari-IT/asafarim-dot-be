@@ -1,6 +1,7 @@
 /* Awesome 404 Not Found Component */
 import './NotFound.css';
 
+
 export default function NotFound({ title, message }: { title?: string; message?: string }) {
   const handleGoHome = () => {
     window.location.href = '/';

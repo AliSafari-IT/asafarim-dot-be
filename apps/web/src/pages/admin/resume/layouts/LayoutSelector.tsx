@@ -1,4 +1,3 @@
-import React from 'react';
 import type { LayoutType } from './types.tsx';
 import './layout-selector.css';
 
@@ -13,11 +12,11 @@ const LAYOUTS = [
   { value: 'print' as LayoutType, label: 'Print', icon: '🖨️', desc: 'Print ready' },
 ];
 
-export const LayoutSelector: React.FC<LayoutSelectorProps> = ({ 
+export const LayoutSelector = ({ 
   currentLayout, 
   onLayoutChange,
   onExportPDF 
-}) => {
+}: LayoutSelectorProps) => {
   return (
     <div className="layout-selector">
       <div className="layout-buttons">

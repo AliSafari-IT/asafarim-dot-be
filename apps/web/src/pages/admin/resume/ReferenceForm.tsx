@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import {
   fetchReferenceById,
   createReference,
@@ -10,7 +10,7 @@ import {
 import { fetchResumeById } from "../../../services/resumeApi";
 import "./resume-section-form.css";
 
-const ReferenceForm: React.FC = () => {
+const ReferenceForm = () => {
   const navigate = useNavigate();
   const { resumeId, id } = useParams<{ resumeId: string; id?: string }>();
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -60,14 +60,23 @@ const ReferenceForm: React.FC = () => {
       try {
         setLoading(true);
         const reference = await fetchReferenceById(resumeId, id);
+        console.log("Loaded reference data:", reference); // Debug log
         setFormData({
-          name: reference.name,
-          position: reference.position,
-          company: reference.company,
-          email: reference.email,
-          phone: reference.phone || "",
-          relationship: reference.relationship || "",
+          name: reference?.name || "",
+          position: reference?.position || "",
+          company: reference?.company || "",
+          email: reference?.email || "",
+          phone: reference?.phone ?? "",
+          relationship: reference?.relationship ?? "",
         });
+        console.log("Updated formData:", {
+          name: reference?.name || "",
+          position: reference?.position || "",
+          company: reference?.company || "",
+          email: reference?.email || "",
+          phone: reference?.phone ?? "",
+          relationship: reference?.relationship ?? "",
+        }); // Debug log
       } catch (err) {
         console.error("Error loading reference:", err);
         addNotification("error", "Failed to load reference");
@@ -78,6 +87,7 @@ const ReferenceForm: React.FC = () => {
 
     // Load data for both view and edit modes
     if (isEditMode || isViewMode) {
+      console.log(`Loading reference in ${isEditMode ? 'edit' : 'view'} mode for ID:`, id); // Debug log
       loadReference();
     }
   }, [id, resumeId, isAuthenticated, isEditMode, isViewMode, addNotification]);
@@ -107,7 +117,10 @@ const ReferenceForm: React.FC = () => {
   };
 
   const handleInputChange = (field: keyof CreateReferenceRequest, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value ?? ""
+    }));
   };
 
   if (!isAuthenticated) {

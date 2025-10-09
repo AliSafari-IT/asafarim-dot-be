@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { Arrow, Button, Lock } from "@asafarim/shared-ui-react";
+import { Arrow, ButtonComponent as Button, Lock } from "@asafarim/shared-ui-react";
 
 
 export const LoginForm = () => {

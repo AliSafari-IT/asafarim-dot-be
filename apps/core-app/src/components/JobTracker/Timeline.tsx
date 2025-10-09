@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import type { TimelineMilestone, TimelineStage, MilestoneType } from '../../types/timelineTypes';
 import type { JobApplication } from '../../types/jobTypes';
 import './Timeline.css';
-import { Button } from '@asafarim/shared-ui-react';
+import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
 
 interface TimelineProps {
   job: JobApplication;
@@ -12,13 +12,13 @@ interface TimelineProps {
   onMilestoneDelete: (milestoneId: string) => void;
 }
 
-const Timeline: React.FC<TimelineProps> = ({
+const Timeline = ({
   job,
   milestones,
   onMilestoneUpdate,
   onMilestoneAdd,
   onMilestoneDelete
-}) => {
+}:TimelineProps) => {
   const [selectedMilestone, setSelectedMilestone] = useState<TimelineMilestone | null>(null);
   const [isAddingMilestone, setIsAddingMilestone] = useState(false);
   const [newMilestoneType, setNewMilestoneType] = useState<MilestoneType>('custom');

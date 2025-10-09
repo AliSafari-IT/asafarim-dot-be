@@ -7,7 +7,7 @@ import {
   type ChangeEvent,
 } from "react";
 import { sendEmail } from "../api/emailService";
-import { Button, Eye, EyeOff, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, Eye, EyeOff, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import { apiGet, CORE_API_BASE } from "../api/core";
 import React from "react";
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import {
   fetchExperienceById,
   createExperience,
@@ -10,7 +10,7 @@ import {
 import { fetchResumeById } from "../../../services/resumeApi";
 import "./resume-section-form.css";
 
-const ExperienceForm: React.FC = () => {
+const ExperienceForm = () => {
   const navigate = useNavigate();
   const { resumeId, id, mode } = useParams<{ resumeId: string; id?: string; mode?: string }>();
   const { isAuthenticated, loading: authLoading } = useAuth();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Notification as NotificationType } from '../../contexts/notificationTypes';
 import './Notification.css';
 
@@ -7,7 +7,7 @@ interface NotificationProps {
   onClose: (id: string) => void;
 }
 
-const Notification: React.FC<NotificationProps> = ({ notification, onClose }) => {
+const Notification = ({ notification, onClose }: NotificationProps) => {
   const [isExiting, setIsExiting] = useState(false);
   const { id, message, type } = notification;
 

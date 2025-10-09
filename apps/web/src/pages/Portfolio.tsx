@@ -1,8 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import { Hero } from '@asafarim/shared-ui-react';
 
-const Portfolio: React.FC = () => {
+const Portfolio = () => {
   // Portfolio sections
   const portfolioSections = [
     {
@@ -48,11 +46,11 @@ const Portfolio: React.FC = () => {
         ]}
         primaryCta={{
           label: "View Resume",
-          to: "/portfolio/resume",
+          href: "/portfolio/resume",
         }}
         secondaryCta={{
           label: "Contact Me",
-          to: "/contact",
+          href: "/contact",
         }}
       />
 
@@ -61,8 +59,8 @@ const Portfolio: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {portfolioSections.map((section) => (
-            <Link 
-              to={section.link} 
+            <a 
+              href={section.link} 
               key={section.id}
               className="portfolio-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center"
             >
@@ -70,7 +68,7 @@ const Portfolio: React.FC = () => {
               <h3 className="text-xl font-bold mb-2">{section.title}</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">{section.description}</p>
               <span className="text-blue-600 dark:text-blue-400 font-medium">View {section.title} →</span>
-            </Link>
+            </a>
           ))}
         </div>
       </section>

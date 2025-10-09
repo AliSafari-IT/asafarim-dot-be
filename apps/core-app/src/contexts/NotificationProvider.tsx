@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { NotificationContext, type NotificationType, type Notification } from './notificationContext';
 
@@ -7,7 +7,7 @@ interface NotificationProviderProps {
   autoRemoveTimeout?: number;
 }
 
-const NotificationProvider: React.FC<NotificationProviderProps> = ({ children, autoRemoveTimeout = 5000 }) => {
+const NotificationProvider = ({ children, autoRemoveTimeout = 5000 }: NotificationProviderProps) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = (type: NotificationType, message: string) => {

@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import "./header.css";
 
-export default function HeaderContainer({
+export function HeaderContainer({
   children,
 }: PropsWithChildren<{
   children?: React.ReactNode;

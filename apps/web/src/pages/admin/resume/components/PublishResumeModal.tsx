@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button } from "@asafarim/shared-ui-react";
+import { useState } from "react";
+import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./PublishResumeModal.css";
 
 interface PublishResumeModalProps {
@@ -9,12 +9,12 @@ interface PublishResumeModalProps {
   resumeTitle: string;
 }
 
-const PublishResumeModal: React.FC<PublishResumeModalProps> = ({
+const PublishResumeModal = ({
   isOpen,
   onClose,
   onConfirm,
   resumeTitle,
-}) => {
+}: PublishResumeModalProps) => {
   const [consentGiven, setConsentGiven] = useState(false);
   const [useCustomSlug, setUseCustomSlug] = useState(false);
   const [customSlug, setCustomSlug] = useState("");

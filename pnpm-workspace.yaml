@@ -1,4 +1,6 @@
 packages:
-  - apps/*
-  - apis/*
-  - packages/*
+  - 'packages/shared-ui-react'
+  - 'packages/shared-tokens'
+  - 'packages/react-themes'
+  - 'apps/*'
+  - 'apis/*'

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, useAuth } from '@asafarim/shared-ui-react';
+import { ButtonComponent as Button, useAuth } from '@asafarim/shared-ui-react';
 import { fetchResumes, deleteResume, type ResumeDto } from '../../../services/resumeApi';
 import './resume-styles.css';
 
-const ResumeList: React.FC = () => {
+const ResumeList = () => {
   const [resumes, setResumes] = useState<ResumeDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -51,6 +51,7 @@ export default function Navbar() {
 
   return (
     <CentralNavbar
+      appId="ai-ui"
       localLinks={navLinks}
       brand={{
         logo: "/logo.svg",

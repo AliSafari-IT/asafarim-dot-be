@@ -1,6 +1,5 @@
-import React from "react";
 import {
-  Button,
+  ButtonComponent as Button,
   LoginArrow,
   isProduction,
   useAuth,
@@ -27,7 +26,7 @@ export interface EntityActionsBarProps {
  * and user roles. It supports custom callbacks for all actions and can be used
  * for any entity type (work-experiences, publications, resumes, etc.)
  */
-const EntityActionsBar: React.FC<EntityActionsBarProps> = ({
+const EntityActionsBar = ({
   entityType,
   entityDisplayName,
   onAddEntity,
@@ -39,7 +38,7 @@ const EntityActionsBar: React.FC<EntityActionsBarProps> = ({
   showMyButton = true,
   showAllButton = true,
   showManageButton = true,
-}) => {
+}: EntityActionsBarProps) => {
   const { isAuthenticated, user, loading: authLoading } = useAuth();
   
   // Check if user is admin based on roles in the user object

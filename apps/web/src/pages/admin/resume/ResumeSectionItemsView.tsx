@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, useAuth, useNotifications, Eye, Edit, Remove } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, useAuth, useNotifications, Eye, Edit, Remove } from "@asafarim/shared-ui-react";
 import { RESUME_SECTION_TYPES } from "./resume-section-types";
 import { fetchResumeById } from "../../../services/resumeApi";
 import "./resume-section-items.css";
@@ -16,17 +16,17 @@ interface ResumeSectionItemsViewProps {
   deleteItem: (resumeId: string, itemId: string) => Promise<void>;
   getItemDisplayName: (item: ResumeSectionItem) => string;
   getItemSubtitle?: (item: ResumeSectionItem) => string;
-  renderItemDetails?: (item: ResumeSectionItem) => React.ReactNode;
+  renderItemDetails?: (item: ResumeSectionItem) => JSX.Element;
 }
 
-const ResumeSectionItemsView: React.FC<ResumeSectionItemsViewProps> = ({
+const ResumeSectionItemsView = ({
   sectionType,
   fetchItems,
   deleteItem,
   getItemDisplayName,
   getItemSubtitle,
   renderItemDetails,
-}) => {
+}: ResumeSectionItemsViewProps) => {
   const navigate = useNavigate();
   const { resumeId } = useParams<{ resumeId: string }>();
   const { isAuthenticated, loading: authLoading } = useAuth();

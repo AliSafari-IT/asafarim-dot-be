@@ -1,6 +1,6 @@
 {
   "name": "@asafarim/blog",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -14,15 +14,15 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
+    "app:blog": "cd ../../ && pnpm run app:blog",
     "typecheck": "tsc"
   },
   "peerDependencies": {
     "@asafarim/shared-ui-react": "workspace:*"
   },
   "dependencies": {
-    "@asafarim/dd-menu": "^1.4.0",
-    "@asafarim/react-themes": "^1.6.1",
-    "@docusaurus/preset-classic": "3.8.1",
+    "@asafarim/react-themes": "workspace:*",
+    "@docusaurus/preset-classic": "3.9.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "prism-react-renderer": "^2.4.1",
@@ -30,10 +30,10 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@docusaurus/core": "3.8.1",
-    "@docusaurus/module-type-aliases": "3.8.1",
-    "@docusaurus/tsconfig": "3.8.1",
-    "@docusaurus/types": "3.8.1",
+    "@docusaurus/core": "3.9.1",
+    "@docusaurus/module-type-aliases": "3.9.1",
+    "@docusaurus/tsconfig": "3.9.1",
+    "@docusaurus/types": "3.9.1",
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.10",
     "typescript": "~5.6.2"
