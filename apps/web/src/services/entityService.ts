@@ -1,4 +1,4 @@
-import { CORE_API_BASE, getCookie } from '../api/core';
+import { API_BASE_URL, getCookie } from "../config/api";
 
 export interface EntityType {
   id: string;
@@ -67,7 +67,7 @@ export const fetchEntityRecords = async (
       throw new Error(`Unknown entity type: ${entityType}`);
     }
 
-    let url = `${CORE_API_BASE}${entity.endpoint}`;
+    let url = `${API_BASE_URL}${entity.endpoint}`;
     
     // Add query parameter for user-specific filtering
     if (myRecordsOnly) {
@@ -128,7 +128,7 @@ export const deleteEntityRecord = async (
       throw new Error(`Unknown entity type: ${entityType}`);
     }
 
-    let url = `${CORE_API_BASE}${entity.endpoint}/${recordId}`;
+    let url = `${API_BASE_URL}${entity.endpoint}/${recordId}`;
     
     if (isAdminEdit) {
       url += '?isAdminEdit=true';

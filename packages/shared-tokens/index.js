@@ -1,8 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.tailwindPreset = void 0;
 // Re-export the tailwind preset
-import preset from './tailwind-preset.cjs';
-
-// Note: CSS files are imported directly in consuming files with:
-// import '@asafarim/shared-tokens/index.css';
-
-export { preset as tailwindPreset };
-export default preset;
+var tailwind_preset_cjs_1 = require("./tailwind-preset.cjs");
+exports.tailwindPreset = tailwind_preset_cjs_1.default;
+exports.default = tailwind_preset_cjs_1.default;
+//# sourceMappingURL=index.js.map

@@ -82,7 +82,7 @@ export const getCurrentAppId = (): string => {
 
   const hostname = window.location.hostname;
 
-  if (hostname.startsWith('web.')) return 'web';
+  if (hostname.startsWith('web.') || hostname.startsWith('www.asafarim.be') || hostname.startsWith('asafarim.be')) return 'web';
   if (hostname.startsWith('blog.')) return 'blog';
   if (hostname.startsWith('ai.')) return 'ai';
   if (hostname.startsWith('core.')) return 'core';

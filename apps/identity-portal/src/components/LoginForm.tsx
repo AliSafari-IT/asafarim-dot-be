@@ -48,6 +48,11 @@ export const LoginForm = () => {
           returnUrl = null; // Will use default '/dashboard'
         }
         
+        // CRITICAL: Wait for cookies to be fully set before redirecting
+        // This is especially important for cross-domain redirects (e.g., identity.asafarim.be -> asafarim.be)
+        // The cookies need time to be written to the browser's cookie store
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         // Check if returnUrl is an external URL
         if (returnUrl && (returnUrl.startsWith('http://') || returnUrl.startsWith('https://'))) {
           console.log('Redirecting to external URL:', returnUrl);

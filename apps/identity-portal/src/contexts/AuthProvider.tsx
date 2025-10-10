@@ -40,9 +40,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.removeItem("auth_token");
       localStorage.removeItem("refresh_token");
       localStorage.removeItem("user_info");
-      document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
-      document.cookie = `refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
-      document.cookie = `user_info=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+      // CRITICAL FIX: Use correct cookie names 'atk' and 'rtk'
+      console.log('🍪 Deleting authentication cookies for domain:', COOKIE_DOMAIN);
+      document.cookie = `atk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+      document.cookie = `rtk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+      document.cookie = `atk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      document.cookie = `rtk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 
       // Dispatch a custom event for local listeners
       window.dispatchEvent(new Event("auth-signout"));
@@ -236,9 +239,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem("user_info");
 
     // Clear cookies (best-effort for any non-HttpOnly values)
-    document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
-    document.cookie = `refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
-    document.cookie = `user_info=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+    // CRITICAL FIX: Use correct cookie names 'atk' and 'rtk'
+    document.cookie = `atk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+    document.cookie = `rtk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
+    document.cookie = `atk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    document.cookie = `rtk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 
     console.log("Force sign out completed");
   }, []);

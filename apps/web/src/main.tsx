@@ -6,7 +6,8 @@ import "./index.css";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import { NotificationProvider, NotFound } from "@asafarim/shared-ui-react";
+import { NotFound } from "@asafarim/shared-ui-react";
+import Root from "./theme/Root";
 import WhatIsBuilding from "./pages/WhatIsBuilding";
 import Portfolio from "./pages/Portfolio";
 import Resume from "./pages/portfolio/resume/Resume";
@@ -309,8 +310,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <NotificationProvider>
+    <Root>
       <RouterProvider router={router} />
-    </NotificationProvider>
+    </Root>
   </StrictMode>
 );

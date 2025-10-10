@@ -5,16 +5,16 @@
   "type": "module",
   "main": "index.js",
   "module": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "build": "tsc -b"  
+    "build": "echo 'No build needed for shared-tokens'"
   },
   "files": [
     "index.css",
     "index.js",
     "index.d.ts",
     "tailwind-preset.cjs",
-    "package.json",
-    "tsconfig.json"
+    "package.json"
   ],
   "exports": {
     ".": {

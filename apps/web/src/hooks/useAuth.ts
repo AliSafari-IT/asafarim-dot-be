@@ -3,7 +3,7 @@ import type { UseAuthOptions } from '@asafarim/shared-ui-react';
 
 // Production config - uses centralized identity portal
 const prodConfig: UseAuthOptions = {
-  authApiBase: 'https://identity.asafarim.be/api/identity',
+  authApiBase: 'https://identity.asafarim.be/api',  // FIXED: removed extra /identity
   meEndpoint: '/auth/me',
   tokenEndpoint: '/auth/token',
   logoutEndpoint: '/auth/logout',
@@ -14,12 +14,12 @@ const prodConfig: UseAuthOptions = {
 
 // Local development config
 const devConfig: UseAuthOptions = {
-  authApiBase: 'http://identity.asafarim.local:5101',
+  authApiBase: 'http://identity.asafarim.local:5177/api',  // FIXED: use port 5177 and /api (not 5101)
   meEndpoint: '/auth/me',
   tokenEndpoint: '/auth/token',
   logoutEndpoint: '/auth/logout',
-  identityLoginUrl: 'http://identity.asafarim.local:5101/login',
-  identityRegisterUrl: 'http://identity.asafarim.local:5101/register'
+  identityLoginUrl: 'http://identity.asafarim.local:5177/login',
+  identityRegisterUrl: 'http://identity.asafarim.local:5177/register'
 };
 
 /**

@@ -8,6 +8,7 @@ import ChatPage from "./pages/ChatPage";
 import JobTools from "./pages/JobTools";
 import ResumeMaker from "./pages/ResumeMaker";
 import { NotFound, NotificationProvider } from "@asafarim/shared-ui-react";
+import Root from "./theme/Root";
 
 const router = createBrowserRouter([
   {
@@ -25,8 +26,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <NotificationProvider>
-      <RouterProvider router={router} />
-    </NotificationProvider>
+    <Root>
+      <NotificationProvider>
+        <RouterProvider router={router} />
+      </NotificationProvider>
+    </Root>
   </React.StrictMode>
 );

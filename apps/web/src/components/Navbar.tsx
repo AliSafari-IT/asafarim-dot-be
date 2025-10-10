@@ -47,7 +47,7 @@ export default function Navbar() {
   return (
     <CentralNavbar
       appId="web"
-      showAppSwitcher={false}
+      showAppSwitcher={true}
       className="navbar"
       key="navbar"
       localLinks={navLinks}

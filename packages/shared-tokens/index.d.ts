@@ -1,4 +1,4 @@
-declare module '*.css' {
-  const content: string;
-  export default content;
-}
+import preset from './tailwind-preset.cjs';
+export { preset as tailwindPreset };
+export default preset;
+//# sourceMappingURL=index.d.ts.map

@@ -68,9 +68,13 @@ export const handleSignOut = async (redirectUrl?: string): Promise<void> => {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(USER_INFO_KEY);
-  document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
-  document.cookie = `refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
-  document.cookie = `user_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
+  // CRITICAL FIX: Use correct cookie names 'atk' and 'rtk' (not 'auth_token' and 'refresh_token')
+  console.log('🍪 Deleting authentication cookies for domain:', COOKIE_DOMAIN);
+  document.cookie = `atk=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
+  document.cookie = `rtk=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${COOKIE_DOMAIN}`;
+  // Also delete without domain to cover current domain
+  document.cookie = `atk=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+  document.cookie = `rtk=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
 
   // Best-effort: also clear identity portal storage via hidden iframe (cross-subdomain)
   // This prevents the identity app from thinking the user is still signed in when navigating there next.

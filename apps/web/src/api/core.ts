@@ -1,10 +1,4 @@
-import { isProduction } from "@asafarim/shared-ui-react";
-
-// Use environment variable if available, otherwise fallback to defaults
-const envCoreApiBase = (import.meta as any).env?.VITE_CORE_API_BASE;
-export const CORE_API_BASE = envCoreApiBase || (isProduction
-  ? "https://www.asafarim.be/api/core"
-  : "http://api.asafarim.local:5102/api");
+import { API_BASE_URL } from "../config/api";
 
 export interface PagedResponse<T> {
   page: number;
@@ -14,7 +8,7 @@ export interface PagedResponse<T> {
 }
 
 export async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     credentials: "include",
     headers: {
@@ -31,7 +25,7 @@ export async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export async function apiPost<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     method: 'POST',
     credentials: "include",
@@ -49,7 +43,7 @@ export async function apiPost<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export async function apiPut<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     method: 'PUT',
     credentials: "include",
@@ -79,7 +73,7 @@ export async function apiPut<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export async function apiDelete<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     method: 'DELETE',
     credentials: "include",
@@ -109,7 +103,7 @@ export async function apiDelete<T>(path: string, init?: RequestInit): Promise<T>
 }
 
 export async function apiGetPaged<T>(path: string, init?: RequestInit): Promise<PagedResponse<T>> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     credentials: "include",
     headers: {
@@ -126,7 +120,7 @@ export async function apiGetPaged<T>(path: string, init?: RequestInit): Promise<
 }
 
 export async function apiPostPaged<T>(path: string, init?: RequestInit): Promise<PagedResponse<T>> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     method: 'POST',
     credentials: "include",
@@ -166,7 +160,7 @@ export async function apiPostPaged<T>(path: string, init?: RequestInit): Promise
 }
 
 export async function apiPutPaged<T>(path: string, init?: RequestInit): Promise<PagedResponse<T>> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     method: 'PUT',
     credentials: "include",
@@ -206,7 +200,7 @@ export async function apiPutPaged<T>(path: string, init?: RequestInit): Promise<
 }
 
 export async function apiDeletePaged<T>(path: string, init?: RequestInit): Promise<PagedResponse<T>> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     method: 'DELETE',
     credentials: "include",
@@ -243,12 +237,4 @@ export async function apiDeletePaged<T>(path: string, init?: RequestInit): Promi
     total: 0,
     items: []
   } as PagedResponse<T>;
-}
-
-// Helper function to get cookie value
-export function getCookie(name: string): string | undefined {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift();
-  return undefined;
 }

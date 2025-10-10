@@ -8,8 +8,9 @@ import {
 } from "react";
 import { sendEmail } from "../api/emailService";
 import { ButtonComponent as Button, Eye, EyeOff, useAuth, useNotifications } from "@asafarim/shared-ui-react";
-import { apiGet, CORE_API_BASE } from "../api/core";
 import React from "react";
+import { API_BASE_URL } from "../config/api";
+import { apiGet } from "../api/core";
 
 // Generate a unique reference number for new conversations
 const generateReferenceNumber = (): string => {
@@ -108,7 +109,7 @@ export default function Contact() {
       token.substring(0, 10) + "..."
     );
     // CORE_API_BASE already includes /api, so we don't need to add it again
-    const apiUrl = `${CORE_API_BASE}/email/conversations`;
+    const apiUrl = `${API_BASE_URL}/email/conversations`;
     console.log("Full API URL:", apiUrl);
 
     try {

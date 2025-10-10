@@ -1,5 +1,6 @@
 import { apiGet, apiPost, apiPut, apiDelete } from '../api/core';
 import type { ContentCardProps } from "@asafarim/shared-ui-react";
+import { API_BASE_URL } from '../config/api';
 
 export interface PublicationDto {
   id: number | string;
@@ -58,15 +59,6 @@ export const mapToContentCardProps = (publication: PublicationDto): ContentCardP
     conferenceName: publication.conferenceName,
   };
 };
-
-// API base URL - ensure it includes /api suffix
-const getApiBaseUrl = () => {
-  const baseUrl = import.meta.env.VITE_CORE_API_URL || 'http://api.asafarim.local:5102';
-  // Ensure the URL ends with /api
-  return baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
-};
-
-const API_BASE_URL = getApiBaseUrl();
 
 // Fetch publications or projects by variant (unified function)
 export const fetchContent = async (

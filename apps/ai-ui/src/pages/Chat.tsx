@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useAuth } from "@asafarim/shared-ui-react";
 import { chatService } from "../api/chatService";
+import ChatSessionList from "../components/ChatSessionList";
 import type {
   ChatSession,
   ChatMessage,
@@ -104,6 +105,14 @@ export default function Chat() {
   const handleNewChat = () => {
     setCurrentSession(null);
     setMessages([]);
+
+    // Scroll to bottom to ensure input section is visible at bottom of viewport
+    setTimeout(() => {
+      const inputSection = document.querySelector(".chat-input-section");
+      if (inputSection) {
+        inputSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    }, 100);
   };
 
   const sendMessage = async () => {
@@ -218,8 +227,8 @@ export default function Chat() {
         }`}
       >
         <div className="sidebar-header">
-          <button 
-            className="new-chat-btn" 
+          <button
+            className="new-chat-btn"
             onClick={handleNewChat}
             disabled={sessionsLoading}
           >
@@ -229,23 +238,11 @@ export default function Chat() {
             ☰
           </button>
         </div>
-        <div className="ai-ui-sessions-section">
-          {(sessions.length === 0 && !sessionsLoading)? (
-            <div className="no-sessions">No conversations yet</div>
-          ):(sessions.map((session) => (
-            <div
-              key={session.id}
-              className={`session-item ${
-                currentSession?.id === session.id ? "active" : ""
-              }`}
-              onClick={() => handleSessionSelect(session)}
-            >
-              <span>💬</span>
-              <span className="session-title">{session.title}</span>
-            </div>
-          ))
-        )}
-        </div>
+        <ChatSessionList
+          sessions={sessions}
+          onSessionSelect={handleSessionSelect}
+          onSessionsChange={loadChatSessions}
+        />
         {user && (
           <div className="ai-ui-user-info">
             <div className="user-avatar">
@@ -258,42 +255,44 @@ export default function Chat() {
 
       {/* Main Content */}
       <div className="ai-ui-main">
-        <div className="chat-messages">
-          {messages.length === 0 && (
-            <div className="empty-chat-message">
-              <h2>How can I help you today?</h2>
-              <p>Ask me anything and I'll do my best to assist you!</p>
-            </div>
-          )}
-
-          {messages.map((message) => (
-            <div key={message.id} className={`chat-message ${message.role}`}>
-              <div className="message-avatar">
-                {message.role === "user" ? "👤" : "🤖"}
+        <div className="chat-messages-container">
+          <div className="chat-messages">
+            {messages.length === 0 && (
+              <div className="empty-chat-message">
+                <h2>How can I help you today?</h2>
+                <p>Ask me anything and I'll do my best to assist you!</p>
               </div>
-              <div className="message-content">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {message.content}
-                </ReactMarkdown>
-                <div className="message-timestamp">
-                  {new Date(message.createdAt).toLocaleString()}
+            )}
+
+            {messages.map((message) => (
+              <div key={message.id} className={`chat-message ${message.role}`}>
+                <div className="message-avatar">
+                  {message.role === "user" ? "👤" : "🤖"}
+                </div>
+                <div className="message-content">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {message.content}
+                  </ReactMarkdown>
+                  <div className="message-timestamp">
+                    {new Date(message.createdAt).toLocaleString()}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {loading && (
-            <div className="chat-message assistant">
-              <div className="message-avatar">🤖</div>
-              <div className="message-content loading">
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+            {loading && (
+              <div className="chat-message assistant">
+                <div className="message-avatar">🤖</div>
+                <div className="message-content loading">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="chat-input-section">

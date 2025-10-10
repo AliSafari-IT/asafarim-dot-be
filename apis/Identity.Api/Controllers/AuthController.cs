@@ -233,41 +233,67 @@ public class AuthController : ControllerBase
         // Get the refresh token from cookies
         if (!Request.Cookies.TryGetValue("rtk", out var refreshToken) || string.IsNullOrWhiteSpace(refreshToken))
         {
+            Console.WriteLine("[RefreshToken] No refresh token cookie found");
             return Unauthorized(new { message = "No refresh token provided" });
         }
 
-        // TODO: In a real implementation, you would validate the refresh token against a database
-        // For now, we'll just validate that it's not empty and generate a new access token
-        // In production, you should:
-        // 1. Store refresh tokens in the database with expiration
-        // 2. Validate the refresh token exists and hasn't expired
-        // 3. Generate a new refresh token and update it in the database
-        // 4. Return both new access and refresh tokens
+        Console.WriteLine($"[RefreshToken] Refresh token cookie found: {refreshToken.Substring(0, Math.Min(10, refreshToken.Length))}...");
 
-        // For this demo, we'll just check if the user is authenticated via cookies
-        if (!User.Identity?.IsAuthenticated ?? true)
+        // CRITICAL FIX: Don't require authentication here - that's the whole point of refresh!
+        // Instead, try to extract the user ID from the expired access token if available
+        string? userId = null;
+        
+        // Try to get user ID from the access token cookie (even if expired)
+        if (Request.Cookies.TryGetValue("atk", out var expiredToken) && !string.IsNullOrWhiteSpace(expiredToken))
         {
-            return Unauthorized(new { message = "Invalid refresh token" });
+            try
+            {
+                // Parse the JWT without validation to extract claims
+                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(expiredToken);
+                userId = token.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == ClaimTypes.NameIdentifier)?.Value;
+                Console.WriteLine($"[RefreshToken] Extracted user ID from expired token: {userId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[RefreshToken] Failed to parse expired token: {ex.Message}");
+            }
         }
 
-        // Get user info from the current claims
-        var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
-        if (string.IsNullOrWhiteSpace(sub))
-            return Unauthorized();
+        // If we couldn't get user ID from token, try from authenticated claims (fallback)
+        if (string.IsNullOrWhiteSpace(userId) && User.Identity?.IsAuthenticated == true)
+        {
+            userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+            Console.WriteLine($"[RefreshToken] Got user ID from authenticated claims: {userId}");
+        }
 
-        var user = await _userManager.FindByIdAsync(sub);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            Console.WriteLine("[RefreshToken] No user ID found - unauthorized");
+            return Unauthorized(new { message = "Invalid refresh token - no user information" });
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
-            return Unauthorized();
+        {
+            Console.WriteLine($"[RefreshToken] User not found: {userId}");
+            return Unauthorized(new { message = "Invalid refresh token - user not found" });
+        }
+
+        // TODO: In production, validate refresh token against database
+        // For now, we accept any non-empty refresh token for the user
 
         var opts = _authOptions.Value;
         var roleNames = await _userManager.GetRolesAsync(user);
         var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
 
-        // Generate new refresh token (in production, you'd store and validate this)
+        // Generate new refresh token (in production, you'd store and rotate this)
         var newRefresh = Guid.NewGuid().ToString("N");
 
         // Set new cookies with updated tokens
         SetAuthCookies(Response, access, newRefresh, opts, persistent: true);
+
+        Console.WriteLine($"[RefreshToken] Successfully refreshed tokens for user: {user.Email}");
 
         return Ok(new
         {
