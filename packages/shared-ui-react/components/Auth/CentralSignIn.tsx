@@ -1,12 +1,11 @@
 import { useCallback } from 'react';
-import { useAuth } from '../../hooks/useAuth';
 import { ButtonComponent } from '../Button/ButtonComponent';
 import { SignIn } from '../../svg-icons';
 
 interface CentralSignInProps {
   children?: React.ReactNode;
   className?: string;
-  onSignIn?: (redirectUrl?: string) => void;
+  onSignIn?: (redirectUrl?: string) => void | Promise<void>;
 }
 
 export const CentralSignIn = ({
@@ -14,21 +13,17 @@ export const CentralSignIn = ({
   className = '',
   onSignIn,
 }: CentralSignInProps) => {
-  const { signIn } = useAuth();
   const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
 
   const handleSignIn = useCallback(async () => {
     const redirectTo = typeof window !== 'undefined' ? window.location.href : undefined;
     try {
-      // Let consumer run any pre-signin logic (analytics, etc.)
-      onSignIn?.(redirectTo);
-
-      // Perform the actual sign in (will redirect to identity portal)
-      await signIn(redirectTo);
+      // Call the provided onSignIn handler
+      await onSignIn?.(redirectTo);
     } catch (error) {
       console.error('Sign in error:', error);
     }
-  }, [signIn, onSignIn]);
+  }, [onSignIn]);
 
   return (
     <ButtonComponent

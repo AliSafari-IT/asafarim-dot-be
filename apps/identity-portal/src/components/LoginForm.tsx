@@ -33,7 +33,20 @@ export const LoginForm = () => {
         // Show success notification
         console.log('Login successful! Redirecting...');
         // get returnUrl from query params
-        const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+        let returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+        
+        // Prevent infinite loop: if returnUrl points to login page, use dashboard instead
+        const isReturnUrlLoginPage = returnUrl && (
+          returnUrl === '/login' || 
+          returnUrl.endsWith('/login') ||
+          returnUrl.includes('/login?') ||
+          returnUrl.includes('/login#')
+        );
+        
+        if (isReturnUrlLoginPage) {
+          console.log('⚠️ returnUrl points to login page, redirecting to dashboard instead');
+          returnUrl = null; // Will use default '/dashboard'
+        }
         
         // Check if returnUrl is an external URL
         if (returnUrl && (returnUrl.startsWith('http://') || returnUrl.startsWith('https://'))) {

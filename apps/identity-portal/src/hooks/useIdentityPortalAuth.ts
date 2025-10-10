@@ -32,6 +32,9 @@ export const useIdentityPortalAuth = () => {
       // Trigger a re-check of auth state by dispatching events that the shared hook listens to
       console.log('Login successful, cookies should be set');
       
+      // Wait a bit to ensure cookies are fully set before triggering auth check
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Dispatch events that the shared useAuth hook listens to
       window.dispatchEvent(new Event('focus'));
       window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
@@ -56,6 +59,9 @@ export const useIdentityPortalAuth = () => {
       
       // After successful registration, cookies should be set
       console.log('Registration successful, cookies should be set');
+      
+      // Wait a bit to ensure cookies are fully set before triggering auth check
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       // Dispatch events that the shared useAuth hook listens to
       window.dispatchEvent(new Event('focus'));

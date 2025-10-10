@@ -171,16 +171,34 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
+        // Debug logging
+        var hasCookie = Request.Cookies.TryGetValue("atk", out var cookieValue);
+        Console.WriteLine($"[GetCurrentUser] Has atk cookie: {hasCookie}");
+        Console.WriteLine($"[GetCurrentUser] Cookie value length: {cookieValue?.Length ?? 0}");
+        Console.WriteLine($"[GetCurrentUser] User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
+        Console.WriteLine($"[GetCurrentUser] User.Identity.Name: {User.Identity?.Name}");
+        
         if (!User.Identity?.IsAuthenticated ?? true)
+        {
+            Console.WriteLine($"[GetCurrentUser] Returning Unauthorized - not authenticated");
             return Unauthorized();
+        }
         // Prefer NameIdentifier (mapped by default), fallback to raw "sub"
         var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+        Console.WriteLine($"[GetCurrentUser] Subject claim: {sub}");
         if (string.IsNullOrWhiteSpace(sub))
+        {
+            Console.WriteLine($"[GetCurrentUser] Returning Unauthorized - no subject claim");
             return Unauthorized();
+        }
         var user = await _userManager.FindByIdAsync(sub);
         if (user is null)
+        {
+            Console.WriteLine($"[GetCurrentUser] Returning Unauthorized - user not found");
             return Unauthorized();
+        }
         var roleNames = await _userManager.GetRolesAsync(user);
+        Console.WriteLine($"[GetCurrentUser] Success - returning user {user.Email}");
         return Ok(
             new MeResponse(user.Id.ToString(), user.Email, user.UserName, roleNames.ToArray())
         );
@@ -360,7 +378,20 @@ public class AuthController : ControllerBase
         // For production with HTTPS, use None with Secure flag
         // For local development, use Lax to ensure cookies work across subdomains
         var sameSite = isProdDomain && isHttps ? SameSiteMode.None : SameSiteMode.Lax;
+        
+        // Debug logging
+        Console.WriteLine($"[SetAuthCookies] CookieDomain: {opts.CookieDomain}");
+        Console.WriteLine($"[SetAuthCookies] isProdDomain: {isProdDomain}");
+        Console.WriteLine($"[SetAuthCookies] isHttps: {isHttps}");
+        Console.WriteLine($"[SetAuthCookies] useSecure: {useSecure}");
+        Console.WriteLine($"[SetAuthCookies] sameSite: {sameSite}");
+        Console.WriteLine($"[SetAuthCookies] persistent: {persistent}");
 
+        var accessExpiration = DateTime.UtcNow.AddMinutes(opts.AccessMinutes);
+        var refreshExpiration = persistent 
+            ? DateTime.UtcNow.AddDays(opts.RefreshDays)
+            : DateTime.UtcNow.AddHours(8);
+        
         var accessCookieOptions = new CookieOptions
         {
             HttpOnly = true,
@@ -368,11 +399,13 @@ public class AuthController : ControllerBase
             SameSite = sameSite,
             Domain = opts.CookieDomain,
             Path = "/",
+            // CRITICAL: SameSite=None cookies MUST have Expires set
+            Expires = accessExpiration,
+            MaxAge = TimeSpan.FromMinutes(opts.AccessMinutes)
         };
-        if (persistent)
-        {
-            accessCookieOptions.Expires = DateTime.UtcNow.AddMinutes(opts.AccessMinutes);
-        }
+        
+        Console.WriteLine($"[SetAuthCookies] Access cookie Expires: {accessExpiration}");
+        Console.WriteLine($"[SetAuthCookies] Access cookie MaxAge: {opts.AccessMinutes} minutes");
         response.Cookies.Append("atk", accessToken, accessCookieOptions);
 
         var refreshCookieOptions = new CookieOptions
@@ -382,11 +415,12 @@ public class AuthController : ControllerBase
             SameSite = sameSite,
             Domain = opts.CookieDomain,
             Path = "/",
+            // CRITICAL: SameSite=None cookies MUST have Expires set
+            Expires = refreshExpiration,
+            MaxAge = persistent ? TimeSpan.FromDays(opts.RefreshDays) : TimeSpan.FromHours(8)
         };
-        if (persistent)
-        {
-            refreshCookieOptions.Expires = DateTime.UtcNow.AddDays(opts.RefreshDays);
-        }
+        
+        Console.WriteLine($"[SetAuthCookies] Refresh cookie Expires: {refreshExpiration}");
         response.Cookies.Append("rtk", refreshToken, refreshCookieOptions);
     }
 }

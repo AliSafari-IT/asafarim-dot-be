@@ -3,11 +3,20 @@ using System.Text;
 using Identity.Api;
 using Identity.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure forwarded headers for reverse proxy
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // Configure structured logging
 builder.Host.ConfigureStructuredLogging();
@@ -117,7 +126,7 @@ var productionOrigins = new[]
     "https://core.asafarim.be",
     "https://blog.asafarim.be",
     "https://identity.asafarim.be",
-    "https://*.asafarim.be", // Wildcard for all subdomains
+    "https://web.asafarim.be",
 };
 
 var developmentOrigins = new[]
@@ -150,6 +159,9 @@ var allowedOrigins = builder.Environment.IsProduction()
     ? productionOrigins.Concat(corsOriginsEnv?.Split(',') ?? Array.Empty<string>()).ToArray()
     : developmentOrigins.Concat(productionOrigins).ToArray();
 
+Console.WriteLine($"[CORS] Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"[CORS] Allowed origins: {string.Join(", ", allowedOrigins)}");
+
 builder.Services.AddCors(opt =>
     opt.AddPolicy(
         "app",
@@ -166,7 +178,11 @@ builder.Services.AddCors(opt =>
             else
             {
                 // In production, use specific origins
-                p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                p.WithOrigins(allowedOrigins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .SetIsOriginAllowedToAllowWildcardSubdomains(); // Allow *.asafarim.be
             }
         }
     )
@@ -176,6 +192,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Use forwarded headers BEFORE any other middleware
+app.UseForwardedHeaders();
 
 app.UseCors("app");
 app.UseSwagger();

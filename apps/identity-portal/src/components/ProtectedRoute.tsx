@@ -48,17 +48,52 @@ export const ProtectedRoute = ({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // If authentication is not required but user is authenticated, redirect to dashboard
+  // If authentication is not required but user is authenticated, redirect appropriately
   if (!requireAuth && isAuthenticated) {
-    console.log('[ProtectedRoute] Already authenticated but on public route, redirecting to', redirectTo);
-    // Show notification when redirecting from login page to dashboard
-    if (location.pathname === '/login') {
-      // Use setTimeout to ensure notification is shown after navigation
+    // Check for returnUrl in query params (for login/register pages)
+    const searchParams = new URLSearchParams(location.search);
+    const returnUrl = searchParams.get('returnUrl');
+    
+    let finalRedirect = redirectTo;
+    
+    if (returnUrl) {
+      // Prevent infinite loop: if returnUrl points to login/register page, use dashboard instead
+      const isReturnUrlAuthPage = 
+        returnUrl === '/login' || 
+        returnUrl === '/register' ||
+        returnUrl.endsWith('/login') ||
+        returnUrl.endsWith('/register') ||
+        returnUrl.includes('/login?') ||
+        returnUrl.includes('/register?') ||
+        returnUrl.includes('/login#') ||
+        returnUrl.includes('/register#');
+      
+      if (isReturnUrlAuthPage) {
+        console.log('[ProtectedRoute] returnUrl points to auth page, using default redirect:', redirectTo);
+        finalRedirect = redirectTo;
+      } else {
+        console.log('[ProtectedRoute] Using returnUrl for redirect:', returnUrl);
+        finalRedirect = returnUrl;
+      }
+    }
+    
+    console.log('[ProtectedRoute] Already authenticated but on public route, redirecting to', finalRedirect);
+    
+    // Show notification when redirecting from login page
+    if (location.pathname === '/login' || location.pathname === '/register') {
       setTimeout(() => {
-        addNotification(`You are signed in. Redirecting to ${redirectTo}`, 'info', 2000);
+        addNotification(`You are already signed in. Redirecting...`, 'info', 2000);
       }, 100);
     }
-    return <Navigate to={redirectTo} replace />;
+    
+    // If finalRedirect is an external URL, use window.location
+    if (finalRedirect.startsWith('http://') || finalRedirect.startsWith('https://')) {
+      console.log('[ProtectedRoute] External redirect:', finalRedirect);
+      window.location.href = finalRedirect;
+      return null; // Return null while redirecting
+    }
+    
+    return <Navigate to={finalRedirect} replace />;
   }
 
   // Render children if conditions are met

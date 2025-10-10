@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ButtonComponent as Button, useAuth } from '@asafarim/shared-ui-react';
+import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
+import { useAuth } from '../../../hooks/useAuth';
 import { fetchResumes, deleteResume, type ResumeDto } from '../../../services/resumeApi';
 import './resume-styles.css';
 
@@ -8,7 +9,7 @@ const ResumeList = () => {
   const [resumes, setResumes] = useState<ResumeDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, signIn } = useAuth();
   const navigate = useNavigate();
   
   const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
@@ -16,11 +17,9 @@ const ResumeList = () => {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
-        window.location.href
-      )}`;
+      signIn(window.location.href);
     }
-  }, [authLoading, isAuthenticated]);
+  }, [authLoading, isAuthenticated, signIn]);
 
   useEffect(() => {
     if (isAuthenticated) {

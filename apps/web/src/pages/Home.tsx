@@ -14,7 +14,7 @@ export default function Home() {
           <Feature
             title="What's I'm building now?"
             desc="A “What I’m Building Now” feed (pull from GitHub commits)."
-            href={isProduction ? "https://core.asafarim.be/what-is-building" : "/what-is-building"}
+            href={isProduction ? "https://asafarim.be/what-is-building" : "/what-is-building"}
           />
           <Feature
             title="AI"

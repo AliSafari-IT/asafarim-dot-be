@@ -12,11 +12,11 @@ export default function About() {
             clean code, and data-driven solutions.
           </p>
           <div className="web-about-actions">
-            <a href="/resume" className="btn-primary">
+            <a href="https://asafarim.be/portfolio/my-react-dotnet-cv-10-10-2025/public" className="btn-primary">
               View Resume
             </a>
-            <a href="/projects" className="btn-secondary">
-              See Projects
+            <a href="/contact" className="btn-secondary">
+              Contact Me
             </a>
           </div>
         </div>

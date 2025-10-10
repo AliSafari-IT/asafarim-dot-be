@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { apiGet } from "../api/core";
-import type { PagedResponse } from "../api/core";
+import { apiGetPaged } from "../api/web";
 
 function WhatIsBuilding() {
   type Item = { id: string; title: string; date: string; link?: string };
@@ -29,7 +28,7 @@ function WhatIsBuilding() {
       setLoading(true);
       setError(null);
       try {
-        const data = await apiGet<PagedResponse<Item>>(
+        const data = await apiGetPaged<Item>(
           `/what-is-building?page=${page}&pageSize=${pageSize}`
         );
         if (cancelled) return;

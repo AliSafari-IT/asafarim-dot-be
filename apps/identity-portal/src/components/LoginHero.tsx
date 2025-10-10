@@ -40,14 +40,28 @@ export const LoginHero = ({ passwordSetupRequired, returnUrl }: LoginHeroProps) 
         userId={passwordSetupRequired.userId}
         email={passwordSetupRequired.email}
         onSuccess={() => {
+          // Prevent infinite loop: if returnUrl points to login page, use dashboard instead
+          let redirectUrl = returnUrl;
+          const isReturnUrlLoginPage = returnUrl && (
+            returnUrl === '/login' || 
+            returnUrl.endsWith('/login') ||
+            returnUrl.includes('/login?') ||
+            returnUrl.includes('/login#')
+          );
+          
+          if (isReturnUrlLoginPage) {
+            console.log('⚠️ returnUrl points to login page, redirecting to dashboard instead');
+            redirectUrl = null; // Will use default '/dashboard'
+          }
+          
           // Check if returnUrl is an external URL
-          if (returnUrl && (returnUrl.startsWith('http://') || returnUrl.startsWith('https://'))) {
-            console.log('Redirecting to external URL after password setup:', returnUrl);
-            window.location.href = returnUrl;
+          if (redirectUrl && (redirectUrl.startsWith('http://') || redirectUrl.startsWith('https://'))) {
+            console.log('Redirecting to external URL after password setup:', redirectUrl);
+            window.location.href = redirectUrl;
           } else {
             // Internal navigation using React Router
-            console.log('Navigating to internal path after password setup:', returnUrl || '/dashboard');
-            navigate(returnUrl || '/dashboard', { replace: true });
+            console.log('Navigating to internal path after password setup:', redirectUrl || '/dashboard');
+            navigate(redirectUrl || '/dashboard', { replace: true });
           }
         }}
         onCancel={() => {

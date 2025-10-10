@@ -1,10 +1,8 @@
 import { isProduction } from "@asafarim/shared-ui-react";
 
-// Use environment variable if available, otherwise fallback to defaults
-const envCoreApiBase = (import.meta as any).env?.VITE_CORE_API_BASE;
-export const CORE_API_BASE = envCoreApiBase || (isProduction
-  ? "https://www.asafarim.be/api/core"
-  : "http://api.asafarim.local:5102/api");
+export const WEB_API_BASE = isProduction
+  ? "https://asafarim.be/api/core"
+  : "http://core.asafarim.local:5102/api";
 
 export interface PagedResponse<T> {
   page: number;
@@ -14,7 +12,7 @@ export interface PagedResponse<T> {
 }
 
 export async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${WEB_API_BASE}${path}`;
   const res = await fetch(url, {
     credentials: "include",
     headers: {
@@ -25,13 +23,13 @@ export async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Core API ${res.status}: ${text || res.statusText}`);
+    throw new Error(`Web API ${res.status}: ${text || res.statusText}`);
   }
   return res.json() as Promise<T>;
 }
 
 export async function apiPost<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${WEB_API_BASE}${path}`;
   const res = await fetch(url, {
     method: 'POST',
     credentials: "include",
@@ -43,13 +41,13 @@ export async function apiPost<T>(path: string, init?: RequestInit): Promise<T> {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Core API ${res.status}: ${text || res.statusText}`);
+    throw new Error(`Web API ${res.status}: ${text || res.statusText}`);
   }
   return res.json() as Promise<T>;
 }
 
 export async function apiPut<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${WEB_API_BASE}${path}`;
   const res = await fetch(url, {
     method: 'PUT',
     credentials: "include",
@@ -61,7 +59,7 @@ export async function apiPut<T>(path: string, init?: RequestInit): Promise<T> {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Core API ${res.status}: ${text || res.statusText}`);
+    throw new Error(`Web API ${res.status}: ${text || res.statusText}`);
   }
 
   // Handle void responses (empty body)
@@ -79,7 +77,7 @@ export async function apiPut<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export async function apiDelete<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${WEB_API_BASE}${path}`;
   const res = await fetch(url, {
     method: 'DELETE',
     credentials: "include",
@@ -91,7 +89,7 @@ export async function apiDelete<T>(path: string, init?: RequestInit): Promise<T>
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Core API ${res.status}: ${text || res.statusText}`);
+    throw new Error(`Web API ${res.status}: ${text || res.statusText}`);
   }
 
   // Handle void responses (empty body)
@@ -109,7 +107,7 @@ export async function apiDelete<T>(path: string, init?: RequestInit): Promise<T>
 }
 
 export async function apiGetPaged<T>(path: string, init?: RequestInit): Promise<PagedResponse<T>> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${WEB_API_BASE}${path}`;
   const res = await fetch(url, {
     credentials: "include",
     headers: {
@@ -120,13 +118,13 @@ export async function apiGetPaged<T>(path: string, init?: RequestInit): Promise<
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Core API ${res.status}: ${text || res.statusText}`);
+    throw new Error(`Web API ${res.status}: ${text || res.statusText}`);
   }
   return res.json() as Promise<PagedResponse<T>>;
 }
 
 export async function apiPostPaged<T>(path: string, init?: RequestInit): Promise<PagedResponse<T>> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${WEB_API_BASE}${path}`;
   const res = await fetch(url, {
     method: 'POST',
     credentials: "include",
@@ -138,7 +136,7 @@ export async function apiPostPaged<T>(path: string, init?: RequestInit): Promise
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Core API ${res.status}: ${text || res.statusText}`);
+    throw new Error(`Web API ${res.status}: ${text || res.statusText}`);
   }
 
   // Handle void responses (empty body) - return empty paged response
@@ -166,7 +164,7 @@ export async function apiPostPaged<T>(path: string, init?: RequestInit): Promise
 }
 
 export async function apiPutPaged<T>(path: string, init?: RequestInit): Promise<PagedResponse<T>> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${WEB_API_BASE}${path}`;
   const res = await fetch(url, {
     method: 'PUT',
     credentials: "include",
@@ -178,7 +176,7 @@ export async function apiPutPaged<T>(path: string, init?: RequestInit): Promise<
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Core API ${res.status}: ${text || res.statusText}`);
+    throw new Error(`Web API ${res.status}: ${text || res.statusText}`);
   }
 
   // Handle void responses (empty body) - return empty paged response
@@ -206,7 +204,7 @@ export async function apiPutPaged<T>(path: string, init?: RequestInit): Promise<
 }
 
 export async function apiDeletePaged<T>(path: string, init?: RequestInit): Promise<PagedResponse<T>> {
-  const url = `${CORE_API_BASE}${path}`;
+  const url = `${WEB_API_BASE}${path}`;
   const res = await fetch(url, {
     method: 'DELETE',
     credentials: "include",
@@ -218,7 +216,7 @@ export async function apiDeletePaged<T>(path: string, init?: RequestInit): Promi
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Core API ${res.status}: ${text || res.statusText}`);
+    throw new Error(`Web API ${res.status}: ${text || res.statusText}`);
   }
 
   // Handle void responses (empty body) - return empty paged response

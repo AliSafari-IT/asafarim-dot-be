@@ -1,11 +1,10 @@
 import React from 'react';
-import { AuthSyncProvider } from '@asafarim/shared-ui-react';
 
 /**
  * Custom Root component for Docusaurus
  *
- * This component wraps the entire application with our AuthSyncProvider
- * to enable cross-app authentication synchronization.
+ * This component wraps the entire application.
+ * We use the useAuth hook directly in components instead of a provider pattern.
  *
  * Docusaurus will automatically use this component as the root wrapper
  * for the entire application when placed in src/theme/Root.
@@ -15,11 +14,7 @@ interface RootProps {
 }
 
 function Root({ children }: RootProps): React.ReactElement {
-  return (
-    <React.Fragment>
-      <AuthSyncProvider children={children} key={"auth-sync-provider"} />
-    </React.Fragment>
-  );
+  return <React.Fragment>{children}</React.Fragment>;
 }
 
 export default Root;
