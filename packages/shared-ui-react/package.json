@@ -8,6 +8,7 @@
     "contexts",
     "hooks",
     "index.css",
+    "base.css",
     "index.ts",
     "svg-icons",
     "package.json",
@@ -27,7 +28,8 @@
     "./contexts/*": "./contexts/*",
     "./hooks/*": "./hooks/*",
     "./svg-icons/*": "./svg-icons/*",
-    "./index.css": "./index.css"
+    "./index.css": "./index.css",
+    "./base.css": "./base.css"
   },
   "typesVersions": {
     "*": {

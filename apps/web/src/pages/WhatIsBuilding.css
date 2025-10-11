@@ -1,0 +1,158 @@
+/* What Is Building Page Styles with Dark Theme Fixes */
+
+/* Base container */
+.what-is-building {
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  min-height: 100vh;
+}
+
+/* Hero section with improved dark mode contrast */
+.what-is-building .hero {
+  position: relative;
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.what-is-building .hero-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.3), transparent 70%);
+  animation: pulse 8s ease-in-out infinite;
+}
+
+.what-is-building .hero h1 {
+  font-size: 2.75rem;
+  font-weight: 900;
+  margin-bottom: var(--spacing-sm);
+  z-index: 1;
+  position: relative;
+  color: white; /* Ensure consistent contrast in all themes */
+}
+
+.what-is-building .hero p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  z-index: 1;
+  position: relative;
+  color: white; /* Ensure consistent contrast in all themes */
+}
+
+/* Build cards with improved dark mode */
+.what-is-building .build-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  transition: all 0.3s ease;
+  color: var(--color-text); /* Ensure proper text color in dark mode */
+}
+
+.what-is-building .build-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.what-is-building .card-top h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text); /* Ensure proper heading color in dark mode */
+}
+
+.what-is-building .card-top span {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* Buttons with improved dark mode visibility */
+.what-is-building button {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.what-is-building button:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+
+/* Empty state with improved dark mode */
+.what-is-building .empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  color: var(--color-text); /* Ensure proper text color in dark mode */
+}
+
+/* Loading state */
+.what-is-building .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  min-height: 300px;
+  color: var(--color-text); /* Ensure proper text color in dark mode */
+}
+
+.what-is-building .spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+/* Dark mode specific overrides */
+@media (prefers-color-scheme: dark) {
+  .what-is-building .build-card {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .what-is-building .empty-state {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Responsive grid */
+.what-is-building .cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* Error banner */
+.what-is-building .error-banner {
+  background: var(--color-danger);
+  color: white;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  font-weight: 600;
+}

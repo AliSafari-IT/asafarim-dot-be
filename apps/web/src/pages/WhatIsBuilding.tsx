@@ -20,7 +20,7 @@ function WhatIsBuilding() {
         minute: "2-digit",
       }),
     []
-  );
+  );  
 
   useEffect(() => {
     let cancelled = false;

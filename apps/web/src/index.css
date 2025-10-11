@@ -1,4 +1,6 @@
 @import url("@asafarim/shared-ui-react/index.css");
+@import url("@asafarim/shared-ui-react/base.css");
+
 
 /* Global fixes for horizontal scrolling issues */
 html, body {
