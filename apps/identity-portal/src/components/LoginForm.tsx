@@ -31,9 +31,11 @@ export const LoginForm = () => {
       const success = await login(formData);
       if (success) {
         // Show success notification
-        console.log('Login successful! Redirecting...');
-        // get returnUrl from query params
+        console.log('👍 Login successful! Preparing redirect...');
+        
+        // Get returnUrl from query params
         let returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+        console.log('🔄 Original returnUrl:', returnUrl);
         
         // Prevent infinite loop: if returnUrl points to login page, use dashboard instead
         const isReturnUrlLoginPage = returnUrl && (
@@ -48,22 +50,42 @@ export const LoginForm = () => {
           returnUrl = null; // Will use default '/dashboard'
         }
         
-        // CRITICAL: Wait for cookies to be fully set before redirecting
-        // This is especially important for cross-domain redirects (e.g., identity.asafarim.be -> asafarim.be)
-        // The cookies need time to be written to the browser's cookie store
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Wait briefly for cookies to be set, then redirect immediately
+        // The login() function already waits 2 seconds and verifies auth
+        console.log('⏱️ Preparing redirect...');
+        await new Promise(resolve => setTimeout(resolve, 100));
         
-        // Check if returnUrl is an external URL
-        if (returnUrl && (returnUrl.startsWith('http://') || returnUrl.startsWith('https://'))) {
-          console.log('Redirecting to external URL:', returnUrl);
-          window.location.href = returnUrl;
+        // Check if we need to perform a cross-domain redirect
+        const isCrossDomainRedirect = returnUrl && (
+          returnUrl.startsWith('http://') || 
+          returnUrl.startsWith('https://') || 
+          returnUrl.includes('.asafarim.be')
+        );
+        
+        if (returnUrl && isCrossDomainRedirect) {
+          // For cross-domain redirects, we need to ensure cookies are fully established
+          // Use full URL redirect with properly encoded URL
+          const targetUrl = returnUrl.startsWith('http') 
+            ? returnUrl 
+            : `https://${returnUrl}`;
+            
+          console.log('🌐 Performing cross-domain redirect to:', targetUrl);
+          
+          // Add a timestamp to prevent caching issues
+          const separator = targetUrl.includes('?') ? '&' : '?';
+          const finalUrl = `${targetUrl}${separator}_t=${Date.now()}`;
+          
+          // Use window.location for cross-domain redirects
+          window.location.href = finalUrl;
         } else {
           // Internal navigation using React Router
-          console.log('Navigating to internal path:', returnUrl || '/dashboard');
-          navigate(returnUrl || '/dashboard', { replace: true });
+          const internalPath = returnUrl || '/dashboard';
+          console.log('🏠 Navigating to internal path:', internalPath);
+          navigate(internalPath, { replace: true });
         }
       }
-    } catch {
+    } catch (error) {
+      console.error('❌ Error during login submission:', error);
       // Error is handled by the auth context
     }
   };

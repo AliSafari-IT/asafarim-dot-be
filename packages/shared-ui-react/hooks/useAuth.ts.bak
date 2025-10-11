@@ -172,30 +172,18 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   const [token, setToken] = useState<string | null>(null);
 
   // Move refreshTokenIfNeeded outside of checkAuth so it can be reused
-  const refreshTokenIfNeeded = useCallback(async (currentToken?: string | null): Promise<string | null> => {
+  const refreshTokenIfNeeded = async (currentToken?: string | null): Promise<string | null> => {
     const tokenToCheck = currentToken || localStorage.getItem('auth_token');
     if (isTokenExpired(tokenToCheck)) {
       console.log('Token expired, refreshing...');
-      try {
-        const newToken = await refreshToken(authApiBase);
-        if (newToken) {
-          localStorage.setItem('auth_token', newToken);
-          setToken(newToken);
-          console.log('Token refreshed successfully');
-          return newToken;
-        } else {
-          console.log('Token refresh failed, logging out...');
-          // If refresh fails, log out
-          setAuthenticated(false);
-          setUser(null);
-          setToken(null);
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('user_info');
-          return null;
-        }
-      } catch (error) {
-        console.error('Token refresh error:', error);
+      const newToken = await refreshToken(authApiBase);
+      if (newToken) {
+        localStorage.setItem('auth_token', newToken);
+        setToken(newToken);
+        console.log('Token refreshed successfully');
+        return newToken;
+      } else {
+        console.log('Token refresh failed, logging out...');
         // If refresh fails, log out
         setAuthenticated(false);
         setUser(null);
@@ -207,10 +195,11 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       }
     }
     return tokenToCheck;
-  }, [authApiBase]);
+  };
 
   useEffect(() => {
     let mounted = true;
+    let refreshInterval: ReturnType<typeof setInterval> | null = null;
     let authCheckInProgress = false; // Prevent multiple simultaneous auth checks
 
     const checkAuth = async () => {
@@ -328,23 +317,74 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       }
     };
 
-    // Initial check only - don't set up listeners that cause loops
+    // Initial check
     void checkAuth();
-  }, [authApiBase, meEndpoint, tokenEndpoint, refreshTokenIfNeeded]);
+    
+    // Removed delayed re-check as it was causing logout after login
+    // The initial check is sufficient, and storage events will trigger re-checks if needed
+    // const delayId = 0; // Placeholder for cleanup
 
-  // Separate effect for token refresh interval - only when authenticated and not loading
+    // Debounce auth checks to prevent too frequent checks
+    let authCheckTimeout: ReturnType<typeof setTimeout> | null = null;
+    const debouncedHandle = () => {
+      if (authCheckTimeout) {
+        clearTimeout(authCheckTimeout);
+      }
+      authCheckTimeout = setTimeout(() => {
+        if (mounted) {
+          void checkAuth();
+        }
+      }, 500); // 500ms debounce
+    };
+
+    const onStorage = (evt: StorageEvent) => {
+      if (evt.key === 'auth_token' || evt.key === 'user_info') {
+        debouncedHandle();
+      }
+    };
+    
+    // Handle sign-out event: clear state immediately, don't re-check auth
+    const handleSignOutEvent = () => {
+      console.log('🚪 Sign-out event received, clearing auth state...');
+      if (mounted) {
+        setAuthenticated(false);
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_info');
+      }
+    };
+    
+    window.addEventListener('auth-signout', handleSignOutEvent);
+    // Remove focus and visibilitychange listeners as they trigger too frequently
+    // and can interfere with the login flow
+    // window.addEventListener('focus', debouncedHandle);
+    // document.addEventListener('visibilitychange', debouncedHandle);
+    window.addEventListener('storage', onStorage);
+
+    return () => {
+      mounted = false;
+      if (authCheckTimeout) {
+        clearTimeout(authCheckTimeout);
+      }
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+      window.removeEventListener('auth-signout', handleSignOutEvent);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, [authApiBase, meEndpoint, tokenEndpoint]);
+
+  // Separate effect for token refresh interval
   useEffect(() => {
     let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
-    if (authenticated && !loading) {
+    if (authenticated) {
       // Refresh token every 45 minutes (with 60-minute token lifetime, gives 15-minute buffer)
       refreshInterval = setInterval(async () => {
         console.log('🔄 Auto-refreshing token (periodic check)...');
-        try {
-          await refreshTokenIfNeeded();
-        } catch (error) {
-          console.error('Token refresh interval error:', error);
-        }
+        await refreshTokenIfNeeded();
       }, 45 * 60 * 1000); // 45 minutes
     }
 
@@ -353,11 +393,11 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
         clearInterval(refreshInterval);
       }
     };
-  }, [authenticated, loading, refreshTokenIfNeeded]);
+  }, [authenticated]);
 
   const signOut = useCallback(async (redirectUrl?: string) => {
     console.log('🔑 Signing out user');
-
+    
     // Clear local state
     setAuthenticated(false);
     setUser(null);
@@ -373,54 +413,33 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       console.warn('⚠️ Failed to clear local storage:', error);
     }
 
-    // COMPREHENSIVE COOKIE CLEARING ACROSS ALL DOMAINS
+    // Clear cookies (CRITICAL: use correct cookie names 'atk' and 'rtk')
     const cookieDomain = isProd ? '.asafarim.be' : '.asafarim.local';
-    console.log('🍪 Clearing cookies for domain:', cookieDomain);
+    console.log('🍪 Deleting cookies for domain:', cookieDomain);
+    
+    // Set multiple variants with different attributes to ensure cookies are cleared
+    // 1. With domain and path
+    document.cookie = `atk=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
+    document.cookie = `rtk=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
+    
+    // 2. Without domain (current domain only)
+    document.cookie = `atk=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+    document.cookie = `rtk=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+    
+    // 3. With SameSite=None and Secure for cross-domain cookies
+    document.cookie = `atk=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}; SameSite=None; Secure`;
+    document.cookie = `rtk=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}; SameSite=None; Secure`;
+    
+    // 4. With all root paths
+    document.cookie = `atk=; path=/api; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
+    document.cookie = `rtk=; path=/api; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
+    
+    // Check cookies after attempting to clear them
+    console.log('🔍 Checking if cookies were cleared, current cookies:', document.cookie);
 
-    // Clear cookies for all subdomains
-    const subdomains = ['identity', 'blog', 'ai', 'core', 'web'];
-    const cookieNames = ['atk', 'rtk', 'auth', 'identity', 'session'];
-
-    // Clear cookies for each subdomain
-    subdomains.forEach(subdomain => {
-      const domain = `${subdomain}.${isProd ? 'asafarim.be' : 'asafarim.local'}`;
-      const fullDomain = domain.startsWith('.') ? domain : `.${domain}`;
-
-      cookieNames.forEach(name => {
-        // Clear with various path combinations
-        ['/', '/api', '/api/identity', '/api/auth', '/api/core'].forEach(path => {
-          document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${fullDomain}`;
-          document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${fullDomain}; SameSite=None; Secure`;
-        });
-      });
-    });
-
-    // Also clear for the main domain
-    cookieNames.forEach(name => {
-      ['/', '/api', '/api/identity', '/api/auth', '/api/core'].forEach(path => {
-        document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
-        document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}; SameSite=None; Secure`;
-      });
-    });
-
-    console.log('🔍 Current cookies after clearing:', document.cookie);
-
-    // USE IDENTITY SERVICE TO CLEAR COOKIES
+    // Notify backend - make this more robust
     try {
-      console.log('🗑️ Using identity service to clear cookies');
-      await fetch('https://identity.asafarim.be/clear-cookies', {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store'
-      });
-      console.log('✅ Identity service cookie clearing completed');
-    } catch (e) {
-      console.warn('⚠️ Identity service cookie clearing failed:', e);
-    }
-
-    // NOTIFY BACKEND
-    try {
-      console.log('📣 Notifying backend about logout');
+      console.log('📣 Notifying backend about logout:', identityLogoutUrl);
       const response = await fetch(identityLogoutUrl, {
         method: 'POST',
         credentials: 'include',
@@ -429,31 +448,59 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
           'Cache-Control': 'no-cache'
         },
         body: JSON.stringify({
-          returnUrl: redirectUrl || '/',
-          clearCookies: true
+          returnUrl: redirectUrl || '/'
         })
       });
 
       if (response.ok) {
         console.log('✅ Backend logout successful');
       } else {
-        console.warn('⚠️ Backend logout failed:', response.status);
+        console.warn('⚠️ Logout request failed:', response.status);
+        try {
+          const errorText = await response.text();
+          console.warn('Error details:', errorText);
+        } catch (e) {
+          // Ignore error text parsing issues
+        }
+      }
+
+      // Clear site data using Clear-Site-Data header if supported
+      try {
+        await fetch('https://identity.asafarim.be/clear-cookies', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store'
+        });
+        console.log('🗑️ Attempted to clear site data via identity service');
+      } catch (e) {
+        console.warn('⚠️ Clear-site-data request failed:', e);
+      }
+
+      // Wait a moment to ensure cookies are fully cleared before redirecting
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Redirect the user, if a URL is provided
+
+      // Small delay to ensure state is updated before redirect
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Redirect to home or specified URL
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        // If no redirect URL specified, reload the current page to reset state
+        window.location.reload();
       }
     } catch (error) {
-      console.error('❌ Backend logout error:', error);
-    }
-
-    // BROADCAST SIGNOUT EVENT
-    window.dispatchEvent(new Event('auth-signout'));
-
-    // FORCE REDIRECT
-    if (redirectUrl) {
-      window.location.href = redirectUrl;
-    } else {
-      window.location.href = '/';
+      console.error('Error during sign out:', error);
+      // Even if there's an error, force logout and redirect
+      setAuthenticated(false);
+      setUser(null);
+      setToken(null);
+      window.dispatchEvent(new Event('auth-signout'));
+      window.location.href = redirectUrl || '/';
     }
   }, [authApiBase, identityLogoutUrl, isProd]);
-
 
   const signIn = useCallback(async (redirectUrl?: string) => {
     // Use provided redirect URL or current page, but ensure it's a valid URL

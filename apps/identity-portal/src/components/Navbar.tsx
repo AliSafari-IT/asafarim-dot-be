@@ -72,7 +72,7 @@ export default function Navbar() {
       localLinks={navLinks}
       brand={{
         logo: "/logo.svg",
-        text: "Identity Portal",
+        text: "AuthGate",
         href: "/dashboard",
       }}
       auth={{

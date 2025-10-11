@@ -59,10 +59,11 @@ export default function NavbarWrapper(props): React.ReactElement {
   return (
     <>
       <CentralNavbar
+        appId="blog"
         localLinks={navLinks}
         showAppSwitcher={true}
         brand={{
-          text: siteConfig.title,
+          text: siteConfig.title || "Blog",
           href: "/",
           logo: siteConfig.themeConfig?.navbar?.logo?.src,
         }}

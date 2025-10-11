@@ -56,7 +56,7 @@ export default function Navbar() {
       localLinks={navLinks}
       brand={{
         logo: "/logo.svg",
-        text: "ASafariM",
+        text: "AI UI",
         href: "/"
       }}
       auth={{

@@ -2,6 +2,8 @@ using System.Security.Claims;
 using System.Text;
 using Identity.Api;
 using Identity.Api.Extensions;
+using Identity.Api.Middleware;
+using Identity.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -66,25 +68,53 @@ builder.Services.PostConfigure<AuthOptions>(opts =>
         opts.CookieDomain = ".asafarim.local";
 });
 
+// Configure database with connection pooling and retry logic
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+{
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), npgsqlOptions =>
+    {
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorCodesToAdd: null);
+        npgsqlOptions.CommandTimeout(30);
+    });
+    
+    if (builder.Environment.IsDevelopment())
+    {
+        opt.EnableSensitiveDataLogging();
+        opt.EnableDetailedErrors();
+    }
+});
 
+// Configure Identity with enhanced security settings
 builder
     .Services.AddIdentityCore<AppUser>(o =>
     {
+        // User settings
         o.User.RequireUniqueEmail = true;
 
-        // Set password requirements
+        // Password requirements
         o.Password.RequireDigit = true;
         o.Password.RequireLowercase = true;
         o.Password.RequireUppercase = true;
         o.Password.RequireNonAlphanumeric = true;
         o.Password.RequiredLength = 8;
+        o.Password.RequiredUniqueChars = 4;
+
+        // Lockout settings
+        o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        o.Lockout.MaxFailedAccessAttempts = 5;
+        o.Lockout.AllowedForNewUsers = true;
+
+        // Sign-in settings
+        o.SignIn.RequireConfirmedEmail = false; // Set to true in production with email service
+        o.SignIn.RequireConfirmedAccount = false;
     })
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddSignInManager();
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
 
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -114,7 +144,16 @@ builder
         };
     });
 
-builder.Services.AddAuthorization();
+// Register application services
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
+// Configure authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
+});
 
 // Get allowed origins from environment or use defaults
 var corsOriginsEnv = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS");
@@ -177,12 +216,16 @@ builder.Services.AddCors(opt =>
             }
             else
             {
-                // In production, use specific origins
+                // In production, use specific origins with proper CORS settings for cookies
                 p.WithOrigins(allowedOrigins)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials()
-                    .SetIsOriginAllowedToAllowWildcardSubdomains(); // Allow *.asafarim.be
+                    .SetIsOriginAllowedToAllowWildcardSubdomains() // Allow *.asafarim.be
+                    .SetPreflightMaxAge(TimeSpan.FromHours(24)); // Reduce preflight requests
+
+                // Log the allowed origins for debugging
+                Console.WriteLine($"[CORS] Allowed origins for credentials: {string.Join(", ", allowedOrigins)}");
             }
         }
     )
@@ -195,6 +238,9 @@ var app = builder.Build();
 
 // Use forwarded headers BEFORE any other middleware
 app.UseForwardedHeaders();
+
+// Apply rate limiting to auth endpoints
+app.UseRateLimiting();
 
 app.UseCors("app");
 app.UseSwagger();
@@ -220,6 +266,14 @@ app.MapGet(
             }
         )
 );
+
+// Add a dedicated endpoint for clearing cookies with Clear-Site-Data header
+app.MapGet("/clear-cookies", (HttpContext httpContext) => {
+    // Add Clear-Site-Data header directly to the HttpContext
+    httpContext.Response.Headers.Append("Clear-Site-Data", "\"cookies\"");
+    Console.WriteLine("[clear-cookies] Sent Clear-Site-Data header");
+    return Results.Ok(new { cleared = true });
+});
 
 // Run the app with automatic migrations
 app.MigrateDatabase<AppDbContext>().Run();

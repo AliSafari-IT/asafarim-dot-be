@@ -2,6 +2,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    padding-top: calc(4rem + 20px); /* Account for fixed navbar height plus extra spacing */
   }
   
   .job-tracker-header {
@@ -9,6 +10,12 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
   
   .job-tracker-header h1 {
@@ -842,6 +849,18 @@
       flex: 1;
       max-width: 80px;
       font-size: 12px;
+    }
+
+    .header-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .header-actions .show-analytics-btn,
+    .header-actions .add-job-btn {
+      width: 100%;
+      justify-content: center;
     }
   }
   

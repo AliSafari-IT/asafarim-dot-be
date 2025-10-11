@@ -1,0 +1,459 @@
+using System.Security.Claims;
+using Identity.Api;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+
+namespace Identity.Api.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class AuthController : ControllerBase
+{
+    private readonly UserManager<AppUser> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
+    private readonly IOptions<AuthOptions> _authOptions;
+
+    public AuthController(
+        UserManager<AppUser> userManager,
+        SignInManager<AppUser> signInManager,
+        IOptions<AuthOptions> authOptions
+    )
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _authOptions = authOptions;
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(RegisterRequest req)
+    {
+        var user = new AppUser
+        {
+            Id = Guid.NewGuid(),
+            Email = req.Email,
+            UserName = req.UserName ?? req.Email,
+        };
+        var result = await _userManager.CreateAsync(user, req.Password);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Code, error.Description);
+            }
+            return ValidationProblem(ModelState);
+        }
+
+        // Generate tokens for the newly registered user
+        var opts = _authOptions.Value;
+        if (string.IsNullOrWhiteSpace(opts.Key))
+        {
+            // Extra safety in case options are not bound or hot-reload left stale state
+            opts.Key = "dev-secret-key-please-change";
+        }
+        var roleNames = await _userManager.GetRolesAsync(user);
+        var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
+        var refresh = Guid.NewGuid().ToString("N");
+        // Registration flow: default to persistent cookies
+        SetAuthCookies(Response, access, refresh, opts, persistent: true);
+
+        // Return user info along with tokens to match frontend expectations
+        return Ok(
+            new
+            {
+                token = access,
+                refreshToken = refresh,
+                expiresAt = DateTime.UtcNow.AddMinutes(opts.AccessMinutes).ToString("o"),
+                user = new
+                {
+                    id = user.Id.ToString(),
+                    email = user.Email,
+                    firstName = req.UserName ?? req.Email,
+                    lastName = "",
+                    roles = roleNames.ToArray(),
+                },
+            }
+        );
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginRequest req)
+    {
+        var user = await _userManager.FindByEmailAsync(req.Email);
+        if (user is null)
+            return Unauthorized();
+
+        // Check if the user has a null password (needs to set one)
+        if (string.IsNullOrEmpty(user.PasswordHash))
+        {
+            return Ok(
+                new
+                {
+                    requiresPasswordSetup = true,
+                    userId = user.Id.ToString(),
+                    email = user.Email,
+                }
+            );
+        }
+
+        var ok = await _userManager.CheckPasswordAsync(user, req.Password);
+        if (!ok)
+            return Unauthorized();
+
+        var opts = _authOptions.Value;
+        var roleNamesLogin = await _userManager.GetRolesAsync(user);
+        var access = TokenService.CreateAccessToken(user, roleNamesLogin.ToArray(), opts);
+        var refresh = Guid.NewGuid().ToString("N"); // stub: store/rotate in DB for real usage
+        // Use RememberMe to decide persistence
+        SetAuthCookies(Response, access, refresh, opts, persistent: req.RememberMe);
+
+        // Return user info along with tokens to match frontend expectations
+        return Ok(
+            new
+            {
+                token = access,
+                refreshToken = refresh,
+                expiresAt = DateTime.UtcNow.AddMinutes(opts.AccessMinutes).ToString("o"),
+                user = new
+                {
+                    id = user.Id.ToString(),
+                    email = user.Email,
+                    firstName = user.UserName,
+                    lastName = "",
+                    roles = roleNamesLogin.ToArray(),
+                },
+            }
+        );
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        var opts = _authOptions.Value;
+        // Compute cookie security options the same way as in SetAuthCookies
+        var isProdDomain =
+            opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
+        var context = Response.HttpContext;
+        var isHttps = context?.Request?.IsHttps == true;
+        var useSecure = isProdDomain || isHttps;
+        var sameSite = SameSiteMode.None; // Always use None for SSO cookies
+
+        Console.WriteLine($"[Logout] Clearing auth cookies with domain {opts.CookieDomain}");
+        Console.WriteLine($"[Logout] isProdDomain: {isProdDomain}, isHttps: {isHttps}, useSecure: {useSecure}, sameSite: {sameSite}");
+
+        // Delete cookies with the same options used when creating them
+        Response.Cookies.Delete(
+            "atk",
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = useSecure,
+                SameSite = sameSite,
+                Domain = opts.CookieDomain,
+                Path = "/",
+            }
+        );
+
+        Response.Cookies.Delete(
+            "rtk",
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = useSecure,
+                SameSite = sameSite,
+                Domain = opts.CookieDomain,
+                Path = "/",
+            }
+        );
+
+        // Attempt to also clear cookies using JavaScript via response headers
+        // This adds a backup mechanism for cookie clearing
+        Response.Headers.Append("Clear-Site-Data", "\"cookies\"");
+
+        return Ok(new { message = "Logged out successfully" });
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        // Debug logging
+        var hasCookie = Request.Cookies.TryGetValue("atk", out var cookieValue);
+        Console.WriteLine($"[GetCurrentUser] Has atk cookie: {hasCookie}");
+        Console.WriteLine($"[GetCurrentUser] Cookie value length: {cookieValue?.Length ?? 0}");
+        Console.WriteLine($"[GetCurrentUser] User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
+        Console.WriteLine($"[GetCurrentUser] User.Identity.Name: {User.Identity?.Name}");
+        
+        if (!User.Identity?.IsAuthenticated ?? true)
+        {
+            Console.WriteLine($"[GetCurrentUser] Returning Unauthorized - not authenticated");
+            return Unauthorized();
+        }
+        // Prefer NameIdentifier (mapped by default), fallback to raw "sub"
+        var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+        Console.WriteLine($"[GetCurrentUser] Subject claim: {sub}");
+        if (string.IsNullOrWhiteSpace(sub))
+        {
+            Console.WriteLine($"[GetCurrentUser] Returning Unauthorized - no subject claim");
+            return Unauthorized();
+        }
+        var user = await _userManager.FindByIdAsync(sub);
+        if (user is null)
+        {
+            Console.WriteLine($"[GetCurrentUser] Returning Unauthorized - user not found");
+            return Unauthorized();
+        }
+        var roleNames = await _userManager.GetRolesAsync(user);
+        Console.WriteLine($"[GetCurrentUser] Success - returning user {user.Email}");
+        return Ok(
+            new MeResponse(user.Id.ToString(), user.Email, user.UserName, roleNames.ToArray())
+        );
+    }
+
+    [HttpGet("token")]
+    public IActionResult GetToken()
+    {
+        // Prefer the HttpOnly cookie set by the server
+        if (Request.Cookies.TryGetValue("atk", out var cookieToken) && !string.IsNullOrWhiteSpace(cookieToken))
+        {
+            return Ok(new { token = cookieToken });
+        }
+
+        // Fallback: allow Authorization header if provided and not empty/null
+        var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+        if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            var headerToken = authHeader.Substring("Bearer ".Length).Trim();
+            if (!string.IsNullOrWhiteSpace(headerToken) && !string.Equals(headerToken, "null", StringComparison.OrdinalIgnoreCase))
+            {
+                return Ok(new { token = headerToken });
+            }
+        }
+
+        return Unauthorized();
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        // Get the refresh token from cookies
+        if (!Request.Cookies.TryGetValue("rtk", out var refreshToken) || string.IsNullOrWhiteSpace(refreshToken))
+        {
+            Console.WriteLine("[RefreshToken] No refresh token cookie found");
+            return Unauthorized(new { message = "No refresh token provided" });
+        }
+
+        Console.WriteLine($"[RefreshToken] Refresh token cookie found: {refreshToken.Substring(0, Math.Min(10, refreshToken.Length))}...");
+
+        // CRITICAL FIX: Don't require authentication here - that's the whole point of refresh!
+        // Instead, try to extract the user ID from the expired access token if available
+        string? userId = null;
+        
+        // Try to get user ID from the access token cookie (even if expired)
+        if (Request.Cookies.TryGetValue("atk", out var expiredToken) && !string.IsNullOrWhiteSpace(expiredToken))
+        {
+            try
+            {
+                // Parse the JWT without validation to extract claims
+                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(expiredToken);
+                userId = token.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == ClaimTypes.NameIdentifier)?.Value;
+                Console.WriteLine($"[RefreshToken] Extracted user ID from expired token: {userId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[RefreshToken] Failed to parse expired token: {ex.Message}");
+            }
+        }
+
+        // If we couldn't get user ID from token, try from authenticated claims (fallback)
+        if (string.IsNullOrWhiteSpace(userId) && User.Identity?.IsAuthenticated == true)
+        {
+            userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+            Console.WriteLine($"[RefreshToken] Got user ID from authenticated claims: {userId}");
+        }
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            Console.WriteLine("[RefreshToken] No user ID found - unauthorized");
+            return Unauthorized(new { message = "Invalid refresh token - no user information" });
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            Console.WriteLine($"[RefreshToken] User not found: {userId}");
+            return Unauthorized(new { message = "Invalid refresh token - user not found" });
+        }
+
+        // TODO: In production, validate refresh token against database
+        // For now, we accept any non-empty refresh token for the user
+
+        var opts = _authOptions.Value;
+        var roleNames = await _userManager.GetRolesAsync(user);
+        var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
+
+        // Generate new refresh token (in production, you'd store and rotate this)
+        var newRefresh = Guid.NewGuid().ToString("N");
+
+        // Set new cookies with updated tokens
+        SetAuthCookies(Response, access, newRefresh, opts, persistent: true);
+
+        Console.WriteLine($"[RefreshToken] Successfully refreshed tokens for user: {user.Email}");
+
+        return Ok(new
+        {
+            token = access,
+            refreshToken = newRefresh,
+            expiresAt = DateTime.UtcNow.AddMinutes(opts.AccessMinutes).ToString("o"),
+            user = new
+            {
+                id = user.Id.ToString(),
+                email = user.Email,
+                firstName = user.UserName,
+                lastName = "",
+                roles = roleNames.ToArray(),
+            },
+        });
+    }
+
+    [HttpPost("setup-password")]
+    public async Task<IActionResult> SetupPassword([FromBody] SetupPasswordRequest req)
+    {
+        // Declare user variable outside try block for scope
+        AppUser user;
+
+        try
+        {
+            // Validate the request
+            if (string.IsNullOrEmpty(req.UserId) || string.IsNullOrEmpty(req.Password))
+            {
+                return BadRequest(new { message = "User ID and password are required" });
+            }
+
+            // Find the user
+            user = await _userManager.FindByIdAsync(req.UserId);
+            if (user is null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            // Check if user actually has a null password
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                return BadRequest(new { message = "User already has a password set" });
+            }
+
+            // Set the password - use AddPassword for users with null password hash
+            var result = await _userManager.AddPasswordAsync(user, req.Password);
+
+            if (!result.Succeeded)
+            {
+                // Return validation errors in a structured format
+                var errors = result
+                    .Errors.Select(e => new { code = e.Code, description = e.Description })
+                    .ToList();
+                return BadRequest(new { message = "Password validation failed", errors });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            Console.Error.WriteLine($"Error in SetupPassword: {ex.Message}");
+            return StatusCode(
+                500,
+                new { message = "An error occurred while setting the password", error = ex.Message }
+            );
+        }
+
+        // Log the user in
+        var opts = _authOptions.Value;
+        var roleNames = await _userManager.GetRolesAsync(user);
+        var access = TokenService.CreateAccessToken(user, roleNames.ToArray(), opts);
+        var refresh = Guid.NewGuid().ToString("N");
+        // After setting password, default to persistent cookies
+        SetAuthCookies(Response, access, refresh, opts, persistent: true);
+
+        // Return user info along with tokens
+        return Ok(
+            new
+            {
+                token = access,
+                refreshToken = refresh,
+                expiresAt = DateTime.UtcNow.AddMinutes(opts.AccessMinutes).ToString("o"),
+                user = new
+                {
+                    id = user.Id.ToString(),
+                    email = user.Email,
+                    firstName = user.UserName,
+                    lastName = "",
+                    roles = roleNames.ToArray(),
+                },
+            }
+        );
+    }
+
+    private void SetAuthCookies(
+        HttpResponse response,
+        string accessToken,
+        string refreshToken,
+        AuthOptions opts,
+        bool persistent
+    )
+    {
+        var isProdDomain =
+            opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
+        var context = response.HttpContext;
+        var isHttps = context?.Request?.IsHttps == true;
+        var useSecure = isProdDomain || isHttps;
+
+        // CRITICAL: Always use SameSite=None for cross-domain SSO
+        // This is essential for cookies to work properly across different subdomains
+        var sameSite = SameSiteMode.None;
+        
+        // Debug logging
+        Console.WriteLine($"[SetAuthCookies] CookieDomain: {opts.CookieDomain}");
+        Console.WriteLine($"[SetAuthCookies] isProdDomain: {isProdDomain}");
+        Console.WriteLine($"[SetAuthCookies] isHttps: {isHttps}");
+        Console.WriteLine($"[SetAuthCookies] useSecure: {useSecure}");
+        Console.WriteLine($"[SetAuthCookies] sameSite: {sameSite}");
+        Console.WriteLine($"[SetAuthCookies] persistent: {persistent}");
+
+        var accessExpiration = DateTime.UtcNow.AddMinutes(opts.AccessMinutes);
+        var refreshExpiration = persistent 
+            ? DateTime.UtcNow.AddDays(opts.RefreshDays)
+            : DateTime.UtcNow.AddHours(8);
+        
+        var accessCookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = useSecure,
+            SameSite = sameSite,
+            Domain = opts.CookieDomain,
+            Path = "/",
+            // CRITICAL: SameSite=None cookies MUST have Expires set
+            Expires = accessExpiration,
+            MaxAge = TimeSpan.FromMinutes(opts.AccessMinutes)
+        };
+        
+        Console.WriteLine($"[SetAuthCookies] Access cookie Expires: {accessExpiration}");
+        Console.WriteLine($"[SetAuthCookies] Access cookie MaxAge: {opts.AccessMinutes} minutes");
+        response.Cookies.Append("atk", accessToken, accessCookieOptions);
+
+        var refreshCookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = useSecure,
+            SameSite = sameSite,
+            Domain = opts.CookieDomain,
+            Path = "/",
+            // CRITICAL: SameSite=None cookies MUST have Expires set
+            Expires = refreshExpiration,
+            MaxAge = persistent ? TimeSpan.FromDays(opts.RefreshDays) : TimeSpan.FromHours(8)
+        };
+        
+        Console.WriteLine($"[SetAuthCookies] Refresh cookie Expires: {refreshExpiration}");
+        response.Cookies.Append("rtk", refreshToken, refreshCookieOptions);
+    }
+}

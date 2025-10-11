@@ -98,7 +98,6 @@
   height: 100%;        /* take full navbar height so centering applies */
   gap: 0.75rem;
   margin-left: auto;
-  min-width: 200px;
   justify-content: flex-end;
 }
 

@@ -19,6 +19,7 @@ export const useIdentityPortalAuth = () => {
     setError(null);
 
     try {
+      console.log('🔑 Attempting login for email:', data.email);
       const response = await identityService.login(data);
       
       // Check if password setup is required
@@ -29,19 +30,76 @@ export const useIdentityPortalAuth = () => {
       }
       
       // After successful login, the cookies should be set by the server
-      // Trigger a re-check of auth state by dispatching events that the shared hook listens to
-      console.log('Login successful, cookies should be set');
+      console.log('✅ Login successful, cookies should be set by server');
+      console.log('📦 Response received with token and user info');
       
-      // Wait a bit to ensure cookies are fully set before triggering auth check
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Store the user info in localStorage as backup (non-sensitive data only)
+      try {
+        // Only store user info if this is an AuthResponse (not PasswordSetupResponse)
+        if ('user' in response) {
+          localStorage.setItem('user_info', JSON.stringify({
+            id: response.user.id,
+            email: response.user.email,
+            firstName: response.user.firstName,
+            roles: response.user.roles,
+            // Do not store the token in localStorage - it should be in HTTP-only cookie
+          }));
+          console.log('📝 User info stored in localStorage as backup');
+        }
+      } catch (storageError) {
+        console.warn('⚠️ Failed to store user info in localStorage:', storageError);
+      }
       
-      // Dispatch events that the shared useAuth hook listens to
-      window.dispatchEvent(new Event('focus'));
-      window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
+      // CRITICAL: Wait longer to ensure cookies are fully written to browser
+      // This is especially important for cross-domain scenarios
+      console.log('⏱️ Waiting for cookies to be properly set...');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Verify cookies are actually set by making a test request
+      console.log('🔍 Verifying authentication after login...');
+      const apiBaseUrl = 'https://identity.asafarim.be/api/identity';
+      try {
+        const verifyResponse = await fetch(`${apiBaseUrl}/auth/me`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (verifyResponse.ok) {
+          console.log('✅ Authentication verified successfully');
+          const userData = await verifyResponse.json();
+          console.log('👤 User data:', userData);
+        } else {
+          console.warn('⚠️ Authentication verification failed:', verifyResponse.status);
+          console.warn('⚠️ Cookies may not be set correctly');
+          console.warn('⚠️ Attempting to diagnose the issue:');
+          
+          // Diagnose possible issues
+          const cookieStr = document.cookie;
+          console.log('📄 Current document.cookie string:', cookieStr);
+          
+          // Check if there are any cookies at all
+          if (!cookieStr) {
+            console.warn('⚠️ No cookies present in document.cookie');
+          } else {
+            console.log('🔍 Cookies found in document.cookie, but they may not include auth cookies');
+          }
+        }
+      } catch (verifyError) {
+        console.error('❌ Failed to verify authentication:', verifyError);
+      }
+      
+      // Don't dispatch any events - they can cause issues
+      // The LoginForm will handle redirect immediately after this returns true
+      console.log('✅ Login complete, returning success');
       
       return true;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Failed to login";
+      console.error('❌ Login failed:', errorMessage);
       setError(errorMessage);
       return false;
     } finally {
@@ -63,9 +121,10 @@ export const useIdentityPortalAuth = () => {
       // Wait a bit to ensure cookies are fully set before triggering auth check
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Dispatch events that the shared useAuth hook listens to
-      window.dispatchEvent(new Event('focus'));
-      window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
+      // Don't dispatch storage event with empty newValue - it triggers logout!
+      // The shared useAuth hook will detect the auth state change naturally
+      // window.dispatchEvent(new Event('focus'));
+      // window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
       
       return true;
     } catch (error: unknown) {
@@ -87,9 +146,10 @@ export const useIdentityPortalAuth = () => {
       // After successful update, cookies should be set
       console.log('Profile update successful, cookies should be set');
       
-      // Dispatch events that the shared useAuth hook listens to
-      window.dispatchEvent(new Event('focus'));
-      window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
+      // Don't dispatch storage event with empty newValue - it triggers logout!
+      // The shared useAuth hook will detect the auth state change naturally
+      // window.dispatchEvent(new Event('focus'));
+      // window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
       
       return true;
     } catch (error: unknown) {

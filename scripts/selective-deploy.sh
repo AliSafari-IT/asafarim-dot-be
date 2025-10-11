@@ -96,7 +96,16 @@ restart_service_if_exists() {
     if sudo systemctl list-unit-files "${svc}.service" >/dev/null 2>&1; then
         print_info "Restarting ${svc}..."
         sudo systemctl restart "${svc}"
-        print_success "Service ${svc} restarted"
+        
+        # Wait and check if service started successfully
+        sleep 2
+        if sudo systemctl is-active --quiet "${svc}"; then
+            print_success "Service ${svc} restarted and running"
+        else
+            print_error "Service ${svc} failed to start!"
+            sudo systemctl status "${svc}" --no-pager -l
+            exit 1
+        fi
     else
         print_warning "Service ${svc}.service not found, skipping"
     fi
@@ -287,6 +296,13 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
     
     cd "$REPO_DIR"
     
+    # Build shared packages first
+    print_info "Building shared packages..."
+    cd "$REPO_DIR/packages/shared-ui-react"
+    pnpm build
+    print_success "Shared packages built"
+    cd "$REPO_DIR"
+    
     # Clean build directories for selected apps
     for idx in "${selected_frontends[@]}"; do
         key="${frontend_keys[$((idx-1))]}"
@@ -325,16 +341,27 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
         dest_path="$SITE_ROOT/apps/$key"
         
         if [ -d "$source_path" ]; then
+            # Backup existing deployment
+            if [ -d "$dest_path" ]; then
+                backup_path="$dest_path.backup.$(date +%Y%m%d_%H%M%S)"
+                print_info "Backing up existing deployment to $backup_path"
+                cp -r "$dest_path" "$backup_path"
+            fi
+            
             print_info "Deploying $key to $dest_path"
             mkdir -p "$dest_path"
             rsync -av --delete "$source_path/" "$dest_path/"
             print_success "$key deployed successfully"
+            chown -R www-data:www-data "$dest_path"
+            chmod -R 755 "$dest_path"
         else
             print_error "Build directory not found for $key: $source_path"
             exit 1
         fi
     done
 fi
+
+
 
 #############################################
 # Build and deploy APIs
@@ -343,6 +370,12 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
     print_header "Building and Deploying APIs"
     
     mkdir -p "$SITE_ROOT/apis"
+    
+    # Restore NuGet packages
+    print_info "Restoring NuGet packages for APIs..."
+    cd "$REPO_DIR"
+    dotnet restore
+    print_success "NuGet packages restored"
     
     for idx in "${selected_apis[@]}"; do
         key="${api_keys[$((idx-1))]}"
@@ -384,6 +417,7 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
         service_name="${API_SERVICES[$key]}"
         restart_service_if_exists "$service_name"
     done
+    
 fi
 
 #############################################

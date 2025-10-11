@@ -107,7 +107,7 @@ export default function Navbar() {
         localLinks={navLinks}
         brand={{
           logo: "/logo.svg",
-          text: "ASafariM Core App",
+          text: "Core App",
           href: "/",
         }}
         auth={{
