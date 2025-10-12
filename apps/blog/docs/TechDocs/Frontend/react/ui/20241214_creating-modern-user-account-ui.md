@@ -203,3 +203,216 @@ const handleInputChange = (
   }));
 };
 ```
+
+### 2. Async Operations
+
+```typescript
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage(null);
+
+  try {
+    await onUpdate?.(formData);
+    setMessage({ type: 'success', text: 'Settings updated successfully!' });
+  } catch (error) {
+    setMessage({ type: 'error', text: 'Failed to update settings' });
+  } finally {
+    setLoading(false);
+  }
+};
+```
+
+## Theme Support
+
+The component is designed to work seamlessly with both light and dark themes using Tailwind CSS's dark mode utilities.
+
+### 1. Dark Mode Configuration
+
+Ensure your `tailwind.config.js` has dark mode enabled:
+
+```javascript
+module.exports = {
+  darkMode: 'class', // or 'media'
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#3b82f6',
+          dark: '#2563eb',
+        },
+      },
+    },
+  },
+};
+```
+
+### 2. Theme-Aware Components
+
+```typescript
+const ThemeAwareCard = ({ children }) => (
+  <div className="
+    bg-white dark:bg-gray-800
+    text-gray-900 dark:text-gray-100
+    border border-gray-200 dark:border-gray-700
+    shadow-sm dark:shadow-gray-900/50
+  ">
+    {children}
+  </div>
+);
+```
+
+### 3. Input Styling
+
+```typescript
+const ThemeAwareInput = (props) => (
+  <input
+    className="
+      w-full p-3 rounded-lg
+      bg-white dark:bg-gray-800
+      border border-gray-300 dark:border-gray-600
+      text-gray-900 dark:text-gray-100
+      placeholder-gray-400 dark:placeholder-gray-500
+      focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark
+      focus:border-transparent
+    "
+    {...props}
+  />
+);
+```
+
+## Best Practices
+
+### 1. Accessibility
+
+- **Semantic HTML**: Use proper HTML elements (`<button>`, `<form>`, `<label>`)
+- **ARIA Labels**: Add descriptive labels for screen readers
+- **Keyboard Navigation**: Ensure all interactive elements are keyboard accessible
+- **Focus States**: Provide clear visual feedback for focused elements
+
+```typescript
+<button
+  aria-label="Update email address"
+  className="focus:outline-none focus:ring-2 focus:ring-primary"
+>
+  Update Email
+</button>
+```
+
+### 2. Form Validation
+
+```typescript
+const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validatePassword = (password: string): boolean => {
+  return password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password);
+};
+```
+
+### 3. Error Handling
+
+```typescript
+const ErrorMessage = ({ message }: { message: string }) => (
+  <div className="
+    p-4 rounded-lg
+    bg-red-50 dark:bg-red-900/20
+    border border-red-200 dark:border-red-800
+    text-red-800 dark:text-red-200
+  ">
+    {message}
+  </div>
+);
+```
+
+### 4. Loading States
+
+```typescript
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+  </div>
+);
+```
+
+### 5. Security Considerations
+
+- **Never store passwords in state longer than necessary**
+- **Use HTTPS for all API calls**
+- **Implement CSRF protection**
+- **Validate input on both client and server**
+- **Use secure password hashing (bcrypt, argon2)**
+
+```typescript
+// Clear sensitive data after submission
+const handlePasswordUpdate = async () => {
+  try {
+    await updatePassword(formData.currentPassword, formData.newPassword);
+    // Clear password fields immediately
+    setFormData(prev => ({
+      ...prev,
+      currentPassword: '',
+      newPassword: '',
+    }));
+  } catch (error) {
+    // Handle error
+  }
+};
+```
+
+### 6. Performance Optimization
+
+```typescript
+// Debounce input validation
+import { useMemo, useCallback } from 'react';
+import debounce from 'lodash/debounce';
+
+const debouncedValidation = useMemo(
+  () => debounce((value: string) => {
+    // Perform validation
+  }, 300),
+  []
+);
+```
+
+### 7. Testing
+
+```typescript
+// Example test with React Testing Library
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import AccountSettings from './AccountSettings';
+
+test('updates email successfully', async () => {
+  const mockUpdate = jest.fn();
+  render(<AccountSettings onUpdate={mockUpdate} />);
+  
+  const emailInput = screen.getByLabelText(/email/i);
+  fireEvent.change(emailInput, { target: { value: 'new@example.com' } });
+  
+  const submitButton = screen.getByRole('button', { name: /update email/i });
+  fireEvent.click(submitButton);
+  
+  await waitFor(() => {
+    expect(mockUpdate).toHaveBeenCalledWith({ email: 'new@example.com' });
+  });
+});
+```
+
+## Conclusion
+
+This guide provides a comprehensive foundation for building a modern, accessible, and maintainable user account settings interface. Remember to:
+
+- Keep components modular and reusable
+- Implement proper error handling and validation
+- Ensure accessibility for all users
+- Test thoroughly across different devices and browsers
+- Follow security best practices for handling user data
+
+For more advanced features, consider adding:
+- Two-factor authentication
+- Profile picture upload
+- Account deletion with confirmation
+- Activity log/audit trail
+- Email verification workflow
