@@ -214,6 +214,20 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     let authCheckInProgress = false; // Prevent multiple simultaneous auth checks
 
     const checkAuth = async () => {
+      // Check if logout is in progress - don't try to re-authenticate
+      const logoutInProgress = sessionStorage.getItem('logout_in_progress') === 'true';
+      if (logoutInProgress) {
+        console.log('🛑 Logout in progress, skipping auth check');
+        sessionStorage.removeItem('logout_in_progress');
+        if (mounted) {
+          setAuthenticated(false);
+          setUser(null);
+          setToken(null);
+          setLoading(false);
+        }
+        return;
+      }
+
       // Prevent multiple simultaneous auth checks
       if (authCheckInProgress) {
         console.log('Auth check already in progress, skipping...');
@@ -358,6 +372,9 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   const signOut = useCallback(async (redirectUrl?: string) => {
     console.log('🔑 Signing out user');
 
+    // Set a flag to prevent auto-re-authentication after logout
+    sessionStorage.setItem('logout_in_progress', 'true');
+
     // Clear local state
     setAuthenticated(false);
     setUser(null);
@@ -405,20 +422,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
     console.log('🔍 Current cookies after clearing:', document.cookie);
 
-    // USE IDENTITY SERVICE TO CLEAR COOKIES
-    try {
-      console.log('🗑️ Using identity service to clear cookies');
-      await fetch('https://identity.asafarim.be/clear-cookies', {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store'
-      });
-      console.log('✅ Identity service cookie clearing completed');
-    } catch (e) {
-      console.warn('⚠️ Identity service cookie clearing failed:', e);
-    }
-
-    // NOTIFY BACKEND
+    // NOTIFY BACKEND TO CLEAR COOKIES - THIS MUST COMPLETE BEFORE REDIRECT
     try {
       console.log('📣 Notifying backend about logout');
       const response = await fetch(identityLogoutUrl, {
@@ -436,6 +440,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
       if (response.ok) {
         console.log('✅ Backend logout successful');
+        console.log('✅ Cookies cleared by server');
       } else {
         console.warn('⚠️ Backend logout failed:', response.status);
       }
@@ -443,15 +448,27 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       console.error('❌ Backend logout error:', error);
     }
 
+    // DON'T call /clear-cookies endpoint - it's redundant and can cause cookie re-sending
+    // The logout endpoint already clears cookies properly
+    
+    // Wait longer to ensure cookies are fully cleared and processed by browser
+    console.log('⏱️ Waiting for cookies to be fully cleared and processed...');
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
     // BROADCAST SIGNOUT EVENT
     window.dispatchEvent(new Event('auth-signout'));
 
-    // FORCE REDIRECT
-    if (redirectUrl) {
-      window.location.href = redirectUrl;
-    } else {
-      window.location.href = '/';
-    }
+    // FORCE REDIRECT ONLY AFTER LOGOUT COMPLETES
+    // Use window.location.replace() instead of .href to ensure browser processes Set-Cookie headers
+    console.log('🔄 Redirecting after successful logout...');
+    const targetUrl = redirectUrl || '/';
+    
+    // Add a timestamp to prevent caching
+    const separator = targetUrl.includes('?') ? '&' : '?';
+    const finalUrl = `${targetUrl}${separator}_logout=${Date.now()}`;
+    
+    console.log('🔄 Final redirect URL:', finalUrl);
+    window.location.replace(finalUrl);
   }, [authApiBase, identityLogoutUrl, isProd]);
 
 

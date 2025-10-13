@@ -1,12 +1,11 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { Arrow, ButtonComponent as Button, Lock } from "@asafarim/shared-ui-react";
 
 
 export const LoginForm = () => {
   const { login, error, clearError, isLoading } = useAuth();
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -33,6 +32,9 @@ export const LoginForm = () => {
         // Show success notification
         console.log('👍 Login successful! Preparing redirect...');
         
+        // Set flag to prevent Login page's useEffect from also redirecting
+        sessionStorage.setItem('login_just_completed', 'true');
+        
         // Get returnUrl from query params
         let returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
         console.log('🔄 Original returnUrl:', returnUrl);
@@ -53,7 +55,9 @@ export const LoginForm = () => {
         // Wait briefly for cookies to be set, then redirect immediately
         // The login() function already waits 2 seconds and verifies auth
         console.log('⏱️ Preparing redirect...');
-        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Get the target URL
+        const targetPath = returnUrl || '/dashboard';
         
         // Check if we need to perform a cross-domain redirect
         const isCrossDomainRedirect = returnUrl && (
@@ -78,10 +82,11 @@ export const LoginForm = () => {
           // Use window.location for cross-domain redirects
           window.location.href = finalUrl;
         } else {
-          // Internal navigation using React Router
-          const internalPath = returnUrl || '/dashboard';
-          console.log('🏠 Navigating to internal path:', internalPath);
-          navigate(internalPath, { replace: true });
+          // Internal navigation - use window.location to ensure it actually happens
+          console.log('🏠 Redirecting to internal path:', targetPath);
+          
+          // Use replace() to avoid back button issues
+          window.location.replace(targetPath);
         }
       }
     } catch (error) {

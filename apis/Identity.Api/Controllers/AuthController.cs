@@ -392,6 +392,7 @@ public class AuthController : ControllerBase
         var useSecure = isProdDomain || isHttps;
         var sameSite = SameSiteMode.None;
 
+        // Clear cookies with the configured domain (e.g., ".asafarim.be")
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
@@ -404,9 +405,43 @@ public class AuthController : ControllerBase
 
         Response.Cookies.Delete("atk", cookieOptions);
         Response.Cookies.Delete("rtk", cookieOptions);
+        
+        // ALSO clear cookies without the leading dot for main domain (e.g., "asafarim.be")
+        // This handles cases where cookies were set for the exact domain
+        if (!string.IsNullOrEmpty(opts.CookieDomain) && opts.CookieDomain.StartsWith("."))
+        {
+            var exactDomain = opts.CookieDomain.TrimStart('.');
+            var exactDomainOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = useSecure,
+                SameSite = sameSite,
+                Domain = exactDomain,
+                Path = "/",
+                Expires = DateTime.UtcNow.AddDays(-1)
+            };
+            
+            Response.Cookies.Delete("atk", exactDomainOptions);
+            Response.Cookies.Delete("rtk", exactDomainOptions);
+            _logger.LogDebug("Also cleared cookies for exact domain: {Domain}", exactDomain);
+        }
+        
+        // ALSO clear cookies without any domain specified (uses current host)
+        var noDomainOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = useSecure,
+            SameSite = sameSite,
+            Path = "/",
+            Expires = DateTime.UtcNow.AddDays(-1)
+        };
+        
+        Response.Cookies.Delete("atk", noDomainOptions);
+        Response.Cookies.Delete("rtk", noDomainOptions);
+
         Response.Headers.Append("Clear-Site-Data", "\"cookies\"");
 
-        _logger.LogDebug("Auth cookies cleared");
+        _logger.LogDebug("Auth cookies cleared for domain: {Domain}", opts.CookieDomain);
     }
 
     private string GetIpAddress()

@@ -3,7 +3,7 @@ import type { UseAuthOptions } from '@asafarim/shared-ui-react';
 
 // Production config - uses centralized identity portal
 const prodConfig: UseAuthOptions = {
-  authApiBase: 'https://identity.asafarim.be/api',  // FIXED: removed extra /identity
+  authApiBase: 'https://identity.asafarim.be/api/identity',  // Must use /api/identity for nginx routing
   meEndpoint: '/auth/me',
   tokenEndpoint: '/auth/token',
   logoutEndpoint: '/auth/logout',
