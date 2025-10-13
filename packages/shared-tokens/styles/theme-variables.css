@@ -677,12 +677,6 @@ article { margin: 2rem 0; }
   padding: 1.5rem;
   border: 1px solid var(--color-border);
 }
-.hero__title {
-  color: var(--color-phosphor);
-}
-.hero__subtitle {
-  color: var(--color-brand);
-}
 
 .features-grid {
   display: grid;
