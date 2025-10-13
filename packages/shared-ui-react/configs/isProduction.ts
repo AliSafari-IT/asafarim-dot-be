@@ -1,10 +1,17 @@
 
+// Declare process for TypeScript when not using @types/node
+declare const process: any;
+
 // Production check that happens at runtime, not build time
 export const getIsProduction = (): boolean => {
   // During SSR/build, check NODE_ENV to determine if building for production
   if (typeof window === 'undefined') {
     // During build, use NODE_ENV to decide which URLs to bake in
-    return process.env.NODE_ENV === 'production';
+    try {
+      return process?.env?.NODE_ENV === 'production';
+    } catch {
+      return false;
+    }
   }
 
   try {
