@@ -7,6 +7,7 @@ using Core.Api.Data;
 using Core.Api.Models.Resume;
 using Core.Api.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ namespace Core.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableCors("frontend")]
 public class ResumesController : ControllerBase
 {
     private readonly CoreDbContext _context;
@@ -24,6 +26,14 @@ public class ResumesController : ControllerBase
     {
         _context = context;
         _logger = logger;
+    }
+
+    // Handle preflight OPTIONS requests for CORS
+    [HttpOptions]
+    [AllowAnonymous]
+    public IActionResult HandlePreflight()
+    {
+        return NoContent();
     }
 
     // GET: api/resumes

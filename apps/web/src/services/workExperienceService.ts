@@ -15,6 +15,7 @@ export interface WorkExperienceDto {
   isCurrent: boolean;
   description?: string;
   achievements?: WorkAchievementDto[];
+  technologies?: TechnologyDto[];
   sortOrder: number;
   highlighted: boolean;
   isPublished: boolean;

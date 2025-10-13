@@ -166,6 +166,21 @@ const Resume = () => {
                     <li key={achievementIndex}>{achievement.text}</li>
                   ))}
                 </ul>
+                { job && job.technologies && job.technologies?.length > 0 && (
+                  <>
+                    <h4 className="font-bold mb-2 mt-4">Technologies:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {job.technologies.map((tech, techIndex) => (
+                        <span
+                          key={techIndex}
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm"
+                        >
+                          {tech.name} {tech.category && `(${tech.category})`}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>

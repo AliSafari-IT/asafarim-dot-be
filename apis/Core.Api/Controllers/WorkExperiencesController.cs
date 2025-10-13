@@ -6,6 +6,7 @@ using Core.Api.Controllers.Dtos;
 using Core.Api.Data;
 using Core.Api.Models.Resume;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ namespace Core.Api.Controllers;
 [ApiController]
 [Route("api/resumes/{resumeId}/[controller]")]
 [Authorize]
+[EnableCors("frontend")]
 public class WorkExperiencesController : ControllerBase
 {
     private readonly CoreDbContext _context;
@@ -27,6 +29,14 @@ public class WorkExperiencesController : ControllerBase
     {
         _context = context;
         _logger = logger;
+    }
+
+    // Handle preflight OPTIONS requests for CORS
+    [HttpOptions]
+    [AllowAnonymous]
+    public IActionResult HandlePreflight()
+    {
+        return NoContent();
     }
 
     // GET: api/resumes/{resumeId}/workexperiences
@@ -262,28 +272,66 @@ public class WorkExperiencesController : ControllerBase
             }
         }
 
-        // Handle technologies - remove existing and add new ones
-        if (workExperience.WorkExperienceTechnologies != null)
-        {
-            _context.WorkExperienceTechnologies.RemoveRange(
-                workExperience.WorkExperienceTechnologies
-            );
-        }
-
+        // Handle technologies - smarter update logic
         if (request.Technologies != null && request.Technologies.Any())
         {
-            foreach (var techRequest in request.Technologies)
-            {
-                if (string.IsNullOrWhiteSpace(techRequest.Name))
-                    continue;
+            // Get existing technology relationships for this work experience
+            var existingTechRelationships = await _context.WorkExperienceTechnologies
+                .Where(wt => wt.WorkExperienceId == workExperience.Id)
+                .Include(wt => wt.Technology)
+                .ToListAsync();
 
-                // Find or create technology
-                var technology = await _context.Technologies.FirstOrDefaultAsync(t =>
-                    t.Name.ToLower() == techRequest.Name.ToLower()
-                );
+            // Remove technologies that are no longer in the request
+            var requestedTechIds = request.Technologies
+                .Where(t => !string.IsNullOrWhiteSpace(t.Name) && t.Id.HasValue)
+                .Select(t => t.Id.Value)
+                .ToList();
+
+            var requestedTechNames = request.Technologies
+                .Where(t => !string.IsNullOrWhiteSpace(t.Name))
+                .Select(t => t.Name.ToLower())
+                .ToList();
+
+            var technologiesToRemove = existingTechRelationships
+                .Where(wt =>
+                    !requestedTechIds.Contains(wt.TechnologyId) &&
+                    !requestedTechNames.Contains(wt.Technology.Name.ToLower())
+                )
+                .ToList();
+
+            if (technologiesToRemove.Any())
+            {
+                _context.WorkExperienceTechnologies.RemoveRange(technologiesToRemove);
+            }
+
+            // Update or add new technologies
+            foreach (var techRequest in request.Technologies.Where(t => !string.IsNullOrWhiteSpace(t.Name)))
+            {
+                Technology technology;
+
+                if (techRequest.Id.HasValue)
+                {
+                    // If ID is provided, try to find by ID first
+                    technology = await _context.Technologies.FindAsync(techRequest.Id.Value);
+                    if (technology == null)
+                    {
+                        // If not found by ID but name matches an existing technology, use that
+                        technology = await _context.Technologies.FirstOrDefaultAsync(t =>
+                            t.Name.ToLower() == techRequest.Name.ToLower()
+                        );
+                    }
+                }
+                else
+                {
+                    // Find existing technology by name
+                    technology = await _context.Technologies.FirstOrDefaultAsync(t =>
+                        t.Name.ToLower() == techRequest.Name.ToLower()
+                    );
+                }
 
                 if (technology == null)
                 {
+                    // Create new technology
                     technology = new Technology
                     {
                         Id = Guid.NewGuid(),
@@ -291,19 +339,56 @@ public class WorkExperiencesController : ControllerBase
                         Category = techRequest.Category ?? "Other",
                     };
                     _context.Technologies.Add(technology);
-                    await _context.SaveChangesAsync();
+                    // Don't save immediately - save all changes at the end
+                }
+                else
+                {
+                    // Update existing technology if category has changed
+                    var updatedCategory = techRequest.Category ?? "Other";
+                    if (technology.Category != updatedCategory)
+                    {
+                        // Ensure the technology is tracked by the context
+                        _context.Technologies.Attach(technology);
+                        technology.Category = updatedCategory;
+                        // Don't save immediately - save all changes at the end
+                    }
                 }
 
-                _context.WorkExperienceTechnologies.Add(
-                    new WorkExperienceTechnology
-                    {
-                        WorkExperienceId = workExperience.Id,
-                        TechnologyId = technology.Id,
-                    }
-                );
+                // Check if relationship already exists
+                var existingRelationship = existingTechRelationships
+                    .FirstOrDefault(wt => wt.TechnologyId == technology.Id);
+
+                if (existingRelationship == null)
+                {
+                    // Create new relationship
+                    _context.WorkExperienceTechnologies.Add(
+                        new WorkExperienceTechnology
+                        {
+                            WorkExperienceId = workExperience.Id,
+                            TechnologyId = technology.Id,
+                        }
+                    );
+                }
+            }
+
+            // Save all new relationships
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            // If no technologies provided, remove all existing ones
+            var existingTechRelationships = await _context.WorkExperienceTechnologies
+                .Where(wt => wt.WorkExperienceId == workExperience.Id)
+                .ToListAsync();
+
+            if (existingTechRelationships.Any())
+            {
+                _context.WorkExperienceTechnologies.RemoveRange(existingTechRelationships);
+                await _context.SaveChangesAsync();
             }
         }
 
+        // Save work experience changes
         await _context.SaveChangesAsync();
 
         return NoContent();
@@ -401,6 +486,7 @@ public class WorkAchievementRequest
 
 public class WorkTechnologyRequest
 {
+    public Guid? Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Category { get; set; }
 }
