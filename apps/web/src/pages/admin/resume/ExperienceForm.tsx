@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ButtonComponent as Button, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent, useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import {
   fetchExperienceById,
   createExperience,
@@ -90,6 +90,13 @@ const ExperienceForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!resumeId) return;
+
+    // Validate form before submission
+    if (!validateForm()) {
+      addNotification("error", "Please fix the validation errors before submitting");
+      return;
+    }
+
     try {
       setLoading(true);
       if (isEditMode && id) {
@@ -122,14 +129,48 @@ const ExperienceForm = () => {
     }));
   };
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Validation function
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    // Validate technology fields
+    if (formData.technologies) {
+      formData.technologies.forEach((tech, index) => {
+        if (tech.name.length > 50) {
+          newErrors[`technology_${index}_name`] = `Technology name must be 50 characters or less (current: ${tech.name.length})`;
+        }
+        if (tech.category && tech.category.length > 50) {
+          newErrors[`technology_${index}_category`] = `Category must be 50 characters or less (current: ${tech.category.length})`;
+        }
+      });
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleTechnologyChange = (index: number, field: 'name' | 'category', value: string) => {
+    // Truncate value if it exceeds 50 characters
+    const truncatedValue = value.length > 50 ? value.substring(0, 50) : value;
+
     const updatedTechnologies = [...(formData.technologies || [])];
-    updatedTechnologies[index] = { ...updatedTechnologies[index], [field]: value };
-    
+    updatedTechnologies[index] = { ...updatedTechnologies[index], [field]: truncatedValue };
+
     setFormData(prev => ({
       ...prev,
       technologies: updatedTechnologies
     }));
+
+    // Clear error for this field if it was previously set
+    if (errors[`technology_${index}_${field}`]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[`technology_${index}_${field}`];
+        return newErrors;
+      });
+    }
   };
   
   const addTechnology = () => {
@@ -198,21 +239,23 @@ const ExperienceForm = () => {
           </div>
           <div className="header-actions">
             {isViewMode && (
-              <Button
+              <ButtonComponent
                 onClick={() => navigate(`/admin/entities/resumes/${resumeId}/work-experiences/${id}/edit`)}
-                variant="primary"
                 size="sm"
+                type="button"
+                variant="info"
               >
                 ✏️ Edit
-              </Button>
+              </ButtonComponent>
             )}
-            <Button
+            <ButtonComponent
               onClick={() => navigate(`/admin/entities/resumes/${resumeId}/work-experiences`)}
-              variant="secondary"
+              variant="ghost"
               size="sm"
+              type="button"
             >
               ← Back
-            </Button>
+            </ButtonComponent>
           </div>
         </header>
 
@@ -336,26 +379,28 @@ const ExperienceForm = () => {
                         onChange={(e) => handleAchievementChange(index, e.target.value)}
                         placeholder="e.g., Led a team of 5 developers to deliver a major product feature"
                       />
-                      <button
+                      <ButtonComponent
                         type="button"
-                        className="achievement-remove-button "
+                        variant="warning"
+                        size="sm"
                         onClick={() => removeAchievement(index)}
                         disabled={formData.achievements?.length === 1}
                         title="Remove achievement"
                       >
                         🗑️
-                      </button>
+                      </ButtonComponent>
                     </div>
                   </div>
                 ))}
                 
-                <button
+                <ButtonComponent
                   type="button"
-                  className="achievement-add-button"
+                  variant="info"
+                  size="sm"
                   onClick={addAchievement}
                 >
                   ➕ Add Achievement
-                </button>
+                </ButtonComponent>
 
               </>
             )}
@@ -395,54 +440,78 @@ const ExperienceForm = () => {
                       <span className="technology-number">{index + 1}</span>
                       <input
                         type="text"
-                        className="form-input technology-input"
+                        className={`form-input technology-input ${errors[`technology_${index}_name`] ? 'error' : ''}`}
                         value={technology.name}
                         onChange={(e) => handleTechnologyChange(index, 'name', e.target.value)}
                         placeholder="e.g., React.js"
+                        maxLength={50}
                       />
+                      <div className="character-counter">
+                        <span className={technology.name.length > 45 ? 'warning' : technology.name.length > 50 ? 'error' : ''}>
+                          {technology.name.length}/50
+                        </span>
+                      </div>
+                      {errors[`technology_${index}_name`] && (
+                        <div className="field-error-message">
+                          {errors[`technology_${index}_name`]}
+                        </div>
+                      )}
+                    </div>
+                    <div className="technology-input-wrapper">
                       <input
                         type="text"
-                        className="form-input technology-category-input"
+                        className={`form-input technology-category-input ${errors[`technology_${index}_category`] ? 'error' : ''}`}
                         value={technology.category || ""}
                         onChange={(e) => handleTechnologyChange(index, 'category', e.target.value)}
                         placeholder="e.g., Frontend"
+                        maxLength={50}
                       />
-                      <button
+                      <div className="character-counter">
+                        <span className={technology.category && technology.category.length > 45 ? 'warning' : technology.category && technology.category.length > 50 ? 'error' : ''}>
+                          {technology.category ? technology.category.length : 0}/50
+                        </span>
+                      </div>
+                      {errors[`technology_${index}_category`] && (
+                        <div className="field-error-message">
+                          {errors[`technology_${index}_category`]}
+                        </div>
+                      )}
+                      <ButtonComponent
                         type="button"
-                        className="technology-remove-button"
+                        variant="warning"
                         onClick={() => removeTechnology(index)}
-                        disabled={formData.technologies?.length === 1}
+                        disabled={formData.technologies?.length === 0}
                         title="Remove technology"
                       >
                         🗑️
-                      </button>
+                      </ButtonComponent>
                     </div>
                   </div>
                 ))}
                 
-                <button
+                <ButtonComponent
                   type="button"
-                  className="achievement-add-button"
+                  variant="primary"
                   onClick={addTechnology}
                 >
                   ➕ Add Technology
-                </button>
+                </ButtonComponent>
               </>
             )}
           </div>
 
           {!isViewMode && (
             <div className="form-actions">
-              <Button type="submit" variant="primary" disabled={loading}>
+              <ButtonComponent type="submit" variant="primary" disabled={loading}>
                 {loading ? "Saving..." : isEditMode ? "💾 Update Experience" : "➕ Add Experience"}
-              </Button>
-              <Button
+              </ButtonComponent>
+              <ButtonComponent
                 type="button"
                 variant="secondary"
                 onClick={() => navigate(`/admin/entities/resumes/${resumeId}/work-experiences`)}
               >
                 Cancel
-              </Button>
+              </ButtonComponent>
             </div>
           )}
         </form>

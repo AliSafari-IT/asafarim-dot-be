@@ -109,6 +109,12 @@ export interface ReferenceDto {
   contactInfo: string;
 }
 
+export interface PublicReferenceDto {
+  name: string;
+  relationship: string;
+  contactInfo: string;
+}
+
 // Public Resume DTOs (GDPR-compliant, no sensitive data)
 export interface PublicResumeDto {
   publicSlug: string;
@@ -123,6 +129,7 @@ export interface PublicResumeDto {
   languages: PublicLanguageDto[];
   awards: PublicAwardDto[];
   socialLinks: PublicSocialLinkDto[];
+  references: PublicReferenceDto[];
 }
 
 export interface PublicSkillDto {

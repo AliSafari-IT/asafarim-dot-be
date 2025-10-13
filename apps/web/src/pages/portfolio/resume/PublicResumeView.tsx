@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { isProduction, NotFound } from "@asafarim/shared-ui-react";
+import {
+  Github,
+  Google,
+  isProduction,
+  Linkedin,
+  NotFound,
+  ORCID,
+  StackOverflow,
+} from "@asafarim/shared-ui-react";
 import {
   fetchPublicResumeBySlug,
   type PublicResumeDto,
@@ -40,9 +48,7 @@ const PublicResumeView = () => {
         setError(null);
       } catch (err) {
         console.error("Failed to load public resume:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to load resume"
-        );
+        setError(err instanceof Error ? err.message : "Failed to load resume");
         setResume(null);
       } finally {
         setLoading(false);
@@ -79,8 +85,10 @@ const PublicResumeView = () => {
     const html2pdf = (await import("html2pdf.js")).default;
 
     // Get the print layout container
-    const element = document.querySelector(".print-layout-container") as HTMLElement;
-    
+    const element = document.querySelector(
+      ".print-layout-container"
+    ) as HTMLElement;
+
     if (!element) {
       console.error("Print layout not found");
       return;
@@ -88,7 +96,7 @@ const PublicResumeView = () => {
 
     const opt = {
       margin: 15,
-      filename: `${resume.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${
+      filename: `${resume.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_${
         new Date().toISOString().split("T")[0]
       }.pdf`,
       image: { type: "jpeg" as const, quality: 0.98 },
@@ -122,7 +130,9 @@ const PublicResumeView = () => {
         <div className="public-resume-container">
           <NotFound
             title="Resume Not Found"
-            message={error || "This resume is not available or has been unpublished."}
+            message={
+              error || "This resume is not available or has been unpublished."
+            }
           />
         </div>
       </div>
@@ -139,10 +149,7 @@ const PublicResumeView = () => {
             onLayoutChange={handleLayoutChange}
             onExportPDF={handleExportPDF}
           />
-          <PrintLayout
-            resume={resume}
-            onExportPDF={handleExportPDF}
-          />
+          <PrintLayout resume={resume} onExportPDF={handleExportPDF} />
         </div>
       </div>
     );
@@ -183,8 +190,13 @@ const PublicResumeView = () => {
 
           {/* Work Experience */}
           {resume.workExperiences && resume.workExperiences.length > 0 && (
-            <section className="resume-section">
-              <h2 className="section-title">Work Experience</h2>
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Work Experiences</h2>
+                <span className="section-count">
+                  {resume.workExperiences.length}
+                </span>
+              </div>
               <div className="section-content">
                 <div className="timeline">
                   {resume.workExperiences.map((exp, index) => (
@@ -199,7 +211,9 @@ const PublicResumeView = () => {
                           </span>
                         </div>
                         <div className="item-subtitle">
-                          <span className="company-name">{exp.companyName}</span>
+                          <span className="company-name">
+                            {exp.companyName}
+                          </span>
                           {exp.location && (
                             <span className="location">• {exp.location}</span>
                           )}
@@ -207,13 +221,17 @@ const PublicResumeView = () => {
                         {exp.description && (
                           <p className="item-description">{exp.description}</p>
                         )}
+
                         {exp.achievements && exp.achievements.length > 0 && (
-                          <ul className="achievements-list">
-                            {exp.achievements.map((ach, idx) => (
-                              <li key={idx}>{ach}</li>
-                            ))}
-                          </ul>
+                          <div className="achievements-section">
+                            <ul className="achievements-list">
+                              {exp.achievements.map((ach, idx) => (
+                                <li key={idx}>{ach}</li>
+                              ))}
+                            </ul>
+                          </div>
                         )}
+
                         {exp.technologies && exp.technologies.length > 0 && (
                           <div className="tech-tags">
                             {exp.technologies.map((tech, idx) => (
@@ -244,7 +262,9 @@ const PublicResumeView = () => {
                         {renderStars(skill.rating)}
                       </div>
                       <div className="skill-meta">
-                        <span className="skill-category">📁 {skill.category}</span>
+                        <span className="skill-category">
+                          📁 {skill.category}
+                        </span>
                         <span className="skill-level">📊 {skill.level}</span>
                       </div>
                     </div>
@@ -267,14 +287,18 @@ const PublicResumeView = () => {
                         {edu.institution}
                       </div>
                       {edu.fieldOfStudy && (
-                        <div className="education-field">{edu.fieldOfStudy}</div>
+                        <div className="education-field">
+                          {edu.fieldOfStudy}
+                        </div>
                       )}
                       <div className="education-dates">
                         {formatDate(edu.startDate)} -{" "}
                         {edu.endDate ? formatDate(edu.endDate) : "Present"}
                       </div>
                       {edu.description && (
-                        <p className="education-description">{edu.description}</p>
+                        <p className="education-description">
+                          {edu.description}
+                        </p>
                       )}
                     </div>
                   ))}
@@ -336,16 +360,19 @@ const PublicResumeView = () => {
                           </a>
                         )}
                       </div>
-                      <p className="project-description">{project.description}</p>
-                      {project.technologies && project.technologies.length > 0 && (
-                        <div className="tech-tags">
-                          {project.technologies.map((tech, idx) => (
-                            <span key={idx} className="tech-tag">
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      <p className="project-description">
+                        {project.description}
+                      </p>
+                      {project.technologies &&
+                        project.technologies.length > 0 && (
+                          <div className="tech-tags">
+                            {project.technologies.map((tech, idx) => (
+                              <span key={idx} className="tech-tag">
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>
@@ -360,7 +387,18 @@ const PublicResumeView = () => {
               <div className="section-content">
                 <div className="languages-grid">
                   {resume.languages.map((lang, index) => (
-                    <div key={index} className="language-card">
+                    <div
+                      key={index}
+                      className={`language-card ${
+                        lang.level
+                          ? `level-${lang.level
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`
+                          : ""
+                      } ${`name-${lang.name
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")}`}`}
+                    >
                       <h3 className="language-name">{lang.name}</h3>
                       <div className="language-level">{lang.level}</div>
                     </div>
@@ -397,8 +435,13 @@ const PublicResumeView = () => {
 
           {/* Social Links */}
           {resume.socialLinks && resume.socialLinks.length > 0 && (
-            <section className="resume-section">
-              <h2 className="section-title">Professional Links</h2>
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">Social Links</h2>
+                <span className="section-count">
+                  {resume.socialLinks.length}
+                </span>
+              </div>
               <div className="section-content">
                 <div className="social-links">
                   {resume.socialLinks.map((link, index) => (
@@ -409,8 +452,69 @@ const PublicResumeView = () => {
                       rel="noopener noreferrer"
                       className="social-link"
                     >
+                      {link.platform.toLowerCase() === "linkedin" ? (
+                        <Linkedin />
+                      ) : link.platform.toLowerCase() === "github" ? (
+                        <Github />
+                      ) : link.platform.toLowerCase() === "stackoverflow" ? (
+                        <StackOverflow />
+                      ) : link.platform.toLowerCase().includes("google") ? (
+                        <Google />
+                      ) : link.platform.toLowerCase().includes("orcid") ? (
+                        <ORCID />
+                      ) : (
+                        <svg
+                          className="text-phosphor"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1"
+                          onClick={() => window.open(link.url, "_blank")}
+                          width={32}
+                          height={32}
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="m14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
                       {link.platform}
                     </a>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* References */}
+          {resume.references && resume.references.length > 0 && (
+            <section className="resume-view-section">
+              <div className="section-header">
+                <h2 className="section-title">
+                  References
+                </h2>
+                <span className="section-count">
+                  {resume.references.length}
+                </span>
+              </div>
+              <div className="section-content">
+                <div className="references-grid">
+                  {resume.references.map((ref, index) => (
+                    <div key={index} className="reference-card">
+                      <h3 className="reference-name">{ref.name}</h3>
+                      <div className="reference-relationship">
+                        {ref.relationship}
+                      </div>
+                      <div className="reference-contact">{ref.contactInfo}</div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -423,7 +527,15 @@ const PublicResumeView = () => {
           <p className="privacy-notice">
             This resume is publicly shared with consent. For privacy inquiries,
             please refer to our{" "}
-            <a href={isProduction?"https://blog.asafarim.be/docs/LegalDocs/privacy-policy/":"https://blog.asafarim.local/docs/LegalDocs/privacy-policy/"} target="_blank" rel="noopener noreferrer">
+            <a
+              href={
+                isProduction
+                  ? "https://blog.asafarim.be/docs/LegalDocs/privacy-policy/"
+                  : "https://blog.asafarim.local/docs/LegalDocs/privacy-policy/"
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Privacy Policy
             </a>
             .

@@ -116,6 +116,7 @@
   border-radius: 3px;
   background: #d1d5db;
   outline: none;
+  appearance: none;
   -webkit-appearance: none;
 }
 
@@ -425,66 +426,219 @@
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
-.achievement-bullet {
-  color: var(--color-primary, #3b82f6);
-  font-size: 1.25rem;
-  line-height: 1;
+/* Character Counter and Validation Styles */
+.character-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: var(--space-1) var(--space-2);
+  border-radius: 3px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.character-counter:not(.warning):not(.error) {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-foreground-muted, #6b7280);
+  border-color: var(--color-border, rgba(0, 0, 0, 0.1));
+}
+
+.character-counter.warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning, #d97706);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.character-counter.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger, #dc2626);
+  border-color: rgba(239, 68, 68, 0.3);
+  font-weight: 600;
+}
+
+.field-error-message {
+  color: var(--color-danger, #dc2626);
+  font-size: 0.8rem;
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: linear-gradient(135deg,
+    rgba(239, 68, 68, 0.05),
+    rgba(220, 38, 38, 0.08)
+  );
+  border-radius: 6px;
+  border-left: 3px solid var(--color-danger, #dc2626);
+  font-weight: 500;
+  line-height: 1.4;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .field-error-message {
+    background: linear-gradient(135deg,
+      rgba(239, 68, 68, 0.1),
+      rgba(220, 38, 38, 0.15)
+    );
+  }
+
+  .character-counter:not(.warning):not(.error) {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--color-foreground-muted, #9ca3af);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.form-input.error {
+  border-color: var(--color-danger, #dc2626);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.technology-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  margin-bottom: var(--space-3);
+  transition: all 0.2s ease;
+}
+
+.technology-input-wrapper:hover {
+  background: rgba(79, 70, 229, 0.02);
+  border-color: rgba(79, 70, 229, 0.15);
+}
+
+.technology-number {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, var(--color-primary, #4f46e5), #3730a3);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  font-weight: 600;
   flex-shrink: 0;
-  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3);
 }
 
-.achievement-text {
-  color: var(--color-foreground, #1f2937);
-  line-height: 1.6;
-  font-size: 0.95rem;
+.technology-input,
+.technology-category-input {
+  position: relative;
+  padding-right: 65px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+  transition: all 0.2s ease;
+  background: var(--color-background, #ffffff);
 }
 
-.no-data-message {
-  color: var(--color-text-muted, #6b7280);
-  font-style: italic;
-  text-align: center;
-  padding: 2rem;
+.technology-input:focus,
+.technology-category-input:focus {
+  border-color: var(--color-primary, #4f46e5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  background: var(--color-background, #ffffff);
 }
 
-/* Responsive Design */
+.technology-category-input {
+  background: linear-gradient(135deg,
+    rgba(79, 70, 229, 0.02),
+    rgba(79, 70, 229, 0.05)
+  );
+  border-left: 2px solid var(--color-primary, #4f46e5);
+}
+
+@media (prefers-color-scheme: dark) {
+  .technology-input,
+  .technology-category-input {
+    background: var(--color-surface, #1f2937);
+    border-color: var(--color-border, rgba(255, 255, 255, 0.1));
+  }
+
+  .technology-input:focus,
+  .technology-category-input:focus {
+    background: var(--color-surface, #1f2937);
+  }
+
+  .technology-category-input {
+    background: linear-gradient(135deg,
+      rgba(79, 70, 229, 0.05),
+      rgba(79, 70, 229, 0.1)
+    );
+  }
+
+  .technology-input-wrapper:hover {
+    background: rgba(79, 70, 229, 0.05);
+    border-color: rgba(79, 70, 229, 0.2);
+  }
+}
+
+/* Technology layout improvements for mobile */
 @media (max-width: 768px) {
-  .resume-section-form-view {
-    padding: 1rem;
-  }
-
-  .resume-section-form-container {
-    padding: 1.5rem;
-  }
-
-  .resume-section-form-header {
+  .technology-input-wrapper {
     flex-direction: column;
-    gap: 1rem;
+    align-items: stretch;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: transparent;
+    border: 1px solid transparent;
   }
 
-  .header-actions {
-    width: 100%;
-    justify-content: stretch;
+  .technology-input-wrapper:hover {
+    background: rgba(79, 70, 229, 0.03);
+    border-color: rgba(79, 70, 229, 0.1);
   }
 
-  .header-actions button {
-    flex: 1;
+  .technology-number {
+    align-self: flex-start;
+    margin-top: 0;
   }
 
-  .form-actions {
-    flex-direction: column;
+  .technology-input,
+  .technology-category-input {
+    padding-right: 55px;
   }
 
-  .form-row {
-    grid-template-columns: 1fr;
+  .character-counter {
+    right: var(--space-2);
+    bottom: var(--space-2);
+    font-size: 0.65rem;
+    padding: var(--space-1);
+  }
+}
+
+/* Very small screens (under 480px) */
+@media (max-width: 480px) {
+  .technology-input-wrapper {
+    gap: var(--space-2);
+    padding: var(--space-2);
   }
 
-  .achievement-input-wrapper {
-    flex-wrap: wrap;
+  .technology-input,
+  .technology-category-input {
+    padding-right: 45px;
   }
 
-  .achievement-number {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
+  .character-counter {
+    right: var(--space-1);
+    bottom: var(--space-1);
+    font-size: 0.6rem;
+    padding: 1px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .technology-input-wrapper:hover {
+    background: rgba(79, 70, 229, 0.08);
+    border-color: rgba(79, 70, 229, 0.25);
   }
 }

@@ -135,6 +135,15 @@ export const updateWorkExperience = async (
         })
     );
 
+    // Validate technology field lengths (database limit is 50 characters)
+    if (cleanedWorkExperience.technologies) {
+      cleanedWorkExperience.technologies = cleanedWorkExperience.technologies.map((tech: TechnologyDto) => ({
+        ...tech,
+        name: tech.name.length > 50 ? tech.name.substring(0, 50) : tech.name,
+        category: tech.category && tech.category.length > 50 ? tech.category.substring(0, 50) : tech.category,
+      }));
+    }
+
     // Add admin flag as a query parameter if it's an admin edit
     const queryParams = isAdminEdit ? '?isAdminEdit=true' : '';
 

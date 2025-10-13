@@ -33,15 +33,27 @@ export const fetchTechnologyById = async (id: string): Promise<TechnologyDto> =>
 
 // Create new technology (Admin only)
 export const createTechnology = async (request: CreateTechnologyRequest): Promise<TechnologyDto> => {
+  // Validate field lengths (database limit is 50 characters)
+  const validatedRequest = {
+    name: request.name.length > 50 ? request.name.substring(0, 50) : request.name,
+    category: request.category.length > 50 ? request.category.substring(0, 50) : request.category,
+  };
+
   return apiPost<TechnologyDto>(`/technologies`, {
-    body: JSON.stringify(request),
+    body: JSON.stringify(validatedRequest),
   });
 };
 
 // Update technology (Admin only)
 export const updateTechnology = async (id: string, request: UpdateTechnologyRequest): Promise<void> => {
+  // Validate field lengths (database limit is 50 characters)
+  const validatedRequest = {
+    name: request.name.length > 50 ? request.name.substring(0, 50) : request.name,
+    category: request.category.length > 50 ? request.category.substring(0, 50) : request.category,
+  };
+
   await apiPut<void>(`/technologies/${id}`, {
-    body: JSON.stringify(request),
+    body: JSON.stringify(validatedRequest),
   });
 };
 

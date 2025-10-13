@@ -2,24 +2,23 @@
 
 /* CSS Variables for common use */
 :root {
-  /* Layout */
+  /* Layout - using existing tokens */
   --container-max-width: 1200px;
   --container-padding: var(--space-4);
 
-  /* Common spacing */
+  /* Common spacing - using existing tokens */
   --gap-xs: var(--space-1);
   --gap-sm: var(--space-2);
   --gap-md: var(--space-4);
-  
   --gap-lg: var(--space-6);
   --gap-xl: var(--space-8);
 
-  /* Common colors */
+  /* Common colors - using existing tokens */
   --color-brand: var(--color-primary);
   --color-secondary: var(--color-neutral-600);
   --color-phosphor: var(--color-primary);
 
-  /* Typography */
+  /* Typography - using existing tokens */
   --text-xs: var(--font-size-xs);
   --text-sm: var(--font-size-sm);
   --text-base: var(--font-size-base);
@@ -33,4 +32,12 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
+
+  /* Additional semantic colors for backward compatibility */
+  --color-primary-dark: var(--color-primary-700);
+  --color-foreground: var(--color-text);
+  --color-foreground-muted: var(--color-text-muted);
+  --color-background-alt: var(--color-surface-muted);
+  --color-border: var(--color-neutral-200);
 }
+

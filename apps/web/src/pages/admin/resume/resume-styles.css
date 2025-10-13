@@ -62,7 +62,7 @@
 }
 
 .resume-card {
-  background: var(--color-background-alt);
+  background: var(--color-background);
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -89,7 +89,7 @@
 .resume-card-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-brand-900);
+  color: var(--color-text);
   margin: 0;
   transition: color 0.3s ease;
 }

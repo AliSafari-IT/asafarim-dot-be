@@ -1,8 +1,8 @@
 /* Public Resume View Styles */
 .public-resume-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem 1rem;
+  background: var(--gradient-primary);
+  padding: var(--space-8) var(--space-4);
 }
 
 .public-resume-container {
@@ -16,7 +16,7 @@
 }
 
 .public-resume-actions {
-  padding: 1rem 2rem;
+  padding: var(--space-4) var(--space-8);
   background: var(--color-surface, #f8f9fa);
   border-bottom: 1px solid var(--color-border);
   display: flex;
@@ -46,30 +46,30 @@
 }
 
 .public-resume-header {
-  padding: 3rem 2rem 2rem;
+  padding: var(--space-12) var(--space-8) var(--space-8);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   text-align: center;
 }
 
 .resume-title {
-  font-size: 2.5rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2) 0;
 }
 
 .published-date {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   opacity: 0.9;
   margin: 0;
 }
 
 .public-resume-content {
-  padding: 2rem;
+  padding: var(--space-8);
 }
 
 .resume-section {
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-12);
 }
 
 .resume-section:last-child {
@@ -77,28 +77,28 @@
 }
 
 .section-title {
-  font-size: 1.75rem;
+  font-size: var(--text-2xl);
   font-weight: 700;
-  color: var(--color-primary, #3b82f6);
-  margin: 0 0 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 3px solid var(--color-primary);
+  color: var(--color-foreground);
+  margin: 0 0 var(--space-6) 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-primary);
 }
 
 .section-content {
-  color: var(--color-foreground-muted);
+  color: var(--color-secondary);
 }
 
 .summary-text {
   font-size: 1.1rem;
   line-height: 1.8;
-  color: var(--color-foreground-muted);
+  color: var(--color-secondary);
 }
 
 /* Timeline Styles */
 .timeline {
   position: relative;
-  padding-left: 2rem;
+  padding-left: var(--space-6);
 }
 
 .timeline::before {
@@ -108,21 +108,21 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(to bottom, #667eea, #764ba2);
+  background: var(--gradient-primary);
 }
 
 .timeline-item {
   position: relative;
-  margin-bottom: 2rem;
-  padding-left: 1.5rem;
+  margin-bottom: var(--space-12);
+  padding-left: var(--space-6);
 }
 
 .timeline-marker {
   position: absolute;
   left: -2.5rem;
   top: 0.25rem;
-  width: 12px;
-  height: 12px;
+  width: var(--space-3);
+  height: var(--space-3);
   background: var(--color-primary);
   border: 3px solid var(--color-background);
   border-radius: 50%;
@@ -131,7 +131,7 @@
 
 .timeline-content {
   background: var(--color-surface, #f8f9fa);
-  padding: 1.5rem;
+  padding: var(--space-6);
   border-radius: 8px;
   border-left: 3px solid var(--color-primary);
 }
@@ -140,26 +140,26 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .item-title {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   font-weight: 600;
   color: var(--color-foreground);
   margin: 0;
 }
 
 .item-date {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--color-foreground-muted);
   font-weight: 500;
 }
 
 .item-subtitle {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
   color: var(--color-foreground-muted);
 }
 
@@ -174,25 +174,25 @@
 }
 
 .item-description {
-  margin: 1rem 0;
+  margin: var(--space-4) 0;
   line-height: 1.6;
 }
 
 .achievements-list {
-  margin: 1rem 0;
-  padding-left: 1.5rem;
+  margin: var(--space-4) 0;
+  padding-left: var(--space-6);
 }
 
 .achievements-list li {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
   line-height: 1.6;
 }
 
 .tech-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
 }
 
 .tech-tag {
@@ -209,12 +209,12 @@
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .skill-card {
   background: var(--color-surface, #f8f9fa);
-  padding: 1.25rem;
+  padding: var(--space-5);
   border-radius: 8px;
   border-left: 3px solid var(--color-primary);
 }
@@ -392,38 +392,56 @@
 .languages-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .language-card {
   background: var(--color-surface, #f8f9fa);
-  padding: 1.25rem;
-  border-radius: 8px;
-  border-left: 3px solid var(--color-primary);
+  padding: var(--space-5) var(--space-6);
+  border-radius: var(--space-3);
   text-align: center;
+  border-left: 3px solid var(--color-primary);
 }
 
+.language-card.level-beginner { background: var(--gradient-warning); }
+.language-card.level-intermediate { background: var(--gradient-info); }
+.language-card.level-advanced { background: var(--gradient-success); }
+.language-card.name-english { background: var(--gradient-primary); }
+.language-card.name-persian { background: var(--gradient-danger); }
+.language-card.name-german { background: var(--gradient-secondary); }
+.language-card.name-spanish { background: var(--gradient-warning); }
+.language-card.name-french { background: var(--gradient-info); }
+.language-card.name-italian { background: var(--gradient-success); }
+.language-card.name-dutch { background: var(--gradient-warning); }
+.language-card.name-russian { background: var(--gradient-danger); }
+.language-card.name-chinese { background: var(--gradient-secondary); }
+.language-card.name-japanese { background: var(--gradient-info); }
+.language-card.name-persian { background: var(--gradient-success); }
+.language-card.name-arabic { background: var(--gradient-primary); }
+.language-card.name-indonesian { background: var(--gradient-danger); }
+
 .language-name {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--color-foreground);
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2) 0;
 }
 
 .language-level {
+  font-size: var(--text-base);
   color: var(--color-foreground-muted);
-  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* Awards Grid */
 .awards-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 .award-card {
   background: var(--color-surface, #f8f9fa);
-  padding: 1.5rem;
+  padding: var(--space-6);
   border-radius: 8px;
   border-left: 3px solid var(--color-primary);
 }
@@ -432,27 +450,27 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .award-title {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--color-foreground);
   margin: 0;
 }
 
 .award-date {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--color-foreground-muted);
 }
 
 .award-issuer {
   font-weight: 500;
   color: var(--color-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--space-3);
 }
 
 .award-description {
@@ -464,13 +482,13 @@
 .social-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .social-link {
   display: inline-flex;
   align-items: center;
-  padding: 0.75rem 1.5rem;
+  padding: var(--space-3) var(--space-6);
   background: var(--color-primary);
   color: white;
   text-decoration: none;
@@ -487,14 +505,14 @@
 
 /* Footer */
 .public-resume-footer {
-  padding: 2rem;
+  padding: var(--space-8);
   background: var(--color-surface, #f8f9fa);
   border-top: 1px solid var(--color-border);
   text-align: center;
 }
 
 .privacy-notice {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--color-foreground-muted);
   margin: 0;
 }
@@ -515,18 +533,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
+  padding: var(--space-16) var(--space-8);
   text-align: center;
 }
 
 .loading-spinner {
-  width: 48px;
-  height: 48px;
+  width: var(--space-12);
+  height: var(--space-12);
   border: 4px solid var(--color-border);
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 @keyframes spin {
@@ -552,7 +570,8 @@
     display: none !important;
   }
 
-  html, body {
+  html,
+  body {
     background: white !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -609,7 +628,6 @@
   .education-card,
   .certificate-card,
   .project-card,
-  .language-card,
   .award-card {
     background: white !important;
     border-left: 3px solid #2d3748 !important;
@@ -640,19 +658,19 @@
   }
 
   .public-resume-header {
-    padding: 2rem 1.5rem 1.5rem;
+    padding: var(--space-8) var(--space-6) var(--space-6);
   }
 
   .resume-title {
-    font-size: 2rem;
+    font-size: var(--text-2xl);
   }
 
   .public-resume-content {
-    padding: 1.5rem;
+    padding: var(--space-6);
   }
 
   .section-title {
-    font-size: 1.5rem;
+    font-size: var(--text-xl);
   }
 
   .skills-grid,

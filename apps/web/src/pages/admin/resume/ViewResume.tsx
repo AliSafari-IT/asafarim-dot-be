@@ -151,24 +151,23 @@ const ViewResume = () => {
   const handlePublish = async (customSlug?: string) => {
     if (!id) return;
 
-      const response = await publishResume(id, {
-        generateSlug: !customSlug,
-        customSlug,
-      });
+    const response = await publishResume(id, {
+      generateSlug: !customSlug,
+      customSlug,
+    });
 
-      setPublishedSlug(response.slug);
-      setShowPublishModal(false);
+    setPublishedSlug(response.slug);
+    setShowPublishModal(false);
 
-      addNotification("success", "Resume published successfully!");
+    addNotification("success", "Resume published successfully!");
 
-      // Show share link in a separate notification
-      const shareUrl = `${window.location.origin}${response.shareUrl}`;
-      addNotification("info", `Share link: ${shareUrl}`);
+    // Show share link in a separate notification
+    const shareUrl = `${window.location.origin}${response.shareUrl}`;
+    addNotification("info", `Share link: ${shareUrl}`);
 
-      // Reload resume to get updated publication status
-      const updatedResume = await fetchResumeById(id);
-      setResume(updatedResume);
-    
+    // Reload resume to get updated publication status
+    const updatedResume = await fetchResumeById(id);
+    setResume(updatedResume);
   };
 
   const handleUnpublish = async () => {
@@ -184,7 +183,7 @@ const ViewResume = () => {
       await unpublishResume(id);
       setPublishedSlug(null);
 
-      addNotification( "success", "Resume unpublished successfully");
+      addNotification("success", "Resume unpublished successfully");
 
       // Reload resume to get updated publication status
       const updatedResume = await fetchResumeById(id);
@@ -214,19 +213,22 @@ const ViewResume = () => {
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        
+
         try {
-          document.execCommand('copy');
+          document.execCommand("copy");
           addNotification("success", "Share link copied to clipboard!");
         } catch (err) {
-          console.error('Fallback copy failed:', err);
-          addNotification("error", "Failed to copy link. Please copy manually: " + shareUrl);
+          console.error("Fallback copy failed:", err);
+          addNotification(
+            "error",
+            "Failed to copy link. Please copy manually: " + shareUrl
+          );
         }
-        
+
         document.body.removeChild(textArea);
       }
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
       addNotification("error", "Failed to copy link. Please copy manually.");
     }
   };
@@ -344,7 +346,10 @@ const ViewResume = () => {
                   </Button>
                 </>
               ) : (
-                <Button onClick={() => setShowPublishModal(true)} variant="primary">
+                <Button
+                  onClick={() => setShowPublishModal(true)}
+                  variant="primary"
+                >
                   🌐 Publish Resume
                 </Button>
               )}
@@ -415,7 +420,7 @@ const ViewResume = () => {
                         {exp.description && (
                           <p className="item-description">{exp.description}</p>
                         )}
-                        
+
                         {exp.achievements && exp.achievements.length > 0 && (
                           <div className="achievements-section">
                             <ul className="achievements-list">
@@ -425,11 +430,15 @@ const ViewResume = () => {
                             </ul>
                           </div>
                         )}
-                        
+
                         {exp.technologies && exp.technologies.length > 0 && (
                           <div className="tech-tags">
                             {exp.technologies.map((tech, idx) => (
-                              <span key={idx} className="tech-tag" title={tech.category || ''}>
+                              <span
+                                key={idx}
+                                className="tech-tag"
+                                title={tech.category || ""}
+                              >
                                 {tech.name}
                               </span>
                             ))}
@@ -646,7 +655,18 @@ const ViewResume = () => {
               <div className="section-content">
                 <div className="languages-grid">
                   {resume.languages.map((lang, index) => (
-                    <div key={lang.id || index} className="language-card">
+                    <div
+                      key={lang.id || index}
+                      className={`language-card ${
+                        lang.level
+                          ? `level-${lang.level
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`
+                          : ""
+                      } ${`name-${lang.name
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")}`}`}
+                    >
                       <h3 className="language-name">{lang.name}</h3>
                       <div className="language-level">{lang.level}</div>
                     </div>

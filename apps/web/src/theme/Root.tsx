@@ -16,7 +16,7 @@ interface RootProps {
 
 export default function Root({ children }: RootProps): React.ReactElement {
   // Get initial theme from localStorage or cookie
-  const [initialTheme, setInitialTheme] = useState<'dark' | 'light'>('dark');
+  const [initialTheme, setInitialTheme] = useState<'dark' | 'light'>();
   
   useEffect(() => {
     // Function to get cookie value
