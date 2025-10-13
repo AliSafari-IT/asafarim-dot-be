@@ -1,3 +1,3 @@
-import isProduction from "./isProduction";
+import isProduction, { getIsProduction } from "./isProduction";
 
-export { isProduction };
+export { isProduction, getIsProduction };

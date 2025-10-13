@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import type { NavLinkItem, NavbarProps } from "./types";
-import { appRegistry, getCurrentAppId, getAppById } from "./appRegistry";
+import { getAppRegistry, getCurrentAppId, getAppById } from "./appRegistry";
 import "./CentralNavbar.css";
 
 const CentralNavbar = ({
@@ -82,7 +82,7 @@ const CentralNavbar = ({
           {appSwitcherOpen && (
             <div className="app-switcher-dropdown">
               <div className="app-switcher-dropdown-inner">
-                {appRegistry
+                {getAppRegistry()
                   .filter((app) => app.id !== currentAppId) // Don't show current app
                   .map((app, index) => (
                     <a

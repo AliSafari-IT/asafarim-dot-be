@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import isProduction from '../../configs/isProduction';
+import { getIsProduction } from '../../configs/isProduction';
 
 export interface AppInfo {
   id: string;
@@ -15,65 +15,102 @@ export interface AppLinkGroup {
   links: AppInfo[];
 }
 
+// URL configuration for each app (production and development)
+const appUrlConfig = {
+  web: {
+    production: 'https://asafarim.be',
+    development: 'http://web.asafarim.local:5175'
+  },
+  blog: {
+    production: 'https://blog.asafarim.be',
+    development: 'http://blog.asafarim.local:3000'
+  },
+  ai: {
+    production: 'https://ai.asafarim.be',
+    development: 'http://ai.asafarim.local:5173'
+  },
+  core: {
+    production: 'https://core.asafarim.be',
+    development: 'http://core.asafarim.local:5174'
+  },
+  jobs: {
+    production: 'https://core.asafarim.be/jobs',
+    development: 'http://core.asafarim.local:5174/jobs'
+  },
+  identity: {
+    production: 'https://identity.asafarim.be',
+    development: 'http://identity.asafarim.local:5177'
+  }
+};
+
+// Helper function to get URL at runtime
+const getAppUrl = (appId: keyof typeof appUrlConfig): string => {
+  const config = appUrlConfig[appId];
+  return getIsProduction() ? config.production : config.development;
+};
+
 // Central registry of all applications in the ecosystem
-export const appRegistry: AppInfo[] = [
+// Using getter to ensure URL is resolved at runtime, not at module load time
+export const getAppRegistry = (): AppInfo[] => [
   {
     id: 'web',
     name: 'Web Portal',
-    url: isProduction ? 'https://asafarim.be' : 'http://web.asafarim.local:5175',
+    url: getAppUrl('web'),
     description: 'Main web portal'
   },
   {
     id: 'blog',
     name: 'Blog',
-    url: isProduction ? 'https://blog.asafarim.be' : 'http://blog.asafarim.local:3000',
+    url: getAppUrl('blog'),
     description: 'Documentation and blog'
   },
   {
     id: 'ai',
     name: 'AI Tools',
-    url: isProduction ? 'https://ai.asafarim.be' : 'http://ai.asafarim.local:5173',
+    url: getAppUrl('ai'),
     description: 'AI-powered tools and services'
   },
   {
     id: 'core',
     name: 'Core App',
-    url: isProduction ? 'https://core.asafarim.be' : 'http://core.asafarim.local:5174',
+    url: getAppUrl('core'),
     description: 'Core application features'
   },
   {
     id: 'jobs',
     name: 'Job Applications',
-    url: isProduction ? 'https://core.asafarim.be/jobs' : 'http://core.asafarim.local:5174/jobs',
+    url: getAppUrl('jobs'),
     description: 'Job application tracking'
   },
   {
     id: 'identity',
     name: 'Identity Portal',
-    url: isProduction ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5177',
+    url: getAppUrl('identity'),
     description: 'User management and authentication'
   }
 ];
 
-// Organized app links by category
-export const appLinkGroups: AppLinkGroup[] = [
-  {
-    groupName: 'Main Applications',
-    links: appRegistry.filter(app => ['web', 'blog', 'ai', 'core'].includes(app.id))
+// Maintain backward compatibility with direct array access
+// Use a Proxy to ensure URLs are always evaluated at runtime, never at build time
+export const appRegistry = new Proxy([] as AppInfo[], {
+  get(_target, prop) {
+    const registry = getAppRegistry();
+    return (registry as any)[prop];
   },
-  {
-    groupName: 'Tools',
-    links: appRegistry.filter(app => ['jobs'].includes(app.id))
+  ownKeys() {
+    return Reflect.ownKeys(getAppRegistry());
   },
-  {
-    groupName: 'Admin',
-    links: appRegistry.filter(app => ['identity'].includes(app.id))
+  getOwnPropertyDescriptor(_target, prop) {
+    return Reflect.getOwnPropertyDescriptor(getAppRegistry(), prop);
+  },
+  has(_target, prop) {
+    return prop in getAppRegistry();
   }
-];
+});
 
 // Helper function to get app info by ID
 export const getAppById = (id: string): AppInfo | undefined => {
-  return appRegistry.find(app => app.id === id);
+  return getAppRegistry().find(app => app.id === id);
 };
 
 // Helper function to get current app ID based on hostname
@@ -82,12 +119,30 @@ export const getCurrentAppId = (): string => {
 
   const hostname = window.location.hostname;
 
-  if (hostname.startsWith('web.') || hostname.startsWith('www.asafarim.be') || hostname.startsWith('asafarim.be')) return 'web';
-  if (hostname.startsWith('blog.')) return 'blog';
-  if (hostname.startsWith('ai.')) return 'ai';
-  if (hostname.startsWith('core.')) return 'core';
-  if (hostname.startsWith('identity.')) return 'identity';
+  // Check for production domains first
+  if (hostname === 'asafarim.be' || hostname === 'www.asafarim.be') return 'web';
+  if (hostname === 'blog.asafarim.be') return 'blog';
+  if (hostname === 'ai.asafarim.be') return 'ai';
+  if (hostname === 'core.asafarim.be') return 'core';
+  if (hostname === 'identity.asafarim.be') return 'identity';
+
+  // Check for development domains
+  if (hostname.startsWith('web.') || hostname.includes('web.asafarim.local')) return 'web';
+  if (hostname.startsWith('blog.') || hostname.includes('blog.asafarim.local')) return 'blog';
+  if (hostname.startsWith('ai.') || hostname.includes('ai.asafarim.local')) return 'ai';
+  if (hostname.startsWith('core.') || hostname.includes('core.asafarim.local')) return 'core';
+  if (hostname.startsWith('identity.') || hostname.includes('identity.asafarim.local')) return 'identity';
 
   // Default fallback
   return '';
 };
+
+// Debug logging for troubleshooting
+if (typeof window !== 'undefined' && window.location.hostname.includes('blog')) {
+  console.log('App Registry Debug:', {
+    isProduction: getIsProduction(),
+    currentHostname: window.location.hostname,
+    currentAppId: getCurrentAppId(),
+    blogApp: getAppRegistry().find(app => app.id === 'blog')
+  });
+}

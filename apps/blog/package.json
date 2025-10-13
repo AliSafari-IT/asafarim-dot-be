@@ -7,7 +7,7 @@
     "dev": "docusaurus start",
     "prestart": "npx kill-port 3000",
     "start": "docusaurus start --host blog.asafarim.local --port 3000",
-    "build": "docusaurus build",
+    "build": "NODE_ENV=production docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

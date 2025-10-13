@@ -1,6 +1,6 @@
 // Environment-aware configuration
 
-import { isProduction } from "@asafarim/shared-ui-react";
+import { getIsProduction } from "@asafarim/shared-ui-react";
 
 interface Config {
   apiBaseUrl: string;
@@ -13,15 +13,17 @@ interface Config {
   isProduction: boolean;
 }
 
-// Log the environment detection for debugging
-console.log('Environment detection:', { 
-  hostname: typeof window !== 'undefined' ? window.location.hostname : 'SSR', 
-  protocol: typeof window !== 'undefined' ? window.location.protocol : 'SSR',
-  isProduction 
-});
-
-// Development configuration
-const devConfig: Config = {
+// Export the appropriate configuration based on environment
+export const config: Config = getIsProduction() ? {
+  apiBaseUrl: '/api/identity',
+  authEndpoints: {
+    me: '/api/identity/auth/me',
+    login: '/api/identity/auth/login',
+    register: '/api/identity/auth/register',
+    logout: '/api/identity/auth/logout',
+  },
+  isProduction: true
+} : {
   apiBaseUrl: 'http://api.asafarim.local:5101',
   authEndpoints: {
     me: 'http://api.asafarim.local:5101/auth/me',
@@ -31,18 +33,3 @@ const devConfig: Config = {
   },
   isProduction: false
 };
-
-// Production configuration
-const prodConfig: Config = {
-  apiBaseUrl: '/api/identity',
-  authEndpoints: {
-    me: '/api/identity/auth/me',
-    login: '/api/identity/auth/login',
-    register: '/api/identity/auth/register',
-    logout: '/api/identity/auth/logout',
-  },
-  isProduction: true
-};
-
-// Export the appropriate configuration based on environment
-export const config: Config = isProduction ? prodConfig : devConfig;
