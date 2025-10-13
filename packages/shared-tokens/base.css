@@ -1,3 +1,36 @@
 @import "./styles/main.css";
 
-    
+/* CSS Variables for common use */
+:root {
+  /* Layout */
+  --container-max-width: 1200px;
+  --container-padding: var(--space-4);
+
+  /* Common spacing */
+  --gap-xs: var(--space-1);
+  --gap-sm: var(--space-2);
+  --gap-md: var(--space-4);
+  
+  --gap-lg: var(--space-6);
+  --gap-xl: var(--space-8);
+
+  /* Common colors */
+  --color-brand: var(--color-primary);
+  --color-secondary: var(--color-neutral-600);
+  --color-phosphor: var(--color-primary);
+
+  /* Typography */
+  --text-xs: var(--font-size-xs);
+  --text-sm: var(--font-size-sm);
+  --text-base: var(--font-size-base);
+  --text-lg: var(--font-size-lg);
+  --text-xl: var(--font-size-xl);
+  --text-2xl: var(--font-size-2xl);
+  --text-3xl: var(--font-size-3xl);
+
+  /* Responsive breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}

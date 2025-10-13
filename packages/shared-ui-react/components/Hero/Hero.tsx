@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Spark, Arrow } from "../../svg-icons";
-import ShowcaseCard from "../ShowcaseCard/index";
 import { ButtonComponent } from "../Button/ButtonComponent";
 import "./Hero.css";
 
@@ -35,7 +34,7 @@ export function Hero({
       <BackgroundDecoration />
 
       <div className="container">
-        <div className="grid gap-8 md:grid-cols-2 items-center">
+        <div className={`grid gap-8 ${media ? 'md:grid-cols-2' : ''} items-center`}>
           {/* Left column: copy */}
           <div>
             {/* Kicker */}
@@ -97,16 +96,14 @@ export function Hero({
             </div>
           </div>
 
-          {/* Right column: media or placeholder card */}
-          <div className="relative">
-            {media ? (
+          {/* Right column: media or placeholder card - only show if media exists */}
+          {media && (
+            <div className="relative">
               <div className="rounded-lg border border-neutral-800 p-4 md:p-6 backdrop-blur-sm">
                 {media}
               </div>
-            ) : (
-              <ShowcaseCard />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

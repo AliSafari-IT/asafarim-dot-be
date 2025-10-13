@@ -1,0 +1,209 @@
+/** Hero Component Styles */
+
+/* Section wrapper */
+.section {
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-12) 0;
+}
+
+/* Container */
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* Grid layout */
+.grid {
+  display: grid;
+}
+
+.gap-8 {
+  gap: var(--gap-xl);
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.items-center {
+  align-items: center;
+}
+
+/* Flexbox utilities */
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.gap-sm {
+  gap: var(--gap-sm);
+}
+
+.gap-md {
+  gap: var(--gap-md);
+}
+
+.mb-3 {
+  margin-bottom: var(--space-3);
+}
+
+.mb-5 {
+  margin-bottom: var(--space-6);
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mt-1 {
+  margin-top: var(--space-1);
+}
+
+.mt-2 {
+  margin-top: var(--space-2);
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.space-y-2 > * + * {
+  margin-top: var(--space-2);
+}
+
+/* Badge component */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-800);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+}
+
+/* Typography */
+.text-3xl {
+  font-size: var(--text-3xl);
+  line-height: var(--line-height-tight);
+}
+
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: var(--line-height-tight);
+}
+
+.text-lg {
+  font-size: var(--text-lg);
+  line-height: var(--line-height-normal);
+}
+
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+/* Color classes */
+.text-phosphor {
+  color: var(--color-phosphor);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+.text-brand {
+  color: var(--color-brand);
+}
+
+.mt-1 {
+  margin-top: var(--space-1);
+}
+
+/* Responsive typography */
+@media (min-width: 768px) {
+  .md\:text-4xl {
+    font-size: 2.25rem;
+  }
+}
+
+/* Media wrapper */
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+
+.border {
+  border: 1px solid var(--color-border);
+}
+
+.border-neutral-800 {
+  border-color: var(--color-neutral-800);
+}
+
+.p-4 {
+  padding: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .md\:p-6 {
+    padding: var(--space-6);
+  }
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* Background decorations */
+.hero-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, rgba(26, 115, 232, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(26, 115, 232, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 115, 232, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .section {
+    padding: var(--space-8) 0;
+  }
+
+  .gap-8 {
+    gap: var(--space-6);
+  }
+}
