@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { initI18n } from "@asafarim/shared-i18n";
 import App from "./App";
 import "./index.css";
 import Home from "./pages/Home";
@@ -9,6 +10,9 @@ import JobTools from "./pages/JobTools";
 import ResumeMaker from "./pages/ResumeMaker";
 import { NotFound, NotificationProvider } from "@asafarim/shared-ui-react";
 import Root from "./theme/Root";
+
+// Initialize i18n before rendering
+initI18n();
 
 const router = createBrowserRouter([
   {

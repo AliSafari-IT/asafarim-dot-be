@@ -50,6 +50,7 @@ asafarim-dot-be/
 │   └── Ai.Api/             # AI-related endpoints
 └── packages/               # Shared libraries
     ├── shared-ui-react/    # React components & utilities
+    ├── react-themes/       # React themes
     └── shared-tokens/      # Design system tokens
 ```
 
@@ -89,6 +90,7 @@ Frontend Apps → APIs → Database
 | Package | Purpose | Version |
 |---------|---------|---------|
 | **shared-ui-react** | Reusable React components | v0.6.0 |
+| **react-themes** | React themes | v1.0.0 |
 | **shared-tokens** | Design system tokens | v1.0.0 |
 
 ## 🛠️ Technology Stack

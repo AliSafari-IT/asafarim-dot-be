@@ -82,7 +82,7 @@ public class AuthController : ControllerBase
         var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user.Id, GetIpAddress());
 
         // Set cookies
-        SetAuthCookies(accessToken, refreshToken.Token, persistent: true);
+        SetAuthCookies(accessToken, refreshToken.Token, persistent: true, user);
 
         return Ok(CreateAuthResponse(user, roleNames, accessToken, refreshToken.Token));
     }
@@ -144,7 +144,7 @@ public class AuthController : ControllerBase
         var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user.Id, GetIpAddress());
 
         // Set cookies
-        SetAuthCookies(accessToken, refreshToken.Token, persistent: req.RememberMe);
+        SetAuthCookies(accessToken, refreshToken.Token, persistent: req.RememberMe, user);
 
         return Ok(CreateAuthResponse(user, roleNames, accessToken, refreshToken.Token));
     }
@@ -343,7 +343,7 @@ public class AuthController : ControllerBase
 
     #region Private Helper Methods
 
-    private void SetAuthCookies(string accessToken, string refreshToken, bool persistent)
+    private void SetAuthCookies(string accessToken, string refreshToken, bool persistent, AppUser user)
     {
         var opts = _authOptions.Value;
         var isProdDomain = opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
@@ -380,8 +380,19 @@ public class AuthController : ControllerBase
             MaxAge = persistent ? TimeSpan.FromDays(opts.RefreshDays) : TimeSpan.FromHours(8)
         });
 
-        _logger.LogDebug("Auth cookies set - Domain: {Domain}, Secure: {Secure}, SameSite: {SameSite}, Persistent: {Persistent}",
-            opts.CookieDomain, useSecure, sameSite, persistent);
+        // Language preference cookie (accessible by JavaScript)
+        Response.Cookies.Append("preferredLanguage", user.PreferredLanguage ?? "en", new CookieOptions
+        {
+            HttpOnly = false, // Allow JavaScript access
+            Secure = useSecure,
+            SameSite = SameSiteMode.Lax,
+            Domain = opts.CookieDomain,
+            Path = "/",
+            Expires = DateTimeOffset.UtcNow.AddYears(1)
+        });
+
+        _logger.LogDebug("Auth cookies set - Domain: {Domain}, Secure: {Secure}, SameSite: {SameSite}, Persistent: {Persistent}, Language: {Language}",
+            opts.CookieDomain, useSecure, sameSite, persistent, user.PreferredLanguage);
     }
 
     private void ClearAuthCookies()
