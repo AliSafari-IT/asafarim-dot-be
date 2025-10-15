@@ -7,6 +7,10 @@ import { getLanguageFromCookie, setLanguageCookie } from '../utils/languageUtils
 import enCommon from '../locales/en/common.json';
 import nlCommon from '../locales/nl/common.json';
 
+// Import web app translations
+import enWeb from '../locales/en/web.json';
+import nlWeb from '../locales/nl/web.json';
+
 export const SUPPORTED_LANGUAGES = ['en', 'nl'] as const;
 export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
 
@@ -19,12 +23,26 @@ export const DEFAULT_LANGUAGE: SupportedLanguage = 'en';
 export const LANGUAGE_COOKIE_NAME = 'preferredLanguage';
 
 // Custom language detector that prioritizes cookie
-const cookieLanguageDetector = {
-  name: 'cookieDetector',
-  lookup() {
-    return getLanguageFromCookie();
+const customLanguageDetector = {
+  name: 'customDetector',
+
+  lookup(options: any) {
+    // First try to get from cookie
+    const cookieLang = getLanguageFromCookie();
+    if (cookieLang) {
+      return cookieLang;
+    }
+
+    // Fallback to browser language
+    if (typeof navigator !== 'undefined') {
+      const browserLang = navigator.language.split('-')[0];
+      return browserLang;
+    }
+
+    return DEFAULT_LANGUAGE;
   },
-  cacheUserLanguage(lng: string) {
+
+  cacheUserLanguage(lng: string, options: any) {
     setLanguageCookie(lng);
   }
 };
@@ -36,16 +54,18 @@ export interface I18nConfig {
 }
 
 export const initI18n = (config?: I18nConfig) => {
-  const { defaultNS = 'common', ns = ['common'], resources = {} } = config || {};
+  const { defaultNS = 'common', ns = ['common', 'web'], resources = {} } = config || {};
 
   // Merge common translations with app-specific resources
   const mergedResources = {
     en: {
       common: enCommon,
+      web: enWeb,
       ...resources.en
     },
     nl: {
       common: nlCommon,
+      web: nlWeb,
       ...resources.nl
     }
   };
@@ -53,10 +73,6 @@ export const initI18n = (config?: I18nConfig) => {
   i18n
     .use(initReactI18next)
     .use(LanguageDetector)
-    .use({
-      type: 'languageDetector',
-      ...cookieLanguageDetector
-    } as any)
     .init({
       resources: mergedResources,
       fallbackLng: DEFAULT_LANGUAGE,
@@ -64,8 +80,8 @@ export const initI18n = (config?: I18nConfig) => {
       ns,
       supportedLngs: SUPPORTED_LANGUAGES,
       detection: {
-        order: ['cookieDetector', 'navigator'],
-        caches: ['cookieDetector'],
+        order: ['customDetector', 'navigator'],
+        caches: ['customDetector'],
         lookupCookie: LANGUAGE_COOKIE_NAME
       },
       interpolation: {

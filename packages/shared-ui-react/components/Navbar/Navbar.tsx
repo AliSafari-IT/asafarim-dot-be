@@ -3,6 +3,7 @@ import AuthStatus from '../Auth/AuthStatus';
 import { ThemeToggle } from '@asafarim/react-themes';
 import type { NavbarProps, NavLinkItem } from './types';
 import './Navbar.css';
+import { LanguageSwitcher } from '../LanguageSwitcher';
 
 const defaultRenderLink = (link: NavLinkItem, isMobile = false): React.ReactNode => {
   if (link.external) {
@@ -119,6 +120,7 @@ export const Navbar = ({
             )}
             
             <div className={`theme-in-header ${open ? 'is-hidden' : ''}`}>
+              <LanguageSwitcher variant="dropdown" />
               <ThemeToggle className="navbar-theme-toggle" />
             </div>
 

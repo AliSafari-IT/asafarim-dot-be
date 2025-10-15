@@ -66,11 +66,31 @@ export const getInitialLanguage = (): SupportedLanguage => {
 };
 
 /**
+ * Get the Identity API base URL based on environment
+ */
+const getIdentityApiUrl = (): string => {
+  // Check if we're in production based on hostname
+  const isProd = typeof window !== 'undefined' && (
+    window.location.hostname.includes('asafarim.be') ||
+    window.location.protocol === 'https:'
+  );
+
+  if (isProd) {
+    return 'https://identity.asafarim.be';
+  }
+
+  // Development: use environment variable or default to localhost
+  const env = (import.meta.env as any) || {};
+  return env.VITE_IDENTITY_API_URL || 'http://localhost:5101';
+};
+
+/**
  * Update user language preference on backend
  */
 export const updateUserLanguagePreference = async (language: SupportedLanguage): Promise<boolean> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'https://identity.asafarim.be'}/api/me/preferences`, {
+    const baseUrl = getIdentityApiUrl();
+    const response = await fetch(`${baseUrl}/api/me/preferences`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -91,7 +111,8 @@ export const updateUserLanguagePreference = async (language: SupportedLanguage):
  */
 export const fetchUserLanguagePreference = async (): Promise<SupportedLanguage | null> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'https://identity.asafarim.be'}/api/me/preferences`, {
+    const baseUrl = getIdentityApiUrl();
+    const response = await fetch(`${baseUrl}/api/me/preferences`, {
       method: 'GET',
       credentials: 'include'
     });

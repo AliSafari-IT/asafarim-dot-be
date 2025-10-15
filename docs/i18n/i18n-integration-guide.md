@@ -5,11 +5,13 @@ This guide shows how to integrate the `@asafarim/shared-i18n` package into each 
 ## Prerequisites
 
 1. Install dependencies in the monorepo root:
+
 ```bash
 pnpm install
 ```
 
 2. Build the shared-i18n package:
+
 ```bash
 cd packages/shared-i18n
 pnpm build
@@ -22,6 +24,7 @@ pnpm build
 **File: `apps/identity-portal/package.json`**
 
 Add dependency:
+
 ```json
 {
   "dependencies": {
@@ -73,6 +76,7 @@ import { LanguageSwitcher } from '@asafarim/shared-ui-react';
 **File: `apps/web/package.json`**
 
 Add dependency:
+
 ```json
 {
   "dependencies": {
@@ -109,6 +113,7 @@ createRoot(document.getElementById('root')!).render(
 **File: `apps/core-app/package.json`**
 
 Add dependency:
+
 ```json
 {
   "dependencies": {
@@ -142,6 +147,7 @@ createRoot(document.getElementById('root')!).render(
 **File: `apps/ai-ui/package.json`**
 
 Add dependency:
+
 ```json
 {
   "dependencies": {
@@ -175,6 +181,7 @@ createRoot(document.getElementById('root')!).render(
 **File: `apps/jobs-ui/package.json`**
 
 Add dependency:
+
 ```json
 {
   "dependencies": {
@@ -208,6 +215,7 @@ createRoot(document.getElementById('root')!).render(
 **File: `apps/blog/package.json`**
 
 Add dependency:
+
 ```json
 {
   "dependencies": {
@@ -283,6 +291,7 @@ function Header() {
 If your app needs custom translations beyond the common ones:
 
 1. Create translation files:
+
 ```
 apps/your-app/src/locales/
   en/
@@ -292,6 +301,7 @@ apps/your-app/src/locales/
 ```
 
 2. Import and initialize:
+
 ```tsx
 import { initI18n } from '@asafarim/shared-i18n';
 import enApp from './locales/en/app.json';
@@ -308,6 +318,7 @@ initI18n({
 ```
 
 3. Use in components:
+
 ```tsx
 const { t } = useTranslation();
 // Common translations (default namespace)
@@ -362,6 +373,7 @@ VITE_IDENTITY_API_URL=https://identity.asafarim.be
 ```
 
 For local development:
+
 ```env
 VITE_IDENTITY_API_URL=https://identity.asafarim.local:5177
 ```
@@ -369,16 +381,19 @@ VITE_IDENTITY_API_URL=https://identity.asafarim.local:5177
 ## Troubleshooting
 
 ### Language not persisting
+
 - Check that the cookie domain is set correctly (`.asafarim.be`)
 - Verify the cookie is not being blocked by browser settings
 - Check browser console for errors
 
 ### Translations not loading
+
 - Ensure `initI18n()` is called before rendering the app
 - Check that translation files exist in `packages/shared-i18n/locales/`
 - Verify the package is built (`cd packages/shared-i18n && pnpm build`)
 
 ### Backend API errors
+
 - Verify the Identity API is running
 - Check that the `PreferredLanguage` column exists in the database
 - Verify the user is authenticated (cookie present)

@@ -116,7 +116,7 @@ function isTokenExpired(token: string | null): boolean {
 // Refresh token function
 async function refreshToken(base: string): Promise<string | null> {
   try {
-    const res = await fetch(`${base}/auth/refresh`, {
+    const res = await fetch(`${base}/refresh`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -143,10 +143,10 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   
   // IMPORTANT: All authentication operations should use Identity API
   // according to SSO-ARCHITECTURE.md
-  // The Identity API is accessible at /api/identity on each subdomain via Nginx routing
+  // The Identity API controller is at /auth (not /api/identity)
   const defaultIdentityApiBase = isProd
-    ? 'https://identity.asafarim.be/api/identity'
-    : 'http://identity.asafarim.local:5177/api/identity';
+    ? 'https://identity.asafarim.be/auth'
+    : `${(import.meta.env as any)?.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101'}/auth`;
   
   console.log('🔐 shared-ui-react/hooks/useAuth.ts: isProd?', isProd);
   console.log('🔐 Identity API Base:', defaultIdentityApiBase);
@@ -154,9 +154,9 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   const authApiBase = options?.authApiBase ?? defaultIdentityApiBase;
   console.log('🔐 Using Auth API Base:', authApiBase);
   
-  const meEndpoint = options?.meEndpoint ?? '/auth/me';
-  const tokenEndpoint = options?.tokenEndpoint ?? '/auth/token';
-  const logoutEndpoint = options?.logoutEndpoint ?? '/auth/logout';
+  const meEndpoint = options?.meEndpoint ?? '/me';
+  const tokenEndpoint = options?.tokenEndpoint ?? '/token';
+  const logoutEndpoint = options?.logoutEndpoint ?? '/logout';
   
   console.log('🔐 Auth endpoints:', { meEndpoint, tokenEndpoint, logoutEndpoint });
 

@@ -27,7 +27,8 @@ public class AuthController : ControllerBase
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
         IOptions<AuthOptions> authOptions,
-        ILogger<AuthController> logger)
+        ILogger<AuthController> logger
+    )
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -61,7 +62,7 @@ public class AuthController : ControllerBase
             Id = Guid.NewGuid(),
             Email = req.Email,
             UserName = req.UserName ?? req.Email,
-            EmailConfirmed = false // Set to false, implement email confirmation
+            EmailConfirmed = false, // Set to false, implement email confirmation
         };
 
         var result = await _userManager.CreateAsync(user, req.Password);
@@ -79,7 +80,10 @@ public class AuthController : ControllerBase
         // Generate tokens
         var roleNames = await _userManager.GetRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
-        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user.Id, GetIpAddress());
+        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
+            user.Id,
+            GetIpAddress()
+        );
 
         // Set cookies
         SetAuthCookies(accessToken, refreshToken.Token, persistent: true, user);
@@ -109,12 +113,14 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(user.PasswordHash))
         {
             _logger.LogInformation("User needs password setup: {Email}", req.Email);
-            return Ok(new
-            {
-                requiresPasswordSetup = true,
-                userId = user.Id.ToString(),
-                email = user.Email
-            });
+            return Ok(
+                new
+                {
+                    requiresPasswordSetup = true,
+                    userId = user.Id.ToString(),
+                    email = user.Email,
+                }
+            );
         }
 
         // Verify password
@@ -141,7 +147,10 @@ public class AuthController : ControllerBase
         // Generate tokens
         var roleNames = await _userManager.GetRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
-        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user.Id, GetIpAddress());
+        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
+            user.Id,
+            GetIpAddress()
+        );
 
         // Set cookies
         SetAuthCookies(accessToken, refreshToken.Token, persistent: req.RememberMe, user);
@@ -159,7 +168,10 @@ public class AuthController : ControllerBase
         var ipAddress = GetIpAddress();
 
         // Try to get and revoke the refresh token
-        if (Request.Cookies.TryGetValue("rtk", out var refreshToken) && !string.IsNullOrWhiteSpace(refreshToken))
+        if (
+            Request.Cookies.TryGetValue("rtk", out var refreshToken)
+            && !string.IsNullOrWhiteSpace(refreshToken)
+        )
         {
             await _refreshTokenService.RevokeRefreshTokenAsync(refreshToken, ipAddress);
             _logger.LogInformation("Refresh token revoked for IP: {IpAddress}", ipAddress);
@@ -181,8 +193,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
-        
+        var userId =
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+
         if (string.IsNullOrWhiteSpace(userId))
         {
             _logger.LogWarning("GetCurrentUser: No user ID in claims");
@@ -197,7 +210,9 @@ public class AuthController : ControllerBase
         }
 
         var roleNames = await _userManager.GetRolesAsync(user);
-        return Ok(new MeResponse(user.Id.ToString(), user.Email, user.UserName, roleNames.ToArray()));
+        return Ok(
+            new MeResponse(user.Id.ToString(), user.Email, user.UserName, roleNames.ToArray())
+        );
     }
 
     /// <summary>
@@ -215,7 +230,10 @@ public class AuthController : ControllerBase
 
         // Fallback to Authorization header
         var authHeader = Request.Headers["Authorization"].ToString();
-        if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        if (
+            !string.IsNullOrWhiteSpace(authHeader)
+            && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+        )
         {
             var headerToken = authHeader.Substring("Bearer ".Length).Trim();
             if (!string.IsNullOrWhiteSpace(headerToken))
@@ -236,14 +254,19 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> RefreshToken()
     {
         // Get refresh token from cookie
-        if (!Request.Cookies.TryGetValue("rtk", out var refreshTokenString) || string.IsNullOrWhiteSpace(refreshTokenString))
+        if (
+            !Request.Cookies.TryGetValue("rtk", out var refreshTokenString)
+            || string.IsNullOrWhiteSpace(refreshTokenString)
+        )
         {
             _logger.LogWarning("RefreshToken: No refresh token in cookie");
             return Unauthorized(new { message = "No refresh token provided" });
         }
 
         // Validate refresh token
-        var refreshToken = await _refreshTokenService.GetActiveRefreshTokenAsync(refreshTokenString);
+        var refreshToken = await _refreshTokenService.GetActiveRefreshTokenAsync(
+            refreshTokenString
+        );
         if (refreshToken == null)
         {
             _logger.LogWarning("RefreshToken: Invalid or expired refresh token");
@@ -255,7 +278,10 @@ public class AuthController : ControllerBase
         var ipAddress = GetIpAddress();
 
         // Rotate refresh token
-        var newRefreshToken = await _refreshTokenService.RotateRefreshTokenAsync(refreshToken, ipAddress);
+        var newRefreshToken = await _refreshTokenService.RotateRefreshTokenAsync(
+            refreshToken,
+            ipAddress
+        );
         if (newRefreshToken == null)
         {
             _logger.LogError("RefreshToken: Failed to rotate token for user {UserId}", user.Id);
@@ -267,7 +293,7 @@ public class AuthController : ControllerBase
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
 
         // Set new cookies
-        SetAuthCookies(accessToken, newRefreshToken.Token, persistent: true);
+        SetAuthCookies(accessToken, newRefreshToken.Token, persistent: true, user);
 
         _logger.LogInformation("Token refreshed for user: {Email}", user.Email);
 
@@ -304,7 +330,9 @@ public class AuthController : ControllerBase
         var result = await _userManager.AddPasswordAsync(user, req.Password);
         if (!result.Succeeded)
         {
-            var errors = result.Errors.Select(e => new { code = e.Code, description = e.Description }).ToList();
+            var errors = result
+                .Errors.Select(e => new { code = e.Code, description = e.Description })
+                .ToList();
             return BadRequest(new { message = "Password validation failed", errors });
         }
 
@@ -313,9 +341,12 @@ public class AuthController : ControllerBase
         // Generate tokens and log user in
         var roleNames = await _userManager.GetRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
-        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user.Id, GetIpAddress());
+        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
+            user.Id,
+            GetIpAddress()
+        );
 
-        SetAuthCookies(accessToken, refreshToken.Token, persistent: true);
+        SetAuthCookies(accessToken, refreshToken.Token, persistent: true, user);
 
         return Ok(CreateAuthResponse(user, roleNames, accessToken, refreshToken.Token));
     }
@@ -343,10 +374,16 @@ public class AuthController : ControllerBase
 
     #region Private Helper Methods
 
-    private void SetAuthCookies(string accessToken, string refreshToken, bool persistent, AppUser user)
+    private void SetAuthCookies(
+        string accessToken,
+        string refreshToken,
+        bool persistent,
+        AppUser user
+    )
     {
         var opts = _authOptions.Value;
-        var isProdDomain = opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
+        var isProdDomain =
+            opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
         var isHttps = Request.IsHttps;
         var useSecure = isProdDomain || isHttps;
         var sameSite = SameSiteMode.None; // Required for cross-subdomain SSO
@@ -357,48 +394,67 @@ public class AuthController : ControllerBase
             : DateTime.UtcNow.AddHours(8);
 
         // Access token cookie
-        Response.Cookies.Append("atk", accessToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = useSecure,
-            SameSite = sameSite,
-            Domain = opts.CookieDomain,
-            Path = "/",
-            Expires = accessExpiration,
-            MaxAge = TimeSpan.FromMinutes(opts.AccessMinutes)
-        });
+        Response.Cookies.Append(
+            "atk",
+            accessToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = useSecure,
+                SameSite = sameSite,
+                Domain = opts.CookieDomain,
+                Path = "/",
+                Expires = accessExpiration,
+                MaxAge = TimeSpan.FromMinutes(opts.AccessMinutes),
+            }
+        );
 
         // Refresh token cookie
-        Response.Cookies.Append("rtk", refreshToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = useSecure,
-            SameSite = sameSite,
-            Domain = opts.CookieDomain,
-            Path = "/",
-            Expires = refreshExpiration,
-            MaxAge = persistent ? TimeSpan.FromDays(opts.RefreshDays) : TimeSpan.FromHours(8)
-        });
+        Response.Cookies.Append(
+            "rtk",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = useSecure,
+                SameSite = sameSite,
+                Domain = opts.CookieDomain,
+                Path = "/",
+                Expires = refreshExpiration,
+                MaxAge = persistent ? TimeSpan.FromDays(opts.RefreshDays) : TimeSpan.FromHours(8),
+            }
+        );
 
         // Language preference cookie (accessible by JavaScript)
-        Response.Cookies.Append("preferredLanguage", user.PreferredLanguage ?? "en", new CookieOptions
-        {
-            HttpOnly = false, // Allow JavaScript access
-            Secure = useSecure,
-            SameSite = SameSiteMode.Lax,
-            Domain = opts.CookieDomain,
-            Path = "/",
-            Expires = DateTimeOffset.UtcNow.AddYears(1)
-        });
+        Response.Cookies.Append(
+            "preferredLanguage",
+            user.PreferredLanguage ?? "en",
+            new CookieOptions
+            {
+                HttpOnly = false, // Allow JavaScript access
+                Secure = useSecure,
+                SameSite = SameSiteMode.Lax,
+                Domain = opts.CookieDomain,
+                Path = "/",
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+            }
+        );
 
-        _logger.LogDebug("Auth cookies set - Domain: {Domain}, Secure: {Secure}, SameSite: {SameSite}, Persistent: {Persistent}, Language: {Language}",
-            opts.CookieDomain, useSecure, sameSite, persistent, user.PreferredLanguage);
+        _logger.LogDebug(
+            "Auth cookies set - Domain: {Domain}, Secure: {Secure}, SameSite: {SameSite}, Persistent: {Persistent}, Language: {Language}",
+            opts.CookieDomain,
+            useSecure,
+            sameSite,
+            persistent,
+            user.PreferredLanguage
+        );
     }
 
     private void ClearAuthCookies()
     {
         var opts = _authOptions.Value;
-        var isProdDomain = opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
+        var isProdDomain =
+            opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
         var isHttps = Request.IsHttps;
         var useSecure = isProdDomain || isHttps;
         var sameSite = SameSiteMode.None;
@@ -411,12 +467,12 @@ public class AuthController : ControllerBase
             SameSite = sameSite,
             Domain = opts.CookieDomain,
             Path = "/",
-            Expires = DateTime.UtcNow.AddDays(-1) // Expire immediately
+            Expires = DateTime.UtcNow.AddDays(-1), // Expire immediately
         };
 
         Response.Cookies.Delete("atk", cookieOptions);
         Response.Cookies.Delete("rtk", cookieOptions);
-        
+
         // ALSO clear cookies without the leading dot for main domain (e.g., "asafarim.be")
         // This handles cases where cookies were set for the exact domain
         if (!string.IsNullOrEmpty(opts.CookieDomain) && opts.CookieDomain.StartsWith("."))
@@ -429,14 +485,14 @@ public class AuthController : ControllerBase
                 SameSite = sameSite,
                 Domain = exactDomain,
                 Path = "/",
-                Expires = DateTime.UtcNow.AddDays(-1)
+                Expires = DateTime.UtcNow.AddDays(-1),
             };
-            
+
             Response.Cookies.Delete("atk", exactDomainOptions);
             Response.Cookies.Delete("rtk", exactDomainOptions);
             _logger.LogDebug("Also cleared cookies for exact domain: {Domain}", exactDomain);
         }
-        
+
         // ALSO clear cookies without any domain specified (uses current host)
         var noDomainOptions = new CookieOptions
         {
@@ -444,9 +500,9 @@ public class AuthController : ControllerBase
             Secure = useSecure,
             SameSite = sameSite,
             Path = "/",
-            Expires = DateTime.UtcNow.AddDays(-1)
+            Expires = DateTime.UtcNow.AddDays(-1),
         };
-        
+
         Response.Cookies.Delete("atk", noDomainOptions);
         Response.Cookies.Delete("rtk", noDomainOptions);
 
@@ -470,7 +526,12 @@ public class AuthController : ControllerBase
         return HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
     }
 
-    private AuthResponse CreateAuthResponse(AppUser user, IEnumerable<string> roles, string accessToken, string refreshToken)
+    private AuthResponse CreateAuthResponse(
+        AppUser user,
+        IEnumerable<string> roles,
+        string accessToken,
+        string refreshToken
+    )
     {
         var opts = _authOptions.Value;
         return new AuthResponse
@@ -484,8 +545,8 @@ public class AuthController : ControllerBase
                 Email = user.Email ?? "",
                 FirstName = user.UserName ?? user.Email ?? "",
                 LastName = "",
-                Roles = roles.ToArray()
-            }
+                Roles = roles.ToArray(),
+            },
         };
     }
 

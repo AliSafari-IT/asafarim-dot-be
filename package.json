@@ -12,7 +12,7 @@
     "kill:jobs": "kill-port 4200",
     "kill:blog": "kill-port 3000",
     "kill:web": "kill-port 5102 5175",
-    "dev:shared": "cd packages/shared-ui-react/ && rm -rf node_modules dist && pnpm i && pnpm build",
+    "dev:shared": " pnpm --filter @asafarim/shared-i18n build && pnpm --filter @asafarim/shared-ui-react build",
     "dev:web": "cd apps/web && rm -rf node_modules && pnpm i && pnpm start",
     "dev:core": "cd apps/core-app && rm -rf node_modules && pnpm i && pnpm start",
     "dev:ai": "cd apps/ai-ui && rm -rf node_modules && pnpm i && pnpm start",

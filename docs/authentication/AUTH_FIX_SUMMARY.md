@@ -17,6 +17,7 @@ Created a **proxy layer in Core.Api** that forwards authentication requests to I
 ### Changes Made
 
 #### 1. **Core.Api (Port 5102)** - Added Auth Proxy Endpoints
+
 - **File**: `apis/Core.Api/Program.cs`
 - **Added Endpoints**:
   - `GET /auth/me` - Proxies to Identity.Api
@@ -27,6 +28,7 @@ Created a **proxy layer in Core.Api** that forwards authentication requests to I
   - Added `"IdentityApiUrl": "http://localhost:5101"`
 
 #### 2. **Frontend Configuration Updates**
+
 - **identity-portal**: `apps/identity-portal/src/config/auth.ts`
   - Changed: `authApiBase: 'http://api.asafarim.local:5102'` (was 5101)
 - **shared-ui-react**: `packages/shared-ui-react/hooks/useAuth.ts`
@@ -68,6 +70,7 @@ Created a **proxy layer in Core.Api** that forwards authentication requests to I
 ## Testing Steps
 
 ### 1. Restart Both APIs
+
 ```bash
 # Terminal 1 - Identity.Api
 cd apis/Identity.Api
@@ -79,6 +82,7 @@ dotnet run
 ```
 
 ### 2. Rebuild Frontend Package
+
 ```bash
 cd packages/shared-ui-react
 pnpm install
@@ -88,6 +92,7 @@ pnpm build
 ### 3. Test Authentication Flow
 
 #### A. Login at Identity Portal
+
 1. Navigate to: `http://identity.asafarim.local:5177/login?returnUrl=http://web.asafarim.local:5175/`
 2. Enter credentials and click "Sign In"
 3. Should redirect to web app
@@ -95,21 +100,25 @@ pnpm build
 #### B. Verify in Browser DevTools
 
 **Network Tab:**
+
 - Look for request to: `http://api.asafarim.local:5102/auth/me`
 - Status should be: **200 OK** (not 401)
 - Response should contain user info
 
 **Application Tab > Cookies:**
+
 - Domain: `.asafarim.local`
 - Cookies present: `atk` (access token), `rtk` (refresh token)
 - `HttpOnly`: true
 - `SameSite`: Lax
 
 **Console:**
+
 - Should see: `✅ AUTHENTICATED` (not `❌ NOT AUTHENTICATED`)
 - Should see: `Auth check response status: 200`
 
 ### 4. Test Cross-App Cookie Sharing
+
 1. Login at identity-portal
 2. Navigate to web app → Should stay logged in
 3. Navigate to ai-ui → Should stay logged in
@@ -130,11 +139,13 @@ If authentication still fails:
 ## Key Configuration Files
 
 ### Backend
+
 - `apis/Identity.Api/appsettings.Development.json` - AuthJwt config
 - `apis/Core.Api/appsettings.Development.json` - AuthJwt + IdentityApiUrl
 - `apis/Core.Api/Program.cs` - Auth proxy endpoints
 
 ### Frontend
+
 - `packages/shared-ui-react/hooks/useAuth.ts` - Default auth base URL
 - `apps/identity-portal/src/config/auth.ts` - Identity portal auth config
 - `apps/web/.env.development` - Web app environment variables
@@ -144,6 +155,7 @@ If authentication still fails:
 ### Why Port 5102 Instead of 5101?
 
 Using Core.Api (5102) as the unified gateway provides:
+
 1. **Single Entry Point**: All frontend apps use one API base URL
 2. **Better Separation**: Authentication service is separate but accessible
 3. **Scalability**: Easy to add more proxied services

@@ -21,6 +21,7 @@ import { LayoutSelector } from "./layouts/LayoutSelector";
 import { type LayoutType } from "./layouts/types.tsx";
 import { PrintLayout } from "./layouts/PrintLayout";
 import PublishResumeModal from "./components/PublishResumeModal";
+import { useTranslation } from "@asafarim/shared-i18n";
 import "./resume-styles.css";
 import "./view-resume.css";
 
@@ -30,6 +31,7 @@ const ViewResume = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { addNotification } = useNotifications();
+  const { t } = useTranslation("web");
   const [resume, setResume] = useState<ResumeDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,14 +68,14 @@ const ViewResume = () => {
         }
       } catch (err) {
         console.error("Failed to load resume:", err);
-        setError("Failed to load resume details");
+        setError(t("resume.error"));
       } finally {
         setLoading(false);
       }
     };
 
     loadResume();
-  }, [id, isAuthenticated]);
+  }, [id, isAuthenticated, t]);
 
   if (loading) {
     return (
@@ -81,7 +83,7 @@ const ViewResume = () => {
         <div className="resume-view-container">
           <div className="loading-state">
             <div className="loading-spinner"></div>
-            <p>Loading resume...</p>
+            <p>{t("resume.loading")}</p>
           </div>
         </div>
       </div>
@@ -92,9 +94,9 @@ const ViewResume = () => {
     return (
       <div className="resume-view-page">
         <div className="resume-view-container">
-          <div className="error-message">{error || "Resume not found"}</div>
+          <div className="error-message">{error || t("resume.notFound")}</div>
           <Button onClick={() => navigate("/admin/entities/resumes")}>
-            Back to Resumes
+            {t("resume.backToResumes")}
           </Button>
         </div>
       </div>
@@ -174,7 +176,10 @@ const ViewResume = () => {
     if (!id) return;
 
     const confirmed = window.confirm(
-      "Are you sure you want to unpublish this resume? The public link will no longer work."
+      t("resume.messages.unpublishConfirm", {
+        defaultValue:
+          "Are you sure you want to unpublish this resume? The public link will no longer work.",
+      })
     );
 
     if (!confirmed) return;
@@ -183,13 +188,13 @@ const ViewResume = () => {
       await unpublishResume(id);
       setPublishedSlug(null);
 
-      addNotification("success", "Resume unpublished successfully");
+      addNotification("success", t("resume.messages.unpublishedSuccess"));
 
       // Reload resume to get updated publication status
       const updatedResume = await fetchResumeById(id);
       setResume(updatedResume);
     } catch {
-      addNotification("error", "Failed to unpublish resume");
+      addNotification("error", t("resume.messages.unpublishedError"));
     }
   };
 
@@ -202,7 +207,7 @@ const ViewResume = () => {
       // Try modern Clipboard API first
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(shareUrl);
-        addNotification("success", "Share link copied to clipboard!");
+        addNotification("success", t("resume.messages.copySuccess"));
       } else {
         // Fallback for older browsers or non-secure contexts
         const textArea = document.createElement("textarea");
@@ -216,12 +221,12 @@ const ViewResume = () => {
 
         try {
           document.execCommand("copy");
-          addNotification("success", "Share link copied to clipboard!");
+          addNotification("success", t("resume.messages.copySuccess"));
         } catch (err) {
           console.error("Fallback copy failed:", err);
           addNotification(
             "error",
-            "Failed to copy link. Please copy manually: " + shareUrl
+            t("resume.messages.copyError", { url: shareUrl })
           );
         }
 
@@ -229,7 +234,10 @@ const ViewResume = () => {
       }
     } catch (err) {
       console.error("Failed to copy:", err);
-      addNotification("error", "Failed to copy link. Please copy manually.");
+      addNotification(
+        "error",
+        t("resume.messages.copyError", { url: shareUrl })
+      );
     }
   };
 
@@ -328,21 +336,21 @@ const ViewResume = () => {
                 onClick={() => navigate("/admin/entities/resumes")}
                 variant="secondary"
               >
-                ← Back to Resumes
+                {t("resume.actions.backToResumes")}
               </Button>
               <Button
                 onClick={() => navigate(`/admin/entities/resumes/${id}/edit`)}
                 variant="primary"
               >
-                Edit Resume
+                {t("resume.actions.editResume")}
               </Button>
               {publishedSlug ? (
                 <>
                   <Button onClick={copyShareLink} variant="success">
-                    📋 Copy Share Link
+                    {t("resume.actions.copyShareLink")}
                   </Button>
                   <Button onClick={handleUnpublish} variant="danger">
-                    🔒 Unpublish
+                    {t("resume.actions.unpublish")}
                   </Button>
                 </>
               ) : (
@@ -350,7 +358,7 @@ const ViewResume = () => {
                   onClick={() => setShowPublishModal(true)}
                   variant="primary"
                 >
-                  🌐 Publish Resume
+                  {t("resume.actions.publishResume")}
                 </Button>
               )}
             </div>
@@ -364,7 +372,7 @@ const ViewResume = () => {
             <section className="resume-view-section summary-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Professional Summary{" "}
+                  {t("resume.sections.summary.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/details`)
@@ -384,7 +392,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Work Experience{" "}
+                  {t("resume.sections.experience.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/work-experiences`)
@@ -406,7 +414,9 @@ const ViewResume = () => {
                           <h3 className="item-title">{exp.jobTitle}</h3>
                           <span className="item-date">
                             {formatDate(exp.startDate)} -{" "}
-                            {exp.endDate ? formatDate(exp.endDate) : "Present"}
+                            {exp.endDate
+                              ? formatDate(exp.endDate)
+                              : t("resume.sections.experience.present")}
                           </span>
                         </div>
                         <div className="item-subtitle">
@@ -457,7 +467,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Skills{" "}
+                  {t("resume.sections.skills.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/skills`)
@@ -477,9 +487,15 @@ const ViewResume = () => {
                       </div>
                       <div className="skill-meta">
                         <span className="skill-category">
-                          📁 {skill.category}
+                          {t("resume.sections.skills.categories.category", {
+                            category: skill.category,
+                          })}
                         </span>
-                        <span className="skill-level">📊 {skill.level}</span>
+                        <span className="skill-level">
+                          {t("resume.sections.skills.categories.level", {
+                            level: skill.level,
+                          })}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -493,7 +509,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Educations{" "}
+                  {t("resume.sections.education.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/educations`)
@@ -509,18 +525,26 @@ const ViewResume = () => {
                 <div className="education-grid">
                   {resume.educationItems.map((edu, index) => (
                     <div key={edu.id || index} className="education-card">
-                      <h3 className="education-degree">{edu.degree}</h3>
+                      <h3 className="education-degree">
+                        {t("resume.sections.education.degree", {
+                          degree: edu.degree,
+                        })}
+                      </h3>
                       <div className="education-institution">
                         {edu.institution}
                       </div>
                       {edu.fieldOfStudy && (
                         <div className="education-field">
-                          {edu.fieldOfStudy}
+                          {t("resume.sections.education.field", {
+                            field: edu.fieldOfStudy,
+                          })}
                         </div>
                       )}
                       <div className="education-dates">
                         {formatDate(edu.startDate)} -{" "}
-                        {edu.endDate ? formatDate(edu.endDate) : "Present"}
+                        {edu.endDate
+                          ? formatDate(edu.endDate)
+                          : t("resume.sections.education.present")}
                       </div>
                       {edu.description && (
                         <p className="education-description">
@@ -539,7 +563,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Certificates{" "}
+                  {t("resume.sections.certificates.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/certificates`)
@@ -558,14 +582,22 @@ const ViewResume = () => {
                       <h3 className="certificate-name">{cert.name}</h3>
                       <div className="certificate-issuer">{cert.issuer}</div>
                       <div className="certificate-dates">
-                        Issued: {formatDate(cert.issueDate)}
+                        {t("resume.sections.certificates.issued", {
+                          date: formatDate(cert.issueDate),
+                        })}
                         {cert.expiryDate &&
-                          ` • Expires: ${formatDate(cert.expiryDate)}`}
+                          ` • ${t("resume.sections.certificates.expires", {
+                            date: formatDate(cert.expiryDate),
+                          })}`}
                       </div>
                       {(cert.credentialId || cert.credentialUrl) && (
                         <div className="certificate-credentials">
                           {cert.credentialId && (
-                            <div>ID: {cert.credentialId}</div>
+                            <div>
+                              {t("resume.sections.certificates.credentialId", {
+                                id: cert.credentialId,
+                              })}
+                            </div>
                           )}
                           {cert.credentialUrl && (
                             <a
@@ -573,7 +605,9 @@ const ViewResume = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              View Certificate →
+                              {t(
+                                "resume.sections.certificates.viewCertificate"
+                              )}
                             </a>
                           )}
                         </div>
@@ -590,7 +624,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Projects{" "}
+                  {t("resume.sections.projects.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/projects`)
@@ -613,7 +647,7 @@ const ViewResume = () => {
                             rel="noopener noreferrer"
                             className="project-link"
                           >
-                            Visit →
+                            {t("resume.sections.projects.visit")}
                           </a>
                         )}
                       </div>
@@ -642,7 +676,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Languages{" "}
+                  {t("resume.sections.languages.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/languages`)
@@ -668,7 +702,11 @@ const ViewResume = () => {
                         .replace(/\s+/g, "-")}`}`}
                     >
                       <h3 className="language-name">{lang.name}</h3>
-                      <div className="language-level">{lang.level}</div>
+                      <div className="language-level">
+                        {t("resume.sections.languages.level", {
+                          level: lang.level,
+                        })}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -681,7 +719,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Awards & Achievements{" "}
+                  {t("resume.sections.awards.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/awards`)
@@ -698,7 +736,9 @@ const ViewResume = () => {
                       <div className="award-header">
                         <h3 className="award-title">{award.title}</h3>
                         <span className="award-date">
-                          {formatDate(award.awardedDate)}
+                          {t("resume.sections.awards.awarded", {
+                            date: formatDate(award.awardedDate),
+                          })}
                         </span>
                       </div>
                       <div className="award-issuer">{award.issuer}</div>
@@ -717,7 +757,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  References{" "}
+                  {t("resume.sections.references.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/references`)
@@ -750,7 +790,7 @@ const ViewResume = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  Social Links{" "}
+                  {t("resume.sections.socialLinks.title")}
                   <Edit
                     onClick={() =>
                       navigate(`/admin/entities/resumes/${id}/social-links`)

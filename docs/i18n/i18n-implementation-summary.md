@@ -11,6 +11,7 @@ A centralized multi-language system has been implemented for the ASafariM monore
 **Location:** `packages/shared-i18n/`
 
 **Features:**
+
 - ✅ i18next + react-i18next integration
 - ✅ Cookie-based language persistence (`.asafarim.be` domain)
 - ✅ Browser language detection fallback
@@ -19,6 +20,7 @@ A centralized multi-language system has been implemented for the ASafariM monore
 - ✅ Lazy loading support for app-specific translations
 
 **Key Files:**
+
 - `config/i18n.ts` - Main i18n configuration
 - `hooks/useLanguage.ts` - React hook for language management
 - `utils/languageUtils.ts` - Cookie and API utilities
@@ -31,6 +33,7 @@ A centralized multi-language system has been implemented for the ASafariM monore
 **Location:** `packages/shared-ui-react/components/LanguageSwitcher/`
 
 **Features:**
+
 - ✅ Two variants: dropdown and toggle
 - ✅ Accessible (ARIA labels, keyboard navigation)
 - ✅ Dark mode support
@@ -38,6 +41,7 @@ A centralized multi-language system has been implemented for the ASafariM monore
 - ✅ Styled with CSS variables for theming
 
 **Usage:**
+
 ```tsx
 import { LanguageSwitcher } from '@asafarim/shared-ui-react';
 
@@ -53,6 +57,7 @@ import { LanguageSwitcher } from '@asafarim/shared-ui-react';
 **Changes Made:**
 
 #### AppUser Model (`AppUser.cs`)
+
 ```csharp
 public class AppUser : IdentityUser<Guid> 
 { 
@@ -61,14 +66,17 @@ public class AppUser : IdentityUser<Guid>
 ```
 
 #### New Controller: `PreferencesController.cs`
+
 - `GET /api/me/preferences` - Get user's language preference
 - `POST /api/me/preferences` - Update user's language preference
 
 #### Updated: `AuthController.cs`
+
 - Modified `SetAuthCookies()` to set `preferredLanguage` cookie on login
 - Cookie is set with user's saved preference or default "en"
 
 #### Database Migration
+
 - SQL script: `apis/Identity.Api/Migrations/AddPreferredLanguage.sql`
 - Adds `PreferredLanguage` column to `AspNetUsers` table
 - Includes check constraint for valid languages (en, nl)
@@ -79,26 +87,32 @@ public class AppUser : IdentityUser<Guid>
 All React apps have been updated with i18n support:
 
 #### ✅ Identity Portal (`apps/identity-portal/`)
+
 - Added `@asafarim/shared-i18n` dependency
 - Initialized i18n in `main.tsx`
 
 #### ✅ Web App (`apps/web/`)
+
 - Added `@asafarim/shared-i18n` dependency
 - Initialized i18n in `main.tsx`
 
 #### ✅ Core App (`apps/core-app/`)
+
 - Added `@asafarim/shared-i18n` dependency
 - Initialized i18n in `main.tsx`
 
 #### ✅ AI UI (`apps/ai-ui/`)
+
 - Added `@asafarim/shared-i18n` dependency
 - Initialized i18n in `main.tsx`
 
 #### ✅ Blog (`apps/blog/`)
+
 - Added `@asafarim/shared-i18n` dependency
 - Ready for Docusaurus i18n integration
 
 #### ⚠️ Jobs UI (`apps/jobs-ui/`)
+
 - Angular app - requires separate i18n implementation
 - Can still read the `preferredLanguage` cookie
 - Consider using Angular's built-in i18n or ngx-translate
@@ -155,6 +169,7 @@ Located in `packages/shared-i18n/locales/{en,nl}/common.json`:
 ### Adding App-Specific Translations
 
 1. Create translation files in your app:
+
    ```
    apps/your-app/src/locales/
      en/app.json
@@ -162,6 +177,7 @@ Located in `packages/shared-i18n/locales/{en,nl}/common.json`:
    ```
 
 2. Import and initialize:
+
    ```tsx
    import enApp from './locales/en/app.json';
    import nlApp from './locales/nl/app.json';
@@ -176,6 +192,7 @@ Located in `packages/shared-i18n/locales/{en,nl}/common.json`:
    ```
 
 3. Use in components:
+
    ```tsx
    const { t } = useTranslation();
    t('common:welcome')  // or just t('welcome')
@@ -196,17 +213,20 @@ chmod +x scripts/setup-i18n.sh
 ### Manual Setup
 
 1. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
 
 2. **Build shared packages:**
+
    ```bash
    cd packages/shared-i18n && pnpm build
    cd ../shared-ui-react && pnpm build
    ```
 
 3. **Run database migration:**
+
    ```bash
    cd apis/Identity.Api
    dotnet ef migrations add AddPreferredLanguageToUser
@@ -214,6 +234,7 @@ chmod +x scripts/setup-i18n.sh
    ```
 
 4. **Start development:**
+
    ```bash
    pnpm dev  # Frontend apps
    pnpm api  # Backend APIs
@@ -342,6 +363,7 @@ Get current user's language preference.
 **Authentication:** Required
 
 **Response:**
+
 ```json
 {
   "preferredLanguage": "en"
@@ -355,6 +377,7 @@ Update current user's language preference.
 **Authentication:** Required
 
 **Request:**
+
 ```json
 {
   "preferredLanguage": "nl"
@@ -362,6 +385,7 @@ Update current user's language preference.
 ```
 
 **Response:**
+
 ```json
 {
   "preferredLanguage": "nl"
@@ -369,6 +393,7 @@ Update current user's language preference.
 ```
 
 **Validation:**
+
 - `preferredLanguage` must be "en" or "nl"
 
 ## Future Enhancements
@@ -433,6 +458,7 @@ Update current user's language preference.
 ## Support
 
 For questions or issues:
+
 1. Check the integration guide: `docs/i18n-integration-guide.md`
 2. Review the shared-i18n README: `packages/shared-i18n/README.md`
 3. Check existing translations: `packages/shared-i18n/locales/`

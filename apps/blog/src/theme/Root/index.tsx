@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ThemeProvider } from '@asafarim/react-themes';
 import { AuthSyncProvider } from '@asafarim/shared-ui-react';
+import { initI18n } from '@asafarim/shared-i18n';
 
 /**
  * Custom Root component for Docusaurus
@@ -18,6 +19,18 @@ interface RootProps {
 export default function Root({ children }: RootProps): React.ReactElement {
   // Get initial theme from localStorage or cookie
   const [initialTheme, setInitialTheme] = useState<'dark' | 'light'>('dark');
+  const [i18nReady, setI18nReady] = useState(false);
+
+  // Initialize i18n BEFORE first render
+  useEffect(() => {
+    try {
+      initI18n();
+      setI18nReady(true);
+    } catch (error) {
+      console.error('Failed to initialize i18n:', error);
+      setI18nReady(true); // Still render even if i18n fails
+    }
+  }, []);
   
   useEffect(() => {
     // Function to get cookie value

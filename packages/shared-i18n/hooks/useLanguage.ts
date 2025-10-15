@@ -22,13 +22,16 @@ export const useLanguage = (): UseLanguageReturn => {
   const { i18n } = useTranslation();
   const [isChanging, setIsChanging] = useState(false);
 
-  const currentLanguage = (isSupportedLanguage(i18n.language) 
+  // Safely get current language with fallback
+  const currentLanguage = (i18n?.language && isSupportedLanguage(i18n.language) 
     ? i18n.language 
     : 'en') as SupportedLanguage;
 
   // Sync with backend on mount (for authenticated users)
   useEffect(() => {
     const syncLanguageWithBackend = async () => {
+      if (!i18n?.changeLanguage) return;
+      
       const backendLang = await fetchUserLanguagePreference();
       if (backendLang && backendLang !== currentLanguage) {
         await i18n.changeLanguage(backendLang);
@@ -44,6 +47,14 @@ export const useLanguage = (): UseLanguageReturn => {
 
     setIsChanging(true);
     try {
+      // Check if i18n is properly initialized
+      if (!i18n || typeof i18n.changeLanguage !== 'function') {
+        console.error('i18n is not properly initialized');
+        // Still update cookie even if i18n fails
+        setLanguageCookie(lang);
+        return;
+      }
+
       // Update i18next
       await i18n.changeLanguage(lang);
       
@@ -59,7 +70,7 @@ export const useLanguage = (): UseLanguageReturn => {
     } finally {
       setIsChanging(false);
     }
-  }, [currentLanguage, i18n]);
+  }, [currentLanguage]);
 
   return {
     language: currentLanguage,
