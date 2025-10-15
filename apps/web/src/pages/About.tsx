@@ -1,48 +1,46 @@
+import { useTranslation } from "@asafarim/shared-i18n";
+
 export default function About() {
+    const { t } = useTranslation('web');
+  
   return (
     <section className="web-about">
       <div className="web-about-container">
         {/* Hero */}
         <div className="web-about-hero">
-          <h1 className="web-about-title">Fullstack .NET & React Developer</h1>
+          <h1 className="web-about-title">{t('about.title')}</h1>
           <p className="web-about-subtitle">
-            I build scalable, maintainable, and interactive applications — from
-            backend APIs in <strong>ASP.NET Core</strong> to modern UIs in{" "}
-            <strong>React & TypeScript</strong>. Passionate about performance,
-            clean code, and data-driven solutions.
+            {t('about.subtitle')}
           </p>
           <div className="web-about-actions">
             <a href="https://asafarim.be/portfolio/my-react-dotnet-cv-10-10-2025/public" className="btn-primary">
-              View Resume
+              {t('about.viewResume')}
             </a>
             <a href="/contact" className="btn-secondary">
-              Contact Me
+              {t('about.contactMe')}
             </a>
           </div>
         </div>
 
         <section className="web-about-section">
-          <h2 className="web-about-heading">What I Do</h2>
+          <h2 className="web-about-heading">{t('about.whatIDo.title')}</h2>
           <div className="web-about-section-grid">
             <div className="web-about-section-card">
-              <h3>Backend with .NET</h3>
+              <h3>{t('about.whatIDo.backend.title')}</h3>
               <p>
-                Building secure and scalable REST APIs with ASP.NET Core, EF
-                Core, and SQL databases.
+                {t('about.whatIDo.backend.description')}
               </p>
             </div>
             <div className="web-about-section-card">
-              <h3>Frontend with React</h3>
+              <h3>{t('about.whatIDo.frontend.title')}</h3>
               <p>
-                Creating interactive, responsive UIs with React, TypeScript, and
-                TailwindCSS.
+                {t('about.whatIDo.frontend.description')}
               </p>
             </div>
             <div className="web-about-section-card">
-              <h3>Fullstack Delivery</h3>
+              <h3>{t('about.whatIDo.fullstack.title')}</h3>
               <p>
-                Combining backend + frontend into production-ready solutions,
-                with CI/CD pipelines and cloud deployment.
+                {t('about.whatIDo.fullstack.description')}
               </p>
             </div>
           </div>
@@ -50,52 +48,46 @@ export default function About() {
 
         {/* Key Skills */}
         <div className="web-about-section">
-          <h2 className="web-about-heading">Key Skills</h2>
+          <h2 className="web-about-heading">{t('about.skills.title')}</h2>
           <ul className="web-about-skills-list">
             <li className="web-about-skill">
-              <strong>Frontend:</strong> React (TypeScript), Redux, Tailwind,
-              Syncfusion
+              <strong>{t('about.skills.frontend')}</strong>
             </li>
             <li className="web-about-skill">
-              <strong>Backend:</strong> ASP.NET Core, Entity Framework, SignalR,
-              REST APIs
+              <strong>{t('about.skills.backend')}</strong>
             </li>
             <li className="web-about-skill">
-              <strong>Databases:</strong> SQL Server, MySQL, MongoDB
+              <strong>{t('about.skills.databases')}</strong>
             </li>
             <li className="web-about-skill">
-              <strong>Data & Visualization:</strong> D3.js, R, R.Net
+              <strong>{t('about.skills.data')}</strong>
             </li>
             <li className="web-about-skill">
-              <strong>DevOps & Tools:</strong> Git, Azure DevOps, Docker,
-              Swagger, TestCafe
+              <strong>{t('about.skills.devops')}</strong>
             </li>
           </ul>
         </div>
 
         {/* Experience */}
         <div className="web-about-section">
-          <h2 className="web-about-heading">Recent Experience</h2>
+          <h2 className="web-about-heading">{t('about.experience.title')}</h2>
           <div className="web-about-cards">
             <div className="web-about-card">
-              <h3 className="web-about-card-title">XiTechniX (2020–2023)</h3>
+              <h3 className="web-about-card-title">{t('about.experience.xitechnix.title')}</h3>
               <p>
-                Fullstack Scientific App Developer. Delivered .NET Core + React
-                applications for scientific and business domains.
+                {t('about.experience.xitechnix.description')}
               </p>
             </div>
             <div className="web-about-card">
-              <h3 className="web-about-card-title">IRC Engineering (2020)</h3>
+              <h3 className="web-about-card-title">{t('about.experience.irc.title')}</h3>
               <p>
-                Internship – Developed energy consumption visualizations using
-                C# and R.Net.
+                {t('about.experience.irc.description')}
               </p>
             </div>
             <div className="web-about-card">
-              <h3 className="web-about-card-title">Flanders Environment Agency (2018–2019)</h3>
+              <h3 className="web-about-card-title">{t('about.experience.vmm.title')}</h3>
               <p>
-                Internship – Enhanced hydrologic models (FORTRAN, WetSpa) for
-                river flow simulations.
+                {t('about.experience.vmm.description')}
               </p>
             </div>
           </div>
@@ -103,17 +95,17 @@ export default function About() {
 
         {/* Academic */}
         <div className="web-about-section">
-          <h2 className="web-about-heading">Background</h2>
+          <h2 className="web-about-heading">{t('about.background.title')}</h2>
           <div className="web-about-cards">
             <div className="web-about-education-card">
               <div className="web-about-education-icon" aria-hidden="true">🎓</div>
               <div className="web-about-education-content">
                 <span className="web-about-education-title">
-                  Applied Information Technology - Programming<br/>
-                  <span className="web-about-education-school">Thomas More, Sint-Katelijne-Waver</span>
+                  {t('about.background.appliedIT.title')}<br/>
+                  <span className="web-about-education-school">{t('about.background.appliedIT.school')}</span>
                 </span>
                 <span className="web-about-education-desc">
-                  Transitioned into software engineering with a focus on fullstack development and data development.
+                  {t('about.background.appliedIT.description')}
                 </span>
               </div>
             </div>
@@ -121,12 +113,11 @@ export default function About() {
               <div className="web-about-education-icon" aria-hidden="true">🔬</div>
               <div className="web-about-education-content">
                 <span className="web-about-education-title">
-                  PhD in Engineering Hydrology<br/>
-                  <span className="web-about-education-school">VUB, Brussels</span>
+                  {t('about.background.phd.title')}<br/>
+                  <span className="web-about-education-school">{t('about.background.phd.school')}</span>
                 </span>
                 <span className="web-about-education-desc">
-                  Strong expertise in modeling and data analysis. 
-                  Transitioned into scientific software development with a focus on numerical modeling.
+                  {t('about.background.phd.description')}
                 </span>
               </div>
             </div>
@@ -134,11 +125,11 @@ export default function About() {
               <div className="web-about-education-icon" aria-hidden="true">🌊</div>
               <div className="web-about-education-content">
                 <span className="web-about-education-title">
-                  B.Sc. & M.Sc. in Natural Resources Engineering<br/>
-                  <span className="web-about-education-school">Tehran University</span>
+                  {t('about.background.bsc.title')}<br/>
+                  <span className="web-about-education-school">{t('about.background.bsc.school')}</span>
                 </span>
                 <span className="web-about-education-desc">
-                  Solid foundation in environmental science and engineering.
+                  {t('about.background.bsc.description')}
                 </span>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLanguage, LANGUAGE_NAMES, SupportedLanguage } from '@asafarim/shared-i18n';
+import { useLanguage, LANGUAGE_NAMES, type SupportedLanguage } from '@asafarim/shared-i18n';
 import './LanguageSwitcher.css';
 
 export interface LanguageSwitcherProps {

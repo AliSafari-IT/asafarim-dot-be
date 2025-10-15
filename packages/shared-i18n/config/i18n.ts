@@ -1,7 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { getLanguageFromCookie, setLanguageCookie } from '../utils/languageUtils';
 
 // Import common translations
 import enCommon from '../locales/en/common.json';
@@ -21,31 +20,6 @@ export const LANGUAGE_NAMES: Record<SupportedLanguage, string> = {
 
 export const DEFAULT_LANGUAGE: SupportedLanguage = 'en';
 export const LANGUAGE_COOKIE_NAME = 'preferredLanguage';
-
-// Custom language detector that prioritizes cookie
-const customLanguageDetector = {
-  name: 'customDetector',
-
-  lookup(options: any) {
-    // First try to get from cookie
-    const cookieLang = getLanguageFromCookie();
-    if (cookieLang) {
-      return cookieLang;
-    }
-
-    // Fallback to browser language
-    if (typeof navigator !== 'undefined') {
-      const browserLang = navigator.language.split('-')[0];
-      return browserLang;
-    }
-
-    return DEFAULT_LANGUAGE;
-  },
-
-  cacheUserLanguage(lng: string, options: any) {
-    setLanguageCookie(lng);
-  }
-};
 
 export interface I18nConfig {
   defaultNS?: string;
@@ -80,8 +54,8 @@ export const initI18n = (config?: I18nConfig) => {
       ns,
       supportedLngs: SUPPORTED_LANGUAGES,
       detection: {
-        order: ['customDetector', 'navigator'],
-        caches: ['customDetector'],
+        order: ['cookie', 'navigator'],
+        caches: ['cookie'],
         lookupCookie: LANGUAGE_COOKIE_NAME
       },
       interpolation: {

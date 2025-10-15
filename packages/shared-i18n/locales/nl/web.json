@@ -34,12 +34,12 @@
         "tokens": "Gedeelde tokens (CSS-variabelen) voor thema-evenwicht",
         "apps": "Web, Core, AI (React TS) + Jobs (Angular TS)",
         "blog": "Docusaurus-blog met gedeelde header/footer",
-        "apis": ".NET API’s (Identity, Core, AI, Jobs) met getypeerde clients"
+        "apis": ".NET API's (Identity, Core, AI, Jobs) met getypeerde clients"
       }
     }
   },
   "about": {
-    "title": "Over",
+    "title": "Over ASafariM",
     "description": "Fullstack .NET & React Developer",
     "subtitle": "Ik bouw schaalbare, onderhoudbare en interactieve applicaties — van backend-API’s in ASP.NET Core tot moderne UI’s in React & TypeScript. Gepassioneerd door prestaties, clean code en data-gedreven oplossingen.",
     "viewResume": "Bekijk CV",
