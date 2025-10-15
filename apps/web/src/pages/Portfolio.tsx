@@ -46,11 +46,11 @@ const Portfolio = () => {
         ]}
         primaryCta={{
           label: "View Resume",
-          href: "/portfolio/resume",
+          to: "/portfolio/my-react-dotnet-cv-10-10-2025/public",
         }}
         secondaryCta={{
           label: "Contact Me",
-          href: "/contact",
+          to: "/contact",
         }}
       />
 

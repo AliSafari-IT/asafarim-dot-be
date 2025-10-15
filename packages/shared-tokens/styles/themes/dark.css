@@ -88,6 +88,8 @@
   --color-text: #f9fafb;
   --color-text-muted: #9ca3af;
   --color-text-muted-hover: #d1d5db;
+  --color-foreground: #64748b;
+  --color-foreground-muted: #1e293b;
   --bg-hover-color: #1f2937;
   --bg-active-color: #374151;
   --bg-disabled-color: #4b5563;

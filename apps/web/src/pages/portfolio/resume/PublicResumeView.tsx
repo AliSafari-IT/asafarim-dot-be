@@ -191,7 +191,7 @@ const PublicResumeView = () => {
 
           {/* Work Experience */}
           {resume.workExperiences && resume.workExperiences.length > 0 && (
-            <section className="resume-view-section">
+            <section className="resume-section">
               <div className="section-header">
                 <h2 className="section-title">{t('resume.sections.experience.title')}</h2>
                 <span className="section-count">

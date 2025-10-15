@@ -5,6 +5,7 @@ import {
   Edit,
   Github,
   Google,
+  isProduction,
   Linkedin,
   ORCID,
   StackOverflow,
@@ -29,7 +30,7 @@ const ViewResume = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, signIn } = useAuth();
   const { addNotification } = useNotifications();
   const { t } = useTranslation("web");
   const [resume, setResume] = useState<ResumeDetailDto | null>(null);
@@ -46,11 +47,22 @@ const ViewResume = () => {
     setSearchParams({ layout });
   };
 
+  // Only redirect if not authenticated after loading is complete
   useEffect(() => {
+    console.log("🔐 Auth effect: authLoading, isAuthenticated ", { authLoading, isAuthenticated });
+    // Only check authentication after the loading state is complete
     if (!authLoading && !isAuthenticated) {
-      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
-        window.location.href
-      )}`;
+      
+      console.log(
+        "Authentication check complete, not authenticated. Redirecting to login."
+      );
+      if (isProduction) {
+        signIn(window.location.href);
+      } else {
+        signIn(`http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
+          window.location.href
+        )}`);
+      }
     }
   }, [authLoading, isAuthenticated]);
 
