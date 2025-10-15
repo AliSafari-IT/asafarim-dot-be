@@ -8,7 +8,7 @@ const Portfolio = () => {
       title: 'Resume',
       description: 'View my professional experience, skills, and education.',
       icon: '📄',
-      link: '/portfolio/resume',
+      link: '/portfolio/my-react-dotnet-cv-10-10-2025/public',
     },
     {
       id: 'publications',
