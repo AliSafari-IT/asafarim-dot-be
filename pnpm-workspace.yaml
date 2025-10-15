@@ -2,5 +2,6 @@ packages:
   - 'packages/shared-ui-react'
   - 'packages/shared-tokens'
   - 'packages/react-themes'
+  - 'packages/shared-i18n'
   - 'apps/*'
   - 'apis/*'

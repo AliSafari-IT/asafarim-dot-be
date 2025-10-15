@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { initI18n } from "@asafarim/shared-i18n";
 import App from "./App";
 import "./index.css";
 import Home from "./pages/Home";
@@ -8,6 +9,9 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import { NotFound } from "@asafarim/shared-ui-react";
 import Root from "./theme/Root";
+
+// Initialize i18n before rendering
+initI18n();
 import WhatIsBuilding from "./pages/WhatIsBuilding";
 import Portfolio from "./pages/Portfolio";
 import Resume from "./pages/portfolio/resume/Resume";

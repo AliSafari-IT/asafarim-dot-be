@@ -1,17 +1,18 @@
 import { CentralNavbar } from "@asafarim/shared-ui-react";
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { useAuth } from "../hooks/useAuth";
+import { useTranslation } from "@asafarim/shared-i18n";
 
 // Define your navigation links
-const navLinks: NavLinkItem[] = [
+const getNavLinks = (t: (key: string, options?: Record<string, string | number>) => string): NavLinkItem[] => [
   {
     to: "/admin/entities/resumes",
-    label: "Resumes",
+    label: t('navbar.links.resumes.label'),
     external: false,
-    icon: "📄",
+    icon: t('navbar.links.resumes.icon'),
   },
-  { to: "/about", label: "About", external: false, icon: "❓" },
-  { to: "/contact", label: "Contact", external: false, icon: "📞" },
+  { to: "/about", label: t('common:about'), external: false, icon: "❓" },
+  { to: "/contact", label: t('common:contact'), external: false, icon: "📞" },
 ];
 
 // Custom render function for React Router links
@@ -43,6 +44,8 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
 
 export default function Navbar() {
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
+  const { t } = useTranslation('web');
+  const navLinks = getNavLinks(t);
 
   return (
     <CentralNavbar
@@ -53,7 +56,7 @@ export default function Navbar() {
       localLinks={navLinks}
       brand={{
         logo: "/logo.svg",
-        text: "ASafariM Web",
+        text: t('navbar.brand.text'),
         href: "/dashboard",
       }}
       auth={{
@@ -63,13 +66,13 @@ export default function Navbar() {
         onSignIn: signIn,
         onSignOut: signOut,
         labels: {
-          notSignedIn: "Not signed in!",
-          signIn: "Sign In",
-          signOut: "Sign Out",
-          welcome: (email?: string) => `Welcome ${email || "User"}!`,
+          notSignedIn: t('common:notSignedIn', { defaultValue: "Not signed in!" }),
+          signIn: t('common:signIn'),
+          signOut: t('common:signOut'),
+          welcome: (email?: string) => t('common:welcome', { email: email || "User" }),
         },
       }}
-      renderLink={(link, isMobile) => {        
+      renderLink={(link, isMobile) => {
         return renderLink(link, isMobile);
       }}
       breakpoint={768}

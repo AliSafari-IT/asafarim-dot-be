@@ -86,8 +86,32 @@
   /* Background / text tokens */
   --color-bg: #111827;
   --color-text: #f9fafb;
+  --color-text-muted: #9ca3af;
+  --color-text-muted-hover: #d1d5db;
+  --color-foreground: #64748b;
+  --color-foreground-muted: #1e293b;
+  --bg-hover-color: #1f2937;
+  --bg-active-color: #374151;
+  --bg-disabled-color: #4b5563;
+  --bg-focus-color: #6b7280;
+  --bg-focus-visible-color: #9ca3af;
   --color-border: #374151;
   --color-border-muted: #4b5563;
   --color-neutral: #6b7280;
   --color-neutral-muted: #9ca3af;
+
+  /* Border color */
+  --border-color: #374151;
+  --border-hover-color: #4b5563;
+  --border-active-color: #6b7280;
+  --border-disabled-color: #9ca3af;
+  --border-focus-color: #9ca3af;
+  --border-focus-visible-color: #9ca3af;
+
+  /* focus colors */
+  --focus-color: #1d4ed8;
+  --focus-border-color: #4972fa;
+  --focus-border-visible-color: #284191;
+  --focus-visible-color: #073bc9;
+  --focus-visible-border-color: #284191;
 }

@@ -3,7 +3,6 @@ import { useParams, useSearchParams } from "react-router-dom";
 import {
   Github,
   Google,
-  isProduction,
   Linkedin,
   NotFound,
   ORCID,
@@ -16,6 +15,7 @@ import {
 import { LayoutSelector } from "../../admin/resume/layouts/LayoutSelector";
 import { type LayoutType } from "../../admin/resume/layouts/types";
 import { PrintLayout } from "../../admin/resume/layouts/PrintLayout";
+import { useTranslation } from "@asafarim/shared-i18n";
 import "./public-resume.css";
 
 const PublicResumeView = () => {
@@ -27,6 +27,7 @@ const PublicResumeView = () => {
   const [currentLayout, setCurrentLayout] = useState<LayoutType>(
     (searchParams.get("layout") as LayoutType) || "online"
   );
+  const { t } = useTranslation('web');
 
   const handleLayoutChange = (layout: LayoutType) => {
     setCurrentLayout(layout);
@@ -36,7 +37,7 @@ const PublicResumeView = () => {
   useEffect(() => {
     const loadPublicResume = async () => {
       if (!publicSlug) {
-        setError("Invalid resume link");
+        setError(t('resume.messages.invalidLink'));
         setLoading(false);
         return;
       }
@@ -48,7 +49,7 @@ const PublicResumeView = () => {
         setError(null);
       } catch (err) {
         console.error("Failed to load public resume:", err);
-        setError(err instanceof Error ? err.message : "Failed to load resume");
+        setError(err instanceof Error ? err.message : t('resume.error'));
         setResume(null);
       } finally {
         setLoading(false);
@@ -56,7 +57,7 @@ const PublicResumeView = () => {
     };
 
     loadPublicResume();
-  }, [publicSlug]);
+  }, [publicSlug, t]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -117,7 +118,7 @@ const PublicResumeView = () => {
         <div className="public-resume-container">
           <div className="loading-state">
             <div className="loading-spinner"></div>
-            <p>Loading resume...</p>
+            <p>{t('resume.loading')}</p>
           </div>
         </div>
       </div>
@@ -131,7 +132,7 @@ const PublicResumeView = () => {
           <NotFound
             title="Resume Not Found"
             message={
-              error || "This resume is not available or has been unpublished."
+              error || t('resume.messages.notAvailable')
             }
           />
         </div>
@@ -171,7 +172,7 @@ const PublicResumeView = () => {
           <h1 className="resume-title">{resume.title}</h1>
           {resume.publishedAt && (
             <p className="published-date">
-              Published: {formatDate(resume.publishedAt)}
+              {t('resume.published')}: {formatDate(resume.publishedAt)}
             </p>
           )}
         </header>
@@ -181,7 +182,7 @@ const PublicResumeView = () => {
           {/* Professional Summary */}
           {resume.summary && (
             <section className="resume-section">
-              <h2 className="section-title">Professional Summary</h2>
+              <h2 className="section-title">{t('resume.sections.summary.title')}</h2>
               <div className="section-content">
                 <p className="summary-text">{resume.summary}</p>
               </div>
@@ -190,9 +191,9 @@ const PublicResumeView = () => {
 
           {/* Work Experience */}
           {resume.workExperiences && resume.workExperiences.length > 0 && (
-            <section className="resume-view-section">
+            <section className="resume-section">
               <div className="section-header">
-                <h2 className="section-title">Work Experiences</h2>
+                <h2 className="section-title">{t('resume.sections.experience.title')}</h2>
                 <span className="section-count">
                   {resume.workExperiences.length}
                 </span>
@@ -207,7 +208,7 @@ const PublicResumeView = () => {
                           <h3 className="item-title">{exp.jobTitle}</h3>
                           <span className="item-date">
                             {formatDate(exp.startDate)} -{" "}
-                            {exp.endDate ? formatDate(exp.endDate) : "Present"}
+                            {exp.endDate ? formatDate(exp.endDate) : t('resume.sections.experience.present')}
                           </span>
                         </div>
                         <div className="item-subtitle">
@@ -252,7 +253,7 @@ const PublicResumeView = () => {
           {/* Skills */}
           {resume.skills && resume.skills.length > 0 && (
             <section className="resume-section">
-              <h2 className="section-title">Skills</h2>
+              <h2 className="section-title">{t('resume.sections.skills.title')}</h2>
               <div className="section-content">
                 <div className="skills-grid">
                   {resume.skills.map((skill, index) => (
@@ -263,9 +264,9 @@ const PublicResumeView = () => {
                       </div>
                       <div className="skill-meta">
                         <span className="skill-category">
-                          📁 {skill.category}
+                          {t('resume.sections.skills.categories.category', { category: skill.category })}
                         </span>
-                        <span className="skill-level">📊 {skill.level}</span>
+                        <span className="skill-level">{t('resume.sections.skills.categories.level', { level: skill.level })}</span>
                       </div>
                     </div>
                   ))}
@@ -277,23 +278,23 @@ const PublicResumeView = () => {
           {/* Education */}
           {resume.educationItems && resume.educationItems.length > 0 && (
             <section className="resume-section">
-              <h2 className="section-title">Education</h2>
+              <h2 className="section-title">{t('resume.sections.education.title')}</h2>
               <div className="section-content">
                 <div className="education-grid">
                   {resume.educationItems.map((edu, index) => (
                     <div key={index} className="education-card">
-                      <h3 className="education-degree">{edu.degree}</h3>
+                      <h3 className="education-degree">{t('resume.sections.education.degree', { degree: edu.degree })}</h3>
                       <div className="education-institution">
                         {edu.institution}
                       </div>
                       {edu.fieldOfStudy && (
                         <div className="education-field">
-                          {edu.fieldOfStudy}
+                          {t('resume.sections.education.field', { field: edu.fieldOfStudy })}
                         </div>
                       )}
                       <div className="education-dates">
                         {formatDate(edu.startDate)} -{" "}
-                        {edu.endDate ? formatDate(edu.endDate) : "Present"}
+                        {edu.endDate ? formatDate(edu.endDate) : t('resume.sections.education.present')}
                       </div>
                       {edu.description && (
                         <p className="education-description">
@@ -310,7 +311,7 @@ const PublicResumeView = () => {
           {/* Certificates */}
           {resume.certificates && resume.certificates.length > 0 && (
             <section className="resume-section">
-              <h2 className="section-title">Certificates</h2>
+              <h2 className="section-title">{t('resume.sections.certificates.title')}</h2>
               <div className="section-content">
                 <div className="certificates-grid">
                   {resume.certificates.map((cert, index) => (
@@ -318,9 +319,9 @@ const PublicResumeView = () => {
                       <h3 className="certificate-name">{cert.name}</h3>
                       <div className="certificate-issuer">{cert.issuer}</div>
                       <div className="certificate-dates">
-                        Issued: {formatDate(cert.issueDate)}
+                        {t('resume.sections.certificates.issued', { date: formatDate(cert.issueDate) })}
                         {cert.expiryDate &&
-                          ` • Expires: ${formatDate(cert.expiryDate)}`}
+                          ` • ${t('resume.sections.certificates.expires', { date: formatDate(cert.expiryDate) })}`}
                       </div>
                       {cert.credentialUrl && (
                         <a
@@ -329,7 +330,7 @@ const PublicResumeView = () => {
                           rel="noopener noreferrer"
                           className="certificate-link"
                         >
-                          View Certificate →
+                          {t('resume.sections.certificates.viewCertificate')}
                         </a>
                       )}
                     </div>
@@ -342,7 +343,7 @@ const PublicResumeView = () => {
           {/* Projects */}
           {resume.projects && resume.projects.length > 0 && (
             <section className="resume-section">
-              <h2 className="section-title">Projects</h2>
+              <h2 className="section-title">{t('resume.sections.projects.title')}</h2>
               <div className="section-content">
                 <div className="projects-grid">
                   {resume.projects.map((project, index) => (
@@ -356,7 +357,7 @@ const PublicResumeView = () => {
                             rel="noopener noreferrer"
                             className="project-link"
                           >
-                            Visit →
+                            {t('resume.sections.projects.visit')}
                           </a>
                         )}
                       </div>
@@ -383,7 +384,7 @@ const PublicResumeView = () => {
           {/* Languages */}
           {resume.languages && resume.languages.length > 0 && (
             <section className="resume-section">
-              <h2 className="section-title">Languages</h2>
+              <h2 className="section-title">{t('resume.sections.languages.title')}</h2>
               <div className="section-content">
                 <div className="languages-grid">
                   {resume.languages.map((lang, index) => (
@@ -400,7 +401,7 @@ const PublicResumeView = () => {
                         .replace(/\s+/g, "-")}`}`}
                     >
                       <h3 className="language-name">{lang.name}</h3>
-                      <div className="language-level">{lang.level}</div>
+                      <div className="language-level">{t('resume.sections.languages.level', { level: lang.level })}</div>
                     </div>
                   ))}
                 </div>
@@ -411,7 +412,7 @@ const PublicResumeView = () => {
           {/* Awards */}
           {resume.awards && resume.awards.length > 0 && (
             <section className="resume-section">
-              <h2 className="section-title">Awards & Achievements</h2>
+              <h2 className="section-title">{t('resume.sections.awards.title')}</h2>
               <div className="section-content">
                 <div className="awards-grid">
                   {resume.awards.map((award, index) => (
@@ -419,7 +420,7 @@ const PublicResumeView = () => {
                       <div className="award-header">
                         <h3 className="award-title">{award.title}</h3>
                         <span className="award-date">
-                          {formatDate(award.awardedDate)}
+                          {t('resume.sections.awards.awarded', { date: formatDate(award.awardedDate) })}
                         </span>
                       </div>
                       <div className="award-issuer">{award.issuer}</div>
@@ -437,7 +438,7 @@ const PublicResumeView = () => {
           {resume.socialLinks && resume.socialLinks.length > 0 && (
             <section className="resume-view-section">
               <div className="section-header">
-                <h2 className="section-title">Social Links</h2>
+                <h2 className="section-title">{t('resume.sections.socialLinks.title')}</h2>
                 <span className="section-count">
                   {resume.socialLinks.length}
                 </span>
@@ -499,7 +500,7 @@ const PublicResumeView = () => {
             <section className="resume-view-section">
               <div className="section-header">
                 <h2 className="section-title">
-                  References
+                  {t('resume.sections.references.title')}
                 </h2>
                 <span className="section-count">
                   {resume.references.length}
@@ -525,20 +526,7 @@ const PublicResumeView = () => {
         {/* Footer */}
         <footer className="public-resume-footer no-print">
           <p className="privacy-notice">
-            This resume is publicly shared with consent. For privacy inquiries,
-            please refer to our{" "}
-            <a
-              href={
-                isProduction
-                  ? "https://blog.asafarim.be/docs/LegalDocs/privacy-policy/"
-                  : "https://blog.asafarim.local/docs/LegalDocs/privacy-policy/"
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Privacy Policy
-            </a>
-            .
+            {t('resume.messages.privacyNotice')}
           </p>
         </footer>
       </div>

@@ -1,0 +1,289 @@
+{
+  "home": {
+    "hero": {
+      "title": "ASafariM • Multi-framework monorepo",
+      "subtitle": "Multi-framework frontends (React, Angular, Docusaurus)",
+      "description": ".NET 8+ APIs with clean architecture and typed clients",
+      "tagline": "Shared tokens and UI for consistent theming"
+    },
+    "features": {
+      "whatBuilding": {
+        "title": "What I'm Building Now",
+        "description": "A 'What I'm Building Now' feed from GitHub commits"
+      },
+      "ai": {
+        "title": "AI",
+        "description": "AI with clean architecture, typed clients, and SSO"
+      },
+      "core": {
+        "title": "Core Apps",
+        "description": "Users & Projects with clean architecture, typed clients, and SSO"
+      },
+      "jobs": {
+        "title": "Jobs Tracker",
+        "description": "Track applications and interviews. Angular UI + .NET Jobs API"
+      },
+      "blog": {
+        "title": "Blog & Docs",
+        "description": "Docusaurus TS with shared header/footer and tokens"
+      }
+    },
+    "monorepo": {
+      "title": "What's inside this monorepo?",
+      "items": {
+        "tokens": "Shared tokens (CSS variables) for theme parity",
+        "apps": "Web, Core, AI (React TS) + Jobs (Angular TS)",
+        "blog": "Docusaurus blog with shared header/footer",
+        "apis": ".NET APIs (Identity, Core, AI, Jobs) with typed clients"
+      }
+    }
+  },
+  "about": {
+    "title": "About",
+    "description": "Fullstack .NET & React Developer",
+    "subtitle": "I build scalable, maintainable, and interactive applications — from backend APIs in ASP.NET Core to modern UIs in React & TypeScript. Passionate about performance, clean code, and data-driven solutions.",
+    "viewResume": "View Resume",
+    "contactMe": "Contact Me",
+    "whatIDo": {
+      "title": "What I Do",
+      "backend": {
+        "title": "Backend with .NET",
+        "description": "Building secure and scalable REST APIs with ASP.NET Core, EF Core, and SQL databases."
+      },
+      "frontend": {
+        "title": "Frontend with React",
+        "description": "Creating interactive, responsive UIs with React, TypeScript, and TailwindCSS."
+      },
+      "fullstack": {
+        "title": "Fullstack Delivery",
+        "description": "Combining backend + frontend into production-ready solutions, with CI/CD pipelines and cloud deployment."
+      }
+    },
+    "skills": {
+      "title": "Key Skills",
+      "frontend": "Frontend: React (TypeScript), Redux, Tailwind, Syncfusion",
+      "backend": "Backend: ASP.NET Core, Entity Framework, SignalR, REST APIs",
+      "databases": "Databases: SQL Server, MySQL, MongoDB",
+      "data": "Data & Visualization: D3.js, R, R.Net",
+      "devops": "DevOps & Tools: Git, Azure DevOps, Docker, Swagger, TestCafe"
+    },
+    "experience": {
+      "title": "Recent Experience",
+      "xitechnix": {
+        "title": "XiTechniX (2020–2023)",
+        "description": "Fullstack Scientific App Developer. Delivered .NET Core + React applications for scientific and business domains."
+      },
+      "irc": {
+        "title": "IRC Engineering (2020)",
+        "description": "Internship – Developed energy consumption visualizations using C# and R.Net."
+      },
+      "vmm": {
+        "title": "Flanders Environment Agency (2018–2019)",
+        "description": "Internship – Enhanced hydrologic models (FORTRAN, WetSpa) for river flow simulations."
+      }
+    },
+    "background": {
+      "title": "Background",
+      "appliedIT": {
+        "title": "Applied Information Technology - Programming",
+        "school": "Thomas More, Sint-Katelijne-Waver",
+        "description": "Transitioned into software engineering with a focus on fullstack development and data development."
+      },
+      "phd": {
+        "title": "PhD in Engineering Hydrology",
+        "school": "VUB, Brussels",
+        "description": "Strong expertise in modeling and data analysis. Transitioned into scientific software development with a focus on numerical modeling."
+      },
+      "bsc": {
+        "title": "B.Sc. & M.Sc. in Natural Resources Engineering",
+        "school": "Tehran University",
+        "description": "Solid foundation in environmental science and engineering."
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "hero": {
+      "title": "Let's Build Something Amazing Together",
+      "subtitle": "As a fullstack developer specializing in .NET and React, I'm ready to help bring your project to life. Whether you need a scalable API, an interactive web application, or end-to-end development."
+    },
+    "services": {
+      "backend": {
+        "title": "Backend Development",
+        "description": "ASP.NET Core APIs, Entity Framework, SQL databases"
+      },
+      "frontend": {
+        "title": "Frontend Development",
+        "description": "React, TypeScript, Tailwind, Modern UI/UX"
+      },
+      "fullstack": {
+        "title": "Full Project Delivery",
+        "description": "End-to-end solutions with CI/CD and cloud deployment"
+      }
+    },
+    "form": {
+      "newConversation": "Start New Conversation",
+      "replyToConversation": "Reply to Conversation {{reference}}",
+      "referenceNumber": "Reference Number",
+      "referencePrevious": "Reference Previous",
+      "selectConversation": "Select a conversation to reference",
+      "name": "Name",
+      "email": "Email",
+      "projectType": "Project Type",
+      "projectTypePlaceholder": "e.g., Full-stack Application, API Development, Frontend UI",
+      "projectDetails": "Project Details",
+      "projectDetailsPlaceholder": "Please describe your project, timeline, and any specific requirements...",
+      "attachments": {
+        "title": "Attachments & Links",
+        "addFile": "Add File",
+        "addLink": "Add Link",
+        "enterUrl": "Please enter a URL:",
+        "invalidUrl": "Please enter a valid URL"
+      },
+      "submit": {
+        "sending": "Sending...",
+        "submit": "Let's Discuss Your Project",
+        "success": "Thank you for your message! We've received your inquiry and will get back to you soon.",
+        "error": "Failed to send message"
+      }
+    },
+    "conversations": {
+      "title": "My Conversations",
+      "show": "Show Conversations",
+      "hide": "Hide Conversations",
+      "empty": "No conversations found",
+      "reply": "Reply to this conversation",
+      "referringTo": "Referring to conversation:",
+      "links": "Links:",
+      "attachments": "Attachments:"
+    },
+    "info": {
+      "whyWorkWithMe": "Why Work With Me?",
+      "expertise": "Expert in both frontend and backend development",
+      "scientific": "Strong background in scientific applications",
+      "visualization": "Experience with complex data visualization",
+      "delivery": "Proven track record in project delivery",
+      "contactInfo": "Contact Information",
+      "email": "contact@asafarim.com",
+      "location": "Hasselt, België",
+      "availability": "Available for freelance projects"
+    }
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "description": "View my work and projects"
+  },
+  "resume": {
+    "loading": "Loading resume...",
+    "error": "Failed to load resume details",
+    "notFound": "Resume not found",
+    "backToResumes": "Back to Resumes",
+    "published": "Published",
+    "publishedAt": "Published: {{date}}",
+    "sections": {
+      "summary": {
+        "title": "Professional Summary"
+      },
+      "experience": {
+        "title": "Work Experiences",
+        "count": "{{count}} experience",
+        "count_plural": "{{count}} experiences",
+        "present": "Present",
+        "achievements": "Achievements"
+      },
+      "skills": {
+        "title": "Skills",
+        "count": "{{count}} skill",
+        "count_plural": "{{count}} skills",
+        "categories": {
+          "category": "��� {{category}}",
+          "level": "��� {{level}}"
+        }
+      },
+      "education": {
+        "title": "Education",
+        "count": "{{count}} education",
+        "count_plural": "{{count}} educations",
+        "degree": "{{degree}}",
+        "field": "{{field}}",
+        "present": "Present"
+      },
+      "certificates": {
+        "title": "Certificates",
+        "count": "{{count}} certificate",
+        "count_plural": "{{count}} certificates",
+        "issued": "Issued: {{date}}",
+        "expires": "Expires: {{date}}",
+        "viewCertificate": "View Certificate →",
+        "credentialId": "ID: {{id}}"
+      },
+      "projects": {
+        "title": "Projects",
+        "count": "{{count}} project",
+        "count_plural": "{{count}} projects",
+        "visit": "Visit →"
+      },
+      "languages": {
+        "title": "Languages",
+        "count": "{{count}} language",
+        "count_plural": "{{count}} languages",
+        "level": "{{level}}"
+      },
+      "awards": {
+        "title": "Awards & Achievements",
+        "count": "{{count}} award",
+        "count_plural": "{{count}} awards",
+        "awarded": "{{date}}",
+        "issuer": "{{issuer}}"
+      },
+      "references": {
+        "title": "References",
+        "count": "{{count}} reference",
+        "count_plural": "{{count}} references"
+      },
+      "socialLinks": {
+        "title": "Social Links",
+        "count": "{{count}} link",
+        "count_plural": "{{count}} links"
+      }
+    },
+    "actions": {
+      "editResume": "Edit Resume",
+      "publishResume": "��� Publish Resume",
+      "unpublish": "��� Unpublish",
+      "copyShareLink": "��� Copy Share Link",
+      "exportPDF": "Export PDF",
+      "backToResumes": "← Back to Resumes"
+    },
+    "messages": {
+      "publishedSuccess": "Resume published successfully!",
+      "publishedInfo": "Share link: {{url}}",
+      "unpublishedSuccess": "Resume unpublished successfully",
+      "unpublishedError": "Failed to unpublish resume",
+      "copySuccess": "Share link copied to clipboard!",
+      "copyError": "Failed to copy link. Please copy manually: {{url}}",
+      "invalidLink": "Invalid resume link",
+      "notAvailable": "This resume is not available or has been unpublished.",
+      "privacyNotice": "This resume is publicly shared with consent. For privacy inquiries, please refer to our Privacy Policy."
+    }
+  },
+  "navbar": {
+    "brand": {
+      "text": "ASafariM Web"
+    },
+    "links": {
+      "resumes": {
+        "label": "Resumes",
+        "icon": "📄"
+      },
+      "about": {
+        "label": "About",
+        "icon": "❓"
+      },
+      "contact": {
+        "label": "Contact",
+        "icon": "✉️"
+      }
+    }
+  }
+}

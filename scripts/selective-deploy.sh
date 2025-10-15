@@ -296,10 +296,12 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
     
     cd "$REPO_DIR"
     
-    # Build shared packages first
+    # Build shared packages first: @asafarim/shared-ui-react, @asafarim/shared-i18n, @asafarim/react-themes
     print_info "Building shared packages..."
-    cd "$REPO_DIR/packages/shared-ui-react"
-    pnpm build
+    pnpm rm:nm && pnpm i
+    pnpm --filter @asafarim/shared-i18n build
+    pnpm --filter @asafarim/react-themes build
+    pnpm --filter @asafarim/shared-ui-react build
     print_success "Shared packages built"
     cd "$REPO_DIR"
     

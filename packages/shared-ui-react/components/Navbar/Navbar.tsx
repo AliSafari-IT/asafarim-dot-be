@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import AuthStatus from '../Auth/AuthStatus';
-import { ThemeToggle } from '@asafarim/react-themes';
-import type { NavbarProps, NavLinkItem } from './types';
-import './Navbar.css';
+import React, { useState, useEffect } from "react";
+import AuthStatus from "../Auth/AuthStatus";
+import { ThemeToggle } from "@asafarim/react-themes";
+import type { NavbarProps, NavLinkItem } from "./types";
+import "./Navbar.css";
+import { LanguageSwitcher } from "../LanguageSwitcher";
 
-const defaultRenderLink = (link: NavLinkItem, isMobile = false): React.ReactNode => {
+const defaultRenderLink = (
+  link: NavLinkItem,
+  isMobile = false
+): React.ReactNode => {
   if (link.external) {
     return (
       <a
         href={link.to}
         target="_blank"
         rel="noopener noreferrer"
-        className={`nav-link ${isMobile ? 'nav-link--mobile' : ''}`}
+        className={`nav-link ${isMobile ? "nav-link--mobile" : ""}`}
         data-nav-link="true"
       >
         {link.icon && <span className="nav-link__icon">{link.icon}</span>}
@@ -19,13 +23,13 @@ const defaultRenderLink = (link: NavLinkItem, isMobile = false): React.ReactNode
       </a>
     );
   }
-  
+
   return (
     <a
       href={link.to}
-      className={`nav-link ${isMobile ? 'nav-link--mobile' : ''}`}
+      className={`nav-link ${isMobile ? "nav-link--mobile" : ""}`}
       data-nav-link="true"
-      {...(link.to === '#' ? { 'data-keep-menu-open': 'true' } : {})}
+      {...(link.to === "#" ? { "data-keep-menu-open": "true" } : {})}
     >
       {link.icon && <span className="nav-link__icon">{link.icon}</span>}
       {link.label}
@@ -33,8 +37,12 @@ const defaultRenderLink = (link: NavLinkItem, isMobile = false): React.ReactNode
   );
 };
 
-const defaultRenderBrand = (brand: { logo?: string; text: string; href?: string }): React.ReactNode => (
-  <a href={brand?.href || '/'} className="brand" aria-label="Home">
+const defaultRenderBrand = (brand: {
+  logo?: string;
+  text: string;
+  href?: string;
+}): React.ReactNode => (
+  <a href={brand?.href || "/"} className="brand" aria-label="Home">
     {brand.logo && <img src={brand.logo} alt="logo" className="brand__logo" />}
     <span className="brand__text">{brand.text}</span>
   </a>
@@ -45,14 +53,14 @@ export const Navbar = ({
   brand,
   breakpoint = 768,
   mobileMenuBreakpoint = 520,
-  className = '',
+  className = "",
   auth,
   renderLink = defaultRenderLink,
   renderBrand = defaultRenderBrand,
 }: NavbarProps): React.ReactNode => {
   const [open, setOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
-    typeof window !== 'undefined' ? window.innerWidth : 1200
+    typeof window !== "undefined" ? window.innerWidth : 1200
   );
 
   useEffect(() => {
@@ -61,13 +69,13 @@ export const Navbar = ({
       if (window.innerWidth >= breakpoint) setOpen(false);
     };
 
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, [breakpoint]);
 
   const Links = ({ vertical = false }: { vertical?: boolean }) => (
     <ul
-      className={`nav-list ${vertical ? 'nav-list--vertical' : ''}`}
+      className={`nav-list ${vertical ? "nav-list--vertical" : ""}`}
       role="list"
     >
       {links?.map((link, index) => (
@@ -75,11 +83,11 @@ export const Navbar = ({
           key={index}
           onClick={(e) => {
             const target = e.target as HTMLElement;
-            if (target.closest('[data-keep-menu-open]')) return;
+            if (target.closest("[data-keep-menu-open]")) return;
 
-            const anchor = target.closest('a');
-            const href = anchor?.getAttribute('href') || '';
-            const isRealNav = !!anchor && href !== '#' && href !== '';
+            const anchor = target.closest("a");
+            const href = anchor?.getAttribute("href") || "";
+            const isRealNav = !!anchor && href !== "#" && href !== "";
             if (isRealNav) setOpen(false);
           }}
         >
@@ -97,7 +105,11 @@ export const Navbar = ({
       <div className="nav-wrap">
         <div className="nav-row">
           {/* Left: brand */}
-          {renderBrand({logo: brand?.logo, text: `${brand?.text}`, href: brand?.href})}
+          {renderBrand({
+            logo: brand?.logo,
+            text: `${brand?.text}`,
+            href: brand?.href,
+          })}
 
           {/* Center: links (desktop only) */}
           <div className="nav-center">
@@ -117,8 +129,9 @@ export const Navbar = ({
                 onSignOut={auth.onSignOut}
               />
             )}
-            
-            <div className={`theme-in-header ${open ? 'is-hidden' : ''}`}>
+
+            <div className={`theme-in-header ${open ? "is-hidden" : ""}`}>
+              <LanguageSwitcher variant="toggle" />
               <ThemeToggle className="navbar-theme-toggle" />
             </div>
 
@@ -131,33 +144,34 @@ export const Navbar = ({
               aria-controls="mobile-menu"
               onClick={() => setOpen((v) => !v)}
             >
-              <span className={`hamburger__bar ${open ? 'x1' : ''}`} />
-              <span className={`hamburger__bar ${open ? 'x2' : ''}`} />
-              <span className={`hamburger__bar ${open ? 'x3' : ''}`} />
+              <span className={`hamburger__bar ${open ? "x1" : ""}`} />
+              <span className={`hamburger__bar ${open ? "x2" : ""}`} />
+              <span className={`hamburger__bar ${open ? "x3" : ""}`} />
             </button>
           </div>
         </div>
       </div>
 
       {/* Mobile dropdown */}
-      <div id="mobile-menu" className={`mobile-menu ${open ? 'open' : ''}`}>
+      <div id="mobile-menu" className={`mobile-menu ${open ? "open" : ""}`}>
         <div className="mobile-inner">
           <Links vertical />
           <div className="theme-in-menu">
-            <ThemeToggle className="navbar-theme-toggle" />
+            <LanguageSwitcher variant="creative" />
             {auth && showAuthInMenu && (
               <AuthStatus
                 isAuthenticated={auth.isAuthenticated}
                 user={auth.user}
                 loading={auth.loading}
                 labels={{
-                  notSignedIn: '',
+                  notSignedIn: "",
                   ...auth.labels,
                 }}
                 onSignIn={auth.onSignIn}
                 onSignOut={auth.onSignOut}
               />
             )}
+            <ThemeToggle className="navbar-theme-toggle" />
           </div>
         </div>
       </div>

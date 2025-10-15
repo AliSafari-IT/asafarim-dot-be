@@ -48,7 +48,7 @@
 .public-resume-header {
   padding: var(--space-12) var(--space-8) var(--space-8);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: var(--color-foreground);
   text-align: center;
 }
 
@@ -76,23 +76,40 @@
   margin-bottom: 0;
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
 .section-title {
   font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-foreground);
-  margin: 0 0 var(--space-6) 0;
+  margin: 0;
   padding-bottom: var(--space-2);
   border-bottom: 2px solid var(--color-primary);
+  flex: 1;
+}
+
+.section-count {
+  background: var(--color-primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-left: var(--space-4);
 }
 
 .section-content {
-  color: var(--color-secondary);
+  color: var(--color-text);
 }
 
 .summary-text {
   font-size: 1.1rem;
   line-height: 1.8;
-  color: var(--color-secondary);
 }
 
 /* Timeline Styles */
@@ -270,7 +287,6 @@
 .education-degree {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-foreground);
   margin: 0 0 0.5rem;
 }
 
@@ -282,20 +298,17 @@
 }
 
 .education-field {
-  color: var(--color-foreground-muted);
   margin-bottom: 0.5rem;
 }
 
 .education-dates {
   font-size: 0.9rem;
-  color: var(--color-foreground-muted);
   margin-bottom: 0.75rem;
 }
 
 .education-description {
   margin-top: 0.75rem;
   line-height: 1.6;
-  color: var(--color-foreground-muted);
 }
 
 /* Certificates Grid */
@@ -327,7 +340,6 @@
 
 .certificate-dates {
   font-size: 0.85rem;
-  color: var(--color-foreground-muted);
   margin-bottom: 0.75rem;
 }
 
@@ -384,7 +396,6 @@
 
 .project-description {
   line-height: 1.6;
-  color: var(--color-foreground-muted);
   margin-bottom: 1rem;
 }
 
@@ -429,7 +440,6 @@
 
 .language-level {
   font-size: var(--text-base);
-  color: var(--color-foreground-muted);
   font-weight: 500;
 }
 
@@ -464,18 +474,15 @@
 
 .award-date {
   font-size: var(--text-sm);
-  color: var(--color-foreground-muted);
 }
 
 .award-issuer {
   font-weight: 500;
-  color: var(--color-primary);
   margin-bottom: var(--space-3);
 }
 
 .award-description {
   line-height: 1.6;
-  color: var(--color-foreground-muted);
 }
 
 /* Social Links */
@@ -513,7 +520,6 @@
 
 .privacy-notice {
   font-size: var(--text-sm);
-  color: var(--color-foreground-muted);
   margin: 0;
 }
 

@@ -71,15 +71,19 @@ builder.Services.PostConfigure<AuthOptions>(opts =>
 // Configure database with connection pooling and retry logic
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), npgsqlOptions =>
-    {
-        npgsqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 3,
-            maxRetryDelay: TimeSpan.FromSeconds(5),
-            errorCodesToAdd: null);
-        npgsqlOptions.CommandTimeout(30);
-    });
-    
+    opt.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        npgsqlOptions =>
+        {
+            npgsqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(5),
+                errorCodesToAdd: null
+            );
+            npgsqlOptions.CommandTimeout(30);
+        }
+    );
+
     if (builder.Environment.IsDevelopment())
     {
         opt.EnableSensitiveDataLogging();
@@ -225,7 +229,9 @@ builder.Services.AddCors(opt =>
                     .SetPreflightMaxAge(TimeSpan.FromHours(24)); // Reduce preflight requests
 
                 // Log the allowed origins for debugging
-                Console.WriteLine($"[CORS] Allowed origins for credentials: {string.Join(", ", allowedOrigins)}");
+                Console.WriteLine(
+                    $"[CORS] Allowed origins for credentials: {string.Join(", ", allowedOrigins)}"
+                );
             }
         }
     )
@@ -268,12 +274,16 @@ app.MapGet(
 );
 
 // Add a dedicated endpoint for clearing cookies with Clear-Site-Data header
-app.MapGet("/clear-cookies", (HttpContext httpContext) => {
-    // Add Clear-Site-Data header directly to the HttpContext
-    httpContext.Response.Headers.Append("Clear-Site-Data", "\"cookies\"");
-    Console.WriteLine("[clear-cookies] Sent Clear-Site-Data header");
-    return Results.Ok(new { cleared = true });
-});
+app.MapGet(
+    "/clear-cookies",
+    (HttpContext httpContext) =>
+    {
+        // Add Clear-Site-Data header directly to the HttpContext
+        httpContext.Response.Headers.Append("Clear-Site-Data", "\"cookies\"");
+        Console.WriteLine("[clear-cookies] Sent Clear-Site-Data header");
+        return Results.Ok(new { cleared = true });
+    }
+);
 
 // Run the app with automatic migrations
 app.MigrateDatabase<AppDbContext>().Run();

@@ -1,18 +1,22 @@
 // Hero component
 import { Hero as SharedHero } from "@asafarim/shared-ui-react";
+import { useTranslation } from "@asafarim/shared-i18n";
 
 export default function Hero() {
+    const { t } = useTranslation('web');
+    
     const kicker = "ASafariM";
-    const title = "ASafariM • Multi‑framework monorepo";
-    const subtitle = "Multi‑framework frontends (React, Angular, Docusaurus)";
+    const title = t('home.hero.title');
+    const subtitle = t('home.hero.subtitle');
     const bullets = [
-        ".NET 8+ APIs with clean architecture and typed clients",
-        "Shared tokens and UI for consistent theming",
+        t('home.hero.description'),
+        t('home.hero.tagline'),
     ];
-    const primaryCta = { label: "Explore Apps", to: "/about" };
-    const secondaryCta = { label: "Contact Me", to: "/contact" };
+    const primaryCta = { label: t('common:about'), to: "/about" };
+    const secondaryCta = { label: t('common:contact'), to: "/contact" };
     const media = null;
     const className = "";
+    
     return <SharedHero 
         kicker={kicker}
         title={title}

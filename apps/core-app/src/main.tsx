@@ -7,12 +7,16 @@ import {
   NotificationProvider
 } from '@asafarim/shared-ui-react'
 import { RouterProvider } from 'react-router-dom'
+import { initI18n } from '@asafarim/shared-i18n'
 import JobEdit from './components/JobTracker/JobEdit'
 import JobView from './components/JobTracker/JobView'
 import CoreAppHome from './pages/CoreAppHome'
 import { createBrowserRouter } from 'react-router-dom'
 import JobTracker from './components/JobTracker/JobTracker'
 import { ToastProvider } from '@asafarim/toast'
+
+// Initialize i18n before rendering
+initI18n();
 
 const router = createBrowserRouter([
   {

@@ -18,10 +18,11 @@
     "typecheck": "tsc"
   },
   "peerDependencies": {
-    "@asafarim/shared-ui-react": "workspace:*"
   },
   "dependencies": {
     "@asafarim/react-themes": "workspace:*",
+    "@asafarim/shared-i18n": "workspace:*",
+    "@asafarim/shared-ui-react": "workspace:*",
     "@docusaurus/preset-classic": "3.9.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",

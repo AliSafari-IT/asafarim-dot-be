@@ -10,6 +10,8 @@
   --color-surface: #f5f5f5;
   --color-surface-muted: #f8f9fa;
   --color-text: #111111;
+  --color-foreground: #1e293b;
+  --color-foreground-muted: #64748b;
   --color-text-muted: #666666;
   --color-text-muted-hover: #999999;
 
@@ -70,12 +72,33 @@
 
   /* Semantic colors (updated) */
 
-
   /* Background / text tokens */
   --color-bg: var(--color-neutral-0);
+  --color-bg-muted: var(--color-neutral-100);
   --color-text: var(--color-neutral-900);
+  --color-text-muted: var(--color-neutral-100);
+  --color-text-muted-hover: var(--color-neutral-200);
+  --bg-hover-color: var(--color-neutral-100);
+  --bg-active-color: var(--color-neutral-200);
+  --bg-disabled-color: var(--color-neutral-100);
+  --bg-focus-color: var(--color-neutral-200);
+  --bg-focus-visible-color: var(--color-neutral-200);
   --color-border: var(--color-neutral-200);
   --color-border-muted: var(--color-neutral-100);
   --color-neutral: var(--color-neutral-600);
   --color-neutral-muted: var(--color-neutral-400);
+  /* Border color */
+  --border-color: var(--color-neutral-200);
+  --border-hover-color: var(--color-neutral-400);
+  --border-active-color: var(--color-neutral-600);
+  --border-disabled-color: var(--color-neutral-100);
+  --border-focus-color: var(--color-neutral-600);
+  --border-focus-visible-color: var(--color-neutral-600);
+
+  /* focus colors */
+  --focus-color: var(--color-primary-600);
+  --focus-border-color: var(--color-primary-500);
+  --focus-border-visible-color: var(--color-primary-700);
+  --focus-visible-color: var(--color-primary-600);
+  --focus-visible-border-color: var(--color-primary-700);
 }

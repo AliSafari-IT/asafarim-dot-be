@@ -11,6 +11,7 @@ import { ButtonComponent as Button, Eye, EyeOff, useAuth, useNotifications } fro
 import React from "react";
 import { API_BASE_URL } from "../config/api";
 import { apiGet } from "../api/core";
+import { useTranslation } from "@asafarim/shared-i18n";
 
 // Generate a unique reference number for new conversations
 const generateReferenceNumber = (): string => {
@@ -66,6 +67,7 @@ interface FormStatus {
 export default function Contact() {
   const { user, token } = useAuth();
   const { addNotification } = useNotifications();
+  const { t } = useTranslation('web');
   const [email, setEmail] = useState(user?.email || "");
   const [name, setName] = useState(user?.name || user?.userName || "");
   const [conversations, setConversations] = useState<Conversation[]>();
@@ -201,14 +203,14 @@ export default function Contact() {
   };
 
   const handleAddLink = () => {
-    const link = prompt("Please enter a URL:");
+    const link = prompt(t('contact.form.attachments.enterUrl'));
     if (link && isValidUrl(link)) {
       setFormData((prev) => ({
         ...prev,
         links: [...prev.links, link],
       }));
     } else if (link) {
-      addNotification("error", "Please enter a valid URL");
+      addNotification("error", t('contact.form.attachments.invalidUrl'));
     }
   };
 
@@ -273,7 +275,7 @@ export default function Contact() {
         // Show success notification
         addNotification(
           "success",
-          "Thank you for your message! We've received your inquiry and will get back to you soon."
+          t('contact.form.submit.success')
         );
   
         setStatus({
@@ -323,33 +325,31 @@ export default function Contact() {
         {/* Hero Section */}
         <div className="web-contact-hero">
           <h1 className="web-contact-title">
-            Let's Build Something Amazing Together
+            {t('contact.hero.title')}
           </h1>
           <p className="web-contact-subtitle">
-            As a fullstack developer specializing in .NET and React, I'm ready
-            to help bring your project to life. Whether you need a scalable API,
-            an interactive web application, or end-to-end development.
+            {t('contact.hero.subtitle')}
           </p>
         </div>
 
         {/* Services Grid */}
         <div className="web-contact-services">
           <div className="web-contact-service-card">
-            <h3 className="web-contact-service-title">Backend Development</h3>
+            <h3 className="web-contact-service-title">{t('contact.services.backend.title')}</h3>
             <p className="web-contact-service-desc">
-              ASP.NET Core APIs, Entity Framework, SQL databases
+              {t('contact.services.backend.description')}
             </p>
           </div>
           <div className="web-contact-service-card">
-            <h3 className="web-contact-service-title">Frontend Development</h3>
+            <h3 className="web-contact-service-title">{t('contact.services.frontend.title')}</h3>
             <p className="web-contact-service-desc">
-              React, TypeScript, Tailwind, Modern UI/UX
+              {t('contact.services.frontend.description')}
             </p>
           </div>
           <div className="web-contact-service-card">
-            <h3 className="web-contact-service-title">Full Project Delivery</h3>
+            <h3 className="web-contact-service-title">{t('contact.services.fullstack.title')}</h3>
             <p className="web-contact-service-desc">
-              End-to-end solutions with CI/CD and cloud deployment
+              {t('contact.services.fullstack.description')}
             </p>
           </div>
         </div>
@@ -360,8 +360,8 @@ export default function Contact() {
           <div className="web-contact-form-container">
             <h2 className="web-contact-form-title">
               {formData.referenceNumber
-                ? `Reply to Conversation ${formData.referenceNumber}`
-                : "Start New Conversation"}
+                ? t('contact.form.replyToConversation', { reference: formData.referenceNumber })
+                : t('contact.form.newConversation')}
             </h2>
 
             {/* Reference Number Input */}
@@ -371,7 +371,7 @@ export default function Contact() {
                 style={{ position: "relative" }}
               >
                 <label htmlFor="referenceNumber" className="web-contact-label">
-                  Reference Number
+                  {t('contact.form.referenceNumber')}
                 </label>
                 <div className="web-contact-reference-input">
                   <input
@@ -396,7 +396,7 @@ export default function Contact() {
                           }));
                         }}
                       >
-                        New Conversation
+                        {t('contact.form.newConversation')}
                       </Button>
                     ) : (
                       <Button
@@ -405,7 +405,7 @@ export default function Contact() {
                           setShowReferenceDropdown(!showReferenceDropdown)
                         }
                       >
-                        Reference Previous
+                        {t('contact.form.referencePrevious')}
                       </Button>
                     )}
                   </div>
@@ -417,7 +417,7 @@ export default function Contact() {
                   conversations.length > 0 && (
                     <div className="web-contact-reference-dropdown">
                       <div className="web-contact-reference-dropdown-header">
-                        <h4>Select a conversation to reference</h4>
+                        <h4>{t('contact.form.selectConversation')}</h4>
                         <Button
                           variant="danger"
                           size="sm"
@@ -464,7 +464,7 @@ export default function Contact() {
               <div className="web-contact-input-group">
                 <div className="web-contact-field">
                   <label htmlFor="name" className="web-contact-label">
-                    Name
+                    {t('contact.form.name')}
                   </label>
                   <input
                     type="text"
@@ -479,7 +479,7 @@ export default function Contact() {
 
                 <div className="web-contact-field">
                   <label htmlFor="email" className="web-contact-label">
-                    Email
+                    {t('contact.form.email')}
                   </label>
                   <input
                     type="email"
@@ -495,7 +495,7 @@ export default function Contact() {
 
               <div className="web-contact-field">
                 <label htmlFor="subject" className="web-contact-label">
-                  Project Type
+                  {t('contact.form.projectType')}
                 </label>
                 <input
                   type="text"
@@ -503,7 +503,7 @@ export default function Contact() {
                   ref={projectTypeRef} 
                   name="subject"
                   className="web-contact-input"
-                  placeholder="e.g., Full-stack Application, API Development, Frontend UI"
+                  placeholder={t('contact.form.projectTypePlaceholder')}
                   value={formData.subject}
                   onChange={handleChange}
                   required
@@ -512,14 +512,14 @@ export default function Contact() {
 
               <div className="web-contact-field">
                 <label htmlFor="message" className="web-contact-label">
-                  Project Details
+                  {t('contact.form.projectDetails')}
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows={6}
                   className="web-contact-textarea"
-                  placeholder="Please describe your project, timeline, and any specific requirements..."
+                  placeholder={t('contact.form.projectDetailsPlaceholder')}
                   value={formData.message}
                   onChange={handleChange}
                   required
@@ -529,21 +529,21 @@ export default function Contact() {
               {/* Attachments Section */}
               <div className="web-contact-attachments">
                 <div className="web-contact-attachment-header">
-                  <h3 className="web-contact-label">Attachments & Links</h3>
+                  <h3 className="web-contact-label">{t('contact.form.attachments.title')}</h3>
                   <div className="web-contact-attachment-actions">
                     <button
                       type="button"
                       className="web-contact-attachment-btn"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      Add File
+                      {t('contact.form.attachments.addFile')}
                     </button>
                     <button
                       type="button"
                       className="web-contact-attachment-btn"
                       onClick={handleAddLink}
                     >
-                      Add Link
+                      {t('contact.form.attachments.addLink')}
                     </button>
                   </div>
                 </div>
@@ -616,8 +616,8 @@ export default function Contact() {
                 disabled={status.submitting}
               >
                 {status.submitting
-                  ? "Sending..."
-                  : "Let's Discuss Your Project"}
+                  ? t('contact.form.submit.sending')
+                  : t('contact.form.submit.submit')}
               </button>
             </form>
           </div>
@@ -626,7 +626,7 @@ export default function Contact() {
           {user && (
             <div className="web-contact-conversations">
               <div className="web-contact-conversations-title">
-                <div>My Conversations</div>
+                <div>{t('contact.conversations.title')}</div>
                 <Button
                 variant="outline"
                 onClick={() => setDisplayConversations(!displayConversations)}
@@ -680,7 +680,7 @@ export default function Contact() {
                                 </p>
                                 {conv.referingToConversation && (
                                   <div className="web-contact-message-reference">
-                                    <strong>Referring to conversation: </strong>
+                                    <strong>{t('contact.conversations.referringTo')} </strong>
                                     <a 
                                       href="#" 
                                       className="web-contact-reference-link"
@@ -721,7 +721,7 @@ export default function Contact() {
                                 )}
                                 {conv.links && conv.links.length > 0 && (
                                   <div className="web-contact-message-links">
-                                    <strong>Links:</strong>
+                                    <strong>{t('contact.conversations.links')}</strong>
                                     <div className="web-contact-link-list">
                                       {conv.links.split(',').map((link, index) => (
                                         <a 
@@ -739,7 +739,7 @@ export default function Contact() {
                                 )}
                                 {conv.attachmentPath && (
                                   <div className="web-contact-message-attachments">
-                                    <strong>Attachments:</strong>
+                                    <strong>{t('contact.conversations.attachments')}</strong>
                                     <div className="web-contact-attachment-link">
                                       <span className="web-contact-attachment-icon">📄</span>
                                       {conv.attachmentPath.split('/').pop()}
@@ -762,7 +762,7 @@ export default function Contact() {
                                     scrollToProjectType();
                                   }}
                                 >
-                                  Reply to this conversation
+                                  {t('contact.conversations.reply')}
                                 </Button>
                               </div>
                             </div>
@@ -772,59 +772,59 @@ export default function Contact() {
                     })}
                   </div>
                 ) : (
-                  <p>No conversations found</p>
+                  <p>{t('contact.conversations.empty')}</p>
                 )
               )}
             </div>
           )}
           <div className="web-contact-info-wrapper">
             <div className="web-contact-info">
-              <h2 className="web-contact-info-title">Why Work With Me?</h2>
+              <h2 className="web-contact-info-title">{t('contact.info.whyWorkWithMe')}</h2>
               <ul className="web-contact-features">
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
                   <p className="web-contact-feature-text">
-                    Expert in both frontend and backend development
+                    {t('contact.info.expertise')}
                   </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
                   <p className="web-contact-feature-text">
-                    Strong background in scientific applications
+                    {t('contact.info.scientific')}
                   </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
                   <p className="web-contact-feature-text">
-                    Experience with complex data visualization
+                    {t('contact.info.visualization')}
                   </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
                   <p className="web-contact-feature-text">
-                    Proven track record in project delivery
+                    {t('contact.info.delivery')}
                   </p>
                 </li>
               </ul>
             </div>
 
             <div className="web-contact-info">
-              <h2 className="web-contact-info-title">Contact Information</h2>
+              <h2 className="web-contact-info-title">{t('contact.info.contactInfo')}</h2>
               <div className="web-contact-details">
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Email</h3>
                   <p className="web-contact-detail-value">
-                    contact@asafarim.com
+                    {t('contact.info.email')}
                   </p>
                 </div>
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Location</h3>
-                  <p className="web-contact-detail-value">Hasselt, België</p>
+                  <p className="web-contact-detail-value">{t('contact.info.location')}</p>
                 </div>
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Availability</h3>
                   <p className="web-contact-detail-value">
-                    Available for freelance projects
+                    {t('contact.info.availability')}
                   </p>
                 </div>
               </div>
