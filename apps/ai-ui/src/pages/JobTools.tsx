@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
-import { useAuth } from "@asafarim/shared-ui-react";
+import { useAuth, isProduction } from "@asafarim/shared-ui-react";
 
 type ExtractResp = {
   title: string;
@@ -19,7 +19,15 @@ export default function JobTools() {
   const [letter, setLetter] = useState<string>("");
   const [loading, setLoading] = useState<LoadingState>("idle");
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated, loading: authLoading, signIn } = useAuth();
+  
+  // Configure useAuth to use AI API proxy endpoints
+  const authApiBase = isProduction ? '/api/auth' : 'http://ai-api.asafarim.local:5103/auth';
+  const { isAuthenticated, loading: authLoading, signIn } = useAuth({
+    authApiBase,
+    meEndpoint: '/me',
+    tokenEndpoint: '/token',
+    logoutEndpoint: '/logout'
+  });
 
   const resetState = () => {
     setExtracted(null);

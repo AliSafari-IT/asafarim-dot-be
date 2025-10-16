@@ -1,0 +1,106 @@
+.portfolio-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--spacing-xl) 0;
+  margin-bottom: var(--spacing-xl);
+}
+
+.portfolio-header__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+}
+
+.portfolio-header__avatar {
+  flex-shrink: 0;
+}
+
+.portfolio-header__avatar-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-primary);
+}
+
+.portfolio-header__content {
+  flex: 1;
+}
+
+.portfolio-header__name {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.portfolio-header__headline {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.portfolio-header__bio {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-md) 0;
+  max-width: 700px;
+}
+
+.portfolio-header__contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.portfolio-header__contact-link,
+.portfolio-header__contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.portfolio-header__contact-link:hover {
+  color: var(--color-primary);
+}
+
+.portfolio-header__contact-link svg,
+.portfolio-header__contact-item svg {
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .portfolio-header__container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .portfolio-header__avatar-img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .portfolio-header__name {
+    font-size: var(--font-size-xl);
+  }
+
+  .portfolio-header__bio {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .portfolio-header__contact {
+    justify-content: center;
+  }
+}

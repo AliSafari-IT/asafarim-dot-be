@@ -19,7 +19,7 @@ import { isProduction } from "@asafarim/shared-ui-react";
     try {
       // Use the appropriate domain for cookies
       const domain = isProduction ? '.asafarim.be' : '.asafarim.local';
-      
+
       // Set domain-wide cookie
       document.cookie = `${COOKIE}=${value}; domain=${domain}; path=/; max-age=31536000; samesite=lax`;
       // Also set path-only cookie as fallback
@@ -59,5 +59,3 @@ import { isProduction } from "@asafarim/shared-ui-react";
     applyDom(v);
   });
 })();
-
-

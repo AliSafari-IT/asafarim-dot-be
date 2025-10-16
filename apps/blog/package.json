@@ -17,8 +17,6 @@
     "app:blog": "cd ../../ && pnpm run app:blog",
     "typecheck": "tsc"
   },
-  "peerDependencies": {
-  },
   "dependencies": {
     "@asafarim/react-themes": "workspace:*",
     "@asafarim/shared-i18n": "workspace:*",
@@ -26,6 +24,7 @@
     "@docusaurus/preset-classic": "3.9.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
+    "gray-matter": "^4.0.3",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

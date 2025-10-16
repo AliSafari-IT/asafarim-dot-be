@@ -5,11 +5,10 @@ import {
   Edit,
   Github,
   Google,
-  isProduction,
+  // isProduction,
   Linkedin,
   ORCID,
   StackOverflow,
-  useAuth,
   useNotifications,
 } from "@asafarim/shared-ui-react";
 import {
@@ -30,7 +29,6 @@ const ViewResume = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isAuthenticated, loading: authLoading, signIn } = useAuth();
   const { addNotification } = useNotifications();
   const { t } = useTranslation("web");
   const [resume, setResume] = useState<ResumeDetailDto | null>(null);
@@ -47,28 +45,9 @@ const ViewResume = () => {
     setSearchParams({ layout });
   };
 
-  // Only redirect if not authenticated after loading is complete
-  useEffect(() => {
-    console.log("🔐 Auth effect: authLoading, isAuthenticated ", { authLoading, isAuthenticated });
-    // Only check authentication after the loading state is complete
-    if (!authLoading && !isAuthenticated) {
-      
-      console.log(
-        "Authentication check complete, not authenticated. Redirecting to login."
-      );
-      if (isProduction) {
-        signIn(window.location.href);
-      } else {
-        signIn(`http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
-          window.location.href
-        )}`);
-      }
-    }
-  }, [authLoading, isAuthenticated]);
-
   useEffect(() => {
     const loadResume = async () => {
-      if (!id || !isAuthenticated) return;
+      if (!id) return;
 
       try {
         setLoading(true);
@@ -87,7 +66,7 @@ const ViewResume = () => {
     };
 
     loadResume();
-  }, [id, isAuthenticated, t]);
+  }, [id, t]);
 
   if (loading) {
     return (

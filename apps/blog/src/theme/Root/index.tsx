@@ -63,7 +63,17 @@ export default function Root({ children }: RootProps): React.ReactElement {
   return (
     <ThemeProvider config={{ defaultMode: initialTheme, storageKey: 'asafarim-theme', }}>
       <AuthSyncProvider>
-        {children}
+        {i18nReady ? children : (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            fontFamily: 'system-ui, -apple-system, sans-serif'
+          }}>
+            Loading...
+          </div>
+        )}
       </AuthSyncProvider>
     </ThemeProvider>
   );

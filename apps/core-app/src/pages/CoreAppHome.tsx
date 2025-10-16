@@ -1,13 +1,21 @@
 /* App Home Page */
 import './CoreAppHome.css';
-import { ButtonComponent as Button, useAuth } from '@asafarim/shared-ui-react';
+import { ButtonComponent as Button, useAuth, isProduction } from '@asafarim/shared-ui-react';
 import { useNavigate } from 'react-router-dom';
 
 import { CORE_JOBS_URL, AI_URL, BLOG_URL, openInNewTab } from '../utils/appUrls';
 import Hero from '../components/Hero';
 
 export default function CoreAppHome() {
-    const auth = useAuth();
+    // Configure useAuth to use Core API proxy endpoints instead of Identity API directly
+    const authApiBase = isProduction ? '/api/auth' : 'http://api.asafarim.local:5101/auth';
+
+    const auth = useAuth({
+        authApiBase,
+        meEndpoint: '/me',
+        tokenEndpoint: '/token',
+        logoutEndpoint: '/logout'
+    });
     const navigate = useNavigate();
     return (
         <div className='core-app-home-container'>

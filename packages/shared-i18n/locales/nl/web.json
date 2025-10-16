@@ -185,23 +185,23 @@
         "title": "Professionele Samenvatting"
       },
       "experience": {
-        "title": "Werkervaring",
+        "title": "💼 Werkervaring",
         "count": "{{count}} ervaring",
         "count_plural": "{{count}} ervaringen",
         "present": "Heden",
         "achievements": "Prestaties"
       },
       "skills": {
-        "title": "Vaardigheden",
+        "title": "🛠️ Vaardigheden",
         "count": "{{count}} vaardigheid",
         "count_plural": "{{count}} vaardigheden",
         "categories": {
-          "category": "• {{category}}",
-          "level": "• {{level}}"
+          "category": "🏷️ {{category}}",
+          "level": "🔢 {{level}}"
         }
       },
       "education": {
-        "title": "Opleiding",
+        "title": "🎓 Opleiding",
         "count": "{{count}} opleiding",
         "count_plural": "{{count}} opleidingen",
         "degree": "{{degree}}",
@@ -209,7 +209,7 @@
         "present": "Heden"
       },
       "certificates": {
-        "title": "Certificaten",
+        "title": "📜 Certificaten",
         "count": "{{count}} certificaat",
         "count_plural": "{{count}} certificaten",
         "issued": "Uitgegeven: {{date}}",
@@ -218,42 +218,42 @@
         "credentialId": "ID: {{id}}"
       },
       "projects": {
-        "title": "Projecten",
+        "title": "🏗️ Projecten",
         "count": "{{count}} project",
         "count_plural": "{{count}} projecten",
         "visit": "Bezoek →"
       },
       "languages": {
-        "title": "Talen",
+        "title": "🌎 Talen",
         "count": "{{count}} taal",
         "count_plural": "{{count}} talen",
         "level": "{{level}}"
       },
       "awards": {
-        "title": "Prijzen & Erkenningen",
+        "title": "🏆 Prijzen & Erkenningen",
         "count": "{{count}} prijs",
         "count_plural": "{{count}} prijzen",
         "awarded": "{{date}}",
         "issuer": "{{issuer}}"
       },
       "references": {
-        "title": "Referenties",
+        "title": "👨🏻 Referenties",
         "count": "{{count}} referentie",
         "count_plural": "{{count}} referenties"
       },
       "socialLinks": {
-        "title": "Sociale Links",
+        "title": "📲 Sociale Links",
         "count": "{{count}} link",
         "count_plural": "{{count}} links"
       }
     },
     "actions": {
-      "editResume": "CV Bewerken",
-      "publishResume": "Publiceer CV",
-      "unpublish": "Publicatie intrekken",
-      "copyShareLink": "Kopieer Deel-link",
-      "exportPDF": "Exporteer PDF",
-      "backToResumes": "← Terug naar CV’s"
+      "editResume": "🖊 CV Bewerken",
+      "publishResume": "🌊 Publiceer CV",
+      "unpublish": "🫷 Publicatie intrekken",
+      "copyShareLink": "🟩 Kopieer Deel-link",
+      "exportPDF": "📥 Exporteer PDF",
+      "backToResumes": "╰┈➤ Terug naar CV's"
     },
     "messages": {
       "publishedSuccess": "CV succesvol gepubliceerd!",
@@ -269,7 +269,7 @@
   },
   "navbar": {
     "brand": {
-      "text": "ASafariM Web"
+      "text": "ASafariM"
     },
     "links": {
       "resumes": {
@@ -277,13 +277,23 @@
         "icon": "📄"
       },
       "about": {
-        "label": "Over",
-        "icon": "❓"
+        "label": "Over ons",
+        "icon": "🙋🏻‍♂️"
       },
       "contact": {
         "label": "Contact",
-        "icon": "✉️"
+        "icon": "ᯓ➤"
+      },
+      "portfolio": {
+        "label": "Mijn Portfolio",
+        "icon": "🗃️"
       }
+    },
+    "auth": {
+      "notSignedIn": "Niet ingelogd!",
+      "signIn": "Inloggen",
+      "signOut": "Uitloggen",
+      "welcome": "Welkom"
     }
   }
 }

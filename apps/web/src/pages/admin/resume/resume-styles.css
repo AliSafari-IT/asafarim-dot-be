@@ -108,7 +108,7 @@
 
 .resume-card-summary {
   font-size: 0.95rem;
-  color: var(--color-foreground-muted);
+  color: var(--color-brand-600);
   line-height: 1.5;
   margin: 0;
   display: -webkit-box;
@@ -123,7 +123,7 @@
   flex-direction: column;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: var(--color-foreground-muted);
+  color: var(--color-brand-600);
   padding: 0.75rem;
   background: var(--color-background);
   border-radius: 0.5rem;
@@ -139,7 +139,7 @@
 
 .resume-date {
   font-size: 0.875rem;
-  color: var(--color-foreground-muted);
+  color: var(--color-brand-700);
 }
 
 .resume-card-actions {

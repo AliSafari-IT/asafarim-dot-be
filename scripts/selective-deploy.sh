@@ -18,6 +18,14 @@ REPO_DIR="/var/repos/asafarim-dot-be"
 WWW_ROOT="/var/www"
 SITE_ROOT="$WWW_ROOT/asafarim-dot-be"
 
+# Packages directory
+PACKAGES_DIR="$REPO_DIR/packages"
+declare -A PACKAGES=(
+    ["shared-ui-react"]="$PACKAGES_DIR/shared-ui-react"
+    ["shared-i18n"]="$PACKAGES_DIR/shared-i18n"
+    ["react-themes"]="$PACKAGES_DIR/react-themes"
+)
+
 # Frontend apps with their build paths
 declare -A FRONTEND_APPS=(
     ["web"]="apps/web/dist"
@@ -299,10 +307,25 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
     # Build shared packages first: @asafarim/shared-ui-react, @asafarim/shared-i18n, @asafarim/react-themes
     print_info "Building shared packages..."
     pnpm rm:nm && pnpm i
-    pnpm --filter @asafarim/shared-i18n build
-    pnpm --filter @asafarim/react-themes build
-    pnpm --filter @asafarim/shared-ui-react build
+    for pkg in "${!PACKAGES[@]}"; do
+        pkg_path="${PACKAGES[$pkg]}"
+        if [ -d "$pkg_path" ]; then
+            print_info "Building package $pkg..."
+            cd "$pkg_path"
+            if pnpm build; then
+                print_success "Package $pkg built successfully"
+                print_info "----------------------------------"
+            else
+                print_error "Failed to build package $pkg"
+                exit 1
+            fi
+        else
+            print_warning "Package path not found: $pkg_path, skipping build for $pkg"
+        fi
+    done
     print_success "Shared packages built"
+    print_info "----------------------------------"
+
     cd "$REPO_DIR"
     
     # Clean build directories for selected apps

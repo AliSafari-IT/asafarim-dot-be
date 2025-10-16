@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
-import { useAuth } from '../../../hooks/useAuth';
+import { ButtonComponent as Button, useAuth } from '@asafarim/shared-ui-react';
 import { fetchResumes, deleteResume, type ResumeDto } from '../../../services/resumeApi';
 import './resume-styles.css';
 
@@ -9,24 +8,15 @@ const ResumeList = () => {
   const [resumes, setResumes] = useState<ResumeDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user, isAuthenticated, loading: authLoading, signIn } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   
   const isAdmin = user?.roles?.map((role: string) => role.toLowerCase()).includes('admin') || false;
 
-  // Redirect if not authenticated
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      signIn(window.location.href);
-    }
-  }, [authLoading, isAuthenticated, signIn]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadResumes();
-    }
+    loadResumes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, isAdmin]);
+  }, [isAdmin]);
 
   const loadResumes = async () => {
     try {
@@ -63,16 +53,6 @@ const ResumeList = () => {
       day: 'numeric'
     });
   };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="resume-list">
-        <div className="resume-container">
-          <p>Redirecting to login...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (

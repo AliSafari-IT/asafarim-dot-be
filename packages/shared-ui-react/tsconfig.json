@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "declaration": true,
     "outDir": "dist",
-    "types": ["react", "react-dom", "node"]
+    "types": ["react", "react-dom"]
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist"]

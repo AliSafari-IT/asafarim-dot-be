@@ -1,35 +1,13 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@asafarim/shared-ui-react";
 import { ENTITY_TYPES, type EntityType } from "../../services/entityService";
 import "./entity-management.css";
 
 const EntityManagement = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, loading: authLoading } = useAuth();
-
-  // Redirect if not authenticated
-  React.useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
-        window.location.href
-      )}`;
-    }
-  }, [authLoading, isAuthenticated]);
 
   const handleEntityClick = (entity: EntityType) => {
     navigate(`/admin/entities/${entity.id}`);
   };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="entity-management">
-        <div className="entity-management-container">
-          <p>Redirecting to login...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="entity-management">

@@ -4,16 +4,33 @@ import { useAuth } from "../hooks/useAuth";
 import { useTranslation } from "@asafarim/shared-i18n";
 
 // Define your navigation links
-const getNavLinks = (t: (key: string, options?: Record<string, string | number>) => string): NavLinkItem[] => [
-  {
-    to: "/admin/entities/resumes",
-    label: t('navbar.links.resumes.label'),
-    external: false,
-    icon: t('navbar.links.resumes.icon'),
-  },
-  { to: "/about", label: t('common:about'), external: false, icon: "❓" },
-  { to: "/contact", label: t('common:contact'), external: false, icon: "📞" },
-];
+const getNavLinks = (t: (key: string, options?: Record<string, string | number>) => string): NavLinkItem[] => {
+  const { isAuthenticated } = useAuth();
+
+  const links: NavLinkItem[] = [
+    // Always show portfolio link
+    {
+      to: "/portfolio",
+      label: "Portfolio",
+      external: false,
+      icon: t('navbar.links.portfolio.icon'),
+    },
+    { to: "/about", label: t('common:about'), external: false, icon: t('navbar.links.about.icon') },
+    { to: "/contact", label: t('common:contact'), external: false, icon: t('navbar.links.contact.icon') },
+  ];
+
+  // Conditionally add admin link if authenticated
+  if (isAuthenticated) {
+    links.unshift({
+      to: "/admin/entities/resumes",
+      label: t('navbar.links.resumes.label'),
+      external: false,
+      icon: t('navbar.links.resumes.icon'),
+    });
+  }
+
+  return links;
+};
 
 // Custom render function for React Router links
 const renderLink = (link: NavLinkItem, isMobile = false) => {
@@ -43,13 +60,18 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
 };
 
 export default function Navbar() {
+  const appId = "web";
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
-  const { t } = useTranslation('web');
+  const { t } = useTranslation(appId);
   const navLinks = getNavLinks(t);
+// "navbar": {
+//   "auth": {
 
+//   }
+// }
   return (
     <CentralNavbar
-      appId="web"
+      appId={appId}
       showAppSwitcher={true}
       className="navbar"
       key="navbar"
@@ -57,7 +79,7 @@ export default function Navbar() {
       brand={{
         logo: "/logo.svg",
         text: t('navbar.brand.text'),
-        href: "/dashboard",
+        href: "/",
       }}
       auth={{
         isAuthenticated,
@@ -66,10 +88,10 @@ export default function Navbar() {
         onSignIn: signIn,
         onSignOut: signOut,
         labels: {
-          notSignedIn: t('common:notSignedIn', { defaultValue: "Not signed in!" }),
-          signIn: t('common:signIn'),
-          signOut: t('common:signOut'),
-          welcome: (email?: string) => t('common:welcome', { email: email || "User" }),
+          notSignedIn: t('navbar.auth.notSignedIn'),
+          signIn: t('navbar.auth.signIn'),
+          signOut: t('navbar.auth.signOut'),
+          welcome: (email?: string) => t('navbar.auth.welcome', { email: email || "User" }),
         },
       }}
       renderLink={(link, isMobile) => {
