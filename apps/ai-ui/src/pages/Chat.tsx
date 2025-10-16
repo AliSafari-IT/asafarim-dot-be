@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useAuth } from "@asafarim/shared-ui-react";
+import { useAuth, isProduction } from "@asafarim/shared-ui-react";
 import { chatService } from "../api/chatService";
 import ChatSessionList from "../components/ChatSessionList";
 import type {
@@ -22,7 +22,14 @@ export default function Chat() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
-  const { isAuthenticated, loading: authLoading, signIn, user } = useAuth();
+  // Configure useAuth to use AI API proxy endpoints
+  const authApiBase = isProduction ? '/api/auth' : 'http://ai-api.asafarim.local:5103/auth';
+  const { isAuthenticated, loading: authLoading, signIn, user } = useAuth({
+    authApiBase,
+    meEndpoint: '/me',
+    tokenEndpoint: '/token',
+    logoutEndpoint: '/logout'
+  });
 
   // Toggle sidebar on mobile
   const toggleMobileSidebar = () => {

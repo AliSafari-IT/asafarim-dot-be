@@ -3,10 +3,10 @@ import type { UseAuthOptions } from '@asafarim/shared-ui-react';
 
 // Production config - uses centralized identity portal
 const prodConfig: UseAuthOptions = {
-  authApiBase: 'https://identity.asafarim.be/api/identity',  // Must use /api/identity for nginx routing
-  meEndpoint: '/auth/me',
-  tokenEndpoint: '/auth/token',
-  logoutEndpoint: '/auth/logout',
+  authApiBase: 'https://identity.asafarim.be/auth',  // Identity API auth endpoints are at /auth/*
+  meEndpoint: '/me',
+  tokenEndpoint: '/token',
+  logoutEndpoint: '/logout',
   // Redirect to identity portal for login/register (with return URL)
   identityLoginUrl: 'https://identity.asafarim.be/login',
   identityRegisterUrl: 'https://identity.asafarim.be/register'
@@ -14,10 +14,10 @@ const prodConfig: UseAuthOptions = {
 
 // Local development config
 const devConfig: UseAuthOptions = {
-  authApiBase: 'http://identity.asafarim.local:5177/api',  // FIXED: use port 5177 and /api (not 5101)
-  meEndpoint: '/auth/me',
-  tokenEndpoint: '/auth/token',
-  logoutEndpoint: '/auth/logout',
+  authApiBase: 'http://identity.asafarim.local:5177/auth',  // Identity API auth endpoints are at /auth/*
+  meEndpoint: '/me',
+  tokenEndpoint: '/token',
+  logoutEndpoint: '/logout',
   identityLoginUrl: 'http://identity.asafarim.local:5177/login',
   identityRegisterUrl: 'http://identity.asafarim.local:5177/register'
 };

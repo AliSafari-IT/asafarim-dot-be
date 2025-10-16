@@ -68,6 +68,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 
+// Register Portfolio Service
+builder.Services.AddScoped<Core.Api.Services.IPortfolioService, Core.Api.Services.PortfolioService>();
+
 // Add database contexts
 var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 if (!string.IsNullOrEmpty(defaultConnection))

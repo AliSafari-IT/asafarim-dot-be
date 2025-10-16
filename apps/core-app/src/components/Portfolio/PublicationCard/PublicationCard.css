@@ -1,0 +1,64 @@
+.publication-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  transition: box-shadow 0.2s ease;
+}
+
+.publication-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.publication-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.publication-card__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.publication-card__link {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  transition: color 0.2s ease;
+}
+
+.publication-card__link:hover {
+  color: var(--color-primary);
+}
+
+.publication-card__link svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.publication-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.publication-card__journal {
+  font-style: italic;
+}
+
+.publication-card__year {
+  font-weight: var(--font-weight-medium);
+}
+
+.publication-card__journal::after {
+  content: "•";
+  margin-left: var(--spacing-sm);
+}

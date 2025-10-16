@@ -14,6 +14,9 @@ import CoreAppHome from './pages/CoreAppHome'
 import { createBrowserRouter } from 'react-router-dom'
 import JobTracker from './components/JobTracker/JobTracker'
 import { ToastProvider } from '@asafarim/toast'
+import { Portfolio } from './components/Portfolio'
+import { PortfolioPublicView } from './pages/Portfolio/PortfolioPublicView'
+import { PortfolioDashboard } from './pages/Portfolio/PortfolioDashboard'
 
 // Initialize i18n before rendering
 initI18n();
@@ -27,6 +30,9 @@ const router = createBrowserRouter([
       { path: "jobs", element: <JobTracker /> },
       { path: "jobs/:jobId/edit", element: <JobEdit /> },
       { path: "jobs/:jobId/view", element: <JobView /> },
+      { path: "portfolio", element: <Portfolio /> },
+      { path: "u/:username", element: <PortfolioPublicView /> },
+      { path: "dashboard/portfolio", element: <PortfolioDashboard /> },
       { path: "*", element: <NotFound /> },
     ]
   }

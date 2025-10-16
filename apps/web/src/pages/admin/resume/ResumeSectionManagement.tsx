@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ButtonComponent as Button, Edit, PlusIcon, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, Edit, PlusIcon, useNotifications } from "@asafarim/shared-ui-react";
 import { fetchResumes } from "../../../services/resumeApi";
 import "./resume-section-management.css";
 import { RESUME_SECTION_TYPES, type ResumeSectionType } from "./resume-section-types";
@@ -14,25 +14,14 @@ interface Resume {
 const ResumeSectionManagement = () => {
   const navigate = useNavigate();
   const { id: resumeId } = useParams<{ id?: string }>();
-  const { isAuthenticated, loading: authLoading } = useAuth();
   const { addNotification } = useNotifications();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [selectedResumeId, setSelectedResumeId] = useState<string>(resumeId || "");
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
-        window.location.href
-      )}`;
-    }
-  }, [authLoading, isAuthenticated]);
-
   // Load user's resumes
   useEffect(() => {
     const loadResumes = async () => {
-      if (!isAuthenticated) return;
 
       try {
         setLoading(true);
@@ -54,7 +43,7 @@ const ResumeSectionManagement = () => {
     };
 
     loadResumes();
-  }, [isAuthenticated, resumeId, addNotification]);
+  }, [resumeId, addNotification]);
 
   const handleSectionClick = (section: ResumeSectionType) => {
     if (!selectedResumeId) {
@@ -68,7 +57,7 @@ const ResumeSectionManagement = () => {
     navigate("/admin/entities/resumes/new");
   };
 
-  if (!isAuthenticated || loading) {
+  if (loading) {
     return (
       <div className="resume-section-management">
         <div className="resume-section-container">

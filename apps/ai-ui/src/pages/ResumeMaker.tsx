@@ -5,6 +5,7 @@ import {
   MarkDown,
   Pdf,
   useAuth,
+  isProduction,
 } from "@asafarim/shared-ui-react";
 import { api } from "../api";
 import html2canvas from "html2canvas";
@@ -23,11 +24,18 @@ type FunctionalResumeResponse = {
 };
 
 export default function ResumeMaker() {
+  // Configure useAuth to use AI API proxy endpoints
+  const authApiBase = isProduction ? '/api/auth' : 'http://ai-api.asafarim.local:5103/auth';
   const { isAuthenticated, user, loading, signIn } = useAuth<{
     id: string;
     email?: string;
     userName?: string;
-  }>();
+  }>({
+    authApiBase,
+    meEndpoint: '/me',
+    tokenEndpoint: '/token',
+    logoutEndpoint: '/logout'
+  });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
