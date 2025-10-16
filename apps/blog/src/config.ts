@@ -15,12 +15,12 @@ interface Config {
 
 // Export the appropriate configuration based on environment
 export const config: Config = getIsProduction() ? {
-  apiBaseUrl: '/api/identity',
+  apiBaseUrl: '/api/auth',
   authEndpoints: {
-    me: '/api/identity/auth/me',
-    login: '/api/identity/auth/login',
-    register: '/api/identity/auth/register',
-    logout: '/api/identity/auth/logout',
+    me: '/api/auth/me',
+    login: '/api/auth/login',
+    register: '/api/auth/register',
+    logout: '/api/auth/logout',
   },
   isProduction: true
 } : {

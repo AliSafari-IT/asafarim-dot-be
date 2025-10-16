@@ -1,4 +1,3 @@
-import React from 'react';
 import type { BlogPost } from '@docusaurus/plugin-content-blog/client';
 import RecentBlogPost from './RecentBlogPost';
 import styles from './HeroMedia.module.css';
@@ -11,7 +10,7 @@ interface RecentBlogPostsProps {
 const RecentBlogPosts = ({ nrPosts, posts = [] }: RecentBlogPostsProps) => {
     const recentPosts = Array.from(posts).slice(0, nrPosts);
 
-    if (recentPosts.length === 0) {
+    if (recentPosts?.length === 0) {
         return null;
     }
 

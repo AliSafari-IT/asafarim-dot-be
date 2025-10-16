@@ -47,7 +47,15 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
 };
 
 export default function Navbar() {
-  const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
+  // Configure useAuth to use AI API proxy endpoints instead of Identity API directly
+  const authApiBase = isProduction ? '/api/auth' : 'http://ai-api.asafarim.local:5103/auth';
+
+  const { isAuthenticated, user, loading, signOut, signIn } = useAuth({
+    authApiBase,
+    meEndpoint: '/me',
+    tokenEndpoint: '/token',
+    logoutEndpoint: '/logout'
+  });
 
   return (
     <CentralNavbar

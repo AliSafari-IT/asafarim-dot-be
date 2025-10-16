@@ -9,6 +9,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import { NotFound } from "@asafarim/shared-ui-react";
 import Root from "./theme/Root";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Initialize i18n before rendering
 initI18n();
@@ -87,223 +88,223 @@ const router = createBrowserRouter([
 
       { path: "portfolio/research", element: <Research /> },
 
-      // Admin routes
-      { path: "/admin/entities", element: <EntityManagement /> },
+      // Admin routes (protected)
+      { path: "/admin/entities", element: <ProtectedRoute><EntityManagement /></ProtectedRoute> },
 
       // http://web.asafarim.local:5175/admin/resumes
-      { path: "/admin/entities/resumes", element: <ResumeList /> },
-      { path: "/admin/entities/resumes/new", element: <ResumeForm /> },
-      { path: "/admin/entities/resumes/:id/resume", element: <ViewResume /> },
+      { path: "/admin/entities/resumes", element: <ProtectedRoute><ResumeList /></ProtectedRoute> },
+      { path: "/admin/entities/resumes/new", element: <ProtectedRoute><ResumeForm /></ProtectedRoute> },
+      { path: "/admin/entities/resumes/:id/resume", element: <ProtectedRoute><ViewResume /></ProtectedRoute> },
 
       // Resume section hub - manages sections like work experience, skills, etc.
       {
         path: "/admin/entities/resumes/:id/edit",
-        element: <ResumeSectionManagement />,
+        element: <ProtectedRoute><ResumeSectionManagement /></ProtectedRoute>,
       },
 
       // Edit basic resume details (title, summary, contact)
-      { path: "/admin/entities/resumes/:id/details", element: <ResumeForm /> },
+      { path: "/admin/entities/resumes/:id/details", element: <ProtectedRoute><ResumeForm /></ProtectedRoute> },
       {
         path: "admin/entities/resumes/:resumeId/work-experiences",
-        element: <ExperiencesManagement />,
+        element: <ProtectedRoute><ExperiencesManagement /></ProtectedRoute>,
       },
       {
         path: "admin/entities/resumes/:resumeId/skills",
-        element: <SkillsManagement />,
+        element: <ProtectedRoute><SkillsManagement /></ProtectedRoute>,
       },
       {
         path: "admin/entities/resumes/:resumeId/educations",
-        element: <EducationsManagement />,
+        element: <ProtectedRoute><EducationsManagement /></ProtectedRoute>,
       },
       {
         path: "admin/entities/resumes/:resumeId/certificates",
-        element: <CertificatesManagement />,
+        element: <ProtectedRoute><CertificatesManagement /></ProtectedRoute>,
       },
       {
         path: "admin/entities/resumes/:resumeId/projects",
-        element: <ProjectsManagement />,
+        element: <ProtectedRoute><ProjectsManagement /></ProtectedRoute>,
       },
       {
         path: "admin/entities/resumes/:resumeId/languages",
-        element: <LanguagesManagement />,
+        element: <ProtectedRoute><LanguagesManagement /></ProtectedRoute>,
       },
       {
         path: "admin/entities/resumes/:resumeId/awards",
-        element: <AwardsManagement />,
+        element: <ProtectedRoute><AwardsManagement /></ProtectedRoute>,
       },
       {
         path: "admin/entities/resumes/:resumeId/references",
-        element: <ReferencesManagement />,
+        element: <ProtectedRoute><ReferencesManagement /></ProtectedRoute>,
       },
 
       {
         path: "/admin/resume-sections/:resumeId",
-        element: <ResumeSectionManagement />,
+        element: <ProtectedRoute><ResumeSectionManagement /></ProtectedRoute>,
       },
 
       // Work Experience routes
       {
         path: "/admin/entities/resumes/:resumeId/work-experiences",
-        element: <ExperiencesManagement />,
+        element: <ProtectedRoute><ExperiencesManagement /></ProtectedRoute>,
       },
       {
         // Add mode
         path: "/admin/entities/resumes/:resumeId/work-experiences/new",
-        element: <ExperienceForm />,
+        element: <ProtectedRoute><ExperienceForm /></ProtectedRoute>,
       },
       {
         // View mode
         path: "/admin/entities/resumes/:resumeId/work-experiences/:id",
-        element: <ExperienceForm />,
+        element: <ProtectedRoute><ExperienceForm /></ProtectedRoute>,
       },
       {
         // Edit mode
         path: "/admin/entities/resumes/:resumeId/work-experiences/:id/:mode",
-        element: <ExperienceForm />,
+        element: <ProtectedRoute><ExperienceForm /></ProtectedRoute>,
       },
 
       // Skills routes
       {
         path: "/admin/entities/resumes/:resumeId/skills",
-        element: <SkillsManagement />,
+        element: <ProtectedRoute><SkillsManagement /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/skills/new",
-        element: <SkillForm />,
+        element: <ProtectedRoute><SkillForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/skills/:id",
-        element: <SkillForm />,
+        element: <ProtectedRoute><SkillForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/skills/:id/edit",
-        element: <SkillForm />,
+        element: <ProtectedRoute><SkillForm /></ProtectedRoute>,
       },
 
       // 🎓 Education routes
       {
         path: "/admin/entities/resumes/:resumeId/educations",
-        element: <EducationsManagement />,
+        element: <ProtectedRoute><EducationsManagement /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/educations/new",
-        element: <EducationForm />,
+        element: <ProtectedRoute><EducationForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/educations/:id",
-        element: <EducationForm />,
+        element: <ProtectedRoute><EducationForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/educations/:id/edit",
-        element: <EducationForm />,
+        element: <ProtectedRoute><EducationForm /></ProtectedRoute>,
       },
 
       // 📜 Certificates routes
       {
         path: "/admin/entities/resumes/:resumeId/certificates",
-        element: <CertificatesManagement />,
+        element: <ProtectedRoute><CertificatesManagement /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/certificates/new",
-        element: <CertificateForm />,
+        element: <ProtectedRoute><CertificateForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/certificates/:id",
-        element: <CertificateForm />,
+        element: <ProtectedRoute><CertificateForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/certificates/:id/edit",
-        element: <CertificateForm />,
+        element: <ProtectedRoute><CertificateForm /></ProtectedRoute>,
       },
 
       // 🚀 Projects routes
       {
         path: "/admin/entities/resumes/:resumeId/projects",
-        element: <ProjectsManagement />,
+        element: <ProtectedRoute><ProjectsManagement /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/projects/new",
-        element: <ProjectForm />,
+        element: <ProtectedRoute><ProjectForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/projects/:id",
-        element: <ProjectForm />,
+        element: <ProtectedRoute><ProjectForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/projects/:id/edit",
-        element: <ProjectForm />,
+        element: <ProtectedRoute><ProjectForm /></ProtectedRoute>,
       },
 
       // 🌐 Languages routes
       {
         path: "/admin/entities/resumes/:resumeId/languages",
-        element: <LanguagesManagement />,
+        element: <ProtectedRoute><LanguagesManagement /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/languages/new",
-        element: <LanguageForm />,
+        element: <ProtectedRoute><LanguageForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/languages/:id",
-        element: <LanguageForm />,
+        element: <ProtectedRoute><LanguageForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/languages/:id/edit",
-        element: <LanguageForm />,
+        element: <ProtectedRoute><LanguageForm /></ProtectedRoute>,
       },
 
       // 🏆 Awards routes
       {
         path: "/admin/entities/resumes/:resumeId/awards",
-        element: <AwardsManagement />,
+        element: <ProtectedRoute><AwardsManagement /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/awards/new",
-        element: <AwardForm />,
+        element: <ProtectedRoute><AwardForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/awards/:id",
-        element: <AwardForm />,
+        element: <ProtectedRoute><AwardForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/awards/:id/edit",
-        element: <AwardForm />,
+        element: <ProtectedRoute><AwardForm /></ProtectedRoute>,
       },
 
       // 🔗 Social Links routes
       {
         path: "/admin/entities/resumes/:resumeId/social-links",
-        element: <SocialLinksManagement />,
+        element: <ProtectedRoute><SocialLinksManagement /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/social-links/new",
-        element: <SocialLinkForm />,
+        element: <ProtectedRoute><SocialLinkForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/social-links/:id",
-        element: <SocialLinkForm />,
+        element: <ProtectedRoute><SocialLinkForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/social-links/:id/edit",
-        element: <SocialLinkForm />,
+        element: <ProtectedRoute><SocialLinkForm /></ProtectedRoute>,
       },
 
       // 👥 References routes
       {
         path: "/admin/entities/resumes/:resumeId/references",
-        element: <ReferencesManagement />,
+        element: <ProtectedRoute><ReferencesManagement /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/references/new",
-        element: <ReferenceForm />,
+        element: <ProtectedRoute><ReferenceForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/references/:id",
-        element: <ReferenceForm />,
+        element: <ProtectedRoute><ReferenceForm /></ProtectedRoute>,
       },
       {
         path: "/admin/entities/resumes/:resumeId/references/:id/edit",
-        element: <ReferenceForm />,
+        element: <ProtectedRoute><ReferenceForm /></ProtectedRoute>,
       },
 
       // dynamic routes

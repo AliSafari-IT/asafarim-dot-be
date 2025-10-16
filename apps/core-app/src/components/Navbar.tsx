@@ -15,6 +15,10 @@ const navLinks: NavLinkItem[] = [
     label: "Job Tracker",
   },
   {
+    to: "/portfolio",
+    label: "Portfolio",
+  },
+  {
     to: isProduction ? "https://www.asafarim.be/contact" : "http://web.asafarim.local:5175/contact",
     label: "Contact",
   },
@@ -78,7 +82,16 @@ const useMobileMenu = () => {
 };
 
 export default function Navbar() {
-  const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
+  // Configure useAuth to use Core API proxy endpoints instead of Identity API directly
+  const authApiBase = isProduction ? '/api/auth' : 'http://api.asafarim.local:5101/auth';
+
+  const { isAuthenticated, user, loading, signOut, signIn } = useAuth({
+    authApiBase,
+    meEndpoint: '/me',
+    tokenEndpoint: '/token',
+    logoutEndpoint: '/logout'
+  });
+
   const { isOpen } = useMobileMenu();
   const [scrolled, setScrolled] = useState(false);
 

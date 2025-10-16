@@ -34,12 +34,12 @@ const devConfig: Config = {
 
 // Production configuration
 const prodConfig: Config = {
-  apiBaseUrl: '/api/identity',
+  apiBaseUrl: '/api/auth', // Changed from /api/identity to /api/auth
   authEndpoints: {
-    me: '/api/identity/auth/me',
-    login: '/api/identity/auth/login',
-    register: '/api/identity/auth/register',
-    logout: '/api/identity/auth/logout',
+    me: '/api/auth/me', // Changed from /api/identity/auth/me to /api/auth/me
+    login: '/api/auth/login',
+    register: '/api/auth/register',
+    logout: '/api/auth/logout',
   },
   isProduction: true
 };

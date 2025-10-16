@@ -185,23 +185,23 @@
         "title": "Professional Summary"
       },
       "experience": {
-        "title": "Work Experiences",
+        "title": "💼 Work Experiences",
         "count": "{{count}} experience",
         "count_plural": "{{count}} experiences",
         "present": "Present",
         "achievements": "Achievements"
       },
       "skills": {
-        "title": "Skills",
+        "title": "🛠️ Skills",
         "count": "{{count}} skill",
         "count_plural": "{{count}} skills",
         "categories": {
-          "category": "��� {{category}}",
-          "level": "��� {{level}}"
+          "category": "🏷️ {{category}}",
+          "level": "🔢 {{level}}"
         }
       },
       "education": {
-        "title": "Education",
+        "title": "🎓 Education",
         "count": "{{count}} education",
         "count_plural": "{{count}} educations",
         "degree": "{{degree}}",
@@ -209,7 +209,7 @@
         "present": "Present"
       },
       "certificates": {
-        "title": "Certificates",
+        "title": "📜 Certificates",
         "count": "{{count}} certificate",
         "count_plural": "{{count}} certificates",
         "issued": "Issued: {{date}}",
@@ -218,42 +218,42 @@
         "credentialId": "ID: {{id}}"
       },
       "projects": {
-        "title": "Projects",
+        "title": "🏗️ Projects",
         "count": "{{count}} project",
         "count_plural": "{{count}} projects",
         "visit": "Visit →"
       },
       "languages": {
-        "title": "Languages",
+        "title": "🌍 Languages",
         "count": "{{count}} language",
         "count_plural": "{{count}} languages",
         "level": "{{level}}"
       },
       "awards": {
-        "title": "Awards & Achievements",
+        "title": "🏆 Awards & Achievements",
         "count": "{{count}} award",
         "count_plural": "{{count}} awards",
         "awarded": "{{date}}",
         "issuer": "{{issuer}}"
       },
       "references": {
-        "title": "References",
+        "title": "👨🏻References",
         "count": "{{count}} reference",
         "count_plural": "{{count}} references"
       },
       "socialLinks": {
-        "title": "Social Links",
+        "title": "📲 Social Links",
         "count": "{{count}} link",
         "count_plural": "{{count}} links"
       }
     },
     "actions": {
-      "editResume": "Edit Resume",
-      "publishResume": "��� Publish Resume",
-      "unpublish": "��� Unpublish",
-      "copyShareLink": "��� Copy Share Link",
-      "exportPDF": "Export PDF",
-      "backToResumes": "← Back to Resumes"
+      "editResume": "🖊 Edit Resume",
+      "publishResume": "🌊 Publish Resume",
+      "unpublish": "🫷 Unpublish",
+      "copyShareLink": "🟩 Copy Share Link",
+      "exportPDF": "📥Export PDF",
+      "backToResumes": "╰┈➤ Back to Resumes"
     },
     "messages": {
       "publishedSuccess": "Resume published successfully!",
@@ -269,7 +269,7 @@
   },
   "navbar": {
     "brand": {
-      "text": "ASafariM Web"
+      "text": "ASafariM"
     },
     "links": {
       "resumes": {
@@ -278,12 +278,22 @@
       },
       "about": {
         "label": "About",
-        "icon": "❓"
+        "icon": "🙋🏻‍♂️"
       },
       "contact": {
         "label": "Contact",
-        "icon": "✉️"
+        "icon": "ᯓ➤"
+      },
+      "portfolio": {
+        "label": "Portfolio",
+        "icon": "🗃️"
       }
+    },
+    "auth": {
+      "notSignedIn": "Not signed in!",
+      "signIn": "Sign In",
+      "signOut": "Sign Out",
+      "welcome": "Welcome"
     }
   }
 }

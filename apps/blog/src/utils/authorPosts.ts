@@ -21,8 +21,8 @@ export function useBlogPosts() {
     const blogData = usePluginData('docusaurus-plugin-content-blog') as any;
 
     // If we have valid blog data with posts, use it
-    if (blogData && Array.isArray(blogData.posts) && blogData.posts.length > 0) {
-      console.log("Found blog posts from plugin:", blogData.posts.length);
+    if (blogData && Array.isArray(blogData.posts) && blogData.posts?.length > 0) {
+      console.log("Found blog posts from plugin:", blogData.posts?.length);
 
       // Transform the blog data into our BlogPost format
       return blogData.posts.map((post: BlogPost) => ({
@@ -161,7 +161,7 @@ export function getAllBlogPosts(): BlogPost[] {
       [];
     console.log("Blog posts:", posts);
 
-    if (posts.length === 0) {
+    if (posts?.length === 0) {
       return getSampleBlogPosts();
     }
 

@@ -38,6 +38,12 @@ public class CoreDbContext : DbContext
     public DbSet<Language> Languages { get; set; } = null!;
     public DbSet<Award> Awards { get; set; } = null!;
     public DbSet<Reference> References { get; set; } = null!;
+    
+    // Portfolio Showcase entities
+    public DbSet<PortfolioSettings> PortfolioSettings { get; set; } = null!;
+    public DbSet<ProjectPublication> ProjectPublications { get; set; } = null!;
+    public DbSet<ProjectWorkExperience> ProjectWorkExperiences { get; set; } = null!;
+    public DbSet<ProjectImage> ProjectImages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -407,6 +413,61 @@ public class CoreDbContext : DbContext
             entity.Property(e => e.Company).HasMaxLength(100);
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.Phone).HasMaxLength(20);
+        });
+        
+        // Portfolio Showcase configurations
+        modelBuilder.Entity<PortfolioSettings>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("PortfolioSettings", "public");
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasIndex(e => e.PublicSlug).IsUnique();
+            entity.Property(e => e.PublicSlug).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Theme).HasMaxLength(50);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
+        });
+        
+        modelBuilder.Entity<ProjectPublication>(entity =>
+        {
+            entity.HasKey(pp => new { pp.ProjectId, pp.PublicationId });
+            entity.ToTable("ProjectPublications", "public");
+            entity.HasOne(pp => pp.Project)
+                .WithMany(p => p.ProjectPublications)
+                .HasForeignKey(pp => pp.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(pp => pp.Publication)
+                .WithMany()
+                .HasForeignKey(pp => pp.PublicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<ProjectWorkExperience>(entity =>
+        {
+            entity.HasKey(pw => new { pw.ProjectId, pw.WorkExperienceId });
+            entity.ToTable("ProjectWorkExperiences", "public");
+            entity.HasOne(pw => pw.Project)
+                .WithMany(p => p.ProjectWorkExperiences)
+                .HasForeignKey(pw => pw.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(pw => pw.WorkExperience)
+                .WithMany()
+                .HasForeignKey(pw => pw.WorkExperienceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<ProjectImage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("ProjectImages", "public");
+            entity.Property(e => e.ImageUrl).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.Caption).HasMaxLength(500);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.HasIndex(e => new { e.ProjectId, e.DisplayOrder });
+            entity.HasOne(e => e.Project)
+                .WithMany(p => p.ProjectImages)
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

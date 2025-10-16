@@ -45,7 +45,7 @@ function extractExcerpt(content: string, maxLength: number = 150): string {
   }
   
   // Limit excerpt length
-  if (excerpt.length > maxLength) {
+  if (excerpt?.length > maxLength) {
     excerpt = excerpt.substring(0, maxLength) + '...';
   }
   
