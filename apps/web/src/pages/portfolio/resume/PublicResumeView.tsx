@@ -511,10 +511,12 @@ const PublicResumeView = () => {
                   {resume.references.map((ref, index) => (
                     <div key={index} className="reference-card">
                       <h3 className="reference-name">{ref.name}</h3>
+                      <div className="reference-position">
+                        {ref.position} {ref.company && `at ${ref.company}`}
+                      </div>
                       <div className="reference-relationship">
                         {ref.relationship}
                       </div>
-                      <div className="reference-contact">{ref.contactInfo}</div>
                     </div>
                   ))}
                 </div>

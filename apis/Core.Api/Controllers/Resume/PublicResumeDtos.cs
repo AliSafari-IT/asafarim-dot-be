@@ -21,6 +21,7 @@ public class PublicResumeDto
     public IEnumerable<PublicLanguageDto> Languages { get; set; } = Array.Empty<PublicLanguageDto>();
     public IEnumerable<PublicAwardDto> Awards { get; set; } = Array.Empty<PublicAwardDto>();
     public IEnumerable<PublicSocialLinkDto> SocialLinks { get; set; } = Array.Empty<PublicSocialLinkDto>();
+    public IEnumerable<PublicReferenceDto> References { get; set; } = Array.Empty<PublicReferenceDto>();
 }
 
 public class PublicSkillDto
@@ -92,6 +93,15 @@ public class PublicSocialLinkDto
 {
     public string Platform { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
+}
+
+public class PublicReferenceDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty;
+    public string Company { get; set; } = string.Empty;
+    public string Relationship { get; set; } = string.Empty;
+    // Note: Email and Phone are excluded for privacy in public resumes
 }
 
 // Request DTOs for publish/unpublish operations

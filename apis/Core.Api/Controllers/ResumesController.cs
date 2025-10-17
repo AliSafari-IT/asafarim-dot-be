@@ -396,6 +396,7 @@ public class ResumesController : ControllerBase
             .Include(r => r.SocialLinks)
             .Include(r => r.Languages)
             .Include(r => r.Awards)
+            .Include(r => r.References)
             .FirstOrDefaultAsync();
 
         if (resume == null)
@@ -675,6 +676,16 @@ public class ResumesController : ControllerBase
                 {
                     Platform = sl.Platform,
                     Url = sl.Url,
+                })
+                .ToList(),
+            References = resume
+                .References.Select(r => new PublicReferenceDto
+                {
+                    Name = r.Name,
+                    Position = r.Position,
+                    Company = r.Company,
+                    Relationship = r.Relationship,
+                    // Email and Phone excluded for privacy
                 })
                 .ToList(),
         };
