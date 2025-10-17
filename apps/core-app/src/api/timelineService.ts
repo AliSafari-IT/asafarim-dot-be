@@ -1,5 +1,5 @@
 import type { TimelineMilestone } from '../types/timelineTypes';
-import { coreApi } from './config';
+import { coreApi } from '../config/api';
 
 // Timeline Milestones API
 export const fetchMilestonesByJob = async (jobId: string): Promise<TimelineMilestone[]> => {

@@ -16,9 +16,9 @@ const USER_INFO_KEY = 'user_info';
 const isBrowser = typeof window !== 'undefined';
 const isProd = isProduction;
 
-// Identity API base (reverse-proxied via Nginx in prod)
+// Identity API base - use direct URL to avoid Nginx routing issues
 const IDENTITY_API_BASE = isProd
-  ? '/api/identity'
+  ? 'https://identity.asafarim.be'
   : (import.meta as { env: Record<string, string> }).env?.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
 
 // Identity site origin for cross-app actions (e.g., sync-logout)
