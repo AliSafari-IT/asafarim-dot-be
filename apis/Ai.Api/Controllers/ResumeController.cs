@@ -82,7 +82,8 @@ public sealed class ResumeController : ControllerBase
     [HttpGet("health")]
     public IActionResult HealthCheck()
     {
-        return Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
+        return Ok(new { status = "healthy", timestamp = DateTime.UtcNow,
+        usage = "This endpoint is used to test API connectivity: https://asafarim.be/api/ai/resume/health" });
     }
 
     // POST /resume/functional - generate a functional resume from a detailed CV for the logged-in user

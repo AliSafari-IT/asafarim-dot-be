@@ -32,14 +32,14 @@ const devConfig: Config = {
   isProduction: false
 };
 
-// Production configuration
+// Production configuration - use direct Identity API URLs
 const prodConfig: Config = {
-  apiBaseUrl: '/api/auth', // Changed from /api/identity to /api/auth
+  apiBaseUrl: 'https://identity.asafarim.be',
   authEndpoints: {
-    me: '/api/auth/me', // Changed from /api/identity/auth/me to /api/auth/me
-    login: '/api/auth/login',
-    register: '/api/auth/register',
-    logout: '/api/auth/logout',
+    me: 'https://identity.asafarim.be/auth/me',
+    login: 'https://identity.asafarim.be/auth/login',
+    register: 'https://identity.asafarim.be/auth/register',
+    logout: 'https://identity.asafarim.be/auth/logout',
   },
   isProduction: true
 };
