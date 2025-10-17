@@ -215,10 +215,10 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
     const checkAuth = async () => {
       // Check if logout is in progress - don't try to re-authenticate
-      const logoutInProgress = sessionStorage.getItem('logout_in_progress') === 'true';
+      const logoutInProgress = localStorage.getItem('logout_in_progress') === 'true';
       if (logoutInProgress) {
         console.log('🛑 Logout in progress, skipping auth check');
-        sessionStorage.removeItem('logout_in_progress');
+        localStorage.removeItem('logout_in_progress');
         if (mounted) {
           setAuthenticated(false);
           setUser(null);
@@ -373,14 +373,15 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     console.log('🔑 Signing out user');
 
     // Set a flag to prevent auto-re-authentication after logout
-    sessionStorage.setItem('logout_in_progress', 'true');
+    // Use localStorage instead of sessionStorage so it persists across redirect
+    localStorage.setItem('logout_in_progress', 'true');
 
     // Clear local state
     setAuthenticated(false);
     setUser(null);
     setToken(null);
 
-    // Clear localStorage
+    // Clear localStorage auth data (but keep logout_in_progress flag)
     try {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('refresh_token');

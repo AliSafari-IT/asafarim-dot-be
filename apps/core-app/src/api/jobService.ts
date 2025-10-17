@@ -1,5 +1,5 @@
 import type { JobApplication } from '../types/jobTypes';
-import { coreApi } from './config';
+import { coreApi } from '../config/api';
 
 const API_URL = coreApi('JobApplications');
 
