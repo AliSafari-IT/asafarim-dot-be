@@ -28,4 +28,5 @@ public class Project
     public ICollection<ProjectPublication> ProjectPublications { get; set; } = new List<ProjectPublication>();
     public ICollection<ProjectWorkExperience> ProjectWorkExperiences { get; set; } = new List<ProjectWorkExperience>();
     public ICollection<ProjectImage> ProjectImages { get; set; } = new List<ProjectImage>();
+    public ICollection<ProjectResumeLink> ProjectResumeLinks { get; set; } = new List<ProjectResumeLink>();
 }

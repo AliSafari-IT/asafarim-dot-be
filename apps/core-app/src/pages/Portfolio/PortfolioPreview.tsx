@@ -45,7 +45,69 @@ export const PortfolioPreview: React.FC = () => {
   }
 
   if (!portfolio) {
-    return null;
+    return (
+      <div style={{
+        maxWidth: '600px',
+        margin: '100px auto',
+        padding: '40px 20px',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          fontSize: '64px',
+          marginBottom: '20px',
+        }}>
+          📁
+        </div>
+        <h1 style={{
+          fontSize: '24px',
+          fontWeight: 600,
+          marginBottom: '16px',
+          color: 'var(--color-text-primary, #1f2937)',
+        }}>
+          No Portfolio Yet
+        </h1>
+        <p style={{
+          color: 'var(--color-text-secondary, #6b7280)',
+          marginBottom: '32px',
+          fontSize: '16px',
+          lineHeight: '1.5',
+        }}>
+          You haven't created a portfolio yet. A portfolio lets you showcase your projects,
+          work experience, and publications in a beautiful, shareable format.
+        </p>
+        <button
+          onClick={() => navigate('/dashboard/portfolio')}
+          style={{
+            padding: '12px 24px',
+            background: 'var(--color-primary, #3b82f6)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: 600,
+            marginRight: '12px'
+          }}
+        >
+          Create Portfolio
+        </button>
+        <button
+          onClick={() => window.history.back()}
+          style={{
+            padding: '12px 24px',
+            background: 'var(--color-surface, #f9fafb)',
+            color: 'var(--color-text-primary, #1f2937)',
+            border: '1px solid var(--color-border, #e5e7eb)',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: 600,
+          }}
+        >
+          Go Back
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -55,12 +117,15 @@ export const PortfolioPreview: React.FC = () => {
         color: 'white',
         padding: '12px 20px',
         textAlign: 'center',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
+        position: 'fixed',
+        top: '4rem',
+        left: 0,
+        right: 0,
+        zIndex: 999,
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         <span>Preview Mode - This is how your portfolio will appear to visitors</span>
         <button 
@@ -78,6 +143,9 @@ export const PortfolioPreview: React.FC = () => {
           Edit Portfolio
         </button>
       </div>
+      
+      {/* Spacer to prevent content from hiding under fixed banner */}
+      <div style={{ height: 'calc(4rem + 48px)' }} />
       
       <PortfolioHeader portfolio={portfolio} />
       <PortfolioOverview portfolio={portfolio} />

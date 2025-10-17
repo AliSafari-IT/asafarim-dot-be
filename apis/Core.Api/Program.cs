@@ -132,8 +132,32 @@ builder
         {
             OnMessageReceived = ctx =>
             {
+                var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("JWT OnMessageReceived - Path: {Path}", ctx.Request.Path);
+                
                 if (ctx.Request.Cookies.TryGetValue("atk", out var token))
+                {
+                    logger.LogInformation("JWT token found in 'atk' cookie");
                     ctx.Token = token;
+                }
+                else
+                {
+                    logger.LogWarning("JWT token NOT found in 'atk' cookie");
+                    logger.LogInformation("Available cookies: {Cookies}", string.Join(", ", ctx.Request.Cookies.Keys));
+                }
+                
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = ctx =>
+            {
+                var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ctx.Exception, "JWT authentication failed");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = ctx =>
+            {
+                var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("JWT token validated successfully");
                 return Task.CompletedTask;
             },
         };
@@ -215,9 +239,33 @@ app.MapPost(
         var response = await httpClient.SendAsync(request);
         var content = await response.Content.ReadAsStringAsync();
 
-        // Clear cookies on this domain too
-        context.Response.Cookies.Delete("atk");
-        context.Response.Cookies.Delete("rtk");
+        // Clear ALL authentication cookies on this domain with proper options
+        var cookieNames = new[] { "atk", "rtk", "auth", "identity", "session", "preferredLanguage" };
+        var cookieOptions = new CookieOptions
+        {
+            Path = "/",
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Domain = app.Environment.IsProduction() ? ".asafarim.be" : ".asafarim.local",
+            Expires = DateTimeOffset.UtcNow.AddDays(-1) // Expire in the past
+        };
+
+        foreach (var cookieName in cookieNames)
+        {
+            // Delete with domain
+            context.Response.Cookies.Delete(cookieName, cookieOptions);
+            
+            // Also delete without domain (for cookies set without domain attribute)
+            context.Response.Cookies.Delete(cookieName, new CookieOptions
+            {
+                Path = "/",
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddDays(-1)
+            });
+        }
 
         return Results.Ok(content);
     }

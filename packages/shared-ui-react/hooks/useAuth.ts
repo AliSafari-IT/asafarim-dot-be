@@ -344,6 +344,24 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
     // Initial check only - don't set up listeners that cause loops
     void checkAuth();
+
+    // Listen for auth-signout events to immediately clear state
+    const handleSignOut = () => {
+      console.log('🔔 Received auth-signout event, clearing state immediately');
+      if (mounted) {
+        setAuthenticated(false);
+        setUser(null);
+        setToken(null);
+        setLoading(false);
+      }
+    };
+
+    window.addEventListener('auth-signout', handleSignOut);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener('auth-signout', handleSignOut);
+    };
   }, [authApiBase, meEndpoint, tokenEndpoint, refreshTokenIfNeeded]);
 
   // Separate effect for token refresh interval - only when authenticated and not loading
@@ -396,7 +414,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
     // Clear cookies for all subdomains
     const subdomains = ['identity', 'blog', 'ai', 'core', 'web'];
-    const cookieNames = ['atk', 'rtk', 'auth', 'identity', 'session'];
+    const cookieNames = ['atk', 'rtk', 'auth', 'identity', 'session', 'preferredLanguage'];
 
     // Clear cookies for each subdomain
     subdomains.forEach(subdomain => {
@@ -417,6 +435,19 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       ['/', '/api', '/api/identity', '/api/auth', '/api/core'].forEach(path => {
         document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
         document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}; SameSite=None; Secure`;
+      });
+    });
+
+    // CRITICAL: Also clear cookies for the CURRENT domain without the leading dot
+    const currentDomain = window.location.hostname;
+    cookieNames.forEach(name => {
+      ['/', '/api', '/api/identity', '/api/auth', '/api/core', '/portfolio'].forEach(path => {
+        // Clear with current domain
+        document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${currentDomain}`;
+        document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${currentDomain}; SameSite=None; Secure`;
+        // Clear without domain (for cookies set without domain attribute)
+        document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+        document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=None; Secure`;
       });
     });
 

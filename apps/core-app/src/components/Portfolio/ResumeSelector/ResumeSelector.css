@@ -1,0 +1,271 @@
+.resume-selector {
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius-md, 8px);
+  padding: var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.resume-selector.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.resume-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.resume-selector-label {
+  font-weight: 600;
+  font-size: var(--font-size-md, 16px);
+  color: var(--color-text, #1f2937);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+}
+
+.resume-selector-count {
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 400;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.resume-selector-toggle {
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  background: var(--color-primary, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm, 4px);
+  cursor: pointer;
+  font-size: var(--font-size-sm, 14px);
+  transition: background-color 0.2s;
+}
+
+.resume-selector-toggle:hover:not(:disabled) {
+  background: var(--color-primary-hover, #2563eb);
+}
+
+.resume-selector-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.resume-selector-content {
+  margin-top: var(--spacing-md, 16px);
+}
+
+.resume-selector-controls {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.resume-selector-search {
+  flex: 1;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+}
+
+.resume-selector-search:focus {
+  outline: none;
+  border-color: var(--color-primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.resume-selector-filter {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+  background: white;
+  cursor: pointer;
+}
+
+.resume-selector-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius-sm, 4px);
+  padding: var(--spacing-sm, 8px);
+}
+
+.resume-selector-empty {
+  padding: var(--spacing-xl, 32px);
+  text-align: center;
+  color: var(--color-text-muted, #6b7280);
+  font-size: var(--font-size-sm, 14px);
+}
+
+.resume-selector-item {
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius-sm, 4px);
+  padding: var(--spacing-md, 16px);
+  margin-bottom: var(--spacing-sm, 8px);
+  background: var(--color-background, #f9fafb);
+}
+
+.resume-selector-item:last-child {
+  margin-bottom: 0;
+}
+
+.resume-selector-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.resume-selector-item-type {
+  font-size: var(--font-size-xs, 12px);
+  padding: 2px var(--spacing-xs, 4px);
+  background: var(--color-primary-light, #dbeafe);
+  color: var(--color-primary, #3b82f6);
+  border-radius: var(--border-radius-xs, 2px);
+  font-weight: 500;
+}
+
+.resume-selector-item-title {
+  font-size: var(--font-size-md, 16px);
+  font-weight: 600;
+  color: var(--color-text, #1f2937);
+  margin: 0;
+}
+
+.resume-selector-work-experiences {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
+}
+
+.resume-selector-work-exp {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius-xs, 2px);
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resume-selector-work-exp:hover {
+  background: var(--color-background-hover, #f3f4f6);
+  border-color: var(--color-primary, #3b82f6);
+}
+
+.resume-selector-work-exp.selected {
+  background: var(--color-primary-light, #dbeafe);
+  border-color: var(--color-primary, #3b82f6);
+}
+
+.resume-selector-work-exp input[type="checkbox"] {
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.resume-selector-work-exp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.resume-selector-work-exp-position {
+  font-weight: 600;
+  font-size: var(--font-size-sm, 14px);
+  color: var(--color-text, #1f2937);
+}
+
+.resume-selector-work-exp-company {
+  font-size: var(--font-size-sm, 14px);
+  color: var(--color-text-secondary, #4b5563);
+}
+
+.resume-selector-work-exp-dates {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-text-muted, #6b7280);
+}
+
+.resume-selector-no-experiences {
+  padding: var(--spacing-md, 16px);
+  text-align: center;
+  color: var(--color-text-muted, #6b7280);
+  font-size: var(--font-size-sm, 14px);
+  font-style: italic;
+}
+
+.resume-selector-summary {
+  margin-top: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  background: var(--color-background, #f9fafb);
+  border-radius: var(--border-radius-sm, 4px);
+  border: 1px solid var(--color-border, #e5e7eb);
+}
+
+.resume-selector-summary h5 {
+  margin: 0 0 var(--spacing-sm, 8px) 0;
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 600;
+  color: var(--color-text, #1f2937);
+}
+
+.resume-selector-selected-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs, 4px);
+}
+
+.resume-selector-selected-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  background: var(--color-primary, #3b82f6);
+  color: white;
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-xs, 12px);
+}
+
+.resume-selector-remove {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  font-size: var(--font-size-md, 16px);
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.resume-selector-remove:hover:not(:disabled) {
+  opacity: 1;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .resume-selector {
+    background: var(--color-surface-dark, #1f2937);
+    border-color: var(--color-border-dark, #374151);
+  }
+
+  .resume-selector-item {
+    background: var(--color-background-dark, #111827);
+    border-color: var(--color-border-dark, #374151);
+  }
+
+  .resume-selector-work-exp {
+    background: var(--color-surface-dark, #1f2937);
+    border-color: var(--color-border-dark, #374151);
+  }
+
+  .resume-selector-work-exp:hover {
+    background: var(--color-background-hover-dark, #374151);
+  }
+}

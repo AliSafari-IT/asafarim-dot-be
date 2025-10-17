@@ -10,7 +10,14 @@ const Portfolio: React.FC = () => {
   const { portfolio, loading, error, fetchMyPortfolio } = usePortfolioStore();
 
   useEffect(() => {
-    fetchMyPortfolio();
+    fetchMyPortfolio().catch(err => {
+      console.error('Failed to fetch portfolio:', err);
+      // If error message indicates authentication issue, redirect to login
+      if (err.message && err.message.includes('Authentication required')) {
+        // Error handler will redirect, no need to do anything here
+        return;
+      }
+    });
   }, [fetchMyPortfolio]);
 
   if (loading) {
@@ -18,30 +25,150 @@ const Portfolio: React.FC = () => {
   }
 
   if (error) {
+    // Check if it's an authentication error
+    const isAuthError = error.includes('Authentication required') || 
+                        error.includes('401') || 
+                        error.includes('text/html');
+    
     return (
       <div style={{ 
-        maxWidth: '600px', 
-        margin: '100px auto', 
-        padding: '20px', 
-        textAlign: 'center' 
+        maxWidth: '700px', 
+        margin: '80px auto', 
+        padding: '40px', 
+        textAlign: 'center',
+        background: 'var(--color-surface, #ffffff)',
+        borderRadius: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
-        <h1>Error Loading Portfolio</h1>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '20px' }}>
-          {error}
+        <div style={{ fontSize: '64px', marginBottom: '20px' }}>
+          {isAuthError ? '🔒' : '⚠️'}
+        </div>
+        
+        <h1 style={{ 
+          fontSize: '28px', 
+          fontWeight: 700, 
+          marginBottom: '16px',
+          color: 'var(--color-text-primary, #1f2937)'
+        }}>
+          {isAuthError ? 'Authentication Required' : 'Portfolio Not Found'}
+        </h1>
+        
+        <p style={{ 
+          color: 'var(--color-text-secondary, #6b7280)', 
+          marginBottom: '32px',
+          fontSize: '16px',
+          lineHeight: '1.6'
+        }}>
+          {isAuthError 
+            ? 'Please sign in to view your portfolio. If you just signed out, your session has been cleared successfully.'
+            : 'Your portfolio hasn\'t been created yet. Get started by creating your first portfolio to showcase your projects and achievements.'}
         </p>
-        <button 
-          onClick={() => navigate('/dashboard/portfolio')}
-          style={{
-            padding: '10px 20px',
-            background: 'var(--color-primary)',
-            color: 'white',
-            border: 'none',
-            borderRadius: 'var(--border-radius-sm)',
-            cursor: 'pointer'
-          }}
-        >
-          Go to Dashboard
-        </button>
+
+        <div style={{ 
+          display: 'flex', 
+          gap: '12px', 
+          justifyContent: 'center',
+          flexWrap: 'wrap'
+        }}>
+          {isAuthError ? (
+            <>
+              <button 
+                onClick={() => window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)}
+                style={{
+                  padding: '12px 24px',
+                  background: 'var(--color-primary, #3b82f6)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 600
+                }}
+              >
+                Sign In
+              </button>
+              <button 
+                onClick={() => navigate('/')}
+                style={{
+                  padding: '12px 24px',
+                  background: 'var(--color-surface, #f9fafb)',
+                  color: 'var(--color-text-primary, #1f2937)',
+                  border: '1px solid var(--color-border, #e5e7eb)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 600
+                }}
+              >
+                Go to Home
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                onClick={() => navigate('/dashboard/portfolio')}
+                style={{
+                  padding: '12px 24px',
+                  background: 'var(--color-primary, #3b82f6)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 600
+                }}
+              >
+                Create Portfolio
+              </button>
+              <button 
+                onClick={() => navigate('/')}
+                style={{
+                  padding: '12px 24px',
+                  background: 'var(--color-surface, #f9fafb)',
+                  color: 'var(--color-text-primary, #1f2937)',
+                  border: '1px solid var(--color-border, #e5e7eb)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 600
+                }}
+              >
+                Go to Home
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Technical error details (collapsible) */}
+        <details style={{ 
+          marginTop: '32px', 
+          textAlign: 'left',
+          padding: '16px',
+          background: 'var(--color-surface, #f9fafb)',
+          borderRadius: '8px'
+        }}>
+          <summary style={{ 
+            cursor: 'pointer', 
+            fontWeight: 600,
+            color: 'var(--color-text-secondary, #6b7280)',
+            fontSize: '14px'
+          }}>
+            Technical Details
+          </summary>
+          <pre style={{ 
+            marginTop: '12px',
+            padding: '12px',
+            background: '#1f2937',
+            color: '#f9fafb',
+            borderRadius: '4px',
+            fontSize: '12px',
+            overflow: 'auto',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word'
+          }}>
+            {error}
+          </pre>
+        </details>
       </div>
     );
   }
@@ -57,12 +184,15 @@ const Portfolio: React.FC = () => {
         color: 'white',
         padding: '12px 20px',
         textAlign: 'center',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
+        position: 'fixed',
+        top: '4rem',
+        left: 0,
+        right: 0,
+        zIndex: 999,
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         <span>Preview Mode - This is how your portfolio will appear to visitors</span>
         <button 
@@ -80,6 +210,9 @@ const Portfolio: React.FC = () => {
           Edit Portfolio
         </button>
       </div>
+      
+      {/* Spacer to prevent content from hiding under fixed banner */}
+      <div style={{ height: 'calc(4rem + 48px)' }} />
       
       <PortfolioHeader portfolio={portfolio} />
       <PortfolioOverview portfolio={portfolio} />

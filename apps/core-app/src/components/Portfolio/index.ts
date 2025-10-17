@@ -7,3 +7,9 @@ export { PublicationCard } from './PublicationCard/PublicationCard';
 export { SkillsSection } from './SkillsSection/SkillsSection';
 export { PortfolioSkeleton } from './PortfolioSkeleton/PortfolioSkeleton';
 export { default as Portfolio } from './Portfolio';
+
+// Resume Linking & Management Components
+export { ResumeSelector } from './ResumeSelector/ResumeSelector';
+export { ResumeLinkingModal } from './ResumeLinkingModal/ResumeLinkingModal';
+export { AnalyticsWidget } from './AnalyticsWidget/AnalyticsWidget';
+export { ActivityTimeline } from './ActivityTimeline/ActivityTimeline';

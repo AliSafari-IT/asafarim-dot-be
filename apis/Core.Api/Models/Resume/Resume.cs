@@ -35,5 +35,9 @@ namespace Core.Api.Models.Resume
         public ICollection<Project> Projects { get; set; } = new List<Project>();
         public ICollection<Award> Awards { get; set; } = new List<Award>();
         public ICollection<Reference> References { get; set; } = new List<Reference>();
+        
+        // Portfolio linking relationships
+        public ICollection<ProjectResumeLink> ProjectResumeLinks { get; set; } = new List<ProjectResumeLink>();
+        public ICollection<PublicationResumeLink> PublicationResumeLinks { get; set; } = new List<PublicationResumeLink>();
     }
 }

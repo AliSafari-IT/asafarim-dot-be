@@ -486,4 +486,534 @@ public class PortfolioService : IPortfolioService
 
         return project == null ? null : MapToProjectShowcaseDto(project);
     }
+
+    // ==================== Resume Linking - Projects ====================
+    
+    public async Task<List<ResumeLinkDto>> LinkProjectToResumesAsync(Guid userId, Guid projectId, LinkResumesDto dto)
+    {
+        var userIdString = userId.ToString();
+        var project = await _context.Projects
+            .Include(p => p.Resume)
+            .FirstOrDefaultAsync(p => p.Id == projectId && p.Resume.UserId == userIdString);
+
+        if (project == null)
+            throw new InvalidOperationException("Project not found or access denied");
+
+        var links = new List<ProjectResumeLink>();
+        
+        foreach (var resumeId in dto.ResumeIds)
+        {
+            // Check if resume belongs to user
+            var resume = await _context.Resumes
+                .FirstOrDefaultAsync(r => r.Id == resumeId && r.UserId == userIdString);
+            
+            if (resume == null) continue;
+
+            // Check if link already exists
+            var existingLink = await _context.Set<ProjectResumeLink>()
+                .FirstOrDefaultAsync(l => l.ProjectId == projectId && l.ResumeId == resumeId);
+            
+            if (existingLink != null) continue;
+
+            var workExperienceId = dto.WorkExperienceLinks?.GetValueOrDefault(resumeId);
+            
+            var link = new ProjectResumeLink
+            {
+                Id = Guid.NewGuid(),
+                ProjectId = projectId,
+                ResumeId = resumeId,
+                WorkExperienceId = workExperienceId,
+                Notes = dto.Notes,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Set<ProjectResumeLink>().Add(link);
+            links.Add(link);
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Log activity
+        await CreateActivityLogAsync(userId, new CreateActivityLogDto
+        {
+            EntityType = EntityType.Project,
+            EntityId = projectId.ToString(),
+            EntityName = project.Name,
+            Action = ActivityAction.Link,
+            Details = $"Linked {links.Count} resume(s)"
+        });
+
+        return await GetProjectResumesAsync(userId, projectId);
+    }
+
+    public async Task<bool> UnlinkProjectFromResumeAsync(Guid userId, Guid projectId, Guid resumeId)
+    {
+        var userIdString = userId.ToString();
+        var project = await _context.Projects
+            .Include(p => p.Resume)
+            .FirstOrDefaultAsync(p => p.Id == projectId && p.Resume.UserId == userIdString);
+
+        if (project == null) return false;
+
+        var link = await _context.Set<ProjectResumeLink>()
+            .FirstOrDefaultAsync(l => l.ProjectId == projectId && l.ResumeId == resumeId);
+
+        if (link == null) return false;
+
+        _context.Set<ProjectResumeLink>().Remove(link);
+        await _context.SaveChangesAsync();
+
+        // Log activity
+        await CreateActivityLogAsync(userId, new CreateActivityLogDto
+        {
+            EntityType = EntityType.Project,
+            EntityId = projectId.ToString(),
+            EntityName = project.Name,
+            Action = ActivityAction.Unlink,
+            Details = "Unlinked resume"
+        });
+
+        return true;
+    }
+
+    public async Task<List<ResumeLinkDto>> GetProjectResumesAsync(Guid userId, Guid projectId)
+    {
+        var userIdString = userId.ToString();
+        var project = await _context.Projects
+            .Include(p => p.Resume)
+            .FirstOrDefaultAsync(p => p.Id == projectId && p.Resume.UserId == userIdString);
+
+        if (project == null) return new List<ResumeLinkDto>();
+
+        var links = await _context.Set<ProjectResumeLink>()
+            .Include(l => l.Resume)
+            .Include(l => l.WorkExperience)
+            .Where(l => l.ProjectId == projectId)
+            .ToListAsync();
+
+        return links.Select(l => new ResumeLinkDto
+        {
+            Id = l.Id,
+            ResumeId = l.ResumeId,
+            ResumeTitle = l.Resume?.Title ?? "Unknown",
+            WorkExperienceId = l.WorkExperienceId,
+            WorkExperienceTitle = l.WorkExperience != null 
+                ? $"{l.WorkExperience.JobTitle} at {l.WorkExperience.CompanyName}" 
+                : null,
+            CreatedAt = l.CreatedAt,
+            Notes = l.Notes
+        }).ToList();
+    }
+
+    // ==================== Resume Linking - Publications ====================
+    
+    public async Task<List<ResumeLinkDto>> LinkPublicationToResumesAsync(Guid userId, int publicationId, LinkResumesDto dto)
+    {
+        var userIdString = userId.ToString();
+        var publication = await _context.Publications
+            .FirstOrDefaultAsync(p => p.Id == publicationId && p.UserId == userIdString);
+
+        if (publication == null)
+            throw new InvalidOperationException("Publication not found or access denied");
+
+        var links = new List<PublicationResumeLink>();
+        
+        foreach (var resumeId in dto.ResumeIds)
+        {
+            var resume = await _context.Resumes
+                .FirstOrDefaultAsync(r => r.Id == resumeId && r.UserId == userIdString);
+            
+            if (resume == null) continue;
+
+            var existingLink = await _context.Set<PublicationResumeLink>()
+                .FirstOrDefaultAsync(l => l.PublicationId == publicationId && l.ResumeId == resumeId);
+            
+            if (existingLink != null) continue;
+
+            var link = new PublicationResumeLink
+            {
+                Id = Guid.NewGuid(),
+                PublicationId = publicationId,
+                ResumeId = resumeId,
+                Notes = dto.Notes,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Set<PublicationResumeLink>().Add(link);
+            links.Add(link);
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Log activity
+        await CreateActivityLogAsync(userId, new CreateActivityLogDto
+        {
+            EntityType = EntityType.Publication,
+            EntityId = publicationId.ToString(),
+            EntityName = publication.Title,
+            Action = ActivityAction.Link,
+            Details = $"Linked {links.Count} resume(s)"
+        });
+
+        return await GetPublicationResumesAsync(userId, publicationId);
+    }
+
+    public async Task<bool> UnlinkPublicationFromResumeAsync(Guid userId, int publicationId, Guid resumeId)
+    {
+        var userIdString = userId.ToString();
+        var publication = await _context.Publications
+            .FirstOrDefaultAsync(p => p.Id == publicationId && p.UserId == userIdString);
+
+        if (publication == null) return false;
+
+        var link = await _context.Set<PublicationResumeLink>()
+            .FirstOrDefaultAsync(l => l.PublicationId == publicationId && l.ResumeId == resumeId);
+
+        if (link == null) return false;
+
+        _context.Set<PublicationResumeLink>().Remove(link);
+        await _context.SaveChangesAsync();
+
+        // Log activity
+        await CreateActivityLogAsync(userId, new CreateActivityLogDto
+        {
+            EntityType = EntityType.Publication,
+            EntityId = publicationId.ToString(),
+            EntityName = publication.Title,
+            Action = ActivityAction.Unlink,
+            Details = "Unlinked resume"
+        });
+
+        return true;
+    }
+
+    public async Task<List<ResumeLinkDto>> GetPublicationResumesAsync(Guid userId, int publicationId)
+    {
+        var userIdString = userId.ToString();
+        var publication = await _context.Publications
+            .FirstOrDefaultAsync(p => p.Id == publicationId && p.UserId == userIdString);
+
+        if (publication == null) return new List<ResumeLinkDto>();
+
+        var links = await _context.Set<PublicationResumeLink>()
+            .Include(l => l.Resume)
+            .Where(l => l.PublicationId == publicationId)
+            .ToListAsync();
+
+        return links.Select(l => new ResumeLinkDto
+        {
+            Id = l.Id,
+            ResumeId = l.ResumeId,
+            ResumeTitle = l.Resume?.Title ?? "Unknown",
+            CreatedAt = l.CreatedAt,
+            Notes = l.Notes
+        }).ToList();
+    }
+
+    // ==================== Bulk Operations ====================
+    
+    public async Task<int> BulkLinkResumesToProjectsAsync(Guid userId, BulkLinkResumesDto dto)
+    {
+        var userIdString = userId.ToString();
+        var linkedCount = 0;
+
+        foreach (var projectId in dto.ProjectIds)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Resume)
+                .FirstOrDefaultAsync(p => p.Id == projectId && p.Resume.UserId == userIdString);
+
+            if (project == null) continue;
+
+            foreach (var resumeId in dto.ResumeIds)
+            {
+                var resume = await _context.Resumes
+                    .FirstOrDefaultAsync(r => r.Id == resumeId && r.UserId == userIdString);
+                
+                if (resume == null) continue;
+
+                var existingLink = await _context.Set<ProjectResumeLink>()
+                    .FirstOrDefaultAsync(l => l.ProjectId == projectId && l.ResumeId == resumeId);
+                
+                if (existingLink != null) continue;
+
+                var link = new ProjectResumeLink
+                {
+                    Id = Guid.NewGuid(),
+                    ProjectId = projectId,
+                    ResumeId = resumeId,
+                    Notes = dto.Notes,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Set<ProjectResumeLink>().Add(link);
+                linkedCount++;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Log activity
+        await CreateActivityLogAsync(userId, new CreateActivityLogDto
+        {
+            EntityType = EntityType.Portfolio,
+            EntityId = userId.ToString(),
+            EntityName = "Portfolio",
+            Action = ActivityAction.Link,
+            Details = $"Bulk linked {linkedCount} project-resume connections"
+        });
+
+        return linkedCount;
+    }
+
+    public async Task<int> BulkUnlinkResumesFromProjectsAsync(Guid userId, BulkLinkResumesDto dto)
+    {
+        var userIdString = userId.ToString();
+        var unlinkedCount = 0;
+
+        foreach (var projectId in dto.ProjectIds)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Resume)
+                .FirstOrDefaultAsync(p => p.Id == projectId && p.Resume.UserId == userIdString);
+
+            if (project == null) continue;
+
+            foreach (var resumeId in dto.ResumeIds)
+            {
+                var link = await _context.Set<ProjectResumeLink>()
+                    .FirstOrDefaultAsync(l => l.ProjectId == projectId && l.ResumeId == resumeId);
+
+                if (link == null) continue;
+
+                _context.Set<ProjectResumeLink>().Remove(link);
+                unlinkedCount++;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Log activity
+        await CreateActivityLogAsync(userId, new CreateActivityLogDto
+        {
+            EntityType = EntityType.Portfolio,
+            EntityId = userId.ToString(),
+            EntityName = "Portfolio",
+            Action = ActivityAction.Unlink,
+            Details = $"Bulk unlinked {unlinkedCount} project-resume connections"
+        });
+
+        return unlinkedCount;
+    }
+
+    // ==================== Analytics & Insights ====================
+    
+    public async Task<PortfolioInsightsDto> GetPortfolioInsightsAsync(Guid userId)
+    {
+        var userIdString = userId.ToString();
+        
+        var resume = await _context.Resumes
+            .FirstOrDefaultAsync(r => r.UserId == userIdString);
+
+        if (resume == null)
+            return new PortfolioInsightsDto();
+
+        // Project statistics
+        var allProjects = await _context.Projects
+            .Include(p => p.ProjectResumeLinks)
+            .Include(p => p.ProjectTechnologies).ThenInclude(pt => pt.Technology)
+            .Where(p => p.ResumeId == resume.Id)
+            .ToListAsync();
+
+        var totalProjects = allProjects.Count;
+        var linkedProjects = allProjects.Count(p => p.ProjectResumeLinks.Any());
+        var unlinkedProjects = totalProjects - linkedProjects;
+        var linkingRate = totalProjects > 0 ? (decimal)linkedProjects / totalProjects * 100 : 0;
+
+        // Publication statistics
+        var allPublications = await _context.Publications
+            .Include(p => p.PublicationResumeLinks)
+            .Where(p => p.UserId == userIdString)
+            .ToListAsync();
+
+        var totalPublications = allPublications.Count;
+        var linkedPublications = allPublications.Count(p => p.PublicationResumeLinks.Any());
+
+        // Resume statistics
+        var allResumes = await _context.Resumes
+            .Include(r => r.ProjectResumeLinks)
+            .Include(r => r.PublicationResumeLinks)
+            .Where(r => r.UserId == userIdString)
+            .ToListAsync();
+
+        var totalResumes = allResumes.Count;
+        var activeResumes = allResumes.Count(r => r.ProjectResumeLinks.Any() || r.PublicationResumeLinks.Any());
+
+        // Most used technologies
+        var technologyUsage = allProjects
+            .SelectMany(p => p.ProjectTechnologies)
+            .GroupBy(pt => new { pt.TechnologyId, pt.Technology?.Name, pt.Technology?.Category })
+            .Select(g => new TechnologyUsageDto
+            {
+                TechnologyId = g.Key.TechnologyId,
+                Name = g.Key.Name ?? "Unknown",
+                Category = g.Key.Category,
+                UsageCount = g.Count()
+            })
+            .OrderByDescending(t => t.UsageCount)
+            .Take(10)
+            .ToList();
+
+        // Most linked resumes
+        var resumeUsage = allResumes
+            .Select(r => new ResumeUsageDto
+            {
+                ResumeId = r.Id,
+                Title = r.Title,
+                LinkCount = r.ProjectResumeLinks.Count + r.PublicationResumeLinks.Count,
+                LastLinked = r.ProjectResumeLinks.Concat(r.PublicationResumeLinks.Select(prl => 
+                    new ProjectResumeLink { CreatedAt = prl.CreatedAt }))
+                    .OrderByDescending(l => l.CreatedAt)
+                    .FirstOrDefault()?.CreatedAt ?? r.CreatedAt
+            })
+            .Where(r => r.LinkCount > 0)
+            .OrderByDescending(r => r.LinkCount)
+            .Take(5)
+            .ToList();
+
+        // Last activity
+        var lastActivity = await _context.Set<ActivityLog>()
+            .Where(a => a.UserId == userIdString)
+            .OrderByDescending(a => a.Timestamp)
+            .FirstOrDefaultAsync();
+
+        // Portfolio health
+        var health = linkingRate >= 75 ? "Excellent" : linkingRate >= 50 ? "Good" : "NeedsAttention";
+
+        return new PortfolioInsightsDto
+        {
+            TotalProjects = totalProjects,
+            LinkedProjects = linkedProjects,
+            UnlinkedProjects = unlinkedProjects,
+            LinkingRate = Math.Round(linkingRate, 2),
+            TotalPublications = totalPublications,
+            LinkedPublications = linkedPublications,
+            TotalResumes = totalResumes,
+            ActiveResumes = activeResumes,
+            MostUsedTechnologies = technologyUsage,
+            MostLinkedResumes = resumeUsage,
+            ProjectPublicationOverlaps = new List<ProjectPublicationOverlapDto>(),
+            LastActivityDate = lastActivity?.Timestamp,
+            PortfolioHealth = health
+        };
+    }
+
+    // ==================== Activity Tracking ====================
+    
+    public async Task<List<ActivityLogDto>> GetActivityLogsAsync(Guid userId, int limit = 50)
+    {
+        var userIdString = userId.ToString();
+        
+        var logs = await _context.Set<ActivityLog>()
+            .Where(a => a.UserId == userIdString)
+            .OrderByDescending(a => a.Timestamp)
+            .Take(limit)
+            .ToListAsync();
+
+        return logs.Select(l => new ActivityLogDto
+        {
+            Id = l.Id,
+            EntityType = l.EntityType,
+            EntityId = l.EntityId,
+            EntityName = l.EntityName ?? "Unknown",
+            Action = l.Action,
+            Details = l.Details,
+            Timestamp = l.Timestamp
+        }).ToList();
+    }
+
+    public async Task<ActivityLogDto> CreateActivityLogAsync(Guid userId, CreateActivityLogDto dto)
+    {
+        var userIdString = userId.ToString();
+        
+        var log = new ActivityLog
+        {
+            Id = Guid.NewGuid(),
+            UserId = userIdString,
+            EntityType = dto.EntityType,
+            EntityId = dto.EntityId,
+            EntityName = dto.EntityName,
+            Action = dto.Action,
+            Details = dto.Details,
+            Timestamp = DateTime.UtcNow
+        };
+
+        _context.Set<ActivityLog>().Add(log);
+        await _context.SaveChangesAsync();
+
+        return new ActivityLogDto
+        {
+            Id = log.Id,
+            EntityType = log.EntityType,
+            EntityId = log.EntityId,
+            EntityName = log.EntityName,
+            Action = log.Action,
+            Details = log.Details,
+            Timestamp = log.Timestamp
+        };
+    }
+
+    // ==================== Resume Metadata ====================
+    
+    public async Task<List<ResumeMetadataDto>> GetUserResumesMetadataAsync(Guid userId)
+    {
+        var userIdString = userId.ToString();
+        
+        var resumes = await _context.Resumes
+            .Include(r => r.Projects)
+            .Include(r => r.WorkExperiences)
+            .Where(r => r.UserId == userIdString)
+            .ToListAsync();
+
+        return resumes.Select(r => new ResumeMetadataDto
+        {
+            Id = r.Id,
+            Title = r.Title,
+            ResumeType = null, // Add if you have a ResumeType field
+            CreatedAt = r.CreatedAt,
+            UpdatedAt = r.UpdatedAt,
+            IsPublic = r.IsPublic,
+            ProjectCount = r.Projects.Count,
+            WorkExperiences = r.WorkExperiences.Select(we => new WorkExperienceMetadataDto
+            {
+                Id = we.Id,
+                Company = we.CompanyName,
+                Position = we.JobTitle,
+                StartDate = we.StartDate,
+                EndDate = we.EndDate,
+                IsCurrent = we.IsCurrent
+            }).ToList()
+        }).ToList();
+    }
+
+    public async Task<List<WorkExperienceMetadataDto>> GetResumeWorkExperiencesAsync(Guid userId, Guid resumeId)
+    {
+        var userIdString = userId.ToString();
+        
+        var resume = await _context.Resumes
+            .Include(r => r.WorkExperiences)
+            .FirstOrDefaultAsync(r => r.Id == resumeId && r.UserId == userIdString);
+
+        if (resume == null) return new List<WorkExperienceMetadataDto>();
+
+        return resume.WorkExperiences.Select(we => new WorkExperienceMetadataDto
+        {
+            Id = we.Id,
+            Company = we.CompanyName,
+            Position = we.JobTitle,
+            StartDate = we.StartDate,
+            EndDate = we.EndDate,
+            IsCurrent = we.IsCurrent
+        }).ToList();
+    }
 }

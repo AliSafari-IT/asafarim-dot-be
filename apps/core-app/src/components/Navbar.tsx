@@ -82,8 +82,8 @@ const useMobileMenu = () => {
 };
 
 export default function Navbar() {
-  // Configure useAuth to use Core API proxy endpoints instead of Identity API directly
-  const authApiBase = isProduction ? '/api/auth' : 'http://api.asafarim.local:5101/auth';
+  // Use Core API for auth checks - same as portfolio service
+  const authApiBase = isProduction ? 'https://core.asafarim.be/api/auth' : 'http://core.asafarim.local:5102/auth';
 
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth({
     authApiBase,

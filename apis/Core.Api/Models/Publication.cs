@@ -48,6 +48,9 @@ public class Publication
     public string? JournalName { get; set; }
     public string? ConferenceName { get; set; }
     public string? PublicationType { get; set; } // academic, blog, presentation, etc.
+    
+    // Portfolio linking relationships
+    public ICollection<Resume.PublicationResumeLink> PublicationResumeLinks { get; set; } = new List<Resume.PublicationResumeLink>();
 }
 
 public class PublicationMetric

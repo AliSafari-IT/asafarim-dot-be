@@ -22,4 +22,29 @@ public interface IPortfolioService
     Task<bool> DeleteProjectAsync(Guid userId, Guid projectId);
     Task<List<ProjectShowcaseDto>> GetUserProjectsAsync(Guid userId);
     Task<ProjectShowcaseDto?> GetProjectByIdAsync(Guid userId, Guid projectId);
+    
+    // Resume linking - Projects
+    Task<List<ResumeLinkDto>> LinkProjectToResumesAsync(Guid userId, Guid projectId, LinkResumesDto dto);
+    Task<bool> UnlinkProjectFromResumeAsync(Guid userId, Guid projectId, Guid resumeId);
+    Task<List<ResumeLinkDto>> GetProjectResumesAsync(Guid userId, Guid projectId);
+    
+    // Resume linking - Publications
+    Task<List<ResumeLinkDto>> LinkPublicationToResumesAsync(Guid userId, int publicationId, LinkResumesDto dto);
+    Task<bool> UnlinkPublicationFromResumeAsync(Guid userId, int publicationId, Guid resumeId);
+    Task<List<ResumeLinkDto>> GetPublicationResumesAsync(Guid userId, int publicationId);
+    
+    // Bulk operations
+    Task<int> BulkLinkResumesToProjectsAsync(Guid userId, BulkLinkResumesDto dto);
+    Task<int> BulkUnlinkResumesFromProjectsAsync(Guid userId, BulkLinkResumesDto dto);
+    
+    // Analytics & Insights
+    Task<PortfolioInsightsDto> GetPortfolioInsightsAsync(Guid userId);
+    
+    // Activity tracking
+    Task<List<ActivityLogDto>> GetActivityLogsAsync(Guid userId, int limit = 50);
+    Task<ActivityLogDto> CreateActivityLogAsync(Guid userId, CreateActivityLogDto dto);
+    
+    // Resume metadata
+    Task<List<ResumeMetadataDto>> GetUserResumesMetadataAsync(Guid userId);
+    Task<List<WorkExperienceMetadataDto>> GetResumeWorkExperiencesAsync(Guid userId, Guid resumeId);
 }

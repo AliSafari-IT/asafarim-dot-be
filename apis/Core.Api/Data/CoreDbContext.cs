@@ -44,6 +44,11 @@ public class CoreDbContext : DbContext
     public DbSet<ProjectPublication> ProjectPublications { get; set; } = null!;
     public DbSet<ProjectWorkExperience> ProjectWorkExperiences { get; set; } = null!;
     public DbSet<ProjectImage> ProjectImages { get; set; } = null!;
+    
+    // Portfolio Resume Linking entities
+    public DbSet<ProjectResumeLink> ProjectResumeLinks { get; set; } = null!;
+    public DbSet<PublicationResumeLink> PublicationResumeLinks { get; set; } = null!;
+    public DbSet<ActivityLog> ActivityLogs { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -468,6 +473,69 @@ public class CoreDbContext : DbContext
                 .WithMany(p => p.ProjectImages)
                 .HasForeignKey(e => e.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // Portfolio Resume Linking configurations
+        modelBuilder.Entity<ProjectResumeLink>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("ProjectResumeLinks", "public");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+            
+            entity.HasIndex(e => new { e.ProjectId, e.ResumeId }).IsUnique();
+            
+            entity.HasOne(e => e.Project)
+                .WithMany(p => p.ProjectResumeLinks)
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.Resume)
+                .WithMany(r => r.ProjectResumeLinks)
+                .HasForeignKey(e => e.ResumeId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.WorkExperience)
+                .WithMany()
+                .HasForeignKey(e => e.WorkExperienceId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+        
+        modelBuilder.Entity<PublicationResumeLink>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("PublicationResumeLinks", "public");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+            
+            entity.HasIndex(e => new { e.PublicationId, e.ResumeId }).IsUnique();
+            
+            entity.HasOne(e => e.Publication)
+                .WithMany(p => p.PublicationResumeLinks)
+                .HasForeignKey(e => e.PublicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.Resume)
+                .WithMany(r => r.PublicationResumeLinks)
+                .HasForeignKey(e => e.ResumeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<ActivityLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("ActivityLogs", "public");
+            entity.Property(e => e.UserId).IsRequired().HasMaxLength(450);
+            entity.Property(e => e.EntityType).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.EntityId).IsRequired().HasMaxLength(450);
+            entity.Property(e => e.EntityName).HasMaxLength(500);
+            entity.Property(e => e.Action).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Details).HasMaxLength(2000);
+            entity.Property(e => e.Timestamp).HasDefaultValueSql("NOW()");
+            
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Timestamp);
+            entity.HasIndex(e => new { e.EntityType, e.EntityId });
         });
     }
 }
