@@ -11,6 +11,7 @@ const JobTracker = () => {
   // Add a state for showing analytics
   const [showAnalytics, setShowAnalytics] = useState(false);
   const handleAddNew = () => {
+    console.log('handleAddNew');
     setSelectedJob(undefined);
     setIsFormVisible(true);
   };
@@ -25,6 +26,7 @@ const JobTracker = () => {
   const handleCancel = () => {
     setIsFormVisible(false);
     setSelectedJob(undefined);
+    setShowAnalytics(false);
   };
 
   return (
@@ -35,9 +37,13 @@ const JobTracker = () => {
           <button onClick={() => setShowAnalytics(!showAnalytics)} className="show-analytics-btn">
             {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
           </button>
-          <button onClick={handleAddNew} className="add-job-btn" disabled={isFormVisible || showAnalytics}>
-            Add New Job Application
-          </button>
+          {
+            !showAnalytics && (
+              <button onClick={handleAddNew} className="add-job-btn" disabled={isFormVisible}>
+                Add New Job Application
+              </button>
+            )
+          }
         </div>
       </div>
 
