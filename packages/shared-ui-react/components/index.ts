@@ -10,4 +10,6 @@ export * from './LayoutContainer';
 export * from './Navbar';
 export { default as NotFound } from './NotFound/NotFound';
 export * from './Notifications';
+export * from './PrelaunchNotice/PrelaunchNotice';
+export * from './PrelaunchNotice/PrelaunchNoticeBanner';
 export * from './ShowcaseCard';

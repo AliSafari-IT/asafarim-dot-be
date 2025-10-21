@@ -144,7 +144,7 @@ export function FooterContainer({ children }: PropsWithChildren) {
               ))}
             </div>
           </div>
-          {isPrelaunch && <PrelaunchNotice />}
+          {isPrelaunch && <PrelaunchNotice position="footer" />}
         </div>
       )}
     </footer>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Arrow, ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./auth-layout.css";
 
 export const RegisterForm = () => {
@@ -171,13 +172,15 @@ export const RegisterForm = () => {
         )}
       </div>
       
-      <button 
-        type="submit" 
-        className="btn-submit" 
+      <Button 
+        type="submit"  
         disabled={isLoading}
+        variant="brand"
+        rightIcon={<Arrow />}
+        style={{ width: '100%' }}
       >
         {isLoading ? 'Creating Account...' : 'Create Account'}
-      </button>
+      </Button>
       
       <div className="auth-links">
         <p>

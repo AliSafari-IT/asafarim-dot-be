@@ -1,0 +1,508 @@
+/* ============================================
+   PREMIUM LOGIN FORM
+   Light, refined, technically precise
+   Zero clutter, maximum elegance
+   ============================================ */
+
+/* ============================================
+   FORM FOUNDATION
+   ============================================ */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Compact vertical rhythm */
+}
+
+/* ============================================
+   FORM HEADER (if needed)
+   ============================================ */
+
+.login-form-header {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.login-form-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin: 0 0 0.625rem 0;
+  letter-spacing: -0.015em; /* Optical adjustment */
+  line-height: 1.2;
+}
+
+.login-form-subtitle {
+  font-size: 0.9375rem;
+  color: var(--color-neutral-600);
+  margin: 0;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+}
+
+/* ============================================
+   FORM GROUPS - Clean Geometry
+   ============================================ */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem; /* Compact spacing */
+}
+
+/* Form row for side-by-side fields (e.g., First Name / Last Name) */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Label row for inline elements (e.g., "Forgot password?") */
+.form-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* ============================================
+   FORM LABELS - Refined Typography
+   ============================================ */
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-neutral-700);
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+/* ============================================
+   FORM INPUTS - Modern, Refined
+   Subtle depth with perfect spacing
+   ============================================ */
+
+.form-input {
+  width: 100%;
+  padding: 0.875rem 1.125rem; /* Generous padding for comfort */
+  font-size: 0.9375rem;
+  color: var(--color-text);
+  /* Light theme: subtle gray for contrast against white card */
+  background: var(--color-neutral-50);
+  border: 1.5px solid var(--color-neutral-200);
+  border-radius: 10px; /* Softer than 8px, more refined */
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  line-height: 1.5;
+  /* Subtle inner shadow for depth */
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.02),
+    0 0 0 0 transparent;
+}
+
+/* Dark theme - elevated inputs */
+[data-theme="dark"] .form-input {
+  background: var(--color-surface);
+  border-color: var(--color-neutral-200);
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.1),
+    0 0 0 0 transparent;
+}
+
+.form-input::placeholder {
+  color: var(--color-neutral-400);
+  font-weight: 400;
+}
+
+/* Hover state - subtle border change */
+.form-input:hover:not(:focus):not(:disabled) {
+  border-color: var(--color-neutral-300);
+}
+
+/* Focus state - elegant ring with lift */
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  /* Light theme: white on focus for clean look */
+  background: var(--color-white);
+  /* Premium focus ring */
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.02),
+    0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+/* Dark theme focus */
+[data-theme="dark"] .form-input:focus {
+  background: var(--color-surface);
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.1),
+    0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-input:disabled {
+  background: var(--color-neutral-50);
+  color: var(--color-neutral-400);
+  cursor: not-allowed;
+  border-color: var(--color-neutral-200);
+}
+
+/* ============================================
+   ERROR STATES - Clear Visual Feedback
+   ============================================ */
+
+.form-input.error,
+.form-input.input-error {
+  border-color: var(--color-error);
+  background: color-mix(in srgb, var(--color-error) 2%, var(--color-white));
+}
+
+.form-input.error:focus,
+.form-input.input-error:focus {
+  border-color: var(--color-error);
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.02),
+    0 0 0 3px color-mix(in srgb, var(--color-error) 12%, transparent);
+}
+
+.form-error,
+.error-text {
+  font-size: 0.8125rem;
+  color: var(--color-error);
+  margin-top: 0.375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.error-text::before {
+  content: '⚠';
+  font-size: 0.875rem;
+}
+
+/* ============================================
+   CHECKBOX - Modern Toggle Style
+   ============================================ */
+
+.form-group-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0.25rem 0;
+}
+
+.form-group-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--color-neutral-300);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  appearance: none;
+  /* Light theme: subtle gray for visibility */
+  background: var(--color-neutral-50);
+  position: relative;
+}
+
+/* Dark theme checkbox */
+[data-theme="dark"] .form-group-checkbox input[type="checkbox"] {
+  background: var(--color-surface);
+  border-color: var(--color-neutral-300);
+}
+
+.form-group-checkbox input[type="checkbox"]:checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.form-group-checkbox input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color-white);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.form-group-checkbox input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.form-group-checkbox label {
+  font-size: 0.875rem;
+  color: var(--color-neutral-600);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 400;
+}
+
+/* ============================================
+   MESSAGE BOXES - Error/Success Feedback
+   ============================================ */
+
+.message {
+  padding: 1rem 1.125rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.message-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.message-title {
+  font-weight: 600;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.message-content {
+  margin: 0;
+  font-weight: 400;
+  padding-left: 1.75rem; /* Align with title */
+}
+
+.message-error {
+  background: var(--color-error-muted);
+  border: 1px solid color-mix(in srgb, var(--color-error) 20%, transparent);
+  color: var(--color-error);
+}
+
+.message-success {
+  background: var(--color-success-muted);
+  border: 1px solid color-mix(in srgb, var(--color-success) 20%, transparent);
+  color: var(--color-success);
+}
+
+/* ============================================
+   AUTH LINKS - Clean Typography
+   ============================================ */
+
+.auth-links {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.auth-links p {
+  font-size: 0.875rem;
+  color: var(--color-neutral-600);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.form-link {
+  font-size: inherit;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.01em;
+}
+
+.form-link:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ============================================
+   DIVIDER - Elegant Separator
+   ============================================ */
+
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 0.75rem 0;
+}
+
+.form-divider::before,
+.form-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-neutral-200);
+}
+
+.form-divider-text {
+  font-size: 0.8125rem;
+  color: var(--color-neutral-400);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ============================================
+   SOCIAL BUTTONS - Refined Style
+   ============================================ */
+
+.btn-social {
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  /* Light theme: white for social buttons */
+  background: var(--color-white);
+  border: 1.5px solid var(--color-neutral-200);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.02),
+    0 0 0 0 transparent;
+}
+
+/* Dark theme social buttons */
+[data-theme="dark"] .btn-social {
+  background: var(--color-surface);
+  border-color: var(--color-neutral-200);
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.1),
+    0 0 0 0 transparent;
+}
+
+.btn-social:hover {
+  background: var(--color-neutral-50);
+  border-color: var(--color-neutral-300);
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.btn-social:active {
+  transform: translateY(0);
+}
+
+.btn-social:focus {
+  outline: none;
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.02),
+    0 0 0 3px color-mix(in srgb, var(--color-neutral-400) 12%, transparent);
+}
+
+/* ============================================
+   PASSWORD STRENGTH - Visual Indicator
+   ============================================ */
+
+.password-strength {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
+}
+
+.password-strength-bar {
+  flex: 1;
+  height: 3px;
+  background: var(--color-neutral-200);
+  border-radius: 2px;
+  transition: background 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.password-strength-bar.active {
+  background: var(--color-primary);
+}
+
+.password-strength-bar.weak {
+  background: var(--color-error);
+}
+
+.password-strength-bar.medium {
+  background: var(--color-warning);
+}
+
+.password-strength-bar.strong {
+  background: var(--color-success);
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 767px) {
+  .auth-form {
+    gap: 1.5rem;
+  }
+
+  .login-form-title {
+    font-size: 1.625rem;
+  }
+
+  .form-input,
+  .btn-social {
+    padding: 0.875rem 1rem;
+    font-size: 0.9375rem;
+  }
+}
+
+/* ============================================
+   VISUAL DECISIONS EXPLAINED
+   ============================================
+   
+   1. **Input Padding (0.875rem 1.125rem)**:
+      - Generous padding creates comfortable hit targets
+      - Horizontal padding slightly larger for visual balance
+      - Meets WCAG 2.1 touch target size (44x44px minimum)
+   
+   2. **Border Radius (10px)**:
+      - Softer than standard 8px for premium feel
+      - Not too rounded (avoids looking childish)
+      - Consistent across all form elements
+   
+   3. **Focus Ring (3px, 12% opacity)**:
+      - Larger than standard for better visibility
+      - Lower opacity prevents overwhelming
+      - Includes subtle lift (translateY) for depth
+   
+   4. **Inner Shadows**:
+      - inset 0 1px 2px rgba(0,0,0,0.02) creates subtle depth
+      - Makes inputs feel "carved" into the surface
+      - Premium detail that elevates the design
+   
+   5. **Vertical Rhythm (1.75rem gaps)**:
+      - Consistent spacing reduces cognitive load
+      - Creates clear visual grouping
+      - Generous without feeling sparse
+   
+   6. **Typography Scale**:
+      - Labels: 0.875rem (14px) - clear hierarchy
+      - Inputs: 0.9375rem (15px) - optimal readability
+      - Links: 0.875rem (14px) - secondary importance
+   
+   7. **Transition Timing**:
+      - cubic-bezier(0.16, 1, 0.3, 1) for smooth, natural motion
+      - 0.2s duration feels responsive without being jarring
+      - Consistent across all interactive elements
+   
+   ============================================ */

@@ -38,5 +38,23 @@
   "terms": "Algemene voorwaarden",
   "copyright": "  {{year}} ASafariM. Alle rechten voorbehouden.",
   "languageChanged": "Taal succesvol gewijzigd",
-  "preferencesSaved": "Voorkeuren succesvol opgeslagen"
+  "preferencesSaved": "Voorkeuren succesvol opgeslagen",
+  "apps": {
+    "appName": {
+      "web": "ASafariM web",
+      "blog": "Blog & documentatie",
+      "ai": "AI hulpmiddelen",
+      "core": "Core applicatie",
+      "jobs": "Vacaturebeheer",
+      "identity": "Identiteitsportaal"
+    },
+    "description": {
+      "web": "ASafariM webportaal",
+      "blog": "Documentatie en blog",
+      "ai": "AI-hulpmiddelen en diensten",
+      "core": "Kernfunctionaliteiten van de applicatie",
+      "jobs": "Sollicitatiebeheer",
+      "identity": "Gebruikersbeheer en authenticatie"
+    }
+  }
 }

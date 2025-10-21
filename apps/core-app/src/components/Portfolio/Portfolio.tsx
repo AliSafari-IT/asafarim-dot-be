@@ -4,6 +4,7 @@ import { usePortfolioStore } from '../../stores/portfolioStore';
 import { PortfolioHeader } from './PortfolioHeader/PortfolioHeader';
 import { PortfolioOverview } from './PortfolioOverview/PortfolioOverview';
 import { PortfolioSkeleton } from './PortfolioSkeleton/PortfolioSkeleton';
+import './Portfolio.css';
 
 const Portfolio: React.FC = () => {
   const navigate = useNavigate();

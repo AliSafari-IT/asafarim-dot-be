@@ -3,7 +3,8 @@ import {
   FooterContainer, 
   ThemeProvider,
   LayoutContainer,
-  NotificationContainer
+  NotificationContainer,
+  PrelaunchNoticeBanner
 } from "@asafarim/shared-ui-react";
 import Navbar from "./components/Navbar";
 import Root from "./theme/Root";
@@ -12,6 +13,7 @@ export default function App() {
 
   return (
     <ThemeProvider>
+      <PrelaunchNoticeBanner />
       <Root>
         <NotificationContainer position="top-right" />
         <LayoutContainer

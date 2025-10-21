@@ -14,18 +14,18 @@ interface LoginHeroProps {
 
 export const LoginHero = ({ passwordSetupRequired, returnUrl }: LoginHeroProps) => {
   const navigate = useNavigate();
-  const kicker = "Identity Portal";
-  const title = "Welcome to ASafariM";
-  const subtitle = "Access all your applications and services with a single account";
+  const kicker = "ASafariM • Identity Portal";
+  const title = "Welcome Back";
+  const subtitle = "Sign in to access your personalized workspace and all connected applications";
   const bullets = [
-    "Secure authentication across all ASafariM apps",
-    "Manage your profile and preferences",
-    "Access your personalized dashboard",
+    "Single sign-on across all ASafariM services",
+    "Secure, encrypted authentication",
+    "Manage your profile and security settings",
   ];
   
   const primaryCta = {
     label: "Learn More",
-    href: "https://www.asafarim.com/about",
+    href: import.meta.env.VITE_APP_ENV === 'production' ? 'https://www.asafarim.be/about' : 'http://web.asafarim.local:5175/about',
   };
   
   const secondaryCta = {

@@ -1,8 +1,24 @@
-/** ShowcaseCard Component Styles */
+/** ShowcaseCard Component - Using Design Tokens */
 
 /* Main card container */
+.showcase-card {
+  border-radius: var(--global-border-radius-lg, 1rem);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-lg, 1.5rem);
+  background-color: var(--color-surface);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  box-shadow: var(--global-shadow-sm);
+}
+
+.showcase-card:hover {
+  box-shadow: var(--global-shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--color-primary-200);
+}
+
 .rounded-lg {
-  border-radius: var(--radius-lg);
+  border-radius: var(--global-border-radius-lg, 1rem);
 }
 
 .border {
@@ -14,12 +30,16 @@
 }
 
 .p-5 {
-  padding: var(--space-6);
+  padding: var(--spacing-lg, 1.25rem);
 }
 
 @media (min-width: 768px) {
   .md\:p-6 {
-    padding: var(--space-6);
+    padding: var(--spacing-xl, 1.5rem);
+  }
+  
+  .showcase-card {
+    padding: var(--spacing-xl, 2rem);
   }
 }
 
@@ -28,17 +48,36 @@
 }
 
 /* Header section */
+.showcase-card__header {
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.showcase-card__title {
+  font-size: var(--global-font-size-lg, 1.125rem);
+  font-weight: var(--font-weight-semibold, 600);
+  line-height: var(--line-height-tight, 1.25);
+  color: var(--color-brand);
+  margin: 0 0 var(--spacing-xs, 0.25rem);
+}
+
+.showcase-card__subtitle {
+  font-size: var(--global-font-size-sm, 0.875rem);
+  line-height: var(--line-height-normal, 1.5);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
 .mb-3 {
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--spacing-md, 0.75rem);
 }
 
 .text-lg {
-  font-size: var(--text-lg);
-  line-height: var(--line-height-normal);
+  font-size: var(--global-font-size-lg, 1.125rem);
+  line-height: var(--line-height-normal, 1.5);
 }
 
 .font-semibold {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold, 600);
 }
 
 .text-brand {
@@ -46,12 +85,12 @@
 }
 
 .text-sm {
-  font-size: var(--text-sm);
-  line-height: var(--line-height-normal);
+  font-size: var(--global-font-size-sm, 0.875rem);
+  line-height: var(--line-height-normal, 1.5);
 }
 
 .text-secondary {
-  color: var(--color-secondary);
+  color: var(--color-text-secondary);
 }
 
 /* Grid layout for mini tiles */
@@ -64,5 +103,34 @@
 }
 
 .gap-3 {
-  gap: var(--space-3);
+  gap: var(--spacing-md, 0.75rem);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .showcase-card {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .showcase-card:hover {
+  border-color: var(--color-primary-700);
+}
+
+[data-theme="dark"] .showcase-card__title {
+  color: var(--color-brand);
+}
+
+[data-theme="dark"] .showcase-card__subtitle {
+  color: var(--color-text-secondary);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .showcase-card {
+    transition: none;
+  }
+  
+  .showcase-card:hover {
+    transform: none;
+  }
 }

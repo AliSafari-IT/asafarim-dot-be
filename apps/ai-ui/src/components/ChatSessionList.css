@@ -1,5 +1,4 @@
 .ai-ui-chat-session-list {
-  background: var(--bg-card);
   border-radius: var(--radius-2xl);
   padding: 2rem;
   box-shadow: var(--shadow-lg);
@@ -38,10 +37,9 @@
 
 .ai-ui-chat-session-item {
   position: relative;
-  background: var(--bg-row);
-  border: 2px solid var(--border-color);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
-  padding: 1.5rem;
+  padding: 0.5rem;
   cursor: pointer;
   transition: var(--transition-slow);
   overflow: hidden;
@@ -97,7 +95,7 @@
   margin: 0;
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-primary-500);
   line-height: 1.4;
   flex: 1;
   letter-spacing: -0.025em;
@@ -105,19 +103,15 @@
 
 .ai-ui-chat-session-date {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--color-success-700);
   white-space: nowrap;
   font-weight: 600;
-  background: var(--bg-tertiary);
-  padding: 0.375rem 0.75rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
 }
 
 .ai-ui-chat-session-description {
   margin: 0;
   font-size: 0.95rem;
-  color: var(--text-secondary);
+  color: var(--color-success-900);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;

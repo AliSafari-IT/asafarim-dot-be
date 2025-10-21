@@ -21,6 +21,12 @@ export interface UseAuthResult<TUser = any> {
 }
 
 async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> {
+  // Block during logout
+  if (localStorage.getItem('logout_in_progress') === 'true') {
+    console.log('🛑 fetchIsAuthenticated blocked - logout in progress');
+    return false;
+  }
+  
   try {
     console.log(`🔍 fetchIsAuthenticated: ${base}${me}`);
     const res = await fetch(`${base}${me}`, {
@@ -40,6 +46,12 @@ async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> 
 }
 
 async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | null> {
+  // Block during logout
+  if (localStorage.getItem('logout_in_progress') === 'true') {
+    console.log('🛑 fetchUserInfo blocked - logout in progress');
+    return null;
+  }
+  
   try {
     console.log(`👤 fetchUserInfo: ${base}${me}`);
     const res = await fetch(`${base}${me}`, {
@@ -66,6 +78,12 @@ async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | n
 
 // fetch token
 async function fetchToken(base: string, tokenEndpoint: string): Promise<string | null> {
+  // Block during logout
+  if (localStorage.getItem('logout_in_progress') === 'true') {
+    console.log('🛑 fetchToken blocked - logout in progress');
+    return null;
+  }
+  
   try {
     const res = await fetch(`${base}${tokenEndpoint}`, {
       method: 'GET',
@@ -115,6 +133,12 @@ function isTokenExpired(token: string | null): boolean {
 
 // Refresh token function
 async function refreshToken(base: string): Promise<string | null> {
+  // CRITICAL: Block all refresh attempts if logout is in progress
+  if (localStorage.getItem('logout_in_progress') === 'true') {
+    console.log('🛑 refreshToken() blocked - logout in progress');
+    return null;
+  }
+  
   try {
     const res = await fetch(`${base}/refresh`, {
       method: 'POST',
@@ -168,11 +192,19 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<TUser | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true); // CRITICAL: Start as true to show loading during initial auth check
   const [token, setToken] = useState<string | null>(null);
+  
+  console.log('🔄 useAuth hook initialized - loading:', true, 'authenticated:', false);
 
   // Move refreshTokenIfNeeded outside of checkAuth so it can be reused
   const refreshTokenIfNeeded = useCallback(async (currentToken?: string | null): Promise<string | null> => {
+    // CRITICAL: Never refresh token if logout is in progress
+    if (localStorage.getItem('logout_in_progress') === 'true') {
+      console.log('🛑 Token refresh blocked - logout in progress');
+      return null;
+    }
+    
     const tokenToCheck = currentToken || localStorage.getItem('auth_token');
     if (isTokenExpired(tokenToCheck)) {
       console.log('Token expired, refreshing...');
@@ -218,7 +250,12 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       const logoutInProgress = localStorage.getItem('logout_in_progress') === 'true';
       if (logoutInProgress) {
         console.log('🛑 Logout in progress, skipping auth check');
-        localStorage.removeItem('logout_in_progress');
+        // Ensure all auth data is cleared
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_info');
+        // DON'T remove the logout_in_progress flag here - let it persist until after redirect
+        // This prevents multiple auth checks from re-authenticating
         if (mounted) {
           setAuthenticated(false);
           setUser(null);
@@ -327,6 +364,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
         }
 
         if (mounted) {
+          console.log('✅ Auth check complete - setting loading=false, authenticated:', authenticated);
           setLoading(false);
         }
       } catch (error) {
@@ -335,6 +373,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
           setAuthenticated(false);
           setUser(null);
           setToken(null);
+          console.log('❌ Auth check failed - setting loading=false');
           setLoading(false);
         }
       } finally {
@@ -344,15 +383,58 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
     // Initial check only - don't set up listeners that cause loops
     void checkAuth();
+    
+    // CRITICAL: Cleanup logout flag AFTER initial auth check completes and page stabilizes
+    // This runs AFTER checkAuth finishes
+    const cleanupTimer = setTimeout(() => {
+      if (!mounted) return;
+      
+      // Clear logout flag if we're on a page after redirect (check URL for _logout param)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('_logout')) {
+        console.log('🧹 Clearing logout flag after redirect (delayed)');
+        localStorage.removeItem('logout_in_progress');
+        localStorage.removeItem('logout_timestamp');
+        // Remove the _logout param from URL without reloading
+        urlParams.delete('_logout');
+        const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}${window.location.hash}`;
+        window.history.replaceState({}, '', newUrl);
+      }
+      
+      // Safety: Clear logout flag if it's been stuck for more than 10 seconds
+      const logoutTimestamp = localStorage.getItem('logout_timestamp');
+      if (logoutTimestamp) {
+        const elapsed = Date.now() - parseInt(logoutTimestamp, 10);
+        if (elapsed > 10000) { // 10 seconds
+          console.log('🧹 Clearing stuck logout flag (timeout)');
+          localStorage.removeItem('logout_in_progress');
+          localStorage.removeItem('logout_timestamp');
+        }
+      }
+    }, 2000); // Wait 2 seconds after mount to ensure auth check is done
+    
+    return () => {
+      mounted = false;
+      clearTimeout(cleanupTimer);
+    };
   }, [authApiBase, meEndpoint, tokenEndpoint, refreshTokenIfNeeded]);
 
   // Separate effect for token refresh interval - only when authenticated and not loading
   useEffect(() => {
     let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
-    if (authenticated && !loading) {
+    // CRITICAL: Don't start auto-refresh if logout is in progress
+    const logoutInProgress = localStorage.getItem('logout_in_progress') === 'true';
+    
+    if (authenticated && !loading && !logoutInProgress) {
       // Refresh token every 45 minutes (with 60-minute token lifetime, gives 15-minute buffer)
       refreshInterval = setInterval(async () => {
+        // Double-check logout isn't in progress before refreshing
+        if (localStorage.getItem('logout_in_progress') === 'true') {
+          console.log('🛑 Skipping token refresh - logout in progress');
+          return;
+        }
+        
         console.log('🔄 Auto-refreshing token (periodic check)...');
         try {
           await refreshTokenIfNeeded();
@@ -370,16 +452,24 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   }, [authenticated, loading, refreshTokenIfNeeded]);
 
   const signOut = useCallback(async (redirectUrl?: string) => {
+    // CRITICAL: Check if logout is already in progress to prevent multiple calls
+    if (localStorage.getItem('logout_in_progress') === 'true') {
+      console.log('🛑 Logout already in progress, skipping duplicate call');
+      return;
+    }
+
     console.log('🔑 Signing out user');
 
-    // Set a flag to prevent auto-re-authentication after logout
-    // Use localStorage instead of sessionStorage so it persists across redirect
+    // CRITICAL: Set flag FIRST before any async operations
+    // This prevents any pending token refresh from executing
     localStorage.setItem('logout_in_progress', 'true');
+    localStorage.setItem('logout_timestamp', Date.now().toString());
 
-    // Clear local state
+    // Clear local state IMMEDIATELY
     setAuthenticated(false);
     setUser(null);
     setToken(null);
+    setLoading(true); // Set loading to prevent auth checks
 
     // Clear localStorage auth data (but keep logout_in_progress flag)
     try {
@@ -391,37 +481,9 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       console.warn('⚠️ Failed to clear local storage:', error);
     }
 
-    // COMPREHENSIVE COOKIE CLEARING ACROSS ALL DOMAINS
-    const cookieDomain = isProd ? '.asafarim.be' : '.asafarim.local';
-    console.log('🍪 Clearing cookies for domain:', cookieDomain);
-
-    // Clear cookies for all subdomains
-    const subdomains = ['identity', 'blog', 'ai', 'core', 'web'];
-    const cookieNames = ['atk', 'rtk', 'auth', 'identity', 'session'];
-
-    // Clear cookies for each subdomain
-    subdomains.forEach(subdomain => {
-      const domain = `${subdomain}.${isProd ? 'asafarim.be' : 'asafarim.local'}`;
-      const fullDomain = domain.startsWith('.') ? domain : `.${domain}`;
-
-      cookieNames.forEach(name => {
-        // Clear with various path combinations
-        ['/', '/api', '/api/identity', '/api/auth', '/api/core'].forEach(path => {
-          document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${fullDomain}`;
-          document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${fullDomain}; SameSite=None; Secure`;
-        });
-      });
-    });
-
-    // Also clear for the main domain
-    cookieNames.forEach(name => {
-      ['/', '/api', '/api/identity', '/api/auth', '/api/core'].forEach(path => {
-        document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}`;
-        document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=${cookieDomain}; SameSite=None; Secure`;
-      });
-    });
-
-    console.log('🔍 Current cookies after clearing:', document.cookie);
+    // Skip frontend cookie clearing - HttpOnly cookies can't be cleared by JavaScript
+    // Let the backend handle all cookie clearing to avoid interference
+    console.log('⏭️ Skipping frontend cookie clearing - backend will handle this');
 
     // NOTIFY BACKEND TO CLEAR COOKIES - THIS MUST COMPLETE BEFORE REDIRECT
     try {
@@ -431,17 +493,18 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        },
-        body: JSON.stringify({
-          returnUrl: redirectUrl || '/',
-          clearCookies: true
-        })
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
       });
 
       if (response.ok) {
         console.log('✅ Backend logout successful');
         console.log('✅ Cookies cleared by server');
+        
+        // Trust that backend cleared cookies properly
+        // Note: HttpOnly cookies won't show in document.cookie anyway
+        console.log('✅ Backend logout completed - cookies should be cleared');
       } else {
         console.warn('⚠️ Backend logout failed:', response.status);
       }
@@ -449,12 +512,58 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       console.error('❌ Backend logout error:', error);
     }
 
+    // DEV-ONLY SAFEGUARD: Also attempt logout via identity subdomain to clear any host-only cookies
+    // that might exist on identity.asafarim.local (cannot be cleared by responses from api.asafarim.local)
+    if (!isProd) {
+      try {
+        // Derive an alternate logout URL on identity subdomain (keep the same port if present)
+        let altLogoutUrl: string | null = null;
+        try {
+          const u = new URL(identityLogoutUrl);
+          if (u.hostname.startsWith('api.')) {
+            u.hostname = u.hostname.replace('api.', 'identity.');
+          } else if (!u.hostname.startsWith('identity.')) {
+            u.hostname = `identity.${u.hostname}`;
+          }
+          altLogoutUrl = u.toString();
+        } catch {
+          altLogoutUrl = 'http://identity.asafarim.local:5101/auth/logout';
+        }
+
+        if (altLogoutUrl && altLogoutUrl !== identityLogoutUrl) {
+          console.log('📣 Dev safeguard: notifying identity host logout as well:', altLogoutUrl);
+          await fetch(altLogoutUrl, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('⚠️ Dev safeguard logout (identity host) failed:', e);
+      }
+    }
+
     // DON'T call /clear-cookies endpoint - it's redundant and can cause cookie re-sending
     // The logout endpoint already clears cookies properly
     
-    // Wait longer to ensure cookies are fully cleared and processed by browser
-    console.log('⏱️ Waiting for cookies to be fully cleared and processed...');
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Skip verification step - it can interfere with cookie clearing
+    // The backend logout already handles token revocation properly
+    console.log('⏭️ Skipping refresh verification to avoid cookie interference');
+    
+    // Wait to ensure cookies are fully cleared and processed by browser
+    console.log('⏱️ Waiting for browser to process logout...');
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Increased wait time
+
+    // Verify cookie state after logout (visible cookies only - HttpOnly cookies won't show)
+    const remainingCookies = document.cookie;
+    console.log('🍪 Remaining visible cookies after logout:', remainingCookies || '(none)');
+    if (remainingCookies.includes('atk') || remainingCookies.includes('rtk')) {
+      console.warn('⚠️ WARNING: Auth cookies still visible (but HttpOnly cookies won\'t show here)');
+    }
 
     // BROADCAST SIGNOUT EVENT
     window.dispatchEvent(new Event('auth-signout'));
@@ -462,7 +571,10 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     // FORCE REDIRECT ONLY AFTER LOGOUT COMPLETES
     // Use window.location.replace() instead of .href to ensure browser processes Set-Cookie headers
     console.log('🔄 Redirecting after successful logout...');
-    const targetUrl = redirectUrl || '/';
+    
+    // CRITICAL: Default to identity login page, not homepage
+    // Homepage might trigger auth checks before flag is cleared
+    const targetUrl = redirectUrl || identityLoginUrl;
     
     // Add a timestamp to prevent caching
     const separator = targetUrl.includes('?') ? '&' : '?';
@@ -470,7 +582,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     
     console.log('🔄 Final redirect URL:', finalUrl);
     window.location.replace(finalUrl);
-  }, [authApiBase, identityLogoutUrl, isProd]);
+  }, [authApiBase, identityLogoutUrl, identityLoginUrl, isProd]);
 
 
   const signIn = useCallback(async (redirectUrl?: string) => {

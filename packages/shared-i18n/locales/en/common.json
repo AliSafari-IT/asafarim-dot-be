@@ -38,5 +38,23 @@
   "terms": "Terms of Service",
   "copyright": " ASafariM. All rights reserved.",
   "languageChanged": "Language changed successfully",
-  "preferencesSaved": "Preferences saved successfully"
+  "preferencesSaved": "Preferences saved successfully",
+  "apps": {
+    "appName": {
+      "web": "ASafariM web",
+      "blog": "Blog & documentation",
+      "ai": "AI Tools",
+      "core": "Core App",
+      "jobs": "Job Applications",
+      "identity": "Identity Portal"
+    },
+    "description": {
+      "web": "ASafariM web portal",
+      "blog": "Documentation and blog",
+      "ai": "AI-powered tools and services",
+      "core": "Core application features",
+      "jobs": "Job application tracking",
+      "identity": "User management and authentication"
+    }
+  }
 }

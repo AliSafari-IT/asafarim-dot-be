@@ -1,0 +1,26 @@
+/* Blog footer wrapper */
+.blog-footer-wrapper {
+  margin-top: auto;
+  width: 100%;
+}
+
+/* Ensure footer is at bottom of page */
+.blog-footer-wrapper :global(.footer) {
+  background-color: var(--ifm-footer-background-color, var(--ifm-color-emphasis-100));
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  padding: 2rem 0;
+}
+
+/* Override shared footer styles for Docusaurus */
+.blog-footer-wrapper :global(.footer-container) {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--ifm-spacing-horizontal);
+}
+
+/* Responsive adjustments */
+@media (max-width: 996px) {
+  .blog-footer-wrapper :global(.footer) {
+    padding: 1.5rem 0;
+  }
+}

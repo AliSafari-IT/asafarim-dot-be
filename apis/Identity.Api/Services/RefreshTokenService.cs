@@ -11,6 +11,7 @@ public interface IRefreshTokenService
 {
     Task<RefreshToken> CreateRefreshTokenAsync(Guid userId, string ipAddress);
     Task<RefreshToken?> GetActiveRefreshTokenAsync(string token);
+    Task<bool> ValidateRefreshTokenAsync(string token);
     Task<RefreshToken?> RotateRefreshTokenAsync(RefreshToken oldToken, string ipAddress);
     Task RevokeRefreshTokenAsync(string token, string ipAddress, string? replacedByToken = null);
     Task RevokeAllUserTokensAsync(Guid userId, string ipAddress);
@@ -68,6 +69,15 @@ public class RefreshTokenService : IRefreshTokenService
         }
 
         return refreshToken;
+    }
+
+    public async Task<bool> ValidateRefreshTokenAsync(string token)
+    {
+        var refreshToken = await _context.RefreshTokens
+            .FirstOrDefaultAsync(rt => rt.Token == token);
+
+        // Token is valid if it exists and is active (not revoked, not expired)
+        return refreshToken != null && refreshToken.IsActive;
     }
 
     public async Task<RefreshToken?> RotateRefreshTokenAsync(RefreshToken oldToken, string ipAddress)

@@ -1,6 +1,14 @@
 :root {
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 var(--shadow-color-1);
+  --shadow-md: 0 4px 6px -1px var(--shadow-color-2), 0 2px 4px -1px var(--shadow-color-3);
+  --shadow-lg: 0 10px 15px -3px var(--shadow-color-4), 0 4px 6px -2px var(--shadow-color-5);
+  --shadow-xl: 0 20px 25px -5px var(--shadow-color-6), 0 10px 10px -5px var(--shadow-color-7);
+  --shadow-inner: inset 0 2px 4px 0 var(--shadow-color-8);
+  --shadow-none: 0 0 0 0 var(--shadow-color-9);
+  --shadow-2xl: 0 25px 50px -12px var(--shadow-color-10);
+  --shadow-3xl: 0 50px 62.5px -12.5px rgba(0, 0, 0, 0.375);
+  --shadow-4xl: 0 75px 87.5px -12.5px rgba(0, 0, 0, 0.5);
+  --shadow-5xl: 0 100px 125px -12.5px rgba(0, 0, 0, 0.625);  
   }
   
