@@ -92,11 +92,7 @@ function App() {
               />
               <Route
                 path="/admin/user-profile"
-                element={
-                  <ProtectedRoute>
-                    <UserProfilePage />
-                  </ProtectedRoute>
-                }
+                element={<UserProfilePage />}
               />
               <Route
                 path="/admin/user-profile/:id"

@@ -7,16 +7,16 @@ import UserProfile from '../components/UserProfile';
 import { useAuth } from '../hooks/useAuth';
 
 export const UserProfilePage = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   
   // Redirect unauthenticated users to login
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !loading) {
       navigate(returnUrl || '/login');
     }
-  }, [isAuthenticated, navigate, returnUrl]);
+  }, [isAuthenticated, navigate, returnUrl, loading]);
 
   return (
     <AuthLayout 
