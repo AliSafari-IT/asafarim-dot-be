@@ -1,0 +1,33 @@
+.prelaunch-notice {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: var(--color-warning);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-warning);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+}
+
+.dismiss-button {
+  margin: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-error);
+  border: 1px solid var(--color-error);
+  color: var(--color-foreground);
+  cursor: pointer;
+  font-weight: 600;
+}
+.dismiss-button:hover {
+  text-decoration: none;
+}
+.feedback-link {
+  margin: 0.5rem;
+  font-size: 0.75rem;
+}
+.version-number {
+  margin: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--sky-variant-color);
+}
