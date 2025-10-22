@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { ChatSessionListItem } from '../types/chat';
 import { chatService } from '../api/chatService';
+import './ChatSessionList.css';
 
 interface ChatSessionListProps {
   sessions: ChatSessionListItem[];

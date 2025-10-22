@@ -1,14 +1,5 @@
 [data-theme="light"] {
   /* Default tokens already set in :root */
 
-  --color-brand-50: #f2fbff;
-  --color-brand-100: #eef2ff;
-  --color-brand-200: #cbd5e1;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #0ea5e9;
-  --color-brand-600: #0284c7;
-  --color-brand-900: #0b3b56;
-  --color-phosphor: #758f17;
-  --color-brand: #3b82f6;
+
 }

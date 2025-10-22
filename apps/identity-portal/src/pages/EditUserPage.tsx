@@ -25,8 +25,7 @@ export default function EditUserPage() {
 
   return (
     <AuthLayout 
-      title="Admin: Edit User" 
-      subtitle="Manage user account details and permissions"
+      key={'identity-portal-edit-user'}
     >
       <EditUser />
     </AuthLayout>

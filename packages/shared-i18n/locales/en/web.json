@@ -269,7 +269,8 @@
   },
   "navbar": {
     "brand": {
-      "text": "ASafariM"
+      "text": "ASafariM",
+      "description": "ASafariM - Fullstack Developer"
     },
     "links": {
       "resumes": {

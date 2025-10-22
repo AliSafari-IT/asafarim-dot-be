@@ -12,6 +12,21 @@ export const Login = () => {
   const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   const hasRedirectedRef = useRef(false);
   
+  // Clear any stuck logout flag when visiting login page
+  // Do this with a delay to let the shared auth hook check the flag first
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const logoutFlag = localStorage.getItem('logout_in_progress');
+      if (logoutFlag === 'true') {
+        console.log('🧹 Clearing stuck logout_in_progress flag on login page (delayed)');
+        localStorage.removeItem('logout_in_progress');
+        localStorage.removeItem('logout_timestamp');
+      }
+    }, 3000); // Wait 3 seconds to ensure shared auth hook has processed the flag
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   // Redirect to dashboard if already authenticated
   useEffect(() => {
     // Prevent double redirects

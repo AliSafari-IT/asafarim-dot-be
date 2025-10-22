@@ -7,6 +7,7 @@ import {
 } from "@asafarim/shared-ui-react";
 import { ToastProvider, Toaster } from "@asafarim/toast";
 import Navbar from "./components/Navbar";
+import { PrelaunchNoticeBanner } from "@asafarim/shared-ui-react";
 
 export default function App() {
   return (
@@ -14,10 +15,11 @@ export default function App() {
       <ToastProvider>
         <Toaster />
         <NotificationContainer position="top-right" />
+        <PrelaunchNoticeBanner />
         <LayoutContainer
           footer={<FooterContainer key={"web-main-footer"} />}
           header={<Navbar key={"web-main-header"} />}
-          title="Web Portal"
+          title="Web"
         >
           <Outlet />
         </LayoutContainer>

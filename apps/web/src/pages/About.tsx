@@ -1,5 +1,5 @@
 import { useTranslation } from "@asafarim/shared-i18n";
-
+import './About.css';
 export default function About() {
     const { t } = useTranslation('web');
   

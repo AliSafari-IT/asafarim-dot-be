@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import type { NavLinkItem, NavbarProps } from "./types";
-import { getAppRegistry, getCurrentAppId, getAppById } from "./appRegistry";
+import { useAppRegistry, getCurrentAppId } from "./appRegistry";
 import "./CentralNavbar.css";
 
 const CentralNavbar = ({
@@ -16,10 +16,13 @@ const CentralNavbar = ({
   brand,
 } : NavbarProps) => {
   const [appSwitcherOpen, setAppSwitcherOpen] = useState(false);
+  
+  // Use the i18n-enabled hook for app registry
+  const appRegistry = useAppRegistry();
 
   // Auto-detect current app if not provided
   const currentAppId = providedAppId || getCurrentAppId();
-  const currentApp = getAppById(currentAppId);
+  const currentApp = appRegistry.find(app => app.id === currentAppId);
   // Resolve the shared package default logo at build time (works in Vite/ESM)
   // Path from components/Navbar/CentralNavbar.tsx -> ./logo.svg
   const defaultLogo = brand?.logo;
@@ -82,7 +85,7 @@ const CentralNavbar = ({
           {appSwitcherOpen && (
             <div className="app-switcher-dropdown">
               <div className="app-switcher-dropdown-inner">
-                {getAppRegistry()
+                {appRegistry
                   .filter((app) => app.id !== currentAppId) // Don't show current app
                   .map((app, index) => (
                     <a

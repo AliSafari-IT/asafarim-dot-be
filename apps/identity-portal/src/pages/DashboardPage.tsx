@@ -63,8 +63,7 @@ export default function DashboardPage() {
 
   return (
     <AuthLayout
-      title="Dashboard"
-      subtitle="Welcome to the dashboard"
+    key={'identity-portal-dashboard'}
     >
       <Dashboard />
     </AuthLayout>

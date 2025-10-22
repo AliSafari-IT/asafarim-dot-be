@@ -102,12 +102,11 @@ export const Navbar = ({
 
   return (
     <nav className={`nav-root ${className}`} aria-label="Primary">
-      <div className="nav-wrap">
         <div className="nav-row">
           {/* Left: brand */}
           {renderBrand({
             logo: brand?.logo,
-            text: `${brand?.text}`,
+            text: `${brand?.text} (DEMO)`,
             href: brand?.href,
           })}
 
@@ -149,8 +148,7 @@ export const Navbar = ({
               <span className={`hamburger__bar ${open ? "x3" : ""}`} />
             </button>
           </div>
-        </div>
-      </div>
+        </div> 
 
       {/* Mobile dropdown */}
       <div id="mobile-menu" className={`mobile-menu ${open ? "open" : ""}`}>

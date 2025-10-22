@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
 import ToolCard from "../components/ToolCard";
 import Hero from "../components/Hero";
+import './home.css';
 
 const tools = [
   {
@@ -26,46 +26,22 @@ const tools = [
   },
 ];
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
 export default function Home() {
   return (
     <section className="ai-ui-home-container">
+      <Hero />
       <div className="container">
-        <div className="mb-8">
-          <Hero />
-        </div>
-
-        <motion.div
-          className="tool-grid"
-          variants={container}
-          initial="hidden"
-          animate="show"
-        >
+        <div className="tool-grid">
           {tools.map((tool) => (
-            <motion.div key={tool.title} variants={item}>
-              <ToolCard
-                title={tool.title}
-                description={tool.description}
-                to={tool.to}
-                icon={tool.icon}
-              />
-            </motion.div>
+            <ToolCard
+              key={tool.title}
+              title={tool.title}
+              description={tool.description}
+              to={tool.to}
+              icon={tool.icon}
+            />
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

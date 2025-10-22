@@ -14,12 +14,12 @@ const prodConfig: UseAuthOptions = {
 
 // Local development config
 const devConfig: UseAuthOptions = {
-  authApiBase: 'http://identity.asafarim.local:5177/auth',  // Identity API auth endpoints are at /auth/*
+  authApiBase: 'http://api.asafarim.local:5101/auth',  // Identity API backend (not the portal frontend)
   meEndpoint: '/me',
   tokenEndpoint: '/token',
   logoutEndpoint: '/logout',
-  identityLoginUrl: 'http://identity.asafarim.local:5177/login',
-  identityRegisterUrl: 'http://identity.asafarim.local:5177/register'
+  identityLoginUrl: 'http://identity.asafarim.local:5177/login',  // Portal frontend for login UI
+  identityRegisterUrl: 'http://identity.asafarim.local:5177/register'  // Portal frontend for register UI
 };
 
 /**

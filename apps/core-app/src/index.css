@@ -1,46 +1,9 @@
 @import url("@asafarim/shared-ui-react/index.css");
 
-/* Fix footer social links containment */
-.footer-bottom {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-}
-
-.footer-social {
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  overflow: visible;
-}
-
-.footer-social-link {
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-/* Ensure footer container doesn't overflow */
-.footer-container {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-/* Fix responsive behavior */
-@media (min-width: 768px) {
-  .footer-bottom {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .footer-social {
-    justify-content: flex-end;
-    width: auto;
-    max-width: none;
-  }
+  margin: 0;
+  padding: 0;
 }

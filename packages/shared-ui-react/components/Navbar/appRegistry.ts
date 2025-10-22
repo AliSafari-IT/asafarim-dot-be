@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { getIsProduction } from '../../configs/isProduction';
+import { useTranslation } from '@asafarim/shared-i18n';
 
 export interface AppInfo {
   id: string;
@@ -49,18 +50,63 @@ const getAppUrl = (appId: keyof typeof appUrlConfig): string => {
   return getIsProduction() ? config.production : config.development;
 };
 
-// Central registry of all applications in the ecosystem
-// Using getter to ensure URL is resolved at runtime, not at module load time
+// React Hook for app registry with i18n support
+// Use this in React components for translated app names and descriptions
+export const useAppRegistry = (): AppInfo[] => {
+  const { t } = useTranslation('common');
+  
+  return [
+    {
+      id: 'web',
+      name: t('apps.appName.web'),
+      url: getAppUrl('web'),
+      description: t('apps.description.web')
+    },
+    {
+      id: 'blog',
+      name: t('apps.appName.blog'),
+      url: getAppUrl('blog'),
+      description: t('apps.description.blog')
+    },
+    {
+      id: 'ai',
+      name: t('apps.appName.ai'),
+      url: getAppUrl('ai'),
+      description: t('apps.description.ai')
+    },
+    {
+      id: 'core',
+      name: t('apps.appName.core'),
+      url: getAppUrl('core'),
+      description: t('apps.description.core')
+    },
+    {
+      id: 'jobs',
+      name: t('apps.appName.jobs'),
+      url: getAppUrl('jobs'),
+      description: t('apps.description.jobs')
+    },
+    {
+      id: 'identity',
+      name: t('apps.appName.identity'),
+      url: getAppUrl('identity'),
+      description: t('apps.description.identity')
+    }
+  ];
+};
+
+// Non-hook version for use outside React components (fallback to English)
+// Use useAppRegistry() hook instead when possible for i18n support
 export const getAppRegistry = (): AppInfo[] => [
   {
     id: 'web',
-    name: 'Web Portal',
+    name: 'ASafariM web',
     url: getAppUrl('web'),
-    description: 'Main web portal'
+    description: 'ASafariM web portal'
   },
   {
     id: 'blog',
-    name: 'Blog',
+    name: 'Blog & documentation',
     url: getAppUrl('blog'),
     description: 'Documentation and blog'
   },

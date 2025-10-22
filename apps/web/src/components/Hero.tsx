@@ -1,6 +1,7 @@
 // Hero component
 import { Hero as SharedHero } from "@asafarim/shared-ui-react";
 import { useTranslation } from "@asafarim/shared-i18n";
+import './hero.css';
 
 export default function Hero() {
     const { t } = useTranslation('web');

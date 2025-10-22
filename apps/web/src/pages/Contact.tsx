@@ -12,6 +12,7 @@ import React from "react";
 import { API_BASE_URL } from "../config/api";
 import { apiGet } from "../api/core";
 import { useTranslation } from "@asafarim/shared-i18n";
+import './Contact.css';
 
 // Generate a unique reference number for new conversations
 const generateReferenceNumber = (): string => {

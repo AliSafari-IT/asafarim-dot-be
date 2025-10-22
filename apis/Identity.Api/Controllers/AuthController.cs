@@ -166,22 +166,116 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Logout()
     {
         var ipAddress = GetIpAddress();
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown";
 
-        // Try to get and revoke the refresh token
-        if (
-            Request.Cookies.TryGetValue("rtk", out var refreshToken)
-            && !string.IsNullOrWhiteSpace(refreshToken)
-        )
+        // Get user ID before clearing cookies (for logging purposes only)
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
+
+        _logger.LogInformation(
+            "🚪 LOGOUT STARTED - Environment: {Environment}, IP: {IpAddress}, User: {UserId}",
+            environment,
+            ipAddress,
+            userId
+        );
+
+        // Log all cookies received BEFORE clearing
+        _logger.LogInformation(
+            "📥 Cookies before logout: {Cookies}",
+            string.Join(
+                ", ",
+                Request.Cookies.Select(c =>
+                    $"{c.Key}={c.Value?.Substring(0, Math.Min(8, c.Value.Length))}..."
+                )
+            )
+        );
+
+        // Get refresh token BEFORE clearing cookies
+        string? refreshToken = null;
+        if (Request.Cookies.TryGetValue("rtk", out var rtkValue))
         {
-            await _refreshTokenService.RevokeRefreshTokenAsync(refreshToken, ipAddress);
-            _logger.LogInformation("Refresh token revoked for IP: {IpAddress}", ipAddress);
+            refreshToken = rtkValue;
+            _logger.LogInformation("🔑 Found refresh token cookie (rtk) - will revoke in database");
+        }
+        else
+        {
+            _logger.LogWarning("⚠️ No refresh token cookie (rtk) found");
         }
 
-        // Clear cookies
+        // STEP 1: Clear custom auth cookies (JWT tokens) IMMEDIATELY
+        // This prevents race conditions with pending refresh requests
         ClearAuthCookies();
+        _logger.LogInformation("🍪 Custom auth cookies cleared");
 
-        _logger.LogInformation("User logged out from IP: {IpAddress}", ipAddress);
-        return Ok(new { message = "Logged out successfully" });
+        // STEP 2: Revoke the refresh token in the database
+        if (!string.IsNullOrWhiteSpace(refreshToken))
+        {
+            await _refreshTokenService.RevokeRefreshTokenAsync(refreshToken, ipAddress);
+            _logger.LogInformation(
+                "✅ Refresh token revoked in database for IP: {IpAddress}",
+                ipAddress
+            );
+        }
+        else
+        {
+            _logger.LogInformation("⏭️ No refresh token to revoke in database");
+        }
+
+        // VERIFICATION: Log Set-Cookie headers sent to browser (development only)
+        if (environment == "Development")
+        {
+            var setCookieHeaders = Response
+                .Headers.Where(h => h.Key == "Set-Cookie")
+                .SelectMany(h => h.Value)
+                .ToList();
+            _logger.LogInformation(
+                "📤 DEVELOPMENT: Set-Cookie headers sent to browser: {Count} headers",
+                setCookieHeaders.Count
+            );
+
+            foreach (var header in setCookieHeaders.Take(5)) // Log first 5 to avoid spam
+            {
+                _logger.LogDebug("📤 Set-Cookie: {Header}", header);
+            }
+
+            // Verify we have cookie clearing headers for each auth cookie
+            var authCookieNames = new[] { "atk", "rtk", "preferredLanguage" };
+            var clearedCookies = authCookieNames
+                .Where(name =>
+                    setCookieHeaders.Any(h =>
+                        h != null && (h.StartsWith($"{name}=;") || h.StartsWith($"{name}=\"\";"))
+                    )
+                )
+                .ToList();
+
+            if (clearedCookies.Count == authCookieNames.Length)
+            {
+                _logger.LogInformation(
+                    "✅ DEVELOPMENT: All {Count} auth cookies have clearing headers",
+                    authCookieNames.Length
+                );
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "⚠️ DEVELOPMENT: Missing clearing headers for cookies: {Missing}",
+                    string.Join(", ", authCookieNames.Except(clearedCookies))
+                );
+            }
+        }
+
+        _logger.LogInformation(
+            "🚪 LOGOUT COMPLETED - User logged out from IP: {IpAddress}",
+            ipAddress
+        );
+
+        return Ok(
+            new
+            {
+                message = "Logged out successfully",
+                environment = environment,
+                timestamp = DateTime.UtcNow,
+            }
+        );
     }
 
     /// <summary>
@@ -193,6 +287,19 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetCurrentUser()
     {
+        // CRITICAL: Check if refresh token has been revoked (for logout to work with persistent cookies)
+        if (Request.Cookies.TryGetValue("rtk", out var refreshToken) && !string.IsNullOrWhiteSpace(refreshToken))
+        {
+            var isValid = await _refreshTokenService.ValidateRefreshTokenAsync(refreshToken);
+            if (!isValid)
+            {
+                _logger.LogWarning("GetCurrentUser: Refresh token has been revoked - forcing logout");
+                // Clear cookies to help browser understand the session is invalid
+                ClearAuthCookies();
+                return Unauthorized(new { message = "Session has been revoked" });
+            }
+        }
+
         var userId =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
 
@@ -386,7 +493,10 @@ public class AuthController : ControllerBase
             opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
         var isHttps = Request.IsHttps;
         var useSecure = isProdDomain || isHttps;
-        var sameSite = SameSiteMode.None; // Required for cross-subdomain SSO
+
+        // SameSite=None requires Secure=true, which requires HTTPS
+        // In development (HTTP), use Lax instead to allow cookies to work
+        var sameSite = useSecure ? SameSiteMode.None : SameSiteMode.Lax;
 
         var accessExpiration = DateTime.UtcNow.AddMinutes(opts.AccessMinutes);
         var refreshExpiration = persistent
@@ -457,58 +567,171 @@ public class AuthController : ControllerBase
             opts.CookieDomain?.EndsWith(".asafarim.be", StringComparison.OrdinalIgnoreCase) == true;
         var isHttps = Request.IsHttps;
         var useSecure = isProdDomain || isHttps;
-        var sameSite = SameSiteMode.None;
+        var sameSite = useSecure ? SameSiteMode.None : SameSiteMode.Lax;
 
-        // Clear cookies with the configured domain (e.g., ".asafarim.be")
-        var cookieOptions = new CookieOptions
+        _logger.LogInformation(
+            "🍪 CLEARING COOKIES - Environment: {Environment}, Domain: {Domain}, Secure: {Secure}, SameSite: {SameSite}, Host: {Host}",
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown",
+            opts.CookieDomain ?? "null",
+            useSecure,
+            sameSite,
+            Request.Host.Host
+        );
+
+        // Log current cookies being sent by browser
+        _logger.LogInformation(
+            "📥 Cookies received from browser: {Cookies}",
+            string.Join(
+                ", ",
+                Request.Cookies.Select(c =>
+                    $"{c.Key}={c.Value?.Substring(0, Math.Min(10, c.Value.Length))}..."
+                )
+            )
+        );
+
+        var expiredDate = DateTimeOffset.UtcNow.AddDays(-1);
+        var cookieNames = new[] { "atk", "rtk", "preferredLanguage" };
+
+        // Use exact same parameters as when cookies were set
+        foreach (var cookieName in cookieNames)
         {
-            HttpOnly = true,
-            Secure = useSecure,
-            SameSite = sameSite,
-            Domain = opts.CookieDomain,
-            Path = "/",
-            Expires = DateTime.UtcNow.AddDays(-1), // Expire immediately
-        };
+            var isLanguageCookie = cookieName == "preferredLanguage";
 
-        Response.Cookies.Delete("atk", cookieOptions);
-        Response.Cookies.Delete("rtk", cookieOptions);
+            Response.Cookies.Append(
+                cookieName,
+                "", // Empty value
+                new CookieOptions
+                {
+                    HttpOnly = !isLanguageCookie, // Language cookie is not HttpOnly
+                    Secure = useSecure,
+                    SameSite = isLanguageCookie ? SameSiteMode.Lax : sameSite, // Language cookie always uses Lax
+                    Domain = opts.CookieDomain,
+                    Path = "/",
+                    Expires = expiredDate,
+                    MaxAge = TimeSpan.Zero, // Immediate expiration
+                }
+            );
 
-        // ALSO clear cookies without the leading dot for main domain (e.g., "asafarim.be")
-        // This handles cases where cookies were set for the exact domain
-        if (!string.IsNullOrEmpty(opts.CookieDomain) && opts.CookieDomain.StartsWith("."))
-        {
-            var exactDomain = opts.CookieDomain.TrimStart('.');
-            var exactDomainOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = useSecure,
-                SameSite = sameSite,
-                Domain = exactDomain,
-                Path = "/",
-                Expires = DateTime.UtcNow.AddDays(-1),
-            };
-
-            Response.Cookies.Delete("atk", exactDomainOptions);
-            Response.Cookies.Delete("rtk", exactDomainOptions);
-            _logger.LogDebug("Also cleared cookies for exact domain: {Domain}", exactDomain);
+            _logger.LogInformation(
+                "✅ Cookie {CookieName} cleared with Domain={Domain}, HttpOnly={HttpOnly}, Secure={Secure}, SameSite={SameSite}",
+                cookieName,
+                opts.CookieDomain ?? "null",
+                !isLanguageCookie,
+                useSecure,
+                isLanguageCookie ? "Lax" : sameSite.ToString()
+            );
         }
 
-        // ALSO clear cookies without any domain specified (uses current host)
-        var noDomainOptions = new CookieOptions
+        // DEVELOPMENT: Additional safeguards for localhost/.local domains
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
         {
-            HttpOnly = true,
-            Secure = useSecure,
-            SameSite = sameSite,
-            Path = "/",
-            Expires = DateTime.UtcNow.AddDays(-1),
-        };
+            _logger.LogInformation("🔧 DEVELOPMENT: Adding additional cookie clearing safeguards");
 
-        Response.Cookies.Delete("atk", noDomainOptions);
-        Response.Cookies.Delete("rtk", noDomainOptions);
+            // APPROACH 1: Clear cookies without domain (host-specific)
+            foreach (var cookieName in cookieNames)
+            {
+                var isLanguageCookie = cookieName == "preferredLanguage";
 
-        Response.Headers.Append("Clear-Site-Data", "\"cookies\"");
+                Response.Cookies.Append(
+                    cookieName,
+                    "", // Empty value
+                    new CookieOptions
+                    {
+                        HttpOnly = !isLanguageCookie,
+                        Secure = useSecure,
+                        SameSite = isLanguageCookie ? SameSiteMode.Lax : sameSite,
+                        Domain = null, // No domain = current host only
+                        Path = "/",
+                        Expires = expiredDate,
+                        MaxAge = TimeSpan.Zero,
+                    }
+                );
+            }
 
-        _logger.LogDebug("Auth cookies cleared for domain: {Domain}", opts.CookieDomain);
+            // APPROACH 2: Clear cookies with exact request host
+            var requestHost = Request.Host.Host;
+            if (!string.IsNullOrEmpty(requestHost))
+            {
+                foreach (var cookieName in cookieNames)
+                {
+                    var isLanguageCookie = cookieName == "preferredLanguage";
+
+                    Response.Cookies.Append(
+                        cookieName,
+                        "", // Empty value
+                        new CookieOptions
+                        {
+                            HttpOnly = !isLanguageCookie,
+                            Secure = useSecure,
+                            SameSite = isLanguageCookie ? SameSiteMode.Lax : sameSite,
+                            Domain = requestHost,
+                            Path = "/",
+                            Expires = expiredDate,
+                            MaxAge = TimeSpan.Zero,
+                        }
+                    );
+                }
+            }
+
+            // APPROACH 3: Manual Set-Cookie headers with multiple domain variations
+            var expiry = "Thu, 01 Jan 1970 00:00:00 GMT";
+            var manualDomains = new List<string>
+            {
+                "", // No domain
+                opts.CookieDomain ?? "", // .asafarim.local
+                requestHost, // identity.asafarim.local or api.asafarim.local
+            };
+
+            // Remove empty entries
+            manualDomains = manualDomains.Where(d => !string.IsNullOrEmpty(d)).Distinct().ToList();
+
+            foreach (var cookieName in cookieNames)
+            {
+                var isLanguageCookie = cookieName == "preferredLanguage";
+                var httpOnlyPart = isLanguageCookie ? "" : "; HttpOnly";
+                var securePart = useSecure ? "; Secure" : "";
+                var sameSitePart = isLanguageCookie ? "; SameSite=Lax" : $"; SameSite={sameSite}";
+
+                foreach (var domain in manualDomains)
+                {
+                    var domainPart = string.IsNullOrEmpty(domain) ? "" : $"; Domain={domain}";
+                    var header = $"{cookieName}=; Path=/; Expires={expiry}; Max-Age=0{httpOnlyPart}{securePart}{sameSitePart}{domainPart}";
+                    Response.Headers.Append("Set-Cookie", header);
+                    
+                    _logger.LogDebug("📤 Manual Set-Cookie: {Header}", header);
+                }
+            }
+
+            // Add Clear-Site-Data header as backup
+            Response.Headers.TryAdd("Clear-Site-Data", "\"cookies\"");
+
+            _logger.LogInformation("🍪 DEVELOPMENT additional cookie clearing complete with {Count} manual headers", 
+                Response.Headers.Where(h => h.Key == "Set-Cookie").SelectMany(h => h.Value).Count());
+        }
+        else
+        {
+            // PRODUCTION: Try different SameSite combinations as backup
+            var expiry = "Thu, 01 Jan 1970 00:00:00 GMT";
+            var sameSiteValues = new[] { "Lax", "Strict", "None" };
+
+            foreach (var cookieName in cookieNames)
+            {
+                var isLanguageCookie = cookieName == "preferredLanguage";
+                var httpOnlyPart = isLanguageCookie ? "" : "; HttpOnly";
+                var securePart = useSecure ? "; Secure" : "";
+
+                foreach (var sameSiteValue in sameSiteValues)
+                {
+                    var sameSitePart = $"; SameSite={sameSiteValue}";
+                    var header =
+                        $"{cookieName}=; Path=/; Expires={expiry}; Max-Age=0{httpOnlyPart}{securePart}{sameSitePart}; Domain={opts.CookieDomain}";
+                    Response.Headers.Append("Set-Cookie", header);
+                }
+            }
+
+            // Also use Clear-Site-Data as backup
+            Response.Headers.TryAdd("Clear-Site-Data", "\"cookies\"");
+        }
     }
 
     private string GetIpAddress()
