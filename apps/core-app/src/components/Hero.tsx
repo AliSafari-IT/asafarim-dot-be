@@ -10,7 +10,7 @@ export default function Hero() {
     "Tailor resumes with AI precision"
   ];
   const primaryCta = { label: "Start Your Journey", to: "/jobs" };
-  const secondaryCta = { label: "Contact", to: "/contact" };
+  const secondaryCta = { label: "View Portfolio", to: "/portfolio" };
 
   return (
     <SharedHero
