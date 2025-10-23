@@ -73,12 +73,13 @@
   text-decoration: none;
   transition: all 0.2s ease;
   display: inline-block;
+  color: var(--text-primary);
   font-size: var(--global-font-size-sm, 0.875rem);
   font-weight: var(--font-weight-regular, 400);
 }
 
 .footer-link:hover {
-  color: var(--color-primary);
+  color: var(--text-primary);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -112,10 +113,11 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs, 0.25rem);
+  color: var(--text-primary);
 }
 
 .footer-social-link:hover {
-  color: var(--color-primary);
+  color: var(--color-accent-500);
   transform: translateY(-2px);
 }
 

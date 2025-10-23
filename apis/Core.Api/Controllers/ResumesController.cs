@@ -640,9 +640,7 @@ public class ResumesController : ControllerBase
                     Link = p.Link,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
-                    Technologies = p
-                        .ProjectTechnologies.Select(pt => pt.Technology.Name)
-                        .ToList(),
+                    Technologies = p.ProjectTechnologies.Select(pt => pt.Technology.Name).ToList(),
                 })
                 .ToList(),
             Certificates = resume

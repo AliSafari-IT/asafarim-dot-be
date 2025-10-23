@@ -1,48 +1,223 @@
-/* What Is Building Page Styles with Dark Theme Fixes */
+/* What Is Building Page - Redesigned Layout */
 
-/* Base container */
-.what-is-building {
-  background: var(--color-bg);
+section {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+
+section.what-is-building {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  height: auto;
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.what-is-building .what-is-building-heading {
+  margin: var(--spacing-2xl) var(--spacing-md);
+  padding: 0;
+}
+
+.what-is-building .what-is-building-heading p {
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* Stats Card */
+.what-is-building .stats-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin: var(--spacing-lg) auto;
+  padding: var(--spacing-lg);
+  max-width: 600px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.what-is-building .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  margin: var(--spacing-md);
+}
+
+.what-is-building .stat-label {
+  font-size: .85rem;
+  color: var(--color-accent-700);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.what-is-building .stat-value {
+  font-size: .85rem;
+  font-weight: 500;
   color: var(--color-text);
-  padding: var(--spacing-3xl) var(--spacing-lg);
-  min-height: 100vh;
 }
 
-/* Hero section with improved dark mode contrast */
-.what-is-building .hero {
-  position: relative;
+.what-is-building .stat-value a {
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.what-is-building .stat-value a:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+
+.what-is-building .stat-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* View controls */
+.what-is-building .view-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+  padding: 0;
+}
+
+.what-is-building .view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 0.25rem;
+}
+
+.what-is-building .toggle-btn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.what-is-building .toggle-btn:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.what-is-building .toggle-btn.active {
+  background: var(--color-primary);
+  color: var(--color-text);
+}
+
+/* Table styling */
+.what-is-building .table-wrapper {
+  overflow-x: auto;
+  margin-bottom: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.what-is-building .updates-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.what-is-building .updates-table thead {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.what-is-building .updates-table th {
+  padding: var(--spacing-md);
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  user-select: none;
+}
+
+.what-is-building .updates-table th.sortable {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.what-is-building .updates-table th.sortable:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.what-is-building .sort-indicator {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.what-is-building .updates-table td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.what-is-building .updates-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.what-is-building .updates-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.what-is-building .title-cell {
+  font-weight: 500;
+  max-width: 400px;
+  word-break: break-word;
+}
+
+.what-is-building .date-cell {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.what-is-building .action-cell {
   text-align: center;
-  padding: var(--spacing-2xl) var(--spacing-lg);
-  border-radius: var(--radius-2xl);
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  color: white;
-  box-shadow: var(--shadow-lg);
-  margin-bottom: var(--spacing-2xl);
 }
 
-.what-is-building .hero-glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.3), transparent 70%);
-  animation: pulse 8s ease-in-out infinite;
+.what-is-building .link-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
 }
 
-.what-is-building .hero h1 {
-  font-size: 2.75rem;
-  font-weight: 900;
-  margin-bottom: var(--spacing-sm);
-  z-index: 1;
-  position: relative;
-  color: white; /* Ensure consistent contrast in all themes */
-}
-
-.what-is-building .hero p {
-  font-size: 1.2rem;
-  opacity: 0.9;
-  z-index: 1;
-  position: relative;
-  color: white; /* Ensure consistent contrast in all themes */
+.what-is-building .link-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
 }
 
 /* Build cards with improved dark mode */
@@ -52,7 +227,7 @@
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   transition: all 0.3s ease;
-  color: var(--color-text); /* Ensure proper text color in dark mode */
+  color: var(--color-text);
 }
 
 .what-is-building .build-card:hover {
@@ -65,7 +240,7 @@
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: var(--spacing-xs);
-  color: var(--color-text); /* Ensure proper heading color in dark mode */
+  color: var(--color-text);
 }
 
 .what-is-building .card-top span {
@@ -76,7 +251,7 @@
 /* Buttons with improved dark mode visibility */
 .what-is-building button {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-text);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--radius-md);
@@ -93,11 +268,12 @@
 /* Empty state with improved dark mode */
 .what-is-building .empty-state {
   text-align: center;
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-xl);
   background: var(--color-surface);
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-xl);
-  color: var(--color-text); /* Ensure proper text color in dark mode */
+  color: var(--color-text);
+  margin: 0;
 }
 
 /* Loading state */
@@ -107,8 +283,9 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-lg);
-  min-height: 300px;
-  color: var(--color-text); /* Ensure proper text color in dark mode */
+  color: var(--color-text);
+  margin: 0;
+  padding: var(--spacing-lg) 0;
 }
 
 .what-is-building .spinner {
@@ -143,16 +320,192 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: var(--spacing-xl);
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Updates wrapper - ensure no gap from hero */
+.what-is-building .updates-wrapper {
+  margin: 0;
+  padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Pagination */
+.what-is-building .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg);
+  padding: 0;
 }
 
 /* Error banner */
 .what-is-building .error-banner {
   background: var(--color-danger);
-  color: white;
+  color: var(--color-text);
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
   margin-bottom: var(--spacing-lg);
   text-align: center;
   font-weight: 600;
+}
+
+
+  .what-is-building .pagination span {
+    font-size: 0.85rem;
+    padding: var(--spacing-md);
+  }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .what-is-building .hero h1 {
+    font-size: 2rem;
+  }
+
+  .what-is-building .hero p {
+    font-size: 1rem;
+  }
+
+  .what-is-building .stats-card {
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin: var(--spacing-md) auto;
+    padding: var(--spacing-md);
+  }
+
+  .what-is-building .stat-divider {
+    display: none;
+  }
+
+  .what-is-building .stat-item {
+    flex: 0 1 calc(33.333% - var(--spacing-md));
+  }
+
+  .what-is-building .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .what-is-building .stat-value {
+    font-size: 0.95rem;
+  }
+
+  .what-is-building .view-toggle {
+    flex-wrap: wrap;
+  }
+
+  .what-is-building .toggle-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .what-is-building .updates-table {
+    font-size: 0.85rem;
+  }
+
+  .what-is-building .updates-table th,
+  .what-is-building .updates-table td {
+    padding: var(--spacing-sm);
+  }
+
+  .what-is-building .title-cell {
+    max-width: 200px;
+  }
+
+  .what-is-building .cards-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .what-is-building .pagination {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .what-is-building .pagination button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .what-is-building .hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .what-is-building .hero p {
+    font-size: 0.9rem;
+  }
+
+  .what-is-building .hero-counter {
+    font-size: 0.85rem;
+  }
+
+  .what-is-building .stats-card {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-md) auto;
+    padding: var(--spacing-md);
+    max-width: 100%;
+  }
+
+  .what-is-building .stat-item {
+    flex: 1 1 100%;
+  }
+
+  .what-is-building .stat-label {
+    font-size: 0.65rem;
+  }
+
+  .what-is-building .stat-value {
+    font-size: 0.9rem;
+  }
+
+  .what-is-building .view-controls {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .what-is-building .toggle-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .what-is-building .table-wrapper {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .what-is-building .updates-table {
+    font-size: 0.75rem;
+  }
+
+  .what-is-building .updates-table th,
+  .what-is-building .updates-table td {
+    padding: var(--spacing-xs);
+  }
+
+  .what-is-building .title-cell {
+    max-width: 150px;
+    font-size: 0.8rem;
+  }
+
+  .what-is-building .date-cell {
+    font-size: 0.75rem;
+  }
+
+  .what-is-building .build-card {
+    padding: var(--spacing-md);
+  }
+
+  .what-is-building .card-top h3 {
+    font-size: 1rem;
+  }
+
+  .what-is-building .pagination {
+    margin-top: var(--spacing-md);
+  }
+
+  .what-is-building .pagination span {
+    font-size: 0.85rem;
+  }
 }

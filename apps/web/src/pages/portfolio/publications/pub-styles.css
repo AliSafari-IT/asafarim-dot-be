@@ -290,7 +290,7 @@
 
 .empty-state-message {
   font-size: 1.125rem;
-  color: var(--color-foreground-muted);
+  color: var(--color-accent-900);
   margin-bottom: 1.5rem;
 }
 

@@ -20,7 +20,7 @@
 
 .web-contact-subtitle {
   font-size: var(--global-font-size-lg);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .web-contact-service-desc {
-  color: var(--text-secondary);
+  color: var(--color-neutral-500);
   font-size: var(--global-font-size-md);
   line-height: 1.5;
 }
@@ -171,7 +171,7 @@
 }
 
 .web-contact-feature-text {
-  color: var(--text-secondary);
+  color: var(--color-accent-800);
   font-size: var(--global-font-size-md);
   line-height: 1.5;
 }
@@ -191,7 +191,7 @@
 }
 
 .web-contact-detail-value {
-  color: var(--text-secondary);
+  color: var(--color-accent-700);
 }
 
 /* Contact Layout */

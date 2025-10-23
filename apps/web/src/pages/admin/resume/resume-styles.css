@@ -253,7 +253,7 @@
 
 .empty-state-message {
   font-size: clamp(1rem, 3vw, 1.125rem);
-  color: var(--color-foreground-muted);
+  color: var(--color-accent-900);
   margin: 0 0 1.5rem 0;
   transition: color 0.3s ease;
 }
