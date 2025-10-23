@@ -267,7 +267,7 @@
 
 .progress-label {
   min-width: 120px;
-  color: var(--color-foreground-muted);
+  color: var(--color-neutral-500);
   font-weight: 500;
 }
 

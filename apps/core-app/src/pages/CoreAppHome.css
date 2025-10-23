@@ -4,62 +4,6 @@
    ============================================ */
 
 /* ============================================
-   HERO SECTION OVERRIDES
-   ============================================ */
-
-.section .hero-section {
-  padding: 3rem 0 1.5rem;
-  min-height: auto;
-  margin-top: 0;
-}
-
-@media (min-width: 768px) {
-  .section .hero-section {
-    padding: 4rem 0 2rem;
-    min-height: 450px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .section .hero-section {
-    padding: 5rem 0 3rem;
-  }
-}
-
-/* ============================================
-   SECTION CONTAINER
-   ============================================ */
-
-.section {
-  position: relative;
-  background: var(--color-background);
-  transition: background 0.3s ease;
-}
-
-/* ============================================
-   CONTAINER - Consistent Width
-   ============================================ */
-
-.container {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 0 2.5rem;
-  position: relative;
-}
-
-@media (max-width: 1023px) {
-  .container {
-    padding: 0 2rem;
-  }
-}
-
-@media (max-width: 767px) {
-  .container {
-    padding: 0 1.5rem;
-  }
-}
-
-/* ============================================
    WELCOME BANNER - Authenticated Users
    ============================================ */
 
@@ -103,7 +47,7 @@
 
 .welcome-subtitle {
   font-size: 1rem;
-  color: var(--color-text-muted);
+  color: var(--color-text);
   margin: 0 0 1rem 0;
   line-height: 1.5;
 }
