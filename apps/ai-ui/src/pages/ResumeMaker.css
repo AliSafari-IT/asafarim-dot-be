@@ -120,7 +120,10 @@
 
 .ai-ui-resume-maker-form-field label { 
   font-size: .9rem; 
-  color: var(--color-foreground-muted); 
+  color: var(--color-primary-800); 
+  font-weight: 500;
+  margin-bottom: .25rem;
+  text-align: left;
 }
 
 .ai-ui-resume-maker-form-actions { 
@@ -202,7 +205,7 @@
 }
 
 .ai-ui-resume-maker-resume-contact {
-    color: var(--color-foreground-muted);
+    color: var(--color-foreground);
 }
 
 .ai-ui-resume-maker-resume-list {
@@ -223,7 +226,7 @@
 }
 
 .ai-ui-resume-maker-resume-project-desc { 
-  color: var(--color-foreground-muted); 
+  color: var(--color-foreground); 
 }
 
 .ai-ui-resume-maker-two-col { 

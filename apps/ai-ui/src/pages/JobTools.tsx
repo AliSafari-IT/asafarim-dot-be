@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "../api";
+import { aiApi } from "../api";
 import { useAuth, isProduction } from "@asafarim/shared-ui-react";
 import './JobTools.css';
 
@@ -56,7 +56,7 @@ export default function JobTools() {
     try {
       setLoading("extracting");
       resetState();
-      const data = await api<ExtractResp>("/extract/job", {
+      const data = await aiApi<ExtractResp>("/extract/job", {
         method: "POST",
         body: JSON.stringify({ text }),
       });
@@ -77,7 +77,7 @@ export default function JobTools() {
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean);
-      const data = await api<{ score: number }>("/score/match", {
+      const data = await aiApi<{ score: number }>("/score/match", {
         method: "POST",
         body: JSON.stringify({
           candidateSkills,
@@ -101,7 +101,7 @@ export default function JobTools() {
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean);
-      const data = await api<{ letter: string }>("/generate/cover-letter", {
+      const data = await aiApi<{ letter: string }>("/generate/cover-letter", {
         method: "POST",
         body: JSON.stringify({
           jobTitle: extracted.title,
