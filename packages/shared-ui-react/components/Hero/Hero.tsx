@@ -1,3 +1,4 @@
+// D:\repos\asafarim-dot-be\packages\shared-ui-react\components\Hero\Hero.tsx
 import type { ReactNode } from "react";
 import { Spark, Arrow } from "../../svg-icons";
 import { ButtonComponent } from "../Button/ButtonComponent";
@@ -29,78 +30,82 @@ export function Hero({
   className = "",
 }: HeroProps) {
   return (
-    <section className={`relative overflow-hidden section ${className}`}>
-      {/* Background decorative grid + glow */}
+    <section className={`hero-section ${className}`}>
+      {/* Background decorative effects */}
       <BackgroundDecoration />
 
-      <div className="container">
-        <div className={`grid gap-8 ${media ? 'md:grid-cols-2' : ''} items-center`}>
-          {/* Left column: copy */}
-          <div>
-            {/* Kicker */}
-            <div className="flex items-center gap-sm mb-3">
-              <span className="badge">
-                <span className="badge-dot"></span>
-                {kicker}
-              </span>
-            </div>
+      <div className="hero-container">
+        <div className={`hero-grid ${media ? 'hero-grid--with-media' : 'hero-grid--centered'}`}>
+          {/* Content column */}
+          <div className="hero-content">
+            {/* Kicker badge */}
+            {kicker && (
+              <div className="hero-kicker-wrapper">
+                <span className="hero-badge">
+                  <span className="hero-badge-dot"></span>
+                  <span className="hero-badge-text">{kicker}</span>
+                </span>
+              </div>
+            )}
 
-            {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-phosphor">
+            {/* Headline */}
+            <h1 className="hero-title">
               {title}
             </h1>
 
             {/* Subtitle */}
             {subtitle && (
-              <p className="text-lg text-secondary mb-5" style={{ maxWidth: "46rem" }}>
+              <p className="hero-subtitle">
                 {subtitle}
               </p>
             )}
 
-            {/* Bullets */}
+            {/* Feature bullets */}
             {bullets?.length > 0 && (
-              <ul className="mb-6 space-y-2">
+              <ul className="hero-features">
                 {bullets.map((b, i) => (
-                  <li key={i} className="flex items-start gap-2 text-secondary">
-                    <span aria-hidden className="mt-1 text-brand">
-                      •
-                    </span>
-                    <span>{b}</span>
+                  <li key={i} className="hero-feature-item">
+                    <span className="hero-feature-icon" aria-hidden="true">✓</span>
+                    <span className="hero-feature-text">{b}</span>
                   </li>
                 ))}
               </ul>
             )}
 
-            {/* CTAs */}
-            <div className="flex flex-wrap gap-md mt-2">
-              {primaryCta && (
-                <ButtonComponent
-                  to={"to" in primaryCta ? primaryCta.to : undefined}
-                  href={"href" in primaryCta ? primaryCta.href : undefined}
-                  variant="brand"
-                  rightIcon={<Spark />}
-                >
-                  {primaryCta.label}
-                </ButtonComponent>
-              )}
-              {secondaryCta && (
-                <ButtonComponent
-                  to={"to" in secondaryCta ? secondaryCta.to : undefined}
-                  href={"href" in secondaryCta ? secondaryCta.href : undefined}
-                  variant="outline"
-                  rightIcon={<Arrow />}
-                >
-                  {secondaryCta.label}
-                </ButtonComponent>
-              )}
-            </div>
+            {/* Action buttons */}
+            {(primaryCta?.label || secondaryCta?.label) && (
+              <div className="hero-actions">
+                {primaryCta?.label && (
+                  <ButtonComponent
+                    to={"to" in primaryCta ? primaryCta.to : undefined}
+                    href={"href" in primaryCta ? primaryCta.href : undefined}
+                    variant="brand"
+                    rightIcon={<Spark />}
+                  >
+                    {primaryCta.label}
+                  </ButtonComponent>
+                )}
+                {secondaryCta?.label && (
+                  <ButtonComponent
+                    to={"to" in secondaryCta ? secondaryCta.to : undefined}
+                    href={"href" in secondaryCta ? secondaryCta.href : undefined}
+                    variant="outline"
+                    rightIcon={<Arrow />}
+                  >
+                    {secondaryCta.label}
+                  </ButtonComponent>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Right column: media or placeholder card - only show if media exists */}
+          {/* Media column */}
           {media && (
-            <div className="relative">
-              <div className="rounded-lg border border-neutral-800 p-4 md:p-6 backdrop-blur-sm">
-                {media}
+            <div className="hero-media">
+              <div className="hero-media-card">
+                <div className="hero-media-content">
+                  {media}
+                </div>
               </div>
             </div>
           )}
@@ -112,10 +117,11 @@ export function Hero({
 
 function BackgroundDecoration() {
   return (
-    <>
-      <div className="hero-glow" />
-      <div className="hero-grid" />
-    </>
+    <div className="hero-background">
+      <div className="hero-background-glow" />
+      <div className="hero-background-grid" />
+      <div className="hero-background-gradient" />
+    </div>
   );
 }
 

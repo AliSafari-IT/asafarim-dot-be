@@ -3,6 +3,7 @@ import './admin-components.css';
 import { useAuth } from '../hooks/useAuth';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@asafarim/toast';
+import { ArrowLeftIcon, ButtonComponent } from '@asafarim/shared-ui-react';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
@@ -214,16 +215,22 @@ export default function UserProfile() {
             </div>
 
             <div className="admin-form-actions">
-              <button className="admin-cancel-button" onClick={() => navigate('/dashboard')}>
+              <ButtonComponent 
+                onClick={() => navigate('/dashboard')}
+                variant="link"
+                size="md"
+                leftIcon={<ArrowLeftIcon width={28} height={28} />}
+              >
                 Cancel and Return to Dashboard
-              </button>
-              <button 
-                className="admin-save-button" 
+              </ButtonComponent>
+              <ButtonComponent 
+                variant="info"
+                size="md"
                 disabled={busy || !selectedId} 
                 onClick={save}
               >
                 {busy ? 'Saving Changes...' : 'Save Changes'}
-              </button>
+              </ButtonComponent>
             </div>
           </div>
         </div>

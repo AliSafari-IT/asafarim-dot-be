@@ -10,6 +10,7 @@ import {
 import { api } from "../api";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import './ResumeMaker.css';
 
 type FunctionalResumeResponse = {
   userId: string;

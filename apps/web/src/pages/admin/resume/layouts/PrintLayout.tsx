@@ -114,16 +114,56 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
           {resume.certificates && resume.certificates.length > 0 && (
             <section className="print-section">
               <h3 className="print-section-title">CERTIFICATES</h3>
-              {resume.certificates.slice(0, 4).map((cert, index) => (
+              {resume.certificates.slice(0, 5).map((cert, index) => (
                 <div key={index} className="print-cert">
                   <strong>{cert.name}</strong>
                   <div>{cert.issuer}</div>
+                  {'issueDate' in cert && <div className="print-date">{formatDate(cert.issueDate)}</div>}
                 </div>
               ))}
             </section>
           )}
         </div>
       </div>
+
+      {/* Projects Section - Full Width */}
+      {resume.projects && resume.projects.length > 0 && (
+        <section className="print-section">
+          <h3 className="print-section-title">PROJECTS</h3>
+          <div className="print-projects">
+            {resume.projects.slice(0, 3).map((project, index) => (
+              <div key={index} className="print-project">
+                <strong>{project.name}</strong>
+                {project.description && <div className="print-desc">{project.description}</div>}
+                {project.technologies && project.technologies.length > 0 && (
+                  <div className="print-tech-tags">
+                    {project.technologies.slice(0, 6).join(' • ')}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Awards Section - Full Width */}
+      {resume.awards && resume.awards.length > 0 && (
+        <section className="print-section">
+          <h3 className="print-section-title">AWARDS & HONORS</h3>
+          <div className="print-awards">
+            {resume.awards.slice(0, 3).map((award, index) => (
+              <div key={index} className="print-award">
+                <div className="print-exp-header">
+                  <strong>{award.title}</strong>
+                  {'awardedDate' in award && <span className="print-date">{formatDate(award.awardedDate)}</span>}
+                </div>
+                <div className="print-company">{award.issuer}</div>
+                {award.description && <div className="print-desc">{award.description}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

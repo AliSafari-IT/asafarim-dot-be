@@ -111,8 +111,10 @@ export interface ReferenceDto {
 
 export interface PublicReferenceDto {
   name: string;
+  position: string;
+  company: string;
   relationship: string;
-  contactInfo: string;
+  // Note: Email and Phone excluded for privacy in public resumes
 }
 
 // Public Resume DTOs (GDPR-compliant, no sensitive data)

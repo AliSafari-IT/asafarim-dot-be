@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Chat from './Chat';
+import './ChatPage.css';
 
 /**
  * ChatPage - A wrapper component for the Chat component

@@ -16,10 +16,7 @@ export const Register = () => {
   }, [isAuthenticated, navigate, loading]);
 
   return (
-    <AuthLayout 
-      title="Create Account" 
-      subtitle="Sign up to get started with ASafariM"
-    >
+    <AuthLayout key="identity-portal-register">
       <RegisterHero />
     </AuthLayout>
   );

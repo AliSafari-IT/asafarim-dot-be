@@ -1,57 +1,96 @@
-import type { PropsWithChildren } from 'react';
-import './footer.css';
-import { Github, Twitter, Linkedin, StackOverflow } from '../../svg-icons';
-import { isProduction } from '../../configs';
+import type { PropsWithChildren } from "react";
+import "./footer.css";
+import { Github, Twitter, Linkedin, StackOverflow } from "../../svg-icons";
+import { isPrelaunch, isProduction } from "../../configs";
+import { PrelaunchNotice } from "../PrelaunchNotice/PrelaunchNotice";
 
 const socialLinks = [
-  { 
-    name: 'GitHub', 
-    url: 'https://github.com/AliSafari-IT',
-    icon: <Github stroke = "currentColor" />
+  {
+    name: "GitHub",
+    url: "https://github.com/AliSafari-IT",
+    icon: <Github stroke="currentColor" />,
   },
-  { 
-    name: 'Twitter', 
-    url: 'https://twitter.com/ASafariM',
-    icon: <Twitter stroke = "currentColor" />
+  {
+    name: "Twitter",
+    url: "https://twitter.com/ASafariM",
+    icon: <Twitter stroke="currentColor" />,
   },
-  { 
-    name: 'LinkedIn', 
-    url: 'https://linkedin.com/in/ali-safari',
-    icon: <Linkedin stroke = "currentColor" />
+  {
+    name: "LinkedIn",
+    url: "https://linkedin.com/in/ali-safari",
+    icon: <Linkedin stroke="currentColor" />,
   },
-  { 
-    name: 'StackOverflow', 
-    url: 'https://stackoverflow.com/users/10703628/ali-safari',
-    icon: <StackOverflow stroke = "currentColor" />
+  {
+    name: "StackOverflow",
+    url: "https://stackoverflow.com/users/10703628/ali-safari",
+    icon: <StackOverflow stroke="currentColor" />,
   },
 ];
 
 const footerLinks = [
   {
-    title: 'Navigation',
+    title: "Navigation",
     items: [
-      { label: 'Home', to: '/' },
-      { label: 'About', to: isProduction ? 'https://asafarim.be/about' : 'http://web.asafarim.local:5175/about' },
-      { label: 'Blog', to: isProduction ? 'https://blog.asafarim.be' : 'http://blog.asafarim.local:3000/' },
-      { label: 'Contact', to: isProduction ? 'https://asafarim.be/contact' : 'http://web.asafarim.local:5175/contact' },
+      { label: "Home", to: "/" },
+      {
+        label: "About",
+        to: isProduction
+          ? "https://asafarim.be/about"
+          : "http://web.asafarim.local:5175/about",
+      },
+      {
+        label: "Blog",
+        to: isProduction
+          ? "https://blog.asafarim.be"
+          : "http://blog.asafarim.local:3000/",
+      },
+      {
+        label: "Contact",
+        to: isProduction
+          ? "https://asafarim.be/contact"
+          : "http://web.asafarim.local:5175/contact",
+      },
     ],
   },
   {
-    title: 'Legal',
+    title: "Legal",
     items: [
-      { label: 'Privacy Policy', to: isProduction ? 'https://blog.asafarim.be/docs/LegalDocs/privacy-policy' : 'http://blog.asafarim.local:3000/docs/LegalDocs/privacy-policy' },
-      { label: 'Terms of Service', to: isProduction ? 'https://blog.asafarim.be/docs/LegalDocs/terms-of-service' : 'http://blog.asafarim.local:3000/docs/LegalDocs/terms-of-service' },
-      { label: 'Cookie Policy', to: isProduction ? 'https://blog.asafarim.be/docs/LegalDocs/cookie-policy' : 'http://blog.asafarim.local:3000/docs/LegalDocs/cookie-policy' },
-      { label: 'Disclaimer', to: isProduction ? 'https://blog.asafarim.be/docs/LegalDocs/legal-disclaimer' : 'http://blog.asafarim.local:3000/docs/LegalDocs/legal-disclaimer' },
+      {
+        label: "Privacy Policy",
+        to: isProduction
+          ? "https://blog.asafarim.be/docs/LegalDocs/privacy-policy"
+          : "http://blog.asafarim.local:3000/docs/LegalDocs/privacy-policy",
+      },
+      {
+        label: "Terms of Service",
+        to: isProduction
+          ? "https://blog.asafarim.be/docs/LegalDocs/terms-of-service"
+          : "http://blog.asafarim.local:3000/docs/LegalDocs/terms-of-service",
+      },
+      {
+        label: "Cookie Policy",
+        to: isProduction
+          ? "https://blog.asafarim.be/docs/LegalDocs/cookie-policy"
+          : "http://blog.asafarim.local:3000/docs/LegalDocs/cookie-policy",
+      },
+      {
+        label: "Disclaimer",
+        to: isProduction
+          ? "https://blog.asafarim.be/docs/LegalDocs/legal-disclaimer"
+          : "http://blog.asafarim.local:3000/docs/LegalDocs/legal-disclaimer",
+      },
     ],
   },
   {
-    title: 'Connect',
+    title: "Connect",
     items: [
-      { label: 'GitHub', to: 'https://github.com/AliSafari-IT' },
-      { label: 'Twitter', to: 'https://twitter.com/ASafariM' },
-      { label: 'LinkedIn', to: 'https://linkedin.com/in/ali-safari' },
-      { label: 'StackOverflow', to: 'https://stackoverflow.com/users/10703628/ali-safari' },
+      { label: "GitHub", to: "https://github.com/AliSafari-IT" },
+      { label: "Twitter", to: "https://twitter.com/ASafariM" },
+      { label: "LinkedIn", to: "https://linkedin.com/in/ali-safari" },
+      {
+        label: "StackOverflow",
+        to: "https://stackoverflow.com/users/10703628/ali-safari",
+      },
     ],
   },
 ];
@@ -70,10 +109,10 @@ export function FooterContainer({ children }: PropsWithChildren) {
                 <ul className="footer-links-list">
                   {section.items.map((item) => (
                     <li key={item.label} className="footer-links-item">
-                      <a 
-                        href={item.to} 
+                      <a
+                        href={item.to}
                         className="footer-link"
-                        target={item.to.startsWith('http') ? '_blank' : '_self'}
+                        target={item.to.startsWith("http") ? "_blank" : "_self"}
                         rel="noopener noreferrer"
                       >
                         {item.label}
@@ -105,6 +144,7 @@ export function FooterContainer({ children }: PropsWithChildren) {
               ))}
             </div>
           </div>
+          {isPrelaunch && <PrelaunchNotice position="footer" />}
         </div>
       )}
     </footer>

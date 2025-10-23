@@ -1,0 +1,70 @@
+/* ============================================
+   AI-UI HOME PAGE - Using ONLY Shared Tokens
+   Clean, modern, visually balanced
+   ============================================ */
+
+/* ============================================
+   SECTION CONTAINER
+   ============================================ */
+
+.ai-ui-home-container {
+  position: relative;
+  background: var(--color-background);
+  transition: background var(--transition-normal);
+}
+
+/* Remove blue gradient background from Hero to match Web app */
+.ai-ui-home-container .hero-background-glow {
+  display: none;
+}
+
+.ai-ui-home-container .hero-background-grid {
+  display: none;
+}
+
+.ai-ui-home-container .hero-background-gradient {
+  display: none;
+}
+
+/* ============================================
+   CONTAINER - Consistent Width
+   ============================================ */
+
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  position: relative;
+}
+
+@media (max-width: 1023px) {
+  .container {
+    padding: 0 var(--space-5);
+  }
+}
+
+@media (max-width: 767px) {
+  .container {
+    padding: 0 var(--space-4);
+  }
+}
+
+/* ============================================
+   TOOL GRID - Card Layout
+   ============================================ */
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--width-2xs), 2fr));
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-3);
+}
+
+@media (max-width: 767px) {
+  .tool-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-2);
+  }
+}
+

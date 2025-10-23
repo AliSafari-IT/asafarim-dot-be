@@ -5,28 +5,29 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function EditUserPage() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
   const navigate = useNavigate();
-  
+
+  console.log('[EditUserPage] Component rendered, auth state:', { isAuthenticated, loading, user });
+
   // Redirect non-admin users
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !loading) {
       navigate('/login?returnUrl=/admin/users');
       return;
     }
-    
+
     // Check if user has admin role (case-insensitive)
     const userRoles = user?.roles || [];
     const isAdmin = userRoles.some((role: string) => role.toLowerCase() === 'admin');
     if (!isAdmin) {
       navigate('/dashboard');
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, loading]);
 
   return (
     <AuthLayout 
-      title="Admin: Edit User" 
-      subtitle="Manage user account details and permissions"
+      key={'identity-portal-edit-user'}
     >
       <EditUser />
     </AuthLayout>

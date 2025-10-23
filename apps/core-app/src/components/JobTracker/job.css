@@ -1,5 +1,5 @@
 .job-tracker-container {
-    max-width: 1200px;
+    max-width: var(--max-width, 1200px);
     margin: 0 auto;
     padding: 20px;
     padding-top: calc(4rem + 20px); /* Account for fixed navbar height plus extra spacing */
@@ -239,7 +239,7 @@
     margin-bottom: 20px;
   }
   
-  .job-form {
+  .job-form-container .job-form {
     display: grid;
     grid-gap: 24px;
     width: 100%;
@@ -262,7 +262,7 @@
     color: var(--color-canceled);
   }
   
-  .form-actions {
+  .job-form-container .form-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -292,7 +292,7 @@
       grid-gap: 20px;
     }
     
-    .form-actions {
+    .job-form-container .form-actions {
       position: fixed;
       left: 0;
       right: 0;
@@ -305,7 +305,7 @@
       border-top: 1px solid var(--color-border);
     }
     
-    .form-actions button {
+    .job-form-container .form-actions button {
       flex: 1;
       padding: 12px;
       font-size: 16px;
@@ -316,12 +316,12 @@
       margin-bottom: 16px;
     }
     
-    .form-group label {
+    .job-form-container .form-group label {
       font-size: 0.9rem;
     }
     
     /* Hide native select dropdown arrow on mobile */
-    .form-group select {
+    .job-form-container .form-group select {
       background-image: none;
       padding-right: 12px;
     }
@@ -337,21 +337,20 @@
       grid-gap: 16px;
     }
     
-    .job-form-container 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
+    .job-form-container .form-group input,
+    .job-form-container .form-group select,
+    .job-form-container .form-group textarea {
       padding: 10px;
       font-size: 16px; /* Prevent zoom on iOS */
     }
   }
   
   /* Custom select (themed) */
-  .custom-select {
+  .job-form-container .custom-select {
     position: relative;
   }
   
-  .custom-select[data-disabled] {
+  .job-form-container .custom-select[data-disabled] {
     opacity: 0.7;
     pointer-events: none;
   }
@@ -590,14 +589,14 @@
   
   .filter-chips {
     display: flex;
-    gap: 8px;
+    gap: var(--spacing-2);
     flex-wrap: wrap;
   }
   
   .chip {
-    background: color-mix(in srgb, var(--card-bg, var(--color-background)) 90%, var(--color-foreground) 10%);
-    color: var(--card-text-color, var(--color-foreground));
-    border: 1px solid var(--card-border-color, var(--color-border));
+    background: color-mix(in srgb, var(--card-neutral-100), var(--color-success-600) 10%);
+    color: var(--card-primary-700);
+    border: 1px solid var(--card-primary-500);
     border-radius: 999px;
     padding: 6px 12px;
     font-size: 12px;
@@ -606,13 +605,13 @@
   }
   
   .chip:hover {
-    background: color-mix(in srgb, var(--card-bg, var(--color-background)) 85%, var(--color-foreground) 15%);
+    background: color-mix(in srgb, var(--card-accent-100), var(--color-primary-700) 10%);
   }
   
   .chip--active {
-    background: var(--color-primary);
-    color: var(--ifm-color-primary-inverse, #fff);
-    border-color: var(--color-primary);
+    background: var(--color-warning-100);
+    color: var(--color-primary-800);
+    border-color: var(--color-warning-500);
   }
   
   .list-controls__right {
@@ -705,7 +704,7 @@
   
   .job-role {
     font-size: 14px;
-    color: var(--color-foreground-muted);
+    color: var(--color-primary-700);
     word-break: break-word;
   }
   
@@ -716,7 +715,7 @@
   
   .job-date {
     font-size: 14px;
-    color: var(--color-foreground-muted);
+    color: var(--color-info-700);
     text-align: center;
     min-width: 80px;
   }
@@ -966,7 +965,7 @@
     margin: 0;
     font-size: 24px;
     font-weight: 500;
-    color: var(--color-foreground-muted);
+    color: var(--color-neutral-500);
     line-height: 1.3;
   }
   
@@ -1055,7 +1054,7 @@
   
   .detail-label {
     font-weight: 600;
-    color: var(--color-foreground-muted);
+    color: var(--color-neutral-500);
     margin-right: 16px;
   }
   
@@ -1138,7 +1137,7 @@
   
   .timeline-date {
     font-size: 14px;
-    color: var(--color-foreground-muted);
+    color: var(--color-neutral-500);
   }
   
   .loading,
@@ -1152,7 +1151,7 @@
   }
   
   .loading {
-    color: var(--color-foreground-muted);
+    color: var(--color-neutral-500);
   }
   
   .error {

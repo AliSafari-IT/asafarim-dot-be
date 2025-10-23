@@ -1,12 +1,13 @@
-import { CentralNavbar } from "@asafarim/shared-ui-react";
-import type { NavLinkItem } from "@asafarim/shared-ui-react";
+import { CentralNavbar, type NavLinkItem } from "@asafarim/shared-ui-react";
 import { useAuth } from "../hooks/useAuth";
 import { useTranslation } from "@asafarim/shared-i18n";
+import './navbar.css';
 
 // Define your navigation links
-const getNavLinks = (t: (key: string, options?: Record<string, string | number>) => string): NavLinkItem[] => {
-  const { isAuthenticated } = useAuth();
-
+const getNavLinks = (
+  t: (key: string, options?: Record<string, string | number>) => string,
+  isAuthenticated: boolean
+): NavLinkItem[] => {
   const links: NavLinkItem[] = [
     // Always show portfolio link
     {
@@ -63,12 +64,8 @@ export default function Navbar() {
   const appId = "web";
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
   const { t } = useTranslation(appId);
-  const navLinks = getNavLinks(t);
-// "navbar": {
-//   "auth": {
+  const navLinks = getNavLinks(t, isAuthenticated);
 
-//   }
-// }
   return (
     <CentralNavbar
       appId={appId}

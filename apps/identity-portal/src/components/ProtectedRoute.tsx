@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useNotification } from '../hooks/useNotification';
@@ -23,6 +23,7 @@ export const ProtectedRoute = ({
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
   const { addNotification } = useNotification();
+  const hasShownNotificationRef = useRef(false);
   
   console.log('[ProtectedRoute] Auth check:', { 
     isAuthenticated,
@@ -79,8 +80,9 @@ export const ProtectedRoute = ({
     
     console.log('[ProtectedRoute] Already authenticated but on public route, redirecting to', finalRedirect);
     
-    // Show notification when redirecting from login page
-    if (location.pathname === '/login' || location.pathname === '/register') {
+    // Show notification ONCE when redirecting from login page
+    if ((location.pathname === '/login' || location.pathname === '/register') && !hasShownNotificationRef.current) {
+      hasShownNotificationRef.current = true;
       setTimeout(() => {
         addNotification(`You are already signed in. Redirecting...`, 'info', 2000);
       }, 100);

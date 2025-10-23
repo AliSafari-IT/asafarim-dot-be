@@ -396,6 +396,7 @@ public class ResumesController : ControllerBase
             .Include(r => r.SocialLinks)
             .Include(r => r.Languages)
             .Include(r => r.Awards)
+            .Include(r => r.References)
             .FirstOrDefaultAsync();
 
         if (resume == null)
@@ -639,9 +640,7 @@ public class ResumesController : ControllerBase
                     Link = p.Link,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
-                    Technologies = p
-                        .ProjectTechnologies.Select(pt => pt.Technology.Name)
-                        .ToList(),
+                    Technologies = p.ProjectTechnologies.Select(pt => pt.Technology.Name).ToList(),
                 })
                 .ToList(),
             Certificates = resume
@@ -675,6 +674,16 @@ public class ResumesController : ControllerBase
                 {
                     Platform = sl.Platform,
                     Url = sl.Url,
+                })
+                .ToList(),
+            References = resume
+                .References.Select(r => new PublicReferenceDto
+                {
+                    Name = r.Name,
+                    Position = r.Position,
+                    Company = r.Company,
+                    Relationship = r.Relationship,
+                    // Email and Phone excluded for privacy
                 })
                 .ToList(),
         };

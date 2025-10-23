@@ -43,7 +43,7 @@ namespace Core.Api.Controllers
         {
             if (page < 1)
                 page = 1;
-            if (pageSize < 1 || pageSize > 50)
+            if (pageSize < 1)
                 pageSize = 10;
 
             var cacheKey = $"wib:commits:p{page}:s{pageSize}";

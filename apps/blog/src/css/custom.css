@@ -1,5 +1,30 @@
 @import url("@asafarim/shared-ui-react/index.css");
-/* Use central theme variables */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#__docusaurus {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Container max-width matching other apps */
+.container {
+  max-width: 1360px;
+  margin: 0 auto;
+}
 
 /* Neutralize global borders from shared tokens for the blog */
 a { 
@@ -126,5 +151,79 @@ a {
 
   .sidebar-toggle {
     display: none;
+  }
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY & SPACING
+   ============================================ */
+
+/* Mobile-first typography */
+:root {
+  --ifm-h1-font-size: 1.75rem;
+  --ifm-h2-font-size: 1.5rem;
+  --ifm-h3-font-size: 1.25rem;
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.6;
+}
+
+/* Tablet typography */
+@media (min-width: 768px) {
+  :root {
+    --ifm-h1-font-size: 2rem;
+    --ifm-h2-font-size: 1.75rem;
+    --ifm-h3-font-size: 1.5rem;
+  }
+}
+
+/* Desktop typography */
+@media (min-width: 1024px) {
+  :root {
+    --ifm-h1-font-size: 2.5rem;
+    --ifm-h2-font-size: 2rem;
+    --ifm-h3-font-size: 1.75rem;
+  }
+}
+
+/* Container padding adjustments */
+.container {
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+/* Improve mobile readability */
+@media (max-width: 767px) {
+  .markdown {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  
+  .markdown h1,
+  .markdown h2,
+  .markdown h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .markdown p {
+    margin-bottom: 1rem;
+  }
+  
+  /* Better code block mobile display */
+  .markdown pre {
+    font-size: 0.8125rem;
+    padding: 0.75rem;
+    overflow-x: auto;
   }
 }

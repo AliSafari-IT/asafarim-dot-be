@@ -7,21 +7,20 @@ import UserProfile from '../components/UserProfile';
 import { useAuth } from '../hooks/useAuth';
 
 export const UserProfilePage = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   
   // Redirect unauthenticated users to login
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !loading) {
       navigate(returnUrl || '/login');
     }
-  }, [isAuthenticated, navigate, returnUrl]);
+  }, [isAuthenticated, navigate, returnUrl, loading]);
 
   return (
     <AuthLayout 
-      title={(user?.roles || []).includes('Admin') ? 'Admin: User Profile' : 'My Profile'} 
-      subtitle={(user?.roles || []).includes('Admin') ? 'Manage individual user accounts and permissions' : 'Manage your profile'}
+      key={'identity-portal-user-profile'}
     >
       <UserProfile />
     </AuthLayout>

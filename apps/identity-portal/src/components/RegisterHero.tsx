@@ -4,8 +4,8 @@ import './login-hero.css';
 
 export const RegisterHero = () => {
   const kicker = "Identity Portal";
-  const title = "Join ASafariM";
-  const subtitle = "Create an account to access all our services and applications";
+  const title = "Create Account";
+  const subtitle = "Sign up to get started with ASafariM";
   const bullets = [
     "Single sign-on for all ASafariM applications",
     "Personalized dashboard and settings",

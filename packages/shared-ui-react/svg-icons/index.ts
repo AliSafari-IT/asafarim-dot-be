@@ -33,6 +33,7 @@ import ArrowLeftIcon from "./ArrowLeftIcon";
 import PlusIcon from "./PlusIcon";
 import Google from "./Google";
 import ORCID from "./ORCID";
+import Cross from "./Cross";
 
 export {
     Arrow, Spark,
@@ -40,5 +41,5 @@ export {
     Github, Twitter, Linkedin, StackOverflow, TwitterX, Download, Html,
     MarkDown, Pdf, Email, Contact, Location, Company, Website, Phone,
     LoginArrow, DotsMenu, Info, Delete, Remove, Edit, ArrowLeftIcon,
-    PlusIcon, Google, ORCID
+    PlusIcon, Google, ORCID, Cross
 };

@@ -4,6 +4,7 @@ import JobForm from './JobForm';
 import type { JobApplication } from '../../types/jobTypes';
 import './job.css';
 import AnalyticsDashboard from './AnalyticsDashboard';
+import { ButtonComponent } from '@asafarim/shared-ui-react';
 
 const JobTracker = () => {
   const [selectedJob, setSelectedJob] = useState<JobApplication | undefined>(undefined);
@@ -34,14 +35,17 @@ const JobTracker = () => {
       <div className="job-tracker-header">
         <h1>Job Tracker</h1>
         <div className="header-actions">
-          <button onClick={() => setShowAnalytics(!showAnalytics)} className="show-analytics-btn">
+          <ButtonComponent 
+          onClick={() => setShowAnalytics(!showAnalytics)} 
+          variant='outline'>
             {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
-          </button>
+          </ButtonComponent>
           {
             !showAnalytics && (
-              <button onClick={handleAddNew} className="add-job-btn" disabled={isFormVisible}>
+              <ButtonComponent onClick={handleAddNew} 
+              variant='brand' disabled={isFormVisible}>
                 Add New Job Application
-              </button>
+              </ButtonComponent>
             )
           }
         </div>

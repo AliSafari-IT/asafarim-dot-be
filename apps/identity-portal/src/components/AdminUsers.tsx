@@ -217,7 +217,14 @@ export default function AdminUsers() {
                     {/* TODO: Add a button to edit the user detaileds such as name, email, phone, etc. */}
                     <button className="admin-table-button"
                       onClick={() => {
-                        navigate(`/admin/edit-user/${u.id}`);
+                        const targetUrl = `/admin/edit-user/${u.id}`;
+                        console.log('[AdminUsers] Edit button clicked for user:', u.id, 'Navigating to:', targetUrl);
+                        console.log('[AdminUsers] Current URL before navigation:', window.location.href);
+                        navigate(targetUrl);
+                        // Log URL after navigation
+                        setTimeout(() => {
+                          console.log('[AdminUsers] Current URL after navigation:', window.location.href);
+                        }, 100);
                       }}
                       aria-label="Edit user"
                       title="Edit user"

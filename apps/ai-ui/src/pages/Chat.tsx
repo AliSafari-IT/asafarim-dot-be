@@ -9,6 +9,7 @@ import type {
   ChatMessage,
   ChatSessionListItem,
 } from "../types/chat";
+import "./Chat.css";
 
 export default function Chat() {
   const [prompt, setPrompt] = useState("");
@@ -18,59 +19,58 @@ export default function Chat() {
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
   // Configure useAuth to use AI API proxy endpoints
-  const authApiBase = isProduction ? '/api/auth' : 'http://ai-api.asafarim.local:5103/auth';
-  const { isAuthenticated, loading: authLoading, signIn, user } = useAuth({
+  const authApiBase = isProduction
+    ? "/api/auth"
+    : "http://ai-api.asafarim.local:5103/auth";
+  const {
+    isAuthenticated,
+    loading: authLoading,
+    signIn,
+    user,
+  } = useAuth({
     authApiBase,
-    meEndpoint: '/me',
-    tokenEndpoint: '/token',
-    logoutEndpoint: '/logout'
+    meEndpoint: "/me",
+    tokenEndpoint: "/token",
+    logoutEndpoint: "/logout",
   });
 
-  // Toggle sidebar on mobile
-  const toggleMobileSidebar = () => {
-    setSidebarExpanded(!sidebarExpanded);
-    // Prevent scrolling when sidebar is open
-    if (!sidebarExpanded) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-  };
-  
   // Toggle sidebar collapse/expand for desktop
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  // Close mobile sidebar when clicking outside
+  // Set initial sidebar state and handle window resize
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      const sidebar = document.querySelector(".ai-ui-sidebar");
-      const menuToggle = document.querySelector(".menu-toggle");
+    // Set initial state based on window width
+    const setInitialState = () => {
+      const isMobile = window.innerWidth < 580;
+      setSidebarCollapsed(isMobile);
+      if (isMobile) {
+        document.body.style.overflow = "";
+      }
+    };
 
-      if (
-        sidebarExpanded &&
-        sidebar &&
-        menuToggle &&
-        !sidebar.contains(event.target as Node) &&
-        !menuToggle.contains(event.target as Node)
-      ) {
-        setSidebarExpanded(false);
-        document.body.style.overflow = '';
+    // Set initial state immediately
+    setInitialState();
+
+    // Handle window resize
+    function handleResize() {
+      const isMobile = window.innerWidth < 580;
+      if (isMobile && sidebarCollapsed) {
+        setSidebarCollapsed(true);
+        document.body.style.overflow = "";
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("resize", handleResize);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.body.style.overflow = '';
+      window.removeEventListener("resize", handleResize);
     };
-  }, [sidebarExpanded]);
+  }, [sidebarCollapsed]);
 
   // Load chat sessions on component mount
   useEffect(() => {
@@ -98,8 +98,9 @@ export default function Chat() {
       setCurrentSession(sessionData);
       setMessages(sessionData.messages || []);
       // On mobile, collapse sidebar after selecting a session
-      if (window.innerWidth <= 768) {
-        setSidebarExpanded(false);
+      if (window.innerWidth < 580) {
+        setSidebarCollapsed(true);
+        document.body.style.overflow = "";
       }
     } catch (error) {
       console.error("Failed to load session:", error);
@@ -117,7 +118,7 @@ export default function Chat() {
     setTimeout(() => {
       const inputSection = document.querySelector(".chat-input-section");
       if (inputSection) {
-        inputSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        inputSection.scrollIntoView({ behavior: "smooth", block: "end" });
       }
     }, 100);
   };
@@ -208,19 +209,13 @@ export default function Chat() {
   // Render authenticated experience
   return (
     <section
-      className={`ai-ui-container ${
-        sidebarCollapsed ? "sidebar-collapsed" : ""
-      }`}
+      className={`ai-ui-container ${sidebarCollapsed ? "collapsed" : ""}`}
     >
-      {/* Mobile overlay */}
-      <div 
-        className={`mobile-overlay ${sidebarExpanded ? "active" : ""}`}
-        onClick={() => setSidebarExpanded(false)}
-      />
-      
       {/* Sidebar toggle button */}
       <button
-        className={`sidebar-toggle ${sidebarCollapsed ? "collapsed" : ""}`}
+        className={`ai-ui-sidebar-toggle ${
+          sidebarCollapsed ? "collapsed" : ""
+        }`}
         onClick={toggleSidebar}
         aria-label={sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
       >
@@ -228,11 +223,7 @@ export default function Chat() {
       </button>
 
       {/* Sidebar */}
-      <div
-        className={`ai-ui-sidebar ${sidebarExpanded ? "expanded" : ""} ${
-          sidebarCollapsed ? "collapsed" : ""
-        }`}
-      >
+      <div className={`ai-ui-sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-header">
           <button
             className="new-chat-btn"
@@ -240,9 +231,6 @@ export default function Chat() {
             disabled={sessionsLoading}
           >
             {sessionsLoading ? "⏳" : "+"} New chat
-          </button>
-          <button className="menu-toggle" onClick={toggleMobileSidebar}>
-            ☰
           </button>
         </div>
         <ChatSessionList
@@ -299,31 +287,31 @@ export default function Chat() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
 
-        <div className="chat-input-section">
-          <div className="chat-input-container">
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Message AI..."
-              className="ai-ui-input"
-              rows={1}
-              disabled={loading}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={loading || !prompt.trim()}
-              className="send-btn"
-              title={loading ? "Processing..." : "Send message"}
-            >
-              {loading ? "⏳" : "➤"}
-            </button>
-          </div>
-          <div className="input-hint">
-            Press Enter to send, Shift+Enter for new line
+            <div className="chat-input-section">
+              <div className="chat-input-container">
+                <textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Message AI..."
+                  className="ai-ui-input"
+                  rows={1}
+                  disabled={loading}
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={loading || !prompt.trim()}
+                  className="send-btn"
+                  title={loading ? "Processing..." : "Send message"}
+                >
+                  {loading ? "⏳" : "➤"}
+                </button>
+              </div>
+              <div className="input-hint">
+                Press Enter to send, Shift+Enter for new line
+              </div>
+            </div>
           </div>
         </div>
       </div>
