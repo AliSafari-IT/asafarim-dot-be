@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import './ToolCard.css';
 
 interface ToolCardProps {
   title: string;
@@ -10,11 +10,7 @@ interface ToolCardProps {
 
 export default function ToolCard({ title, description, to, icon }: ToolCardProps) {
   return (
-    <motion.div 
-      className="ai-ui-tool-card"
-      whileHover={{ y: -5 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-    >
+    <div className="ai-ui-tool-card">
       <Link to={to} className="ai-ui-tool-card-link">
         <div className="ai-ui-tool-card-content">
           {icon && <div className="ai-ui-tool-card-icon">{icon}</div>}
@@ -27,6 +23,6 @@ export default function ToolCard({ title, description, to, icon }: ToolCardProps
           </div>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }

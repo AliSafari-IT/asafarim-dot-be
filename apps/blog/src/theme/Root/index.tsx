@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ThemeProvider } from '@asafarim/react-themes';
-import { AuthSyncProvider } from '@asafarim/shared-ui-react';
+import { AuthSyncProvider, PrelaunchNoticeBanner } from '@asafarim/shared-ui-react';
 import { initI18n } from '@asafarim/shared-i18n';
 
 /**

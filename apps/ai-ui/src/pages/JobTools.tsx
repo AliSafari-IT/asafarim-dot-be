@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../api";
 import { useAuth, isProduction } from "@asafarim/shared-ui-react";
+import './JobTools.css';
 
 type ExtractResp = {
   title: string;

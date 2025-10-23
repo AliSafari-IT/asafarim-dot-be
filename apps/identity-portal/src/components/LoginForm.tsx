@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { Arrow, ButtonComponent as Button, Lock } from "@asafarim/shared-ui-react";
+import './LoginForm.css';
 
 
 export const LoginForm = () => {
@@ -27,13 +28,17 @@ export const LoginForm = () => {
     e.preventDefault();
 
     try {
+      console.log('📝 Submitting login form...');
       const success = await login(formData);
+      console.log('🔍 Login result:', success);
+      
       if (success) {
         // Show success notification
         console.log('👍 Login successful! Preparing redirect...');
         
         // Set flag to prevent Login page's useEffect from also redirecting
         sessionStorage.setItem('login_just_completed', 'true');
+        console.log('✅ Set login_just_completed flag in sessionStorage');
         
         // Get returnUrl from query params
         let returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
@@ -85,8 +90,11 @@ export const LoginForm = () => {
           // Internal navigation - use window.location to ensure it actually happens
           console.log('🏠 Redirecting to internal path:', targetPath);
           
-          // Use replace() to avoid back button issues
-          window.location.replace(targetPath);
+          // Force a small delay to ensure cookies are readable by the browser
+          setTimeout(() => {
+            // Use replace() to avoid back button issues
+            window.location.replace(targetPath);
+          }, 500);
         }
       }
     } catch (error) {

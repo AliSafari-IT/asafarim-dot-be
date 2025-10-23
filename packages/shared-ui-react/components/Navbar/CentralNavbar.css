@@ -1,41 +1,47 @@
-.central-navbar {
-  --app-switcher-bg: var(--bg-card, #ffffff);
-  --app-switcher-border: var(--border-color, #e2e8f0);
-  --app-switcher-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --app-switcher-hover-bg: var(--bg-tertiary, #f1f5f9);
-  --app-switcher-text: var(--text-primary, #1e293b);
-  --app-switcher-description: var(--text-secondary, #64748b);
-}
-
-/* App switcher button */
+/* App switcher button - matches nav-link styling exactly */
 .app-switcher-button {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 6px;
+  gap: 0.5rem;
+  /* Match nav-link padding exactly */
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
   background: transparent;
   border: none;
-  color: inherit;
-  font-size: inherit;
+  /* Match nav-link colors */
+  color: var(--color-text);
+  font-size: var(--font-size-base);
   font-family: inherit;
+  font-weight: var(--font-weight-normal);
   cursor: pointer;
-  transition: background-color 0.2s;
+  /* Match nav-link transition */
+  transition: color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+  /* Ensure same height as nav links */
+  height: auto;
+  line-height: 1.5;
 }
 
-.app-switcher-button:hover,
+/* Match nav-link hover state */
+.app-switcher-button:hover {
+  color: var(--nav-hover);
+  background-color: var(--bg-nav-hover-color);
+}
+
 .app-switcher-button.active {
-  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--nav-active);
+  background-color: var(--bg-nav-active-color);
 }
 
-[data-theme="dark"] .app-switcher-button:hover,
-[data-theme="dark"] .app-switcher-button.active {
-  background-color: rgba(255, 255, 255, 0.1);
+/* Focus state for accessibility */
+.app-switcher-button:focus-visible {
+  outline: 2px solid var(--focus-border-color);
+  outline-offset: 2px;
 }
 
 .app-switcher-caret {
-  margin-left: 4px;
-  transition: transform 0.2s ease;
+  margin-left: 0.25rem;
+  transition: transform var(--transition-speed) ease;
+  flex-shrink: 0;
 }
 
 .app-switcher-caret.open {
@@ -52,13 +58,13 @@
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1000;
+  z-index: var(--z-navbar-dropdown, 250);
   min-width: 280px;
   margin-top: 8px;
-  background-color: var(--app-switcher-bg);
+  background-color: var(--color-surface);
   border-radius: 8px;
-  box-shadow: var(--app-switcher-shadow);
-  border: 1px solid var(--app-switcher-border);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-border);
   overflow: hidden;
   animation: fadeIn 0.2s ease-out;
 }
@@ -87,12 +93,12 @@
   padding: 12px;
   border-radius: 6px;
   text-decoration: none;
-  color: var(--app-switcher-text);
+  color: var(--color-text);
   transition: background-color 0.2s;
 }
 
 .app-switcher-item:hover {
-  background-color: var(--app-switcher-hover-bg);
+  background-color: var(--bg-hover-color);
 }
 
 .app-switcher-item-icon {
@@ -118,7 +124,7 @@
 
 .app-switcher-item-description {
   font-size: 0.8rem;
-  color: var(--app-switcher-description);
+  color: var(--color-neutral-muted);
 }
 
 /* Mobile adjustments: keep dropdown under the trigger, not as a bottom sheet */

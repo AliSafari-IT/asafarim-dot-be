@@ -7,6 +7,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import type { DocusaurusConfig } from "@docusaurus/types";
 import "./Navbar.css";
 import { isProduction } from "@asafarim/shared-ui-react";
+import { PrelaunchNoticeBanner } from "@asafarim/shared-ui-react";
 
 // Define your blog navigation links
 const navLinks: NavLinkItem[] = [
@@ -48,7 +49,7 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
     </a>
   );
 };
-export default function NavbarWrapper(props): React.ReactElement {
+export default function NavbarWrapper(props: any): React.ReactElement {
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
   const { siteConfig } = useDocusaurusContext() as {
     siteConfig: DocusaurusConfig & {
@@ -58,6 +59,7 @@ export default function NavbarWrapper(props): React.ReactElement {
 
   return (
     <>
+      <PrelaunchNoticeBanner />
       <CentralNavbar
         appId="blog"
         localLinks={navLinks}

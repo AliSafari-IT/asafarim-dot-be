@@ -1,59 +1,66 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ToastProvider, Toaster } from '@asafarim/toast';
-import '@asafarim/toast/styles.css';
-import { ThemeProvider } from '@asafarim/shared-ui-react';
-import ProtectedRoute from './components/ProtectedRoute';
-import NotificationProvider from './contexts/NotificationProvider';
-import NotificationContainer from './components/Notifications/NotificationContainer';
-import Navbar from './components/Navbar';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { ToastProvider, Toaster } from "@asafarim/toast";
+import "@asafarim/toast/styles.css";
+import { ThemeProvider } from "@asafarim/shared-ui-react";
+import ProtectedRoute from "./components/ProtectedRoute";
+import NotificationProvider from "./contexts/NotificationProvider";
+import NotificationContainer from "./components/Notifications/NotificationContainer";
+import Navbar from "./components/Navbar";
 
 // Pages
-import Login from './pages/Login';
-import Register from './pages/Register';
-import SyncLogout from './pages/SyncLogout';
-import AdminUsersPage from './pages/AdminUsersPage';
-import DashboardPage from './pages/DashboardPage';
-import UserProfilePage from './pages/UserProfilePage';
-import MeProfilePage from './pages/MeProfilePage';
-import AddNewUserPage from './pages/AddNewUserPage';
-import EditUserPage from './pages/EditUserPage';
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import SyncLogout from "./pages/SyncLogout";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import DashboardPage from "./pages/DashboardPage";
+import UserProfilePage from "./pages/UserProfilePage";
+import MeProfilePage from "./pages/MeProfilePage";
+import AddNewUserPage from "./pages/AddNewUserPage";
+import EditUserPage from "./pages/EditUserPage";
+import { PrelaunchNoticeBanner } from "@asafarim/shared-ui-react";
 
 function App() {
   return (
-      <ThemeProvider>
-        <ToastProvider>
-          <NotificationProvider>
-              <Router>
-              <NotificationContainer />
-              <Toaster />
-              <Navbar />
-              <Routes>
+    <ThemeProvider>
+      <PrelaunchNoticeBanner />
+      <ToastProvider>
+        <NotificationProvider>
+          <Router>
+            <NotificationContainer />
+            <Toaster />
+            <Navbar />
+            <Routes>
               {/* Public routes (accessible when not logged in) */}
-              <Route 
-                path="/login" 
+              <Route
+                path="/login"
                 element={
                   <ProtectedRoute requireAuth={false}>
                     <Login />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/register" 
+              <Route
+                path="/register"
                 element={
                   <ProtectedRoute requireAuth={false}>
                     <Register />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Protected routes (require authentication) */}
-              <Route 
-                path="/dashboard" 
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <DashboardPage />
                   </ProtectedRoute>
-                } 
+                }
               />
 
               {/* Admin users management */}
@@ -85,11 +92,7 @@ function App() {
               />
               <Route
                 path="/admin/user-profile"
-                element={
-                  <ProtectedRoute>
-                    <UserProfilePage />
-                  </ProtectedRoute>
-                }
+                element={<UserProfilePage />}
               />
               <Route
                 path="/admin/user-profile/:id"
@@ -111,17 +114,17 @@ function App() {
 
               {/* Logout sync endpoint (not protected) */}
               <Route path="/sync-logout" element={<SyncLogout />} />
-              
+
               {/* Redirect root to login */}
               <Route path="/" element={<Navigate to="/login" replace />} />
-              
+
               {/* Catch all other routes and redirect to login */}
               <Route path="*" element={<Navigate to="/login" replace />} />
-              </Routes>
-              </Router>
-          </NotificationProvider>
-        </ToastProvider>
-      </ThemeProvider>
+            </Routes>
+          </Router>
+        </NotificationProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 

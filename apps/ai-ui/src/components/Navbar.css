@@ -1,0 +1,11 @@
+/* AI UI-specific navbar styles - MINIMAL overrides only */
+
+/* Container max-width for centering content */
+.ai-ui-navbar .nav-row {
+}
+
+@media (min-width: 768px) {
+}
+
+@media (min-width: 1024px) {
+}

@@ -164,7 +164,7 @@
 
 .empty-state-message {
   font-size: 1.125rem;
-  color: var(--color-text-muted);
+  color: var(--color-accent-900);
   margin-bottom: 2rem;
 }
 

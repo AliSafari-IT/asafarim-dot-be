@@ -21,12 +21,12 @@ const prodConfig: UseAuthOptions = {
 
 // Local development config (existing values)
 const devConfig: UseAuthOptions = {
-  authApiBase: 'http://api.asafarim.local:5101',
+  authApiBase: 'http://api.asafarim.local:5101',  // Identity API backend
   meEndpoint: '/auth/me',
   tokenEndpoint: '/auth/token',
   logoutEndpoint: '/auth/logout',
-  identityLoginUrl: 'http://identity.asafarim.local:5101/login',
-  identityRegisterUrl: 'http://identity.asafarim.local:5101/register'
+  identityLoginUrl: 'http://identity.asafarim.local:5177/login',  // Identity Portal frontend
+  identityRegisterUrl: 'http://identity.asafarim.local:5177/register'  // Identity Portal frontend
 };
 
 export const authConfig: UseAuthOptions = isProd ? prodConfig : devConfig;

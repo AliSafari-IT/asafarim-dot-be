@@ -139,6 +139,7 @@ export default function Navbar() {
         renderLink={renderLink}
         breakpoint={992} // Desktop breakpoint
         mobileMenuBreakpoint={768} // Tablet breakpoint
+        className="core-app-navbar"
       />
     </header>
   );

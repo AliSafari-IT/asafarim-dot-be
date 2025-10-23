@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import './admin-components.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@asafarim/toast';
-import { Eye, EyeOff } from '@asafarim/shared-ui-react';
+import { Arrow, ButtonComponent, Eye, EyeOff } from '@asafarim/shared-ui-react';
+import './admin-components.css';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
-
 const API = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101';
 
 export default function EditUser() {
@@ -22,6 +21,8 @@ export default function EditUser() {
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
+
+  console.log('[EditUser] Component mounted with userId:', userId);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -40,6 +41,7 @@ export default function EditUser() {
           throw new Error('No user ID provided');
         }
 
+        console.log('[EditUser] Loading user with ID:', userId);
         const userRes = await fetch(`${API}/admin/users/${userId}`, { credentials: 'include' });
         if (!userRes.ok) {
           if (userRes.status === 404) {
@@ -49,6 +51,7 @@ export default function EditUser() {
         }
 
         const userData = await userRes.json();
+        console.log('[EditUser] Loaded user data:', userData);
         setUser(userData);
         setEmail(userData.email || '');
         setUserName(userData.userName || '');
@@ -268,19 +271,20 @@ export default function EditUser() {
           </div>
 
           <div className="admin-form-actions">
-            <button 
-              className="admin-cancel-button" 
+            <ButtonComponent 
               onClick={() => navigate('/admin/users')}
+              variant="outline"
+              size="md"
+              leftIcon={<Arrow width={18} height={18} />}
             >
               Cancel
-            </button>
-            <button 
-              className="admin-save-button" 
+            </ButtonComponent>
+            <ButtonComponent 
               disabled={busy} 
               onClick={saveUser}
             >
               {busy ? 'Saving Changes...' : 'Save Changes'}
-            </button>
+            </ButtonComponent>
           </div>
         </div>
       </div>

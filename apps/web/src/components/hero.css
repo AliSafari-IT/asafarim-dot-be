@@ -1,0 +1,362 @@
+/* ============================================
+   PREMIUM WEB APP - HERO SECTION
+   Stripe meets Linear aesthetic
+   Visually balanced, technically precise
+   ============================================ */
+
+/* ============================================
+   HERO SECTION - Foundation
+   ============================================ */
+
+.hero {
+  position: relative;
+  /* Subtle gradient - adapts to theme */
+  background: linear-gradient(
+    135deg,
+    var(--color-neutral-50) 0%,
+    var(--color-background) 45%,
+    var(--color-neutral-50) 100%
+  );
+  /* Generous vertical padding for breathing room */
+  padding: 6rem 0;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .hero {
+  background: linear-gradient(
+    135deg,
+    var(--color-neutral-50) 0%,
+    var(--color-background) 45%,
+    var(--color-neutral-100) 100%
+  );
+}
+
+/* Refined radial glow - adds depth without overwhelming */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(
+      circle at 25% 35%,
+      color-mix(in srgb, var(--color-primary) 3%, transparent) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 75% 65%,
+      color-mix(in srgb, var(--color-primary-muted) 2%, transparent) 0%,
+      transparent 45%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dark theme - more prominent glow */
+[data-theme="dark"] .hero::before {
+  background-image: 
+    radial-gradient(
+      circle at 25% 35%,
+      color-mix(in srgb, var(--color-primary) 5%, transparent) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 75% 65%,
+      color-mix(in srgb, var(--color-primary-muted) 4%, transparent) 0%,
+      transparent 45%
+    );
+}
+
+/* Elegant grid pattern - perfectly balanced opacity */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(
+      color-mix(in srgb, var(--color-neutral-400) 3%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-neutral-400) 3%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 56px 56px;
+  /* Centered mask for subtle fade */
+  mask-image: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(0, 0, 0, 0.18),
+    transparent 68%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dark theme - more visible grid */
+[data-theme="dark"] .hero::after {
+  background-image: 
+    linear-gradient(
+      color-mix(in srgb, var(--color-neutral-400) 6%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-neutral-400) 6%, transparent) 1px,
+      transparent 1px
+    );
+  mask-image: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(255, 255, 255, 0.12),
+    transparent 68%
+  );
+}
+
+/* ============================================
+   CONTAINER - Optical Balance
+   ============================================ */
+
+.hero .hero-container {
+  max-width: 1360px; /* Slightly wider for better balance */
+  margin: 0 auto;
+  padding: 0 2.5rem; /* Generous horizontal padding */
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   GRID LAYOUT - Centered Single Column
+   ============================================ */
+
+.hero .hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+}
+
+/* ============================================
+   HERO CONTENT - Centered
+   ============================================ */
+
+.hero .hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Generous vertical spacing */
+  align-items: center;
+  max-width: 800px; /* Optimal reading width */
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   KICKER BADGE - Premium Pill
+   ============================================ */
+
+.hero .hero-kicker-wrapper {
+  display: inline-flex;
+}
+
+.hero .hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  /* Subtle gradient for depth */
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-100) 0%,
+    color-mix(in srgb, var(--color-primary-50) 95%, var(--color-white)) 100%
+  );
+  color: var(--color-primary-700);
+  padding: 0.625rem 1.25rem;
+  border-radius: 100px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  border: 1px solid color-mix(in srgb, var(--color-primary-700) 8%, transparent);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 5%, transparent);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero .hero-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.hero .hero-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary-700);
+  animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+}
+
+/* ============================================
+   TYPOGRAPHY - Visual Hierarchy
+   ============================================ */
+
+/* Hero Title - Bold statement with negative tracking */
+.hero .hero-title {
+  color: var(--color-neutral-900);
+  font-size: clamp(2.5rem, 5.5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1; /* Tighter for large text */
+  letter-spacing: -0.025em; /* Optical adjustment */
+  margin: 0;
+  /* Subtle text shadow for depth */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* Hero Subtitle - Refined secondary text */
+.hero .hero-subtitle {
+  color: var(--color-neutral-600);
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  line-height: 1.7; /* Generous for readability */
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0;
+  max-width: 680px; /* Optimal line length */
+}
+
+/* ============================================
+   FEATURES LIST - Clean Geometry
+   ============================================ */
+
+.hero .hero-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Consistent rhythm */
+  align-items: center;
+}
+
+.hero .hero-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-neutral-700);
+  font-size: 1rem;
+  line-height: 1.65;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Subtle hover lift for interactivity */
+.hero .hero-feature-item:hover {
+  transform: translateX(4px);
+}
+
+.hero .hero-feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  /* Refined gradient */
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-100) 0%,
+    var(--color-primary-200) 100%
+  );
+  color: var(--color-primary-700);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.hero .hero-feature-text {
+  flex: 1;
+}
+
+/* ============================================
+   CTA BUTTONS - Modern Styling
+   ============================================ */
+
+.hero .hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  justify-content: center;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 1023px) {
+  .hero {
+    padding: 4.5rem 0;
+  }
+
+  .hero .hero-container {
+    padding: 0 2rem;
+  }
+
+  .hero .hero-content {
+    gap: 1.75rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero {
+    padding: 3.5rem 0;
+    min-height: auto;
+  }
+
+  .hero .hero-container {
+    padding: 0 1.5rem;
+  }
+
+  .hero .hero-grid {
+    gap: 2.5rem;
+  }
+
+  .hero .hero-content {
+    gap: 1.5rem;
+  }
+
+  .hero .hero-title {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+  }
+
+  .hero .hero-subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
