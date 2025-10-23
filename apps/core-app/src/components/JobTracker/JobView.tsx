@@ -1,14 +1,19 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { fetchJobApplicationById } from '../../api/jobService';
-import { fetchMilestonesByJob, createMilestone, updateMilestone, deleteMilestone } from '../../api/timelineService';
-import { useNotifications } from '@asafarim/shared-ui-react';
-import { useToast } from '@asafarim/toast';
-import JobStatusBadge from './JobStatusBadge';
-import Timeline from './Timeline';
-import type { JobApplication } from '../../types/jobTypes';
-import type { TimelineMilestone } from '../../types/timelineTypes';
-import './job.css';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { fetchJobApplicationById } from "../../api/jobService";
+import {
+  fetchMilestonesByJob,
+  createMilestone,
+  updateMilestone,
+  deleteMilestone,
+} from "../../api/timelineService";
+import { ButtonComponent, useNotifications } from "@asafarim/shared-ui-react";
+import { useToast } from "@asafarim/toast";
+import JobStatusBadge from "./JobStatusBadge";
+import Timeline from "./Timeline";
+import type { JobApplication } from "../../types/jobTypes";
+import type { TimelineMilestone } from "../../types/timelineTypes";
+import "./job.css";
 
 const JobView = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -23,7 +28,7 @@ const JobView = () => {
   useEffect(() => {
     const loadJob = async () => {
       if (!jobId) {
-        setError('No job ID provided');
+        setError("No job ID provided");
         setLoading(false);
         return;
       }
@@ -33,21 +38,28 @@ const JobView = () => {
         setError(null);
         const jobData = await fetchJobApplicationById(jobId);
         setJob(jobData);
-        
+
         // Load milestones from backend
         try {
           const milestonesData = await fetchMilestonesByJob(jobId);
           setMilestones(milestonesData);
         } catch (error) {
-          console.warn('Failed to load milestones, starting with empty timeline:', error);
+          console.warn(
+            "Failed to load milestones, starting with empty timeline:",
+            error
+          );
           setMilestones([]);
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load job application';
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load job application";
         setError(errorMessage);
-        console.error('Job view error:', err);
+        console.error("Job view error:", err);
         toast.error(errorMessage);
-        addNotification('error', `Failed to load job application: ${errorMessage}`);
+        addNotification(
+          "error",
+          `Failed to load job application: ${errorMessage}`
+        );
       } finally {
         setLoading(false);
       }
@@ -57,7 +69,7 @@ const JobView = () => {
   }, [jobId]);
 
   const handleBack = () => {
-    navigate('/jobs');
+    navigate("/jobs");
   };
 
   const handleEdit = () => {
@@ -70,36 +82,43 @@ const JobView = () => {
   const handleMilestoneUpdate = async (milestone: TimelineMilestone) => {
     try {
       await updateMilestone(milestone.id, milestone);
-      setMilestones(prev => prev.map(m => m.id === milestone.id ? milestone : m));
-      toast.success('Milestone updated successfully');
+      setMilestones((prev) =>
+        prev.map((m) => (m.id === milestone.id ? milestone : m))
+      );
+      toast.success("Milestone updated successfully");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update milestone';
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update milestone";
       toast.error(errorMessage);
-      addNotification('error', `Failed to update milestone: ${errorMessage}`);
+      addNotification("error", `Failed to update milestone: ${errorMessage}`);
     }
   };
 
-  const handleMilestoneAdd = async (milestone: Omit<TimelineMilestone, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleMilestoneAdd = async (
+    milestone: Omit<TimelineMilestone, "id" | "createdAt" | "updatedAt">
+  ) => {
     try {
       const newMilestone = await createMilestone(milestone);
-      setMilestones(prev => [...prev, newMilestone]);
-      toast.success('Milestone added successfully');
+      setMilestones((prev) => [...prev, newMilestone]);
+      toast.success("Milestone added successfully");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to add milestone';
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to add milestone";
       toast.error(errorMessage);
-      addNotification('error', `Failed to add milestone: ${errorMessage}`);
+      addNotification("error", `Failed to add milestone: ${errorMessage}`);
     }
   };
 
   const handleMilestoneDelete = async (milestoneId: string) => {
     try {
       await deleteMilestone(milestoneId);
-      setMilestones(prev => prev.filter(m => m.id !== milestoneId));
-      toast.success('Milestone deleted successfully');
+      setMilestones((prev) => prev.filter((m) => m.id !== milestoneId));
+      toast.success("Milestone deleted successfully");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to delete milestone';
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to delete milestone";
       toast.error(errorMessage);
-      addNotification('error', `Failed to delete milestone: ${errorMessage}`);
+      addNotification("error", `Failed to delete milestone: ${errorMessage}`);
     }
   };
 
@@ -107,9 +126,9 @@ const JobView = () => {
     return (
       <div className="job-view">
         <div className="job-view-header">
-          <button className="back-btn" onClick={handleBack}>
+          <ButtonComponent variant="link" onClick={handleBack}>
             ← Back to Jobs
-          </button>
+          </ButtonComponent>
         </div>
         <div className="loading">Loading job application...</div>
       </div>
@@ -120,9 +139,9 @@ const JobView = () => {
     return (
       <div className="job-view">
         <div className="job-view-header">
-          <button className="back-btn" onClick={handleBack}>
+          <ButtonComponent variant="link" onClick={handleBack}>
             ← Back to Jobs
-          </button>
+          </ButtonComponent>
         </div>
         <div className="error">{error}</div>
       </div>
@@ -133,25 +152,25 @@ const JobView = () => {
     return (
       <div className="job-view">
         <div className="job-view-header">
-          <button className="back-btn" onClick={handleBack}>
+          <ButtonComponent variant="link" onClick={handleBack}>
             ← Back to Jobs
-          </button>
+          </ButtonComponent>
         </div>
         <div className="error">Job application not found</div>
       </div>
     );
   }
 
-    return (
+  return (
     <div className="job-view">
       <div className="job-view-header">
-        <button className="back-btn" onClick={handleBack}>
-          ← Back to Jobs
-        </button>
+        <ButtonComponent variant="link" onClick={handleBack}>
+          Back to Jobs
+        </ButtonComponent>
         <div className="header-actions">
-          <button className="edit-btn" onClick={handleEdit}>
+          <ButtonComponent variant="outline" onClick={handleEdit}>
             Edit Application
-          </button>
+          </ButtonComponent>
         </div>
       </div>
 
@@ -161,14 +180,9 @@ const JobView = () => {
             <div className="job-title-section">
               <div className="title-with-edit">
                 <h1 className="job-company">{job.company}</h1>
-                <button 
-                  className="edit-icon-btn"
-                  onClick={handleEdit}
-                  title="Edit Job Application"
-                  aria-label="Edit Job Application"
-                >
+                <ButtonComponent variant="ghost" onClick={handleEdit}>
                   ✏️
-                </button>
+                </ButtonComponent>
               </div>
               <h2 className="job-role">{job.role}</h2>
             </div>
@@ -181,14 +195,9 @@ const JobView = () => {
             <div className="detail-section">
               <div className="section-header-with-edit">
                 <h3>Application Details</h3>
-                <button 
-                  className="edit-icon-btn small"
-                  onClick={handleEdit}
-                  title="Edit Job Application"
-                  aria-label="Edit Job Application"
-                >
+                <ButtonComponent variant="ghost" onClick={handleEdit}>
                   ✏️
-                </button>
+                </ButtonComponent>
               </div>
               <div className="detail-grid">
                 <div className="detail-item">
@@ -208,11 +217,11 @@ const JobView = () => {
                 <div className="detail-item">
                   <span className="detail-label">Applied Date:</span>
                   <span className="detail-value">
-                    {new Date(job.appliedDate).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
+                    {new Date(job.appliedDate).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
                     })}
                   </span>
                 </div>
@@ -223,8 +232,8 @@ const JobView = () => {
               <div className="detail-section">
                 <h3>Notes</h3>
                 <div className="notes-content">
-                  {job.notes.split('\n').map((line, index) => (
-                    <p key={index}>{line || '\u00A0'}</p>
+                  {job.notes.split("\n").map((line, index) => (
+                    <p key={index}>{line || "\u00A0"}</p>
                   ))}
                 </div>
               </div>
@@ -241,8 +250,8 @@ const JobView = () => {
           </div>
         </div>
       </div>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default JobView;

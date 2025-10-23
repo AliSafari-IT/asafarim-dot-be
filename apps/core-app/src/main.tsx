@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import App from './App.tsx'
 import React from 'react'
 import { 
@@ -17,6 +16,7 @@ import { ToastProvider } from '@asafarim/toast'
 import { Portfolio } from './components/Portfolio'
 import { PortfolioPublicView } from './pages/Portfolio/PortfolioPublicView'
 import { PortfolioDashboard } from './pages/Portfolio/PortfolioDashboard'
+import './index.css';
 
 // Initialize i18n before rendering
 initI18n();

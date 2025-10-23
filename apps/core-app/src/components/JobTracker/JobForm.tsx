@@ -3,7 +3,6 @@ import type { JobApplication, JobStatus } from '../../types/jobTypes';
 import { createJobApplication, updateJobApplication } from '../../api/jobService';
 import { useNotifications } from '@asafarim/shared-ui-react';
 import { useToast } from '@asafarim/toast';
-import './job.css';
 
 interface JobFormProps {
   job?: JobApplication;
