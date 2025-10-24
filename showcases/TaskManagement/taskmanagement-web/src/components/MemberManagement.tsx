@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import memberService, { ProjectRole, type ProjectMemberDto } from '../api/memberService'
+import UserDisplay from './UserDisplay'
 import '../styles/MemberManagement.css'
 
 interface MemberManagementProps {
@@ -144,7 +145,7 @@ export default function MemberManagement({
               {members.map(member => (
                 <div key={member.id} className="member-item">
                   <div className="member-info">
-                    <span className="member-id">{member.userId}</span>
+                    <span className="member-id"><UserDisplay userId={member.userId} fallback={member.userId} /></span>
                     <span className={`role-badge role-${roleNames[member.role].toLowerCase()}`}>
                       {roleNames[member.role]}
                     </span>

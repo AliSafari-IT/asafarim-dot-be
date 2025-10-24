@@ -30,7 +30,7 @@
 }
 
 .nav-link--active {
-  background-color: var(--color-info-700);
+  background-color: var(--color-info-200);
   color: var(--color-neutral-900);
 }
 
