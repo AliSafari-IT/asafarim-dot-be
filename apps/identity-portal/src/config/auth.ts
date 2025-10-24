@@ -11,20 +11,20 @@ const isProd = typeof window !== 'undefined' && (
 // In production, the identity portal should talk to the identity API on the same domain
 // so cookies (atk/rtk) are included with credentials.
 const prodConfig: UseAuthOptions = {
-  authApiBase: 'https://identity.asafarim.be/api/identity',
-  meEndpoint: '/auth/me',
-  tokenEndpoint: '/auth/token',
-  logoutEndpoint: '/auth/logout',
+  authApiBase: 'https://identity.asafarim.be/auth',
+  meEndpoint: '/me',
+  tokenEndpoint: '/token',
+  logoutEndpoint: '/logout',
   identityLoginUrl: 'https://identity.asafarim.be/login',
   identityRegisterUrl: 'https://identity.asafarim.be/register'
 };
 
 // Local development config (existing values)
 const devConfig: UseAuthOptions = {
-  authApiBase: 'http://api.asafarim.local:5101',  // Identity API backend
-  meEndpoint: '/auth/me',
-  tokenEndpoint: '/auth/token',
-  logoutEndpoint: '/auth/logout',
+  authApiBase: 'http://identity.asafarim.local:5101/auth',  // Identity API backend with /auth path
+  meEndpoint: '/me',
+  tokenEndpoint: '/token',
+  logoutEndpoint: '/logout',
   identityLoginUrl: 'http://identity.asafarim.local:5177/login',  // Identity Portal frontend
   identityRegisterUrl: 'http://identity.asafarim.local:5177/register'  // Identity Portal frontend
 };

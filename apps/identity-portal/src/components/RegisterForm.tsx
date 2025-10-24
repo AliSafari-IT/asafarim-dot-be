@@ -73,8 +73,63 @@ export const RegisterForm = () => {
       const success = await register(formData);
       if (success) {
         // Show success notification
-        console.log('Registration successful! Redirecting to dashboard...');
-        // Redirect happens automatically via the useEffect in the Register component
+        console.log('✅ Registration successful! Redirecting...');
+        
+        // Set flag to prevent Register page's useEffect from also redirecting
+        sessionStorage.setItem('registration_just_completed', 'true');
+        console.log('✅ Set registration_just_completed flag in sessionStorage');
+        
+        // Get returnUrl from query params
+        let returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+        console.log('🔄 Original returnUrl:', returnUrl);
+        
+        // Prevent infinite loop: if returnUrl points to register page, use dashboard instead
+        const isReturnUrlRegisterPage = returnUrl && (
+          returnUrl === '/register' || 
+          returnUrl.endsWith('/register') ||
+          returnUrl.includes('/register?') ||
+          returnUrl.includes('/register#')
+        );
+        
+        if (isReturnUrlRegisterPage) {
+          console.log('⚠️ returnUrl points to register page, redirecting to dashboard instead');
+          returnUrl = null; // Will use default '/dashboard'
+        }
+        
+        // Get the target URL
+        const targetPath = returnUrl || '/dashboard';
+        
+        // Check if we need to perform a cross-domain redirect
+        const isCrossDomainRedirect = returnUrl && (
+          returnUrl.startsWith('http://') || 
+          returnUrl.startsWith('https://') || 
+          returnUrl.includes('.asafarim.be')
+        );
+        
+        if (returnUrl && isCrossDomainRedirect) {
+          // For cross-domain redirects, we need to ensure cookies are fully established
+          const targetUrl = returnUrl.startsWith('http') 
+            ? returnUrl 
+            : `https://${returnUrl}`;
+            
+          console.log('🌐 Performing cross-domain redirect to:', targetUrl);
+          
+          // Add a timestamp to prevent caching issues
+          const separator = targetUrl.includes('?') ? '&' : '?';
+          const finalUrl = `${targetUrl}${separator}_t=${Date.now()}`;
+          
+          // Use window.location for cross-domain redirects
+          window.location.href = finalUrl;
+        } else {
+          // Internal navigation - use window.location to ensure it actually happens
+          console.log('🏠 Redirecting to internal path:', targetPath);
+          
+          // Force a small delay to ensure cookies are readable by the browser
+          setTimeout(() => {
+            // Use replace() to avoid back button issues
+            window.location.replace(targetPath);
+          }, 500);
+        }
       }
     } catch {
       // Error is handled by the auth context
