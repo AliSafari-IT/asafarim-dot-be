@@ -17,6 +17,26 @@ public class UserController : ControllerBase
         _userManager = userManager;
     }
 
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetUserById(string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+            return BadRequest("User ID is required");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return NotFound();
+
+        return Ok(
+            new
+            {
+                id = user.Id.ToString(),
+                email = user.Email,
+                userName = user.UserName,
+            }
+        );
+    }
+
     [HttpPut("me")]
     public async Task<IActionResult> UpdateProfile(UpdateProfileRequest req)
     {

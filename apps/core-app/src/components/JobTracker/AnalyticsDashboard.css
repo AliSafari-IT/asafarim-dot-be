@@ -84,7 +84,7 @@
 }
 
 .stat-label {
-  color: var(--color-foreground-muted);
+  color: var(--color-foreground);
   font-weight: var(--global-font-weight-medium);
 }
 
