@@ -12,7 +12,7 @@ type ViewMode = 'board' | 'list'
 export default function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   
   const [project, setProject] = useState<ProjectDto | null>(null)
   const [tasks, setTasks] = useState<TaskDto[]>([])
@@ -21,6 +21,10 @@ export default function ProjectDetail() {
   const [error, setError] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('board')
   const [showMemberModal, setShowMemberModal] = useState(false)
+
+  // Check if current user is a member of this project
+  const isUserMember = members.some(m => m.userId === user?.id)
+  // const userRole = members.find(m => m.userId === user?.id)?.role
   
   // Filter states
   const [filterPriority, setFilterPriority] = useState<TaskPriority | ''>("")
@@ -32,21 +36,30 @@ export default function ProjectDetail() {
       loadProjectData()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId])
+  }, [projectId, isAuthenticated])
 
   const loadProjectData = async () => {
     if (!projectId) return
     
     try {
       setLoading(true)
-      const [projectData, tasksData, membersData] = await Promise.all([
-        projectService.getProject(projectId),
-        taskService.getProjectTasks(projectId),
-        memberService.getProjectMembers(projectId).catch(() => [])
-      ])
+      const projectData = await projectService.getProject(projectId)
       setProject(projectData)
-      setTasks(tasksData)
-      setMembers(membersData)
+      
+      // Only fetch tasks and members if authenticated (private projects)
+      // Public projects can be viewed but not edited
+      if (isAuthenticated) {
+        const [tasksData, membersData] = await Promise.all([
+          taskService.getProjectTasks(projectId).catch(() => []),
+          memberService.getProjectMembers(projectId).catch(() => [])
+        ])
+        setTasks(tasksData)
+        setMembers(membersData)
+      } else {
+        // For public projects viewed by unauthenticated users, show empty state
+        setTasks([])
+        setMembers([])
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load project')
     } finally {
@@ -125,11 +138,20 @@ export default function ProjectDetail() {
           <button className="btn-action" onClick={() => setShowMemberModal(true)}>
             👥 Members ({members.length})
           </button>
-          <button className="btn-primary" onClick={() => navigate(`/projects/${projectId}/tasks/new`)}>
-            + New Task
-          </button>
+          {isAuthenticated && isUserMember && (
+            <button className="btn-primary" onClick={() => navigate(`/projects/${projectId}/tasks/new`)}>
+              + New Task
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Public Project Notice */}
+      {!isAuthenticated && project?.isPrivate === false && (
+        <div className="public-project-notice">
+          📖 This is a public project. <a href="/login">Sign in</a> to view tasks and collaborate.
+        </div>
+      )}
 
       {/* View Mode Toggle & Filters */}
       <div className="project-controls">

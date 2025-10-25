@@ -4,6 +4,59 @@ import { useAuth } from "../hooks/useAuth";
 import { Arrow, ButtonComponent as Button, Lock } from "@asafarim/shared-ui-react";
 import './LoginForm.css';
 
+// Helper function to provide user-friendly error messages
+function getErrorMessage(error: string | null): { title: string; message: string; action?: string } | null {
+  if (!error) return null;
+
+  // Map backend errors to user-friendly messages
+  if (error.includes("Invalid email or password")) {
+    return {
+      title: "Login Failed",
+      message: "The email or password you entered is incorrect.",
+      action: "Please check your credentials and try again. If you forgot your password, click 'Forgot password?' below."
+    };
+  }
+
+  if (error.includes("Account is locked")) {
+    return {
+      title: "Account Locked",
+      message: "Your account has been locked due to too many failed login attempts.",
+      action: "Please try again later or reset your password."
+    };
+  }
+
+  if (error.includes("Password setup required")) {
+    return {
+      title: "Password Setup Required",
+      message: "Your account exists but needs a password to be set.",
+      action: "Click 'Forgot password?' to set up your password."
+    };
+  }
+
+  if (error.includes("Failed to fetch") || error.includes("Network")) {
+    return {
+      title: "Connection Error",
+      message: "Unable to connect to the authentication server.",
+      action: "Please check your internet connection and try again."
+    };
+  }
+
+  if (error.includes("Email is already registered")) {
+    return {
+      title: "Email Already Registered",
+      message: "This email is already associated with an account.",
+      action: "Try logging in instead, or use a different email to register."
+    };
+  }
+
+  // Default error message
+  return {
+    title: "Error",
+    message: error,
+    action: "Please try again or contact support if the problem persists."
+  };
+}
+
 
 export const LoginForm = () => {
   const { login, error, clearError, isLoading } = useAuth();
@@ -103,9 +156,11 @@ export const LoginForm = () => {
     }
   };
 
+  const errorInfo = getErrorMessage(error);
+
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
-      {error && (
+      {errorInfo && (
         <div className="message message-error">
           <div className="message-header">
             <svg
@@ -124,9 +179,12 @@ export const LoginForm = () => {
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            <p className="message-title">Error</p>
+            <p className="message-title">{errorInfo.title}</p>
           </div>
-          <p className="message-content">{error}</p>
+          <p className="message-content">{errorInfo.message}</p>
+          {errorInfo.action && (
+            <p className="message-action">{errorInfo.action}</p>
+          )}
         </div>
       )}
 

@@ -4,10 +4,18 @@ import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./Navbar.css";
 
-// Define your navigation links
-const navLinks: NavLinkItem[] = [
+// Define your navigation links for unauthenticated users
+const publicNavLinks: NavLinkItem[] = [
   {
     to: "/",
+    label: "Home",
+  },
+];
+
+// Define your navigation links for authenticated users
+const authenticatedNavLinks: NavLinkItem[] = [
+  {
+    to: "/dashboard",
     label: "Dashboard",
   },
   {
@@ -83,6 +91,9 @@ export default function Navbar() {
   const { isOpen } = useMobileMenu();
   const [scrolled, setScrolled] = useState(false);
 
+  // Select nav links based on authentication status
+  const navLinks = isAuthenticated ? authenticatedNavLinks : publicNavLinks;
+
   // Add scroll effect
   useEffect(() => {
     const handleScroll = () => {
@@ -112,7 +123,7 @@ export default function Navbar() {
           href: "/",
         }}
         auth={{
-          isAuthenticated,
+          isAuthenticated: loading ? true : isAuthenticated,
           user,
           loading,
           onSignIn: signIn,

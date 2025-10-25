@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '../config/api';
 
+// v2 - Added getPublicProjects method 
 export interface ProjectDto {
   id: string;
   name: string;
@@ -44,7 +45,7 @@ export enum ProjectRole {
 }
 
 const projectService = {
-  async getProject(id: string): Promise<ProjectDto> {
+  getProject: async (id: string): Promise<ProjectDto> => {
     const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
       credentials: 'include',
     });
@@ -52,7 +53,7 @@ const projectService = {
     return response.json();
   },
 
-  async getMyProjects(): Promise<ProjectDto[]> {
+  getMyProjects: async (): Promise<ProjectDto[]> => {
     const response = await fetch(`${API_BASE_URL}/projects/my-projects`, {
       credentials: 'include',
     });
@@ -60,7 +61,7 @@ const projectService = {
     return response.json();
   },
 
-  async getSharedProjects(): Promise<ProjectDto[]> {
+  getSharedProjects: async (): Promise<ProjectDto[]> => {
     const response = await fetch(`${API_BASE_URL}/projects/shared`, {
       credentials: 'include',
     });
@@ -68,7 +69,13 @@ const projectService = {
     return response.json();
   },
 
-  async createProject(dto: CreateProjectDto): Promise<ProjectDto> {
+  getAllPublicProjects: async (): Promise<ProjectDto[]> => {
+    const response = await fetch(`${API_BASE_URL}/projects/public`);
+    if (!response.ok) throw new Error('Failed to fetch public projects');
+    return response.json();
+  },
+
+  createProject: async (dto: CreateProjectDto): Promise<ProjectDto> => {
     const response = await fetch(`${API_BASE_URL}/projects`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -79,7 +86,7 @@ const projectService = {
     return response.json();
   },
 
-  async updateProject(id: string, dto: UpdateProjectDto): Promise<ProjectDto> {
+  updateProject: async (id: string, dto: UpdateProjectDto): Promise<ProjectDto> => {
     const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -90,7 +97,7 @@ const projectService = {
     return response.json();
   },
 
-  async deleteProject(id: string): Promise<void> {
+  deleteProject: async (id: string): Promise<void> => {
     const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
       method: 'DELETE',
       credentials: 'include',
@@ -98,7 +105,7 @@ const projectService = {
     if (!response.ok) throw new Error('Failed to delete project');
   },
 
-  async getProjectMembers(projectId: string): Promise<ProjectMemberDto[]> {
+  getProjectMembers: async (projectId: string): Promise<ProjectMemberDto[]> => {
     const response = await fetch(`${API_BASE_URL}/projects/${projectId}/members`, {
       credentials: 'include',
     });
@@ -106,7 +113,7 @@ const projectService = {
     return response.json();
   },
 
-  async addProjectMember(projectId: string, dto: AddProjectMemberDto): Promise<ProjectMemberDto> {
+  addProjectMember: async (projectId: string, dto: AddProjectMemberDto): Promise<ProjectMemberDto> => {
     const response = await fetch(`${API_BASE_URL}/projects/${projectId}/members`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -117,7 +124,7 @@ const projectService = {
     return response.json();
   },
 
-  async updateProjectMember(projectId: string, memberId: string, role: ProjectRole): Promise<ProjectMemberDto> {
+  updateProjectMember: async (projectId: string, memberId: string, role: ProjectRole): Promise<ProjectMemberDto> => {
     const response = await fetch(`${API_BASE_URL}/projects/${projectId}/members/${memberId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -128,13 +135,12 @@ const projectService = {
     return response.json();
   },
 
-  async removeProjectMember(projectId: string, memberId: string): Promise<void> {
+  removeProjectMember: async (projectId: string, memberId: string): Promise<void> => {
     const response = await fetch(`${API_BASE_URL}/projects/${projectId}/members/${memberId}`, {
       method: 'DELETE',
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to remove project member');
   },
-};
-
+}
 export default projectService;

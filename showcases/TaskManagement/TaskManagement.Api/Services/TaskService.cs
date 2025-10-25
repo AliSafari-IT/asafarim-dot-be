@@ -94,6 +94,15 @@ public class TaskService : ITaskService
         if (!await _permissionService.CanAccessProjectAsync(dto.ProjectId, userId))
             throw new UnauthorizedAccessException("You don't have access to this project");
 
+        // Only project owner or members can create tasks (not just any public project viewer)
+        var isOwner = project.UserId == userId;
+        var isMember = await _context.ProjectMembers.AnyAsync(m =>
+            m.ProjectId == dto.ProjectId && m.UserId == userId
+        );
+
+        if (!isOwner && !isMember)
+            throw new UnauthorizedAccessException("Only project members can create tasks");
+
         // Ensure DueDate is UTC if provided
         DateTime? dueDate = null;
         if (dto.DueDate.HasValue)

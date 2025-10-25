@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '@asafarim/shared-ui-react'
 import taskService, { TaskStatus, TaskPriority, type CreateTaskDto, type UpdateTaskDto } from '../api/taskService'
 import './TaskForm.css'
 
@@ -9,6 +10,7 @@ interface TaskFormProps {
 
 export default function TaskForm({ projectId: propProjectId }: TaskFormProps) {
   const navigate = useNavigate()
+  const { isAuthenticated, loading: authLoading } = useAuth()
   const { taskId, projectId: routeProjectId } = useParams<{ taskId?: string; projectId?: string }>()
   const [projectId, setProjectId] = useState(propProjectId || routeProjectId)
   const isEditMode = !!taskId
@@ -24,6 +26,15 @@ export default function TaskForm({ projectId: propProjectId }: TaskFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loadingTask, setLoadingTask] = useState(isEditMode)
+
+  // Redirect unauthenticated users to identity portal login
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      const identityLoginUrl = 'http://identity.asafarim.local:5177/login'
+      const returnUrl = encodeURIComponent(window.location.href)
+      window.location.href = `${identityLoginUrl}?returnUrl=${returnUrl}`
+    }
+  }, [isAuthenticated, authLoading])
 
   useEffect(() => {
     if (isEditMode && taskId) {

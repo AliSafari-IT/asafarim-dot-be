@@ -95,6 +95,22 @@ public class ProjectsController : ControllerBase
         return Ok(projects);
     }
 
+    [HttpGet("public")]
+    [AllowAnonymous]
+    public async Task<ActionResult<List<ProjectDto>>> GetPublicProjects()
+    {
+        try
+        {
+            var projects = await _projectService.GetPublicProjectsAsync();
+            return Ok(projects);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"DEBUG: Error in GetPublicProjects: {ex.Message}");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
     [HttpPost]
     public async Task<ActionResult<ProjectDto>> CreateProject(CreateProjectDto dto)
     {

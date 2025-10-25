@@ -23,6 +23,10 @@ public class UserController : ControllerBase
         if (string.IsNullOrWhiteSpace(userId))
             return BadRequest("User ID is required");
 
+        // Validate that userId is a valid GUID
+        if (!Guid.TryParse(userId, out _))
+            return BadRequest("Invalid user ID format");
+
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
             return NotFound();

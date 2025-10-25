@@ -99,6 +99,19 @@ public class ProjectService : IProjectService
         return projects.Select(MapToDto).ToList();
     }
 
+    public async Task<List<ProjectDto>> GetPublicProjectsAsync()
+    {
+        // Get all public projects (not private)
+        var projects = await _context.Projects
+            .Where(p => !p.IsPrivate)
+            .Include(p => p.Tasks)
+            .Include(p => p.Members)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+
+        return projects.Select(MapToDto).ToList();
+    }
+
     public async Task<ProjectDto> CreateProjectAsync(CreateProjectDto dto, string userId)
     {
         var project = new TaskProject

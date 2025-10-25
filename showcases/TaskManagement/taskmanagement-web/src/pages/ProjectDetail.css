@@ -8,11 +8,32 @@
 .project-detail-error {
   text-align: center;
   padding: 3rem;
-  color: var(--color-text-muted, #64748b);
+  color: var(--color-neutral-500, #64748b);
 }
 
 .project-detail-error {
   color: #dc2626;
+}
+
+/* Public Project Notice */
+.public-project-notice {
+  background-color: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 0 2rem 1rem 2rem;
+  color: #92400e;
+  font-size: 0.95rem;
+}
+
+.public-project-notice a {
+  color: #d97706;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.public-project-notice a:hover {
+  text-decoration: underline;
 }
 
 /* Header */
@@ -237,7 +258,7 @@
   gap: 0.75rem;
   flex-wrap: wrap;
   font-size: 0.75rem;
-  color: var(--color-text-muted, #64748b);
+  color: var(--color-neutral-600);
   margin-bottom: 0.75rem;
 }
 

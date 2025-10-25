@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import projectService from '../api/projectService'
+import { useAuth } from '@asafarim/shared-ui-react'
+import projectService from '../api/projectService';
 import './ProjectForm.css'
 
 export default function ProjectForm() {
   const navigate = useNavigate()
+  const { isAuthenticated, loading: authLoading } = useAuth()
   const { id } = useParams<{ id: string }>()
   const isEditMode = !!id
 
@@ -17,11 +19,20 @@ export default function ProjectForm() {
   const [error, setError] = useState<string | null>(null)
   const [loadingProject, setLoadingProject] = useState(isEditMode)
 
+  // Redirect unauthenticated users to identity portal login
   useEffect(() => {
-    if (isEditMode && id) {
+    if (!authLoading && !isAuthenticated) {
+      const identityLoginUrl = 'http://identity.asafarim.local:5177/login'
+      const returnUrl = encodeURIComponent(window.location.href)
+      window.location.href = `${identityLoginUrl}?returnUrl=${returnUrl}`
+    }
+  }, [isAuthenticated, authLoading])
+
+  useEffect(() => {
+    if (isAuthenticated && isEditMode && id) {
       loadProject(id)
     }
-  }, [id, isEditMode])
+  }, [id, isEditMode, isAuthenticated])
 
   const loadProject = async (projectId: string) => {
     try {

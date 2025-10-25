@@ -34,6 +34,12 @@ export default defineConfig(
   server: {
     host: 'taskmanagement.asafarim.local',
     port: 5176,
+    middlewareMode: false,
+    hmr: {
+      host: 'taskmanagement.asafarim.local',
+      port: 5176,
+      protocol: 'http',
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:5104',
@@ -82,9 +88,7 @@ export default defineConfig(
     include: [
       'react',
       'react-dom',
-      ...Object.keys(getWorkspaceAliases(__dirname)),
     ],
-    force: true, // Force re-optimization for workspace packages
   },
   build: {
     commonjsOptions: {

@@ -288,6 +288,15 @@
   padding-left: 1.75rem; /* Align with title */
 }
 
+.message-action {
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+  padding-left: 1.75rem; /* Align with title */
+  font-size: 0.8125rem;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
 .message-error {
   background: var(--color-error-muted);
   border: 1px solid color-mix(in srgb, var(--color-error) 20%, transparent);

@@ -1,37 +1,54 @@
-import { useEffect, useState } from 'react'
-import projectService, { type ProjectDto } from '../api/projectService'
-import './ProjectList.css'
 import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import projectService, { type ProjectDto } from '../api/projectService';
+import { useAuth } from '@asafarim/shared-ui-react'
+import './ProjectList.css'
 
 export default function ProjectList() {
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   const [projects, setProjects] = useState<ProjectDto[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
-    loadProjects()
-  }, [])
+    const loadProjects = async () => {
+      try {
+        setLoading(true)
+        let allProjects: ProjectDto[] = []
 
-  const loadProjects = async () => {
-    try {
-      setLoading(true)
-      const [myProjects, sharedProjects] = await Promise.all([
-        projectService.getMyProjects(),
-        projectService.getSharedProjects(),
-      ])
-      // Deduplicate projects by ID (owned projects may also appear in shared)
-      const projectMap = new Map<string, ProjectDto>()
-      myProjects.forEach(p => projectMap.set(p.id, p))
-      sharedProjects.forEach(p => projectMap.set(p.id, p))
-      setProjects(Array.from(projectMap.values()))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load projects')
-    } finally {
-      setLoading(false)
+        console.log('DEBUG: projectService object:', projectService);
+        console.log('DEBUG: projectService.getPublicProjects:', projectService.getAllPublicProjects);
+        console.log('DEBUG: typeof projectService.getPublicProjects:', typeof projectService.getAllPublicProjects);
+
+        if (isAuthenticated) {
+          // Authenticated users: get their projects and shared projects
+          const [myProjects, sharedProjects] = await Promise.all([
+            projectService.getMyProjects(),
+            projectService.getSharedProjects(),
+          ])
+          // Deduplicate projects by ID (owned projects may also appear in shared)
+          const projectMap = new Map<string, ProjectDto>()
+          myProjects.forEach(p => projectMap.set(p.id, p))
+          sharedProjects.forEach(p => projectMap.set(p.id, p))
+          allProjects = Array.from(projectMap.values())
+        } else {
+          console.log('DEBUG: isAuthenticated:', isAuthenticated);
+          // Unauthenticated users: get only public projects
+          allProjects = await projectService.getAllPublicProjects();
+        }
+
+        setProjects(allProjects)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load projects')
+      } finally {
+        setLoading(false)
+      }
     }
-  }
+
+    loadProjects()
+  }, [isAuthenticated])
 
   const handleDelete = async (projectId: string, projectName: string, e: React.MouseEvent) => {
     e.preventDefault()

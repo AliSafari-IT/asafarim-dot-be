@@ -1,17 +1,30 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '@asafarim/shared-ui-react'
 import projectService, { type ProjectDto } from '../api/projectService'
 //import taskService, { TaskDto } from '../api/taskService'
-import './Dashboard.css'
+import './Dashboard.css';
 
 export default function Dashboard() {
+  const { isAuthenticated, loading: authLoading } = useAuth()
   const [projects, setProjects] = useState<ProjectDto[]>([])
 //  const [recentTasks, setRecentTasks] = useState<TaskDto[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Redirect unauthenticated users to identity portal login
   useEffect(() => {
-    loadDashboard()
-  }, [])
+    if (!authLoading && !isAuthenticated) {
+      const identityLoginUrl = 'http://identity.asafarim.local:5177/login'
+      const returnUrl = encodeURIComponent(window.location.href)
+      window.location.href = `${identityLoginUrl}?returnUrl=${returnUrl}`
+    }
+  }, [isAuthenticated, authLoading])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadDashboard()
+    }
+  }, [isAuthenticated])
 
   const loadDashboard = async () => {
     try {

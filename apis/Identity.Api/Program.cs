@@ -145,6 +145,23 @@ builder
                     ctx.Token = token;
                 return Task.CompletedTask;
             },
+            OnTokenValidated = async ctx =>
+            {
+                // After JWT is validated, check if refresh token has been revoked
+                // This ensures that even if the access token is still valid, 
+                // a revoked refresh token means the user is logged out
+                if (ctx.Request.Cookies.TryGetValue("rtk", out var refreshToken) && !string.IsNullOrEmpty(refreshToken))
+                {
+                    var refreshTokenService = ctx.HttpContext.RequestServices.GetRequiredService<IRefreshTokenService>();
+                    var isValid = await refreshTokenService.ValidateRefreshTokenAsync(refreshToken);
+                    
+                    if (!isValid)
+                    {
+                        // Refresh token is revoked/invalid, reject the request
+                        ctx.Fail("Refresh token has been revoked");
+                    }
+                }
+            },
         };
     });
 
