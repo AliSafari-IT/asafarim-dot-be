@@ -1,3 +1,4 @@
+import { isProduction } from "@asafarim/shared-ui-react";
 import { useTranslation } from "@asafarim/shared-i18n";
 import './Showcases.css';
 
@@ -14,32 +15,44 @@ export default function Showcases() {
     {
       title: t("showcases.projects.taskManagement.title"),
       description: t("showcases.projects.taskManagement.description"),
-      url: "http://taskmanagement.asafarim.local:5176/"
+      url: isProduction
+        ? "https://taskmanagement.asafarim.be/"
+        : "http://taskmanagement.asafarim.local:5176/"
     },
     {
       title: t("showcases.projects.identityPortal.title"),
       description: t("showcases.projects.identityPortal.description"),
-      url: "http://identity.asafarim.local:5177/"
+      url: isProduction
+        ? "https://identity.asafarim.be/"
+        : "http://identity.asafarim.local:5177/"
     },
     {
       title: t("showcases.projects.coreApp.title"),
       description: t("showcases.projects.coreApp.description"),
-      url: "http://core.asafarim.local:5174/"
+      url: isProduction
+        ? "https://core.asafarim.be/"
+        : "http://core.asafarim.local:5174/"
     },
     {
       title: t("showcases.projects.aiPlatform.title"),
       description: t("showcases.projects.aiPlatform.description"),
-      url: "http://ai.asafarim.local:5173/"
+      url: isProduction
+        ? "https://ai.asafarim.be/"
+        : "http://ai.asafarim.local:5173/"
     },
     {
       title: t("showcases.projects.jobsPortal.title"),
       description: t("showcases.projects.jobsPortal.description"),
-      url: "http://core.asafarim.local:5174/jobs"
+      url: isProduction
+        ? "https://core.asafarim.be/jobs"
+        : "http://core.asafarim.local:5174/jobs"
     },
     {
       title: t("showcases.projects.blog.title"),
       description: t("showcases.projects.blog.description"),
-      url: "http://blog.asafarim.local:3000/"
+      url: isProduction
+        ? "https://blog.asafarim.be/"
+        : "http://blog.asafarim.local:3000/"
     }
   ];
 
