@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASafariM | Tasks</title>
+    <!-- Theme Preloader: Apply theme before React initializes to prevent flash -->
+    <script>
+      (function() {
+        // Constants
+        const STORAGE_KEY = 'asafarim-theme';
+        const COOKIE_NAME = 'asafarim_theme';
+        
+        // Get theme from cookie
+        function getCookie(name) {
+          return document.cookie
+            .split(';')
+            .map(c => c.trim())
+            .find(c => c.startsWith(name + '='))
+            ?.split('=')[1];
+        }
+
+        // Apply theme to document immediately
+        function applyTheme(theme) {
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+            document.documentElement.classList.remove('light-theme');
+            document.documentElement.style.colorScheme = 'dark';
+          } else {
+            document.documentElement.classList.add('light-theme');
+            document.documentElement.classList.remove('dark-theme');
+            document.documentElement.style.colorScheme = 'light';
+          }
+        }
+
+        // Get theme from cookie or localStorage
+        const cookieTheme = getCookie(COOKIE_NAME);
+        const localTheme = localStorage.getItem(STORAGE_KEY);
+        
+        // Determine which theme to use (cookie takes precedence)
+        const theme = cookieTheme || localTheme || 'dark';
+        
+        // Store theme in localStorage for React to pick up
+        if (cookieTheme && cookieTheme !== localTheme) {
+          localStorage.setItem(STORAGE_KEY, cookieTheme);
+        }
+        
+        // Apply theme immediately
+        applyTheme(theme);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

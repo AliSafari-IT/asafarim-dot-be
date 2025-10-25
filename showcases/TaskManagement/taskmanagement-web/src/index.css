@@ -1,0 +1,9 @@
+@import url("@asafarim/shared-ui-react/index.css");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}

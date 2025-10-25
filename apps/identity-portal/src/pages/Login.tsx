@@ -12,7 +12,7 @@ export const Login = () => {
   const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   const hasRedirectedRef = useRef(false);
   
-  // Clear any stuck logout flag when visiting login page
+  // Clear any stuck logout flag and auth data when visiting login page
   // Do this with a delay to let the shared auth hook check the flag first
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -21,16 +21,38 @@ export const Login = () => {
         console.log('🧹 Clearing stuck logout_in_progress flag on login page (delayed)');
         localStorage.removeItem('logout_in_progress');
         localStorage.removeItem('logout_timestamp');
+        // Also clear all auth data to ensure clean state
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_info');
       }
-    }, 3000); // Wait 3 seconds to ensure shared auth hook has processed the flag
+    }, 500); // Reduced wait time since we're clearing everything
     
     return () => clearTimeout(timer);
   }, []);
   
-  // Redirect to dashboard if already authenticated
+  // Redirect to dashboard if already authenticated, or stay on login if not
   useEffect(() => {
     // Prevent double redirects
     if (hasRedirectedRef.current) {
+      return;
+    }
+    
+    // Check if we just logged out - if so, stay on login page and remove the flag
+    const justLoggedOut = new URLSearchParams(window.location.search).has('_logout');
+    if (justLoggedOut) {
+      console.log('🚪 Just logged out, staying on login page');
+      hasRedirectedRef.current = true;
+      // Clear all auth data from localStorage to ensure clean state
+      localStorage.removeItem('logout_in_progress');
+      localStorage.removeItem('logout_timestamp');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user_info');
+      // Clean up the logout flag from URL after a short delay
+      setTimeout(() => {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }, 300);
       return;
     }
     

@@ -3,9 +3,7 @@ import MeProfile from '../components/MeProfile';
 
 export default function MeProfilePage() {
   return (
-    <AuthLayout
-      key={'identity-portal-me-profile'}
-    >
+    <AuthLayout>
       <MeProfile />
     </AuthLayout>
   );

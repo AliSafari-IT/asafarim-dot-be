@@ -287,18 +287,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetCurrentUser()
     {
-        // CRITICAL: Check if refresh token has been revoked (for logout to work with persistent cookies)
-        if (Request.Cookies.TryGetValue("rtk", out var refreshToken) && !string.IsNullOrWhiteSpace(refreshToken))
-        {
-            var isValid = await _refreshTokenService.ValidateRefreshTokenAsync(refreshToken);
-            if (!isValid)
-            {
-                _logger.LogWarning("GetCurrentUser: Refresh token has been revoked - forcing logout");
-                // Clear cookies to help browser understand the session is invalid
-                ClearAuthCookies();
-                return Unauthorized(new { message = "Session has been revoked" });
-            }
-        }
+        // NOTE: The [Authorize] attribute already validates the JWT access token
+        // We don't need to validate the refresh token here - that's only needed for token refresh
+        // Validating refresh token here causes false logouts when cookies are set but not yet in DB
 
         var userId =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
