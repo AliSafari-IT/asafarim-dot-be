@@ -173,6 +173,37 @@
     "title": "Portfolio",
     "description": "Bekijk mijn werk en projecten"
   },
+  "showcases": {
+    "title": "Aanbevolen Applicaties",
+    "intro": "Verken mijn aanbevolen applicaties en lopende projecten.",
+    "visitButton": "App Bezoeken",
+    "projects": {
+      "taskManagement": {
+        "title": "Taakbeheer",
+        "description": "Een productiviteitsapp voor het beheren van persoonlijke en teamtaken met authenticatie en dashboards."
+      },
+      "identityPortal": {
+        "title": "Identiteitsportaal",
+        "description": "Een veilig gebruikersbeheer- en authenticatiesysteem geïntegreerd met ASafariM backend."
+      },
+      "coreApp": {
+        "title": "Kern-app",
+        "description": "Centraal platform voor het beheren van CV's, portfolio's en professionele inhoud."
+      },
+      "aiPlatform": {
+        "title": "AI-platform",
+        "description": "Geavanceerde AI-aangedreven tools en hulpprogramma's voor intelligente automatisering."
+      },
+      "jobsPortal": {
+        "title": "Vacatureportaal",
+        "description": "Vacatures en carrièremogelijkheden geïntegreerd met het kernplatform."
+      },
+      "blog": {
+        "title": "Blog",
+        "description": "Technische artikelen, inzichten en documentatie over mijn projecten."
+      }
+    }
+  },
   "resume": {
     "loading": "CV wordt geladen...",
     "error": "CV-details konden niet worden geladen",

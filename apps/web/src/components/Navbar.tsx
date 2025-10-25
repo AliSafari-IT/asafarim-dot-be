@@ -16,6 +16,12 @@ const getNavLinks = (
       external: false,
       icon: t('navbar.links.portfolio.icon'),
     },
+    {
+      to: "/showcases",
+      label: "Showcases",
+      external: false,
+      icon: "✨",
+    },
     { to: "/about", label: t('common:about'), external: false, icon: t('navbar.links.about.icon') },
     { to: "/contact", label: t('common:contact'), external: false, icon: t('navbar.links.contact.icon') },
   ];

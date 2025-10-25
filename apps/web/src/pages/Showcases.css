@@ -1,0 +1,273 @@
+/* ============================================
+   SHOWCASES PAGE - Featured Applications
+   Clean, modern, visually balanced
+   ============================================ */
+
+/* ============================================
+   SECTION CONTAINER
+   ============================================ */
+
+.section {
+  position: relative;
+  background: var(--color-background);
+  transition: background 0.3s ease;
+  padding: 4rem 0;
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding: 3rem 0;
+  }
+}
+
+/* ============================================
+   CONTAINER - Consistent Width
+   ============================================ */
+
+.container {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  position: relative;
+}
+
+@media (max-width: 1023px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+/* ============================================
+   SHOWCASES HEADER
+   ============================================ */
+
+.showcases-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+@media (max-width: 767px) {
+  .showcases-header {
+    margin-bottom: 3rem;
+  }
+}
+
+.showcases-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-foreground);
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+@media (max-width: 1023px) {
+  .showcases-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .showcases-title {
+    font-size: 1.75rem;
+  }
+}
+
+.showcases-intro {
+  font-size: 1.125rem;
+  color: var(--color-neutral-500);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 767px) {
+  .showcases-intro {
+    font-size: 1rem;
+  }
+}
+
+/* ============================================
+   SHOWCASES GRID - Card Layout
+   ============================================ */
+
+.showcases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 767px) {
+  .showcases-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* ============================================
+   SHOWCASE CARD - Premium Styling
+   ============================================ */
+
+.showcase-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.03);
+  text-decoration: none;
+  color: inherit;
+  min-height: 100%;
+}
+
+.showcase-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark theme showcase card */
+[data-theme="dark"] .showcase-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] .showcase-card:hover {
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   SHOWCASE CARD CONTENT
+   ============================================ */
+
+.showcase-card-content {
+  flex: 1;
+  margin-bottom: 1.5rem;
+}
+
+.showcase-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
+.showcase-card-description {
+  font-size: 0.9375rem;
+  color: var(--color-neutral-500);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================
+   VISIT BUTTON
+   ============================================ */
+
+.visit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.visit-button:hover {
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.visit-button:active {
+  transform: translateX(0);
+}
+
+.visit-button-icon {
+  width: 1rem;
+  height: 1rem;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 767px) {
+  .showcase-card {
+    padding: 1.5rem;
+  }
+
+  .showcase-card-title {
+    font-size: 1.125rem;
+  }
+
+  .showcase-card-description {
+    font-size: 0.875rem;
+  }
+
+  .visit-button {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .visit-button-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.showcase-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.visit-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .showcase-card,
+  .visit-button {
+    transition: none;
+  }
+
+  .showcase-card:hover,
+  .visit-button:hover {
+    transform: none;
+  }
+}
