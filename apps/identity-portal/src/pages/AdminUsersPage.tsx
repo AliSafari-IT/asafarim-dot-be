@@ -5,7 +5,7 @@ import AuthLayout from "../components/AuthLayout";
 
 export default function AdminUsersPage() {
   return (
-    <AuthLayout key="identity-portal-admin-users">
+    <AuthLayout>
       <AdminUsers />
     </AuthLayout>
   );

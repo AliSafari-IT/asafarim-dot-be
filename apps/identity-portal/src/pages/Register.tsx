@@ -16,7 +16,7 @@ export const Register = () => {
   }, [isAuthenticated, navigate, loading]);
 
   return (
-    <AuthLayout key="identity-portal-register">
+    <AuthLayout>
       <RegisterHero />
     </AuthLayout>
   );

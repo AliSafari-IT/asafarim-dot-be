@@ -30,17 +30,13 @@ var productionOrigins = new[]
     "https://core.asafarim.be",
     "https://blog.asafarim.be",
     "https://identity.asafarim.be",
-    "https://*.asafarim.be"  // Wildcard for all subdomains
+    "https://*.asafarim.be", // Wildcard for all subdomains
 };
 
-var developmentOrigins = new[]
-{
-    "http://ai.asafarim.local:5173",
-    "http://localhost:5173"
-};
+var developmentOrigins = new[] { "http://ai.asafarim.local:5173", "http://localhost:5173" };
 
 // Combine origins based on environment
-string[] allowedOrigins = builder.Environment.IsProduction() 
+string[] allowedOrigins = builder.Environment.IsProduction()
     ? productionOrigins.Concat(corsOriginsEnv?.Split(',') ?? Array.Empty<string>()).ToArray()
     : developmentOrigins.Concat(productionOrigins).ToArray();
 
@@ -48,10 +44,7 @@ builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(
         "frontend",
-        p => p.WithOrigins(allowedOrigins)
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
+        p => p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()
     );
 });
 
@@ -100,14 +93,20 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 // Add health endpoint
-app.MapGet("/health", () => Results.Ok(new
-{
-    Status = "Healthy",
-    Service = "AI API",
-    Version = "1.0.0",
-    Environment = app.Environment.EnvironmentName,
-    Timestamp = DateTime.UtcNow
-}));
+app.MapGet(
+    "/health",
+    () =>
+        Results.Ok(
+            new
+            {
+                Status = "Healthy",
+                Service = "AI API",
+                Version = "1.0.0",
+                Environment = app.Environment.EnvironmentName,
+                Timestamp = DateTime.UtcNow,
+            }
+        )
+);
 
 // Run the app with automatic migrations
 app.MigrateDatabase<SharedDbContext>().Run();

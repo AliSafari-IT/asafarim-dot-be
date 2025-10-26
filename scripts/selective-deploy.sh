@@ -34,6 +34,7 @@ declare -A FRONTEND_APPS=(
     ["identity-portal"]="apps/identity-portal/dist"
     ["blog"]="apps/blog/build"
     ["jobs-ui"]="apps/jobs-ui/dist"
+    ["taskmanagement-web"]="showcases/TaskManagement/taskmanagement-web/dist"
 )
 
 # .NET APIs with their project paths and output directories
@@ -41,12 +42,14 @@ declare -A API_PROJECTS=(
     ["Identity.Api"]="apis/Identity.Api/Identity.Api.csproj"
     ["Core.Api"]="apis/Core.Api/Core.Api.csproj"
     ["Ai.Api"]="apis/Ai.Api/Ai.Api.csproj"
+    ["TaskManagement.Api"]="showcases/TaskManagement/TaskManagement.Api/TaskManagement.Api.csproj"
 )
 
 declare -A API_OUTPUTS=(
     ["Identity.Api"]="$SITE_ROOT/apis/identity"
     ["Core.Api"]="$SITE_ROOT/apis/core"
     ["Ai.Api"]="$SITE_ROOT/apis/ai"
+    ["TaskManagement.Api"]="$SITE_ROOT/apis/taskmanagement"
 )
 
 # Systemd services
@@ -54,6 +57,7 @@ declare -A API_SERVICES=(
     ["Identity.Api"]="dotnet-identity"
     ["Core.Api"]="dotnet-core"
     ["Ai.Api"]="dotnet-ai"
+    ["TaskManagement.Api"]="dotnet-taskmanagement"
 )
 
 #############################################
@@ -284,7 +288,9 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
     # Clean node_modules for selected apps
     for idx in "${selected_frontends[@]}"; do
         key="${frontend_keys[$((idx-1))]}"
-        app_path="$REPO_DIR/apps/$key"
+        build_path="${FRONTEND_APPS[$key]}"
+        # Extract app directory from build path (e.g., "apps/web/dist" -> "apps/web")
+        app_path="$REPO_DIR/${build_path%/dist}"
         if [ -d "$app_path/node_modules" ]; then
             print_info "Cleaning node_modules for $key"
             rm -rf "$app_path/node_modules"
@@ -345,7 +351,18 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
         key="${frontend_keys[$((idx-1))]}"
         print_info "Building $key..."
         
-        cd "$REPO_DIR/apps/$key"
+        build_path="${FRONTEND_APPS[$key]}"
+        # Extract app directory from build path
+        # Handle both /dist and /build suffixes (e.g., "apps/web/dist" -> "apps/web", "apps/blog/build" -> "apps/blog")
+        app_dir="$REPO_DIR/${build_path%/dist}"
+        app_dir="${app_dir%/build}"
+        
+        if [ ! -d "$app_dir" ]; then
+            print_error "App directory not found: $app_dir"
+            exit 1
+        fi
+        
+        cd "$app_dir"
         if pnpm build; then
             print_success "$key built successfully"
         else
@@ -363,7 +380,15 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
         key="${frontend_keys[$((idx-1))]}"
         build_path="${FRONTEND_APPS[$key]}"
         source_path="$REPO_DIR/$build_path"
-        dest_path="$SITE_ROOT/apps/$key"
+        
+        # Determine destination based on app location
+        if [[ "$build_path" == showcases/* ]]; then
+            # For showcases apps, deploy to apps/ directory with app name
+            dest_path="$SITE_ROOT/apps/$key"
+        else
+            # For regular apps, deploy to apps/ directory with app name
+            dest_path="$SITE_ROOT/apps/$key"
+        fi
         
         if [ -d "$source_path" ]; then
             # Backup existing deployment

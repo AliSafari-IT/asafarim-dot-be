@@ -7,6 +7,7 @@ import "./index.css";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Showcases from "./pages/Showcases";
 import { NotFound } from "@asafarim/shared-ui-react";
 import Root from "./theme/Root";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -70,6 +71,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
+      { path: "showcases", element: <Showcases /> },
       { path: "what-is-building", element: <WhatIsBuilding /> },
       { path: "portfolio", element: <Portfolio /> },
 

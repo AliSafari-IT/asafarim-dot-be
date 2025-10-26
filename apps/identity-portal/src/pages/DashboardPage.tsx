@@ -62,9 +62,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <AuthLayout
-    key={'identity-portal-dashboard'}
-    >
+    <AuthLayout>
       <Dashboard />
     </AuthLayout>
   );

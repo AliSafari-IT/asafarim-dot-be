@@ -1,0 +1,51 @@
+/* Navbar Styles */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  transition: box-shadow 0.3s ease;
+}
+
+.app-header.scrolled {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--color-neutral-400);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-foreground);
+}
+
+.nav-link--active {
+  background-color: var(--color-info-200);
+  color: var(--color-neutral-900);
+}
+
+.nav-link__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-link--mobile {
+  width: 100%;
+  padding: 0.75rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .app-header.mobile-menu-open {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}

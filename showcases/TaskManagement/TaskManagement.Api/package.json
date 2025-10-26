@@ -1,0 +1,20 @@
+{
+  "name": "@asafarim/taskmanagement-api",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "predev": "kill-port 5104",
+    "dev": "dotnet watch run --project TaskManagement.Api.csproj",
+    "start": "dotnet run --project TaskManagement.Api.csproj",
+    "build": "dotnet build TaskManagement.Api.csproj",
+    "preapi": "kill-port 5104",
+    "api": "dotnet watch run --project TaskManagement.Api.csproj --no-hot-reload"
+  },
+  "devDependencies": {
+    "kill-port": "^2.0.1"
+  },
+  "keywords": [],
+  "author": "ASafariM",
+  "license": "ISC",
+  "packageManager": "pnpm@10.19.0"
+}

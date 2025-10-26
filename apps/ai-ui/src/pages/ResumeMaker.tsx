@@ -6,11 +6,12 @@ import {
   Pdf,
   useAuth,
   isProduction,
+  ButtonComponent,
 } from "@asafarim/shared-ui-react";
-import { api } from "../api";
+import {aiApi } from "../api";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import './ResumeMaker.css';
+import "./ResumeMaker.css";
 
 type FunctionalResumeResponse = {
   userId: string;
@@ -26,16 +27,18 @@ type FunctionalResumeResponse = {
 
 export default function ResumeMaker() {
   // Configure useAuth to use AI API proxy endpoints
-  const authApiBase = isProduction ? '/api/auth' : 'http://ai-api.asafarim.local:5103/auth';
+  const authApiBase = isProduction
+    ? "/api/auth"
+    : "http://identity.asafarim.local:5101/auth";
   const { isAuthenticated, user, loading, signIn } = useAuth<{
     id: string;
     email?: string;
     userName?: string;
   }>({
     authApiBase,
-    meEndpoint: '/me',
-    tokenEndpoint: '/token',
-    logoutEndpoint: '/logout'
+    meEndpoint: "/me",
+    tokenEndpoint: "/token",
+    logoutEndpoint: "/logout",
   });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -60,11 +63,18 @@ export default function ResumeMaker() {
   // Safe clipboard copy with fallbacks for non-secure contexts
   async function copyTextToClipboard(text: string) {
     try {
-      if (typeof navigator !== "undefined" && navigator.clipboard && window.isSecureContext) {
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.clipboard &&
+        window.isSecureContext
+      ) {
         await navigator.clipboard.writeText(text);
         setCopyBtnText("Copied!");
         setCopied(true);
-        setTimeout(() => { setCopyBtnText("Copy"); setCopied(false); }, 2000);
+        setTimeout(() => {
+          setCopyBtnText("Copy");
+          setCopied(false);
+        }, 2000);
         return;
       }
     } catch {
@@ -89,7 +99,10 @@ export default function ResumeMaker() {
     } finally {
       document.body.removeChild(ta);
     }
-    setTimeout(() => { setCopyBtnText("Copy"); setCopied(false); }, 2000);
+    setTimeout(() => {
+      setCopyBtnText("Copy");
+      setCopied(false);
+    }, 2000);
   }
 
   function parseResumeFromRaw(text: string): FunctionalResumeResponse | null {
@@ -136,9 +149,13 @@ export default function ResumeMaker() {
             <ul className="ai-ui-resume-maker-resume-list">
               {model.projects.map((p, idx) => (
                 <li key={idx} className="ai-ui-resume-maker-resume-project">
-                  <div className="ai-ui-resume-maker-resume-project-title">{p.title}</div>
+                  <div className="ai-ui-resume-maker-resume-project-title">
+                    {p.title}
+                  </div>
                   {p.description && (
-                    <div className="ai-ui-resume-maker-resume-project-desc">{p.description}</div>
+                    <div className="ai-ui-resume-maker-resume-project-desc">
+                      {p.description}
+                    </div>
                   )}
                   {!!p.highlights?.length && (
                     <ul className="ai-ui-resume-maker-resume-bullets">
@@ -286,7 +303,7 @@ ${`
         achievements: [],
         detailedCv,
       };
-      const data = await api<{ userId: string; raw: string }>(
+      const data = await aiApi<{ userId: string; raw: string }>(
         "/resume/functional",
         {
           method: "POST",
@@ -344,13 +361,13 @@ ${`
       <div className="ai-ui-resume-maker-cover-letter ai-ui-resume-maker-form-card">
         <div className="ai-ui-resume-maker-form-header">
           <div className="ai-ui-resume-maker-buttons">
-            <button
+            <ButtonComponent
+              variant="link"
               onClick={prefillFromAccount}
               disabled={!isAuthenticated || loading}
-              className="ai-ui-resume-maker-button"
             >
               Fill from account
-            </button>
+            </ButtonComponent>
           </div>
         </div>
         <div className="ai-ui-resume-maker-form-grid">
