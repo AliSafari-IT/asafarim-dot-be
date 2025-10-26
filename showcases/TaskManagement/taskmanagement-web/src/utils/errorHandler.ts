@@ -47,7 +47,7 @@ function getErrorMessage(status: number, apiMessage: string): string {
     case 401:
       return 'Your session has expired. Please log in again.';
     case 403:
-      return 'You don\'t have permission to perform this action. Only project owners can make changes.';
+      return 'You don\'t have permission to perform this action. Only project owners, managers and project admin can make changes.';
     case 404:
       return 'The project was not found. It may have been deleted.';
     case 409:

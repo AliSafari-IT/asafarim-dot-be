@@ -1,45 +1,70 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import projectService, { type ProjectDto } from '../api/projectService';
+import projectService, { type ProjectDto, ProjectRole } from '../api/projectService';
 import { useAuth } from '@asafarim/shared-ui-react'
 import './ProjectList.css'
 
+type FilterType = 'all' | 'mine' | 'shared' | 'manager' | 'admin'
+
 export default function ProjectList() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const [projects, setProjects] = useState<ProjectDto[]>([])
+  const [allProjects, setAllProjects] = useState<ProjectDto[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [filter, setFilter] = useState<FilterType>('all')
+  const [projectMembers, setProjectMembers] = useState<Map<string, ProjectRole>>(new Map())
+  const [ownedProjectIds, setOwnedProjectIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
         setLoading(true)
-        let allProjects: ProjectDto[] = []
+        let allProjectsList: ProjectDto[] = []
+        const memberRoles = new Map<string, ProjectRole>()
 
-        console.log('DEBUG: projectService object:', projectService);
-        console.log('DEBUG: projectService.getPublicProjects:', projectService.getAllPublicProjects);
-        console.log('DEBUG: typeof projectService.getPublicProjects:', typeof projectService.getAllPublicProjects);
-
+        let ownedIds = new Set<string>()
+        
         if (isAuthenticated) {
           // Authenticated users: get their projects and shared projects
           const [myProjects, sharedProjects] = await Promise.all([
             projectService.getMyProjects(),
             projectService.getSharedProjects(),
           ])
+          
+          // Track which projects are owned by the user
+          ownedIds = new Set(myProjects.map(p => p.id))
+          
           // Deduplicate projects by ID (owned projects may also appear in shared)
           const projectMap = new Map<string, ProjectDto>()
           myProjects.forEach(p => projectMap.set(p.id, p))
           sharedProjects.forEach(p => projectMap.set(p.id, p))
-          allProjects = Array.from(projectMap.values())
+          allProjectsList = Array.from(projectMap.values())
+
+          // Fetch member roles for each project
+          for (const project of allProjectsList) {
+            try {
+              // Fetch the user's role from members for all projects
+              const members = await projectService.getProjectMembers(project.id)
+              const userMember = members.find(m => m.userId === user?.id)
+              if (userMember) {
+                memberRoles.set(project.id, userMember.role)
+              }
+            } catch (err) {
+              console.error(`Failed to fetch members for project ${project.id}:`, err)
+            }
+          }
+          setOwnedProjectIds(ownedIds)
         } else {
-          console.log('DEBUG: isAuthenticated:', isAuthenticated);
           // Unauthenticated users: get only public projects
-          allProjects = await projectService.getAllPublicProjects();
+          allProjectsList = await projectService.getAllPublicProjects();
         }
 
-        setProjects(allProjects)
+        setAllProjects(allProjectsList)
+        setProjectMembers(memberRoles)
+        applyFilter(allProjectsList, 'all', memberRoles, ownedIds)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load projects')
       } finally {
@@ -48,7 +73,77 @@ export default function ProjectList() {
     }
 
     loadProjects()
-  }, [isAuthenticated])
+  }, [isAuthenticated, user?.sub])
+
+  const normalizeRole = (role: string | number | undefined): ProjectRole | null => {
+    // Handle undefined
+    if (role === undefined) {
+      return null
+    }
+    
+    // Handle numeric values (0, 1, 2)
+    if (typeof role === 'number') {
+      if (role === 0 || role === 1 || role === 2) {
+        return role as ProjectRole
+      }
+      return null
+    }
+    
+    // Handle string values
+    if (typeof role === 'string') {
+      const roleMap: { [key: string]: ProjectRole } = {
+        'Admin': ProjectRole.Admin,
+        'ADMIN': ProjectRole.Admin,
+        '0': ProjectRole.Admin,
+        'Manager': ProjectRole.Manager,
+        'MANAGER': ProjectRole.Manager,
+        '1': ProjectRole.Manager,
+        'Member': ProjectRole.Member,
+        'MEMBER': ProjectRole.Member,
+        '2': ProjectRole.Member,
+      }
+      return roleMap[role] ?? null
+    }
+    
+    return null
+  }
+
+  const applyFilter = (projectList: ProjectDto[], filterType: FilterType, roles: Map<string, ProjectRole>, owned: Set<string>) => {
+    let filtered = projectList
+
+    switch (filterType) {
+      case 'mine':
+        filtered = projectList.filter(p => owned.has(p.id))
+        break
+      case 'shared':
+        filtered = projectList.filter(p => !owned.has(p.id) && roles.has(p.id))
+        break
+      case 'manager':
+        filtered = projectList.filter(p => {
+          const role = roles.get(p.id)
+          const normalized = normalizeRole(role)
+          return normalized === ProjectRole.Manager
+        })
+        break
+      case 'admin':
+        filtered = projectList.filter(p => {
+          const role = roles.get(p.id)
+          const normalized = normalizeRole(role)
+          return normalized === ProjectRole.Admin
+        })
+        break
+      case 'all':
+      default:
+        filtered = projectList
+    }
+
+    setProjects(filtered)
+  }
+
+  const handleFilterChange = (newFilter: FilterType) => {
+    setFilter(newFilter)
+    applyFilter(allProjects, newFilter, projectMembers, ownedProjectIds)
+  }
 
   const handleDelete = async (projectId: string, projectName: string, e: React.MouseEvent) => {
     e.preventDefault()
@@ -61,7 +156,12 @@ export default function ProjectList() {
     try {
       setDeletingId(projectId)
       await projectService.deleteProject(projectId)
-      setProjects(prev => prev.filter(p => p.id !== projectId))
+      const updatedProjects = allProjects.filter(p => p.id !== projectId)
+      const updatedOwned = new Set(ownedProjectIds)
+      updatedOwned.delete(projectId)
+      setAllProjects(updatedProjects)
+      setOwnedProjectIds(updatedOwned)
+      applyFilter(updatedProjects, filter, projectMembers, updatedOwned)
     } catch (err) {
       alert('Failed to delete project')
       console.error('Error deleting project:', err)
@@ -88,7 +188,43 @@ export default function ProjectList() {
     <div className="projects-page">
       <div className="projects-header">
         <h1>Projects</h1>
-        <button className="btn-create" onClick={() => navigate('/projects/new')}>+ New Project</button>
+        <div className="projects-controls">
+          {isAuthenticated && (
+            <div className="filter-buttons">
+              <button
+                className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+                onClick={() => handleFilterChange('all')}
+              >
+                All
+              </button>
+              <button
+                className={`filter-btn ${filter === 'mine' ? 'active' : ''}`}
+                onClick={() => handleFilterChange('mine')}
+              >
+                My Projects
+              </button>
+              <button
+                className={`filter-btn ${filter === 'shared' ? 'active' : ''}`}
+                onClick={() => handleFilterChange('shared')}
+              >
+                Shared With Me
+              </button>
+              <button
+                className={`filter-btn ${filter === 'manager' ? 'active' : ''}`}
+                onClick={() => handleFilterChange('manager')}
+              >
+                I'm Manager
+              </button>
+              <button
+                className={`filter-btn ${filter === 'admin' ? 'active' : ''}`}
+                onClick={() => handleFilterChange('admin')}
+              >
+                I'm Admin
+              </button>
+            </div>
+          )}
+          <button className="btn-create" onClick={() => navigate('/projects/new')}>+ New Project</button>
+        </div>
       </div>
 
       {projects.length === 0 ? (

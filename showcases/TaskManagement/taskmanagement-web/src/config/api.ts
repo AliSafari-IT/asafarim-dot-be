@@ -1,9 +1,9 @@
-const isDevelopment = import.meta.env.DEV;
+import { isProduction } from "@asafarim/shared-ui-react";
 
-export const API_BASE_URL = isDevelopment
-  ? (import.meta.env.VITE_TASKS_API_URL || '/api/taskmanagement')
-  : (import.meta.env.VITE_TASKS_API_URL || 'https://taskmanagement.asafarim.be/api/taskmanagement');
+export const API_BASE_URL = isProduction
+  ? "https://taskmanagement.asafarim.be/api/taskmanagement"
+  : "http://tasks.asafarim.local:5104/api";
 
-export const IDENTITY_API_URL = isDevelopment
-  ? (import.meta.env.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101')
-  : (import.meta.env.VITE_IDENTITY_API_URL || 'https://identity.asafarim.be');
+export const IDENTITY_API_URL = isProduction
+  ? "https://identity.asafarim.be"
+  : "http://identity.asafarim.local:5101";
