@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config/api';
+import { parseApiError } from '../utils/errorHandler';
 
 // v2 - Added getPublicProjects method 
 export interface ProjectDto {
@@ -49,7 +50,10 @@ const projectService = {
     const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Failed to fetch project');
+    if (!response.ok) {
+      const error = await parseApiError(response);
+      throw new Error(error.message);
+    }
     return response.json();
   },
 
@@ -82,7 +86,10 @@ const projectService = {
       credentials: 'include',
       body: JSON.stringify(dto),
     });
-    if (!response.ok) throw new Error('Failed to create project');
+    if (!response.ok) {
+      const error = await parseApiError(response);
+      throw new Error(error.message);
+    }
     return response.json();
   },
 
@@ -93,7 +100,10 @@ const projectService = {
       credentials: 'include',
       body: JSON.stringify(dto),
     });
-    if (!response.ok) throw new Error('Failed to update project');
+    if (!response.ok) {
+      const error = await parseApiError(response);
+      throw new Error(error.message);
+    }
     return response.json();
   },
 
@@ -102,7 +112,10 @@ const projectService = {
       method: 'DELETE',
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Failed to delete project');
+    if (!response.ok) {
+      const error = await parseApiError(response);
+      throw new Error(error.message);
+    }
   },
 
   getProjectMembers: async (projectId: string): Promise<ProjectMemberDto[]> => {
