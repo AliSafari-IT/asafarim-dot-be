@@ -187,6 +187,7 @@ var productionOrigins = new[]
     "https://blog.asafarim.be",
     "https://identity.asafarim.be",
     "https://web.asafarim.be",
+    "https://taskmanagement.asafarim.be",
 };
 
 var developmentOrigins = new[]
