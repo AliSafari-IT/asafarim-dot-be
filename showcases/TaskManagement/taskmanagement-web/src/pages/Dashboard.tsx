@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useAuth } from '@asafarim/shared-ui-react'
+import { useAuth, isProduction } from '@asafarim/shared-ui-react'
 import projectService, { type ProjectDto } from '../api/projectService'
 //import taskService, { TaskDto } from '../api/taskService'
 import './Dashboard.css';
@@ -14,7 +14,9 @@ export default function Dashboard() {
   // Redirect unauthenticated users to identity portal login
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      const identityLoginUrl = 'http://identity.asafarim.local:5177/login'
+      const identityLoginUrl = isProduction
+        ? 'https://identity.asafarim.be/login'
+        : 'http://identity.asafarim.local:5177/login'
       const returnUrl = encodeURIComponent(window.location.href)
       window.location.href = `${identityLoginUrl}?returnUrl=${returnUrl}`
     }

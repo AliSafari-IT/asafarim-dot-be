@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAuth } from '@asafarim/shared-ui-react'
+import { useAuth, isProduction } from '@asafarim/shared-ui-react'
 import projectService from '../api/projectService';
 import './ProjectForm.css'
 
@@ -22,7 +22,9 @@ export default function ProjectForm() {
   // Redirect unauthenticated users to identity portal login
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      const identityLoginUrl = 'http://identity.asafarim.local:5177/login'
+      const identityLoginUrl = isProduction
+        ? 'https://identity.asafarim.be/login'
+        : 'http://identity.asafarim.local:5177/login'
       const returnUrl = encodeURIComponent(window.location.href)
       window.location.href = `${identityLoginUrl}?returnUrl=${returnUrl}`
     }

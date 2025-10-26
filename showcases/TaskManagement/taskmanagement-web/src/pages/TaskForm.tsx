@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAuth } from '@asafarim/shared-ui-react'
+import { useAuth, isProduction } from '@asafarim/shared-ui-react'
 import taskService, { TaskStatus, TaskPriority, type CreateTaskDto, type UpdateTaskDto } from '../api/taskService'
 import './TaskForm.css'
 
@@ -30,7 +30,9 @@ export default function TaskForm({ projectId: propProjectId }: TaskFormProps) {
   // Redirect unauthenticated users to identity portal login
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      const identityLoginUrl = 'http://identity.asafarim.local:5177/login'
+      const identityLoginUrl = isProduction
+        ? 'https://identity.asafarim.be/login'
+        : 'http://identity.asafarim.local:5177/login'
       const returnUrl = encodeURIComponent(window.location.href)
       window.location.href = `${identityLoginUrl}?returnUrl=${returnUrl}`
     }
