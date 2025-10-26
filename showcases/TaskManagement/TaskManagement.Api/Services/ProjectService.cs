@@ -101,15 +101,26 @@ public class ProjectService : IProjectService
 
     public async Task<List<ProjectDto>> GetPublicProjectsAsync()
     {
-        // Get all public projects (not private)
-        var projects = await _context.Projects
-            .Where(p => !p.IsPrivate)
-            .Include(p => p.Tasks)
-            .Include(p => p.Members)
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
+        try
+        {
+            Console.WriteLine("DEBUG: GetPublicProjectsAsync called");
+            
+            // Get all projects - no includes, no ordering
+            var projects = await _context.Projects.ToListAsync();
+            Console.WriteLine($"DEBUG: Got {projects.Count} projects from database");
 
-        return projects.Select(MapToDto).ToList();
+            // Filter in memory instead
+            var publicProjects = projects.Where(p => !p.IsPrivate).ToList();
+            Console.WriteLine($"DEBUG: Filtered to {publicProjects.Count} public projects");
+            
+            return publicProjects.Select(MapToDto).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR in GetPublicProjectsAsync: {ex.Message}");
+            Console.WriteLine($"ERROR Stack: {ex.StackTrace}");
+            throw;
+        }
     }
 
     public async Task<ProjectDto> CreateProjectAsync(CreateProjectDto dto, string userId)

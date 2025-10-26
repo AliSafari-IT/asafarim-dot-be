@@ -59,6 +59,9 @@
 
     <!-- Properties -->
     <Compile Include="Properties\**\*.cs" />
+
+    <!-- Configuration files -->
+    <None Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
