@@ -21,6 +21,7 @@ public class AuthController : ControllerBase
     private readonly IPasswordSetupTokenService _passwordSetupTokenService;
     private readonly IEmailService _emailService;
     private readonly IOptions<AuthOptions> _authOptions;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
@@ -31,6 +32,7 @@ public class AuthController : ControllerBase
         IPasswordSetupTokenService passwordSetupTokenService,
         IEmailService emailService,
         IOptions<AuthOptions> authOptions,
+        IConfiguration configuration,
         ILogger<AuthController> logger
     )
     {
@@ -41,6 +43,7 @@ public class AuthController : ControllerBase
         _passwordSetupTokenService = passwordSetupTokenService;
         _emailService = emailService;
         _authOptions = authOptions;
+        _configuration = configuration;
         _logger = logger;
     }
 
@@ -836,18 +839,29 @@ public class AuthController : ControllerBase
         if (user == null)
         {
             // Don't reveal if user exists or not (security best practice)
-            _logger.LogWarning("Password reset requested for non-existent user: {Email}", req.Email);
-            return Ok(new { message = "If an account exists with this email, you will receive a password reset link" });
+            _logger.LogWarning(
+                "Password reset requested for non-existent user: {Email}",
+                req.Email
+            );
+            return Ok(
+                new
+                {
+                    message = "If an account exists with this email, you will receive a password reset link",
+                }
+            );
         }
 
         // Generate password setup token
         var token = await _passwordSetupTokenService.GenerateTokenAsync(user.Id);
 
-        _logger.LogInformation("Generated password setup token for user {UserId}, expires in 1440 minutes", user.Id);
+        _logger.LogInformation(
+            "Generated password setup token for user {UserId}, expires in 1440 minutes",
+            user.Id
+        );
 
         // Get the base URL from configuration
-        var opts = _authOptions.Value;
-        var baseUrl = opts.PasswordSetup?.BaseUrl ?? "http://localhost:5177";
+        var baseUrl =
+            _configuration["PasswordSetup:BaseUrl"] ?? "http://identity.asafarim.local:5101";
         var resetLink = $"{baseUrl}/setup-password?token={token}";
 
         // Send email with reset link
@@ -861,7 +875,12 @@ public class AuthController : ControllerBase
             // Don't expose error details to client - still return success message for security
         }
 
-        return Ok(new { message = "If an account exists with this email, you will receive a password reset link" });
+        return Ok(
+            new
+            {
+                message = "If an account exists with this email, you will receive a password reset link",
+            }
+        );
     }
 
     #endregion
