@@ -67,13 +67,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Add database context
-var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
-if (!string.IsNullOrEmpty(defaultConnection))
+var taskManagementConnection = builder.Configuration.GetConnectionString("TaskManagementConnection") 
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrEmpty(taskManagementConnection))
 {
     // Use PostgreSQL for both development and production
     builder.Services.AddDbContext<TaskManagementDbContext>(options =>
         options.UseNpgsql(
-            defaultConnection,
+            taskManagementConnection,
             npgsqlOptions =>
                 npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
         )
@@ -206,8 +207,8 @@ app.UseCors("frontend");
 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNullOrEmpty(audience))
 {
     app.UseAuthentication();
+    app.UseAuthorization();
 }
-app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
