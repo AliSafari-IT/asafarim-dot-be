@@ -15,7 +15,7 @@ const navLinks: NavLinkItem[] = [
     label: "Job Tracker",
   },
   {
-    to: "/portfolio",
+    to: isProduction ? "https://asafarim.be/portfolio" : "http://web.asafarim.local:5175/portfolio",
     label: "Portfolio",
   },
   {
