@@ -853,7 +853,7 @@ public class AuthController : ControllerBase
         // Send email with reset link
         try
         {
-            await _emailService.SendPasswordSetupEmailAsync(user.Email!, resetLink);
+            await _emailService.SendPasswordResetEmailAsync(user.Email!, resetLink);
         }
         catch (Exception ex)
         {
