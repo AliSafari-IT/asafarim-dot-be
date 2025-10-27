@@ -119,12 +119,16 @@ public class ProjectService : IProjectService
         {
             Console.WriteLine("DEBUG: GetPublicProjectsAsync called");
             
-            // Get all projects - no includes, no ordering
-            var projects = await _context.Projects.ToListAsync();
-            Console.WriteLine($"DEBUG: Got {projects.Count} projects from database");
-
-            // Filter in memory instead
-            var publicProjects = projects.Where(p => !p.IsPrivate).ToList();
+            // Temporary workaround: Get all projects and filter in memory
+            // This bypasses the EF Core IsPrivate column query issue
+            var allProjects = await _context.Projects.ToListAsync();
+            Console.WriteLine($"DEBUG: Got {allProjects.Count} total projects from database");
+            
+            // Filter to public projects in memory
+            var publicProjects = allProjects
+                .Where(p => !p.IsPrivate)
+                .ToList();
+            
             Console.WriteLine($"DEBUG: Filtered to {publicProjects.Count} public projects");
             
             return publicProjects.Select(MapToDto).ToList();
