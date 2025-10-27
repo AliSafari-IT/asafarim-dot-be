@@ -51,16 +51,6 @@ export default defineConfig(
           });
         }
       },
-      '^/api/me/preferences': {
-        target: 'http://identity.asafarim.local:5101',
-        changeOrigin: true,
-        secure: false,
-        configure: (proxy) => {
-          proxy.on('error', (err) => {
-            console.log('proxy error', err);
-          });
-        }
-      },
       '/auth': {
         target: 'http://identity.asafarim.local:5101',
         changeOrigin: true,
