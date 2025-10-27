@@ -1,0 +1,13 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=YOUR_HOST;Port=5432;Database=taskmanagement;Username=postgres;Password=YOUR_PASSWORD;"
+  },
+  "AuthJwt": {
+    "Key": "YOUR_JWT_KEY",
+    "Issuer": "asafarim.be",
+    "Audience": "asafarim.be"
+  },
+  "OpenAI": {
+    "ApiKey": "YOUR_OPENAI_API_KEY"
+  }
+}
