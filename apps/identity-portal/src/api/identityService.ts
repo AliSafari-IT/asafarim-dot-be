@@ -343,6 +343,26 @@ export const identityService = {
   },
   
   /**
+   * Request password reset (forgot password)
+   */
+  async requestPasswordReset(data: ForgotPasswordRequest): Promise<{ message: string }> {
+    console.log('Requesting password reset for email:', data.email);
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      console.log('Forgot password response status:', response.status);
+      return handleResponse<{ message: string }>(response);
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Validate password setup token (magic link)
    */
   async validateSetupToken(data: ValidateSetupTokenRequest): Promise<ValidateSetupTokenResponse> {

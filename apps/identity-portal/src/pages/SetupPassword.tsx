@@ -89,7 +89,7 @@ export default function SetupPassword() {
     setLoading(true);
 
     try {
-      const response = await identityService.setupPassword({
+      await identityService.setupPassword({
         token,
         password,
       });
@@ -99,15 +99,8 @@ export default function SetupPassword() {
         durationMs: 3000,
       });
 
-      // Store auth tokens
-      if (response.token) {
-        localStorage.setItem('token', response.token);
-      }
-      if (response.refreshToken) {
-        localStorage.setItem('refreshToken', response.refreshToken);
-      }
-
-      // Redirect to dashboard after a short delay
+      // Backend sets auth cookies automatically, no need to store tokens manually
+      // Just redirect to dashboard - the shared auth hook will detect the cookies
       setTimeout(() => {
         navigate('/');
       }, 1500);

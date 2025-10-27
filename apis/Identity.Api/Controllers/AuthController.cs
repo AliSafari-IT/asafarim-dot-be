@@ -19,6 +19,7 @@ public class AuthController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IPasswordSetupTokenService _passwordSetupTokenService;
+    private readonly IEmailService _emailService;
     private readonly IOptions<AuthOptions> _authOptions;
     private readonly ILogger<AuthController> _logger;
 
@@ -28,6 +29,7 @@ public class AuthController : ControllerBase
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
         IPasswordSetupTokenService passwordSetupTokenService,
+        IEmailService emailService,
         IOptions<AuthOptions> authOptions,
         ILogger<AuthController> logger
     )
@@ -37,6 +39,7 @@ public class AuthController : ControllerBase
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
         _passwordSetupTokenService = passwordSetupTokenService;
+        _emailService = emailService;
         _authOptions = authOptions;
         _logger = logger;
     }
@@ -779,8 +782,20 @@ public class AuthController : ControllerBase
         if (user == null)
             return BadRequest(new { message = "User not found" });
 
-        // Set the password
-        var result = await _userManager.AddPasswordAsync(user, req.Password);
+        // Set or reset the password
+        IdentityResult result;
+        if (string.IsNullOrEmpty(user.PasswordHash))
+        {
+            // User doesn't have a password yet, add one
+            result = await _userManager.AddPasswordAsync(user, req.Password);
+        }
+        else
+        {
+            // User already has a password, reset it
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            result = await _userManager.ResetPasswordAsync(user, resetToken, req.Password);
+        }
+
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors)
@@ -804,6 +819,49 @@ public class AuthController : ControllerBase
         SetAuthCookies(accessToken, refreshToken.Token, persistent: true, user);
 
         return Ok(CreateAuthResponse(user, roleNames, accessToken, refreshToken.Token));
+    }
+
+    /// <summary>
+    /// Request password reset (forgot password)
+    /// </summary>
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Email))
+            return BadRequest(new { message = "Email is required" });
+
+        var user = await _userManager.FindByEmailAsync(req.Email);
+        if (user == null)
+        {
+            // Don't reveal if user exists or not (security best practice)
+            _logger.LogWarning("Password reset requested for non-existent user: {Email}", req.Email);
+            return Ok(new { message = "If an account exists with this email, you will receive a password reset link" });
+        }
+
+        // Generate password setup token
+        var token = await _passwordSetupTokenService.GenerateTokenAsync(user.Id);
+
+        _logger.LogInformation("Generated password setup token for user {UserId}, expires in 1440 minutes", user.Id);
+
+        // Get the base URL from configuration
+        var opts = _authOptions.Value;
+        var baseUrl = opts.PasswordSetup?.BaseUrl ?? "http://localhost:5177";
+        var resetLink = $"{baseUrl}/setup-password?token={token}";
+
+        // Send email with reset link
+        try
+        {
+            await _emailService.SendPasswordSetupEmailAsync(user.Email!, resetLink);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send password reset email to {Email}", user.Email);
+            // Don't expose error details to client - still return success message for security
+        }
+
+        return Ok(new { message = "If an account exists with this email, you will receive a password reset link" });
     }
 
     #endregion
@@ -842,6 +900,11 @@ public class SetupPasswordRequest
 {
     public string Token { get; set; } = default!;
     public string Password { get; set; } = default!;
+}
+
+public class ForgotPasswordRequest
+{
+    public string Email { get; set; } = default!;
 }
 
 #endregion
