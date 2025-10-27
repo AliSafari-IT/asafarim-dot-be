@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TaskManagement.Api.Data;
 using TaskManagement.Api.DTOs;
 using TaskManagement.Api.Models;
@@ -13,11 +15,21 @@ public class TaskService : ITaskService
 {
     private readonly TaskManagementDbContext _context;
     private readonly IPermissionService _permissionService;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfiguration _configuration;
+    private readonly Dictionary<string, (string Name, string Email)> _userCache = new();
 
-    public TaskService(TaskManagementDbContext context, IPermissionService permissionService)
+    public TaskService(
+        TaskManagementDbContext context,
+        IPermissionService permissionService,
+        IHttpClientFactory httpClientFactory,
+        IConfiguration configuration
+    )
     {
         _context = context;
         _permissionService = permissionService;
+        _httpClientFactory = httpClientFactory;
+        _configuration = configuration;
     }
 
     public async Task<TaskDto?> GetTaskByIdAsync(Guid taskId)
@@ -28,7 +40,7 @@ public class TaskService : ITaskService
             .Include(t => t.Attachments)
             .FirstOrDefaultAsync(t => t.Id == taskId);
 
-        return task == null ? null : MapToDto(task);
+        return task == null ? null : await MapToDtoAsync(task);
     }
 
     public async Task<List<TaskDto>> GetProjectTasksAsync(Guid projectId, TaskFilterDto filter)
@@ -80,7 +92,12 @@ public class TaskService : ITaskService
 
         var tasks = await query.Skip(filter.Skip).Take(filter.Take).ToListAsync();
 
-        return tasks.Select(MapToDto).ToList();
+        var dtos = new List<TaskDto>();
+        foreach (var task in tasks)
+        {
+            dtos.Add(await MapToDtoAsync(task));
+        }
+        return dtos;
     }
 
     public async Task<TaskDto> CreateTaskAsync(CreateTaskDto dto, string userId)
@@ -110,7 +127,7 @@ public class TaskService : ITaskService
             dueDate = DateTime.SpecifyKind(dto.DueDate.Value, DateTimeKind.Utc);
         }
 
-        var task = new TaskManagement.Api.Models.TaskManagement 
+        var task = new TaskManagement.Api.Models.TaskManagement
         {
             Id = Guid.NewGuid(),
             ProjectId = dto.ProjectId,
@@ -163,7 +180,7 @@ public class TaskService : ITaskService
             throw;
         }
 
-        return MapToDto(task);
+        return await MapToDtoAsync(task);
     }
 
     public async Task<TaskDto> UpdateTaskAsync(Guid taskId, UpdateTaskDto dto, string userId)
@@ -195,16 +212,22 @@ public class TaskService : ITaskService
         }
         task.UpdatedAt = DateTime.UtcNow;
 
-        // Update assignments
-        _context.TaskAssignments.RemoveRange(task.Assignments);
+        // Update assignments - remove old ones from database first
+        var existingAssignments = await _context
+            .TaskAssignments.Where(a => a.TaskId == taskId)
+            .ToListAsync();
+        _context.TaskAssignments.RemoveRange(existingAssignments);
+
+        // Add new assignments
         if (dto.AssignedUserIds != null && dto.AssignedUserIds.Count > 0)
         {
             foreach (var assignedUserId in dto.AssignedUserIds)
             {
-                task.Assignments.Add(
+                _context.TaskAssignments.Add(
                     new TaskAssignment
                     {
                         Id = Guid.NewGuid(),
+                        TaskId = taskId,
                         UserId = assignedUserId,
                         AssignedAt = DateTime.UtcNow,
                     }
@@ -214,7 +237,7 @@ public class TaskService : ITaskService
 
         await _context.SaveChangesAsync();
 
-        return MapToDto(task);
+        return await MapToDtoAsync(task);
     }
 
     public async Task DeleteTaskAsync(Guid taskId, string userId)
@@ -253,11 +276,28 @@ public class TaskService : ITaskService
 
         await _context.SaveChangesAsync();
 
-        return MapToDto(task);
+        return await MapToDtoAsync(task);
     }
 
-    private TaskDto MapToDto(TaskManagement.Api.Models.TaskManagement task)
+    private async Task<TaskDto> MapToDtoAsync(TaskManagement.Api.Models.TaskManagement task)
     {
+        var assignments = new List<TaskAssignmentDto>();
+
+        foreach (var assignment in task.Assignments)
+        {
+            var (userName, userEmail) = await GetUserInfoAsync(assignment.UserId);
+            assignments.Add(
+                new TaskAssignmentDto
+                {
+                    Id = assignment.Id,
+                    UserId = assignment.UserId,
+                    UserName = userName,
+                    UserEmail = userEmail,
+                    AssignedAt = assignment.AssignedAt,
+                }
+            );
+        }
+
         return new TaskDto
         {
             Id = task.Id,
@@ -270,16 +310,52 @@ public class TaskService : ITaskService
             CreatedBy = task.CreatedBy,
             CreatedAt = task.CreatedAt,
             UpdatedAt = task.UpdatedAt,
-            Assignments = task
-                .Assignments.Select(a => new TaskAssignmentDto
-                {
-                    Id = a.Id,
-                    UserId = a.UserId,
-                    AssignedAt = a.AssignedAt,
-                })
-                .ToList(),
+            Assignments = assignments,
             CommentCount = task.Comments.Count,
             AttachmentCount = task.Attachments.Count,
         };
+    }
+
+    private async Task<(string Name, string Email)> GetUserInfoAsync(string userId)
+    {
+        // Check cache first
+        if (_userCache.TryGetValue(userId, out var cached))
+            return cached;
+
+        try
+        {
+            var identityApiUrl = _configuration["IdentityApiUrl"];
+            if (string.IsNullOrEmpty(identityApiUrl))
+                return (userId, "");
+
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetAsync($"{identityApiUrl}/users/{userId}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Cache the failed lookup to avoid repeated requests
+                _userCache[userId] = (userId, "");
+                return (userId, "");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(content);
+            var root = doc.RootElement;
+
+            var name = root.GetProperty("userName").GetString() ?? userId;
+            var email = root.TryGetProperty("email", out var emailProp)
+                ? emailProp.GetString() ?? ""
+                : "";
+
+            var result = (name, email);
+            _userCache[userId] = result;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"DEBUG: Failed to fetch user info for {userId}: {ex.Message}");
+            _userCache[userId] = (userId, "");
+            return (userId, "");
+        }
     }
 }

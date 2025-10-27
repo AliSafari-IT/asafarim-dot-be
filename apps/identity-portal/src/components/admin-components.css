@@ -447,6 +447,42 @@
 
 .admin-table-button:hover { transform: translateY(-1px); }
 
+.admin-table-button-danger {
+  background: var(--color-danger, #ef4444);
+}
+
+.admin-table-button-danger:hover {
+  background: var(--color-danger-dark, #dc2626);
+  transform: translateY(-1px);
+}
+
+.admin-table-button-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.admin-table-button-warning {
+  background: var(--color-warning, #f59e0b);
+}
+
+.admin-table-button-warning:hover {
+  background: var(--color-warning-dark, #d97706);
+  transform: translateY(-1px);
+}
+
+.admin-table-button-warning:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.admin-table-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 /* Available roles (unselected) chip list */
 .available-roles-container {
   display: flex;

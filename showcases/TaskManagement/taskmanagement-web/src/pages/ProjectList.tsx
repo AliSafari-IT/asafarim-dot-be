@@ -22,6 +22,7 @@ export default function ProjectList() {
     const loadProjects = async () => {
       try {
         setLoading(true)
+        setError(null)
         let allProjectsList: ProjectDto[] = []
         const memberRoles = new Map<string, ProjectRole>()
 
@@ -29,19 +30,24 @@ export default function ProjectList() {
         
         if (isAuthenticated) {
           // Authenticated users: get their projects and shared projects
-          const [myProjects, sharedProjects] = await Promise.all([
-            projectService.getMyProjects(),
-            projectService.getSharedProjects(),
-          ])
-          
-          // Track which projects are owned by the user
-          ownedIds = new Set(myProjects.map(p => p.id))
-          
-          // Deduplicate projects by ID (owned projects may also appear in shared)
-          const projectMap = new Map<string, ProjectDto>()
-          myProjects.forEach(p => projectMap.set(p.id, p))
-          sharedProjects.forEach(p => projectMap.set(p.id, p))
-          allProjectsList = Array.from(projectMap.values())
+          try {
+            const [myProjects, sharedProjects] = await Promise.all([
+              projectService.getMyProjects(),
+              projectService.getSharedProjects(),
+            ])
+            
+            // Track which projects are owned by the user
+            ownedIds = new Set(myProjects.map(p => p.id))
+            
+            // Deduplicate projects by ID (owned projects may also appear in shared)
+            const projectMap = new Map<string, ProjectDto>()
+            myProjects.forEach(p => projectMap.set(p.id, p))
+            sharedProjects.forEach(p => projectMap.set(p.id, p))
+            allProjectsList = Array.from(projectMap.values())
+          } catch (err) {
+            console.error('Failed to fetch projects:', err)
+            throw new Error(`Failed to fetch projects: ${err instanceof Error ? err.message : 'Unknown error'}`)
+          }
 
           // Fetch member roles for each project
           for (const project of allProjectsList) {
@@ -59,21 +65,28 @@ export default function ProjectList() {
           setOwnedProjectIds(ownedIds)
         } else {
           // Unauthenticated users: get only public projects
-          allProjectsList = await projectService.getAllPublicProjects();
+          try {
+            allProjectsList = await projectService.getAllPublicProjects();
+          } catch (err) {
+            console.error('Failed to fetch public projects:', err)
+            throw new Error(`Failed to fetch public projects: ${err instanceof Error ? err.message : 'Unknown error'}`)
+          }
         }
 
         setAllProjects(allProjectsList)
         setProjectMembers(memberRoles)
         applyFilter(allProjectsList, 'all', memberRoles, ownedIds)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load projects')
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load projects'
+        console.error('Error in loadProjects:', errorMessage, err)
+        setError(errorMessage)
       } finally {
         setLoading(false)
       }
     }
 
     loadProjects()
-  }, [isAuthenticated, user?.sub])
+  }, [isAuthenticated, user?.id])
 
   const normalizeRole = (role: string | number | undefined): ProjectRole | null => {
     // Handle undefined
@@ -181,7 +194,26 @@ export default function ProjectList() {
   }
 
   if (error) {
-    return <div className="projects-error">{error}</div>
+    return (
+      <div className="projects-page">
+        <div className="projects-header">
+          <h1>Projects</h1>
+        </div>
+        <div className="projects-error">
+          <h2>⚠️ Error Loading Projects</h2>
+          <p><strong>Error:</strong> {error}</p>
+          <p style={{ fontSize: '0.9em', color: '#999', marginTop: '1em' }}>
+            Check the browser console (F12) for more details.
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{ marginTop: '1em', padding: '0.5em 1em', cursor: 'pointer' }}
+          >
+            🔄 Retry
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -168,6 +168,8 @@ builder
 // Register application services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IPasswordSetupTokenService, PasswordSetupTokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configure authorization policies
 builder.Services.AddAuthorization(options =>

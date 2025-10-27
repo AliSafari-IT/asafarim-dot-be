@@ -1,3 +1,4 @@
+using Identity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,26 @@ public class AdminController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+    private readonly IPasswordSetupTokenService _passwordSetupTokenService;
+    private readonly IEmailService _emailService;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<AdminController> _logger;
 
     public AdminController(
         UserManager<AppUser> userManager,
-        RoleManager<IdentityRole<Guid>> roleManager
+        RoleManager<IdentityRole<Guid>> roleManager,
+        IPasswordSetupTokenService passwordSetupTokenService,
+        IEmailService emailService,
+        IConfiguration configuration,
+        ILogger<AdminController> logger
     )
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _passwordSetupTokenService = passwordSetupTokenService;
+        _emailService = emailService;
+        _configuration = configuration;
+        _logger = logger;
     }
 
     [HttpGet("users")]
@@ -75,7 +88,7 @@ public class AdminController : ControllerBase
         }
         return Ok(new { id = user.Id });
     }
-    
+
     [HttpPost("users/with-null-password")]
     public async Task<IActionResult> CreateUserWithNullPassword(AdminUserUpsert req)
     {
@@ -86,19 +99,19 @@ public class AdminController : ControllerBase
             {
                 return BadRequest(new { message = "Email is required" });
             }
-            
+
             // Create user object
             var user = new AppUser
             {
                 Id = Guid.NewGuid(),
                 Email = req.Email,
                 UserName = req.UserName ?? req.Email,
-                EmailConfirmed = true // Auto-confirm email for admin-created users
+                EmailConfirmed = true, // Auto-confirm email for admin-created users
             };
-            
+
             // Create user without password
             var result = await _userManager.CreateAsync(user);
-            
+
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -107,7 +120,7 @@ public class AdminController : ControllerBase
                 }
                 return ValidationProblem(ModelState);
             }
-            
+
             // Add roles if specified
             if (req.Roles != null && req.Roles.Any())
             {
@@ -119,25 +132,51 @@ public class AdminController : ControllerBase
                         validRoles.Add(role);
                     }
                 }
-                
+
                 if (validRoles.Any())
                 {
                     await _userManager.AddToRolesAsync(user, validRoles);
                 }
             }
-            
-            return Ok(new { 
-                id = user.Id.ToString(),
-                email = user.Email,
-                userName = user.UserName,
-                message = "User created successfully with null password hash. User will need to set password on first login."
-            });
+
+            // Generate magic link token
+            var token = await _passwordSetupTokenService.GenerateTokenAsync(
+                user.Id,
+                expirationMinutes: 1440
+            ); // 24 hours
+
+            // Build the magic link URL
+            var baseUrl =
+                _configuration["PasswordSetup:BaseUrl"] ?? "http://identity.asafarim.local:5101";
+            var magicLink = $"{baseUrl}/setup-password?token={token}";
+
+            // Send email with magic link
+            await _emailService.SendPasswordSetupEmailAsync(user.Email!, magicLink);
+
+            _logger.LogInformation(
+                "User created with null password and magic link sent: {Email}",
+                user.Email
+            );
+
+            return Ok(
+                new
+                {
+                    id = user.Id.ToString(),
+                    email = user.Email,
+                    userName = user.UserName,
+                    message = "User created successfully. Magic link sent to email.",
+                    magicLink = magicLink, // For development/testing only
+                }
+            );
         }
         catch (Exception ex)
         {
             // Log the exception
-            Console.Error.WriteLine($"Error creating user with null password: {ex.Message}");
-            return StatusCode(500, new { message = "An error occurred while creating the user", error = ex.Message });
+            _logger.LogError(ex, "Error creating user with null password: {Message}", ex.Message);
+            return StatusCode(
+                500,
+                new { message = "An error occurred while creating the user", error = ex.Message }
+            );
         }
     }
 
@@ -216,64 +255,70 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("users/{id:guid}/reset-password")]
-    public async Task<IActionResult> ResetUserPassword(Guid id, AdminResetPasswordRequest req)
+    public async Task<IActionResult> ResetUserPassword(Guid id)
     {
         try
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
                 return NotFound(new { message = $"User with ID {id} not found" });
-            
-            // Remove existing password if any
-            if (!string.IsNullOrEmpty(user.PasswordHash))
+
+            // Remove the user's password by setting PasswordHash to null
+            user.PasswordHash = null;
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
             {
-                // Generate a reset token
-                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                
-                // Reset the password with the new one or a generated one
-                var result = await _userManager.ResetPasswordAsync(
-                    user,
-                    resetToken,
-                    req.NewPassword ?? Guid.NewGuid().ToString("N") + "Aa1!"
-                );
-                
-                if (!result.Succeeded)
+                foreach (var error in updateResult.Errors)
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(error.Code, error.Description);
-                    }
-                    return ValidationProblem(ModelState);
+                    ModelState.AddModelError(error.Code, error.Description);
                 }
+                return ValidationProblem(ModelState);
             }
-            else
-            {
-                // If user has no password, set one directly
-                var result = await _userManager.AddPasswordAsync(
-                    user,
-                    req.NewPassword ?? Guid.NewGuid().ToString("N") + "Aa1!"
-                );
-                
-                if (!result.Succeeded)
+
+            // Revoke any existing password setup tokens for this user
+            await _passwordSetupTokenService.RevokeUserTokensAsync(user.Id);
+
+            // Generate a new magic link token
+            var token = await _passwordSetupTokenService.GenerateTokenAsync(
+                user.Id,
+                expirationMinutes: 1440
+            ); // 24 hours
+
+            // Build the magic link URL
+            var baseUrl =
+                _configuration["PasswordSetup:BaseUrl"] ?? "http://identity.asafarim.local:5101";
+            var magicLink = $"{baseUrl}/setup-password?token={token}";
+
+            // Send email with magic link
+            await _emailService.SendPasswordSetupEmailAsync(user.Email!, magicLink);
+
+            _logger.LogInformation(
+                "Password reset for user {Email}. Magic link sent to email.",
+                user.Email
+            );
+
+            return Ok(
+                new
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(error.Code, error.Description);
-                    }
-                    return ValidationProblem(ModelState);
+                    message = "Password has been reset. Magic link sent to user's email.",
+                    email = user.Email,
+                    magicLink = magicLink, // For development/testing only
                 }
-            }
-            
-            return Ok(new { 
-                message = "Password has been reset successfully",
-                passwordWasGenerated = req.NewPassword == null
-            });
+            );
         }
         catch (Exception ex)
         {
             // Log the exception
-            Console.Error.WriteLine($"Error resetting password: {ex.Message}");
-            return StatusCode(500, new { message = "An error occurred while resetting the password", error = ex.Message });
+            _logger.LogError(ex, "Error resetting password: {Message}", ex.Message);
+            return StatusCode(
+                500,
+                new
+                {
+                    message = "An error occurred while resetting the password",
+                    error = ex.Message,
+                }
+            );
         }
     }
 }

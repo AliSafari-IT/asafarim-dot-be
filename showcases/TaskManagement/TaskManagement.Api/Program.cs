@@ -82,6 +82,7 @@ if (!string.IsNullOrEmpty(defaultConnection))
 
 // Add services
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();

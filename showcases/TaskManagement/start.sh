@@ -15,6 +15,16 @@ pnpm --filter @asafarim/core-api run build
 pnpm --filter @asafarim/ai-api run build
 pnpm --filter @asafarim/taskmanagement-api run build
 
+# kill all dotnet processes (Windows compatible)
+# Try multiple methods to kill dotnet processes
+taskkill /f /im dotnet.exe /t 2>/dev/null || true
+taskkill /f /im "Identity.Api.exe" /t 2>/dev/null || true
+taskkill /f /im "Core.Api.exe" /t 2>/dev/null || true
+taskkill /f /im "Ai.Api.exe" /t 2>/dev/null || true
+taskkill /f /im "TaskManagement.Api.exe" /t 2>/dev/null || true
+# Also try PowerShell if available
+powershell -Command "Get-Process | Where-Object {$_.ProcessName -like '*dotnet*' -or $_.ProcessName -like '*Identity*' -or $_.ProcessName -like '*Core*' -or $_.ProcessName -like '*Ai*'} | Stop-Process -Force -ErrorAction SilentlyContinue" 2>/dev/null || true
+
 # start all api projects: identity, core,ai, taskmanagement
 (cd "$ROOT_DIR/apis/Identity.Api" && dotnet run watch) &
 IDENTITY_API_PID=$!
@@ -52,7 +62,41 @@ echo "TaskManagement API PID: $TASKMANAGEMENT_API_PID"
 echo "TaskManagement Web App PID: $TASKMANAGEMENT_WEB_PID"
 echo "All services are running. Press Ctrl+C to stop."
 
-# Trap Ctrl+C to kill all processes
-trap "kill $IDENTITY_API_PID $IDENTITY_PORTAL_PID $WEB_PID $CORE_API_PID $AI_API_PID $TASKMANAGEMENT_API_PID $TASKMANAGEMENT_WEB_PID" SIGINT
+# Windows-compatible cleanup function
+cleanup() {
+    echo "Stopping all services..."
+    # Kill all dotnet processes
+    taskkill /f /im dotnet.exe /t 2>/dev/null || true
+    taskkill /f /im "Identity.Api.exe" /t 2>/dev/null || true
+    taskkill /f /im "Core.Api.exe" /t 2>/dev/null || true
+    taskkill /f /im "Ai.Api.exe" /t 2>/dev/null || true
+    taskkill /f /im "TaskManagement.Api.exe" /t 2>/dev/null || true
 
-wait
+    # Kill frontend processes
+    taskkill /f /im node.exe /t 2>/dev/null || true
+    taskkill /f /im "vite.exe" /t 2>/dev/null || true
+
+    # Also try PowerShell cleanup
+    powershell -Command "Get-Process | Where-Object {\$_.ProcessName -like '*dotnet*' -or \$_.ProcessName -like '*node*' -or \$_.ProcessName -like '*Identity*' -or \$_.ProcessName -like '*Core*' -or \$_.ProcessName -like '*Ai*'} | Stop-Process -Force -ErrorAction SilentlyContinue" 2>/dev/null || true
+
+    exit 0
+}
+
+# Windows-compatible wait mechanism
+# Since Windows doesn't have the same signal handling, we'll use a simple loop
+echo "All services are running. Press Ctrl+C to stop."
+
+# Set up basic signal handling for Windows (fallback)
+trap cleanup INT TERM
+
+# Wait for any key press or process termination
+while true; do
+    # Check if processes are still running (basic health check)
+    if ! tasklist | findstr /i "dotnet\|node\|Identity.Api\|Core.Api\|Ai.Api\|TaskManagement.Api" > /dev/null 2>&1; then
+        echo "Some processes have stopped. Exiting..."
+        cleanup
+    fi
+
+    # Sleep for 5 seconds before checking again
+    sleep 5
+done

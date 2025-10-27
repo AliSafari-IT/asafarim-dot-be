@@ -15,6 +15,7 @@ import Navbar from "./components/Navbar";
 // Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SetupPassword from "./pages/SetupPassword";
 import SyncLogout from "./pages/SyncLogout";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -49,6 +50,14 @@ function App() {
                 element={
                   <ProtectedRoute requireAuth={false}>
                     <Register />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setup-password"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <SetupPassword />
                   </ProtectedRoute>
                 }
               />

@@ -75,28 +75,42 @@ public class ProjectService : IProjectService
 
     public async Task<List<ProjectDto>> GetSharedProjectsAsync(string userId)
     {
-        IQueryable<TaskProject> query;
-
-        if (IsGlobalAdmin())
+        try
         {
-            // Global admins see all projects
-            query = _context.Projects;
+            Console.WriteLine($"DEBUG: GetSharedProjectsAsync called with userId: {userId}");
+            
+            IQueryable<TaskProject> query;
+
+            if (IsGlobalAdmin())
+            {
+                // Global admins see all projects
+                Console.WriteLine("DEBUG: User is global admin, showing all projects");
+                query = _context.Projects;
+            }
+            else
+            {
+                // Regular users see public projects and projects they're members of
+                Console.WriteLine($"DEBUG: User is not admin, filtering projects");
+                query = _context.Projects.Where(p =>
+                    p.UserId != userId && (!p.IsPrivate || p.Members.Any(m => m.UserId == userId))
+                );
+            }
+
+            var projects = await query
+                .Include(p => p.Tasks)
+                .Include(p => p.Members)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            Console.WriteLine($"DEBUG: Found {projects.Count} shared projects for user {userId}");
+            return projects.Select(MapToDto).ToList();
         }
-        else
+        catch (Exception ex)
         {
-            // Regular users see public projects and projects they're members of
-            query = _context.Projects.Where(p =>
-                p.UserId != userId && (!p.IsPrivate || p.Members.Any(m => m.UserId == userId))
-            );
+            Console.WriteLine($"ERROR in GetSharedProjectsAsync: {ex.Message}");
+            Console.WriteLine($"ERROR Stack: {ex.StackTrace}");
+            throw;
         }
-
-        var projects = await query
-            .Include(p => p.Tasks)
-            .Include(p => p.Members)
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
-
-        return projects.Select(MapToDto).ToList();
     }
 
     public async Task<List<ProjectDto>> GetPublicProjectsAsync()

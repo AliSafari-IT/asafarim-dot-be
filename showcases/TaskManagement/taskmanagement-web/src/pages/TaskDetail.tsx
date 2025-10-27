@@ -2,13 +2,17 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import taskService, { type TaskDto, TaskStatus, TaskPriority } from '../api/taskService'
 import commentService, { type TaskCommentDto } from '../api/commentService'
+import memberService, { ProjectRole } from '../api/memberService'
+import { useAuth } from '@asafarim/shared-ui-react'
+import TaskAssignees from '../components/TaskAssignees'
 import UserDisplay from '../components/UserDisplay'
 import './TaskDetail.css'
 
 export default function TaskDetail() {
   const { taskId } = useParams<{ taskId: string }>()
   const navigate = useNavigate()
-  
+  const { isAuthenticated, user } = useAuth()
+
   const [task, setTask] = useState<TaskDto | null>(null)
   const [comments, setComments] = useState<TaskCommentDto[]>([])
   const [loading, setLoading] = useState(true)
@@ -17,17 +21,18 @@ export default function TaskDetail() {
   const [submittingComment, setSubmittingComment] = useState(false)
   const [editingComment, setEditingComment] = useState<string | null>(null)
   const [editCommentText, setEditCommentText] = useState('')
+  const [currentUserRole, setCurrentUserRole] = useState<ProjectRole | null>(null)
 
   useEffect(() => {
     if (taskId) {
       loadTaskData()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskId])
+  }, [taskId, user?.id])
 
   const loadTaskData = async () => {
     if (!taskId) return
-    
+
     try {
       setLoading(true)
       const [taskData, commentsData] = await Promise.all([
@@ -36,11 +41,33 @@ export default function TaskDetail() {
       ])
       setTask(taskData)
       setComments(commentsData)
+
+      // Load user's role in the project if authenticated
+      if (isAuthenticated && user?.id) {
+        await loadUserRole(taskData.projectId)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load task')
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadUserRole = async (projectId: string) => {
+    if (!user?.id) return
+    try {
+      const members = await memberService.getProjectMembers(projectId)
+      const userMember = members.find(m => m.userId === user.id)
+      if (userMember) {
+        setCurrentUserRole(userMember.role)
+      }
+    } catch (err) {
+      console.error('Failed to load user role:', err)
+    }
+  }
+
+  const handleTaskUpdate = (updatedTask: TaskDto) => {
+    setTask(updatedTask)
   }
 
   const handleStatusChange = async (newStatus: TaskStatus) => {
@@ -308,20 +335,15 @@ export default function TaskDetail() {
           </div>
 
           {/* Assignees */}
-          <div className="sidebar-section">
-            <h3>Assignees ({task.assignments.length})</h3>
-            {task.assignments.length === 0 ? (
-              <p className="no-assignees">No assignees</p>
-            ) : (
-              <ul className="assignees-list">
-                {task.assignments.map(assignment => (
-                  <li key={assignment.id} className="assignee-item">
-                    <span>👤 {assignment.userId}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {currentUserRole !== null && user?.id && task && (
+            <TaskAssignees
+              projectId={task.projectId}
+              task={task}
+              currentUserId={user.id}
+              currentUserRole={currentUserRole}
+              onTaskUpdate={handleTaskUpdate}
+            />
+          )}
 
           {/* Attachments */}
           {task.attachmentCount > 0 && (

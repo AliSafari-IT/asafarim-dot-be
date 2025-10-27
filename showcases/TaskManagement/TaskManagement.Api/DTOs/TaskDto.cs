@@ -63,5 +63,7 @@ public class TaskAssignmentDto
 {
     public Guid Id { get; set; }
     public string UserId { get; set; } = string.Empty;
+    public string? UserName { get; set; }
+    public string? UserEmail { get; set; }
     public DateTime AssignedAt { get; set; }
 }

@@ -12,6 +12,7 @@ export const useIdentityPortalAuth = () => {
   const sharedAuth = useSharedAuth(authConfig);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [passwordSetupRequired, setPasswordSetupRequired] = useState<{ userId: string; email: string } | null>(null);
 
   // Direct login method for identity-portal
   const login = useCallback(async (data: LoginRequest) => {
@@ -24,8 +25,12 @@ export const useIdentityPortalAuth = () => {
       
       // Check if password setup is required
       if ('requiresPasswordSetup' in response && response.requiresPasswordSetup) {
-        // Handle password setup case if needed
-        setError('Password setup required');
+        console.log('🔐 Password setup required for user:', response.email);
+        setPasswordSetupRequired({
+          userId: response.userId,
+          email: response.email
+        });
+        setError(null); // Clear any previous errors
         return false;
       }
       
@@ -99,8 +104,18 @@ export const useIdentityPortalAuth = () => {
       
       return true;
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to login";
-      console.error('❌ Login failed:', errorMessage);
+      let errorMessage = "Failed to login";
+      
+      // Check if error has a code property (from ApiError)
+      if (error && typeof error === 'object' && 'code' in error) {
+        const apiError = error as { message?: string; code?: string };
+        errorMessage = apiError.message || errorMessage;
+        console.error('❌ Login failed with code:', apiError.code, 'Message:', errorMessage);
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+        console.error('❌ Login failed:', errorMessage);
+      }
+      
       setError(errorMessage);
       return false;
     } finally {
@@ -232,6 +247,8 @@ export const useIdentityPortalAuth = () => {
     clearError,
     isLoading,
     updateProfile,
+    passwordSetupRequired,
+    setPasswordSetupRequired,
   };
 };
 
