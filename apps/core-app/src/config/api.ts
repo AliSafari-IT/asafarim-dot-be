@@ -6,7 +6,7 @@ interface ImportMetaEnv {
 const env = import.meta.env as unknown as ImportMetaEnv;
 // /api/core/* -> http://127.0.0.1:5102/*
 
-export const CORE_API_URL = env.VITE_CORE_API_URL || 'http://api.asafarim.local:5102/api/core';
+export const CORE_API_URL = env.VITE_CORE_API_URL || 'http://core.asafarim.local:5102/api/core';
 
 // API endpoints
 export const endpoints = {
