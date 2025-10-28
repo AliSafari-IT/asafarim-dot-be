@@ -26,7 +26,7 @@ public class TaskManagementDbContext : DbContext
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.UserId).IsRequired().HasMaxLength(100);
-            // IsPrivate is required and must be explicitly set by the application
+            entity.Property(e => e.IsPrivate).HasDefaultValue(true);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.HasIndex(e => e.UserId);

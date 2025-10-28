@@ -228,7 +228,9 @@ namespace TaskManagement.Api.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<bool>("IsPrivate")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
