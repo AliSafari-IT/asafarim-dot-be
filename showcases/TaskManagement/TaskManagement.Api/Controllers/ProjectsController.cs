@@ -141,6 +141,7 @@ public class ProjectsController : ControllerBase
             }
 
             Console.WriteLine($"DEBUG: Creating project for user: {userId}");
+            Console.WriteLine($"DEBUG: Project DTO - Name: {dto.Name}, Description: {dto.Description}, IsPrivate: {dto.IsPrivate}");
 
             var project = await _projectService.CreateProjectAsync(dto, userId);
             return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
@@ -148,6 +149,7 @@ public class ProjectsController : ControllerBase
         catch (Exception ex)
         {
             Console.WriteLine($"DEBUG: Error in CreateProject: {ex.Message}");
+            Console.WriteLine($"DEBUG: Stack trace: {ex.StackTrace}");
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
