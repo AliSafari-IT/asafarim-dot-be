@@ -143,21 +143,36 @@ public class ProjectService : IProjectService
 
     public async Task<ProjectDto> CreateProjectAsync(CreateProjectDto dto, string userId)
     {
-        var project = new TaskProject
+        try
         {
-            Id = Guid.NewGuid(),
-            Name = dto.Name,
-            Description = dto.Description,
-            UserId = userId,
-            IsPrivate = dto.IsPrivate,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-        };
+            Console.WriteLine($"DEBUG: CreateProjectAsync called with userId: {userId}, isPrivate: {dto.IsPrivate}");
 
-        _context.Projects.Add(project);
-        await _context.SaveChangesAsync();
+            var project = new TaskProject
+            {
+                Id = Guid.NewGuid(),
+                Name = dto.Name,
+                Description = dto.Description,
+                UserId = userId,
+                IsPrivate = dto.IsPrivate,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            };
 
-        return MapToDto(project);
+            Console.WriteLine($"DEBUG: Adding project to context: {project.Id}");
+            _context.Projects.Add(project);
+            
+            Console.WriteLine("DEBUG: Saving changes to database");
+            await _context.SaveChangesAsync();
+
+            Console.WriteLine($"DEBUG: Project created successfully: {project.Id}");
+            return MapToDto(project);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR in CreateProjectAsync: {ex.Message}");
+            Console.WriteLine($"ERROR Stack: {ex.StackTrace}");
+            throw;
+        }
     }
 
     public async Task<ProjectDto> UpdateProjectAsync(
