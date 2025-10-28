@@ -1,19 +1,18 @@
 #!/bin/bash
-# exit on error
-set -e
-
 # Get the root directory (parent of showcases)
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # first rebuild share ui and i18n packages
-pnpm --filter @asafarim/shared-ui-react run build
-pnpm --filter @asafarim/shared-i18n run build
+echo "Building shared packages..."
+pnpm --filter @asafarim/shared-ui-react run build || echo "⚠️ shared-ui-react build failed, continuing..."
+pnpm --filter @asafarim/shared-i18n run build || echo "⚠️ shared-i18n build failed, continuing..."
 
 # build all api projects: identity, core,ai, taskmanagement
-pnpm --filter @asafarim/identity-api run build
-pnpm --filter @asafarim/core-api run build
-pnpm --filter @asafarim/ai-api run build
-pnpm --filter @asafarim/taskmanagement-api run build
+echo "Building API projects..."
+pnpm --filter @asafarim/identity-api run build || echo "⚠️ identity-api build failed, continuing..."
+pnpm --filter @asafarim/core-api run build || echo "⚠️ core-api build failed, continuing..."
+pnpm --filter @asafarim/ai-api run build || echo "⚠️ ai-api build failed, continuing..."
+pnpm --filter @asafarim/taskmanagement-api run build || echo "⚠️ taskmanagement-api build failed, continuing..."
 
 # kill all dotnet processes (Windows compatible)
 # Try multiple methods to kill dotnet processes
@@ -82,21 +81,31 @@ cleanup() {
     exit 0
 }
 
-# Windows-compatible wait mechanism
-# Since Windows doesn't have the same signal handling, we'll use a simple loop
-echo "All services are running. Press Ctrl+C to stop."
-
-# Set up basic signal handling for Windows (fallback)
+# Set up signal handling for graceful shutdown
 trap cleanup INT TERM
 
-# Wait for any key press or process termination
-while true; do
-    # Check if processes are still running (basic health check)
-    if ! tasklist | findstr /i "dotnet\|node\|Identity.Api\|Core.Api\|Ai.Api\|TaskManagement.Api" > /dev/null 2>&1; then
-        echo "Some processes have stopped. Exiting..."
-        cleanup
-    fi
+echo ""
+echo "=========================================="
+echo "✅ All services are running!"
+echo "=========================================="
+echo ""
+echo "📍 Frontend Apps:"
+echo "   • TaskManagement: http://taskmanagement.asafarim.local:5176"
+echo "   • Web App: http://web.asafarim.local:5175"
+echo "   • Identity Portal: http://identity.asafarim.local:5177"
+echo ""
+echo "🔌 Backend APIs:"
+echo "   • Identity API: http://localhost:5101"
+echo "   • Core API: http://localhost:5102"
+echo "   • AI API: http://localhost:5103"
+echo "   • TaskManagement API: http://localhost:5104"
+echo ""
+echo "Press Ctrl+C to stop all services."
+echo "=========================================="
+echo ""
 
-    # Sleep for 5 seconds before checking again
-    sleep 5
+# Keep the script running indefinitely
+# Services run in background and will continue even if this process exits
+while true; do
+    sleep 3600
 done

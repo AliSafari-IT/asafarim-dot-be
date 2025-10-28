@@ -12,8 +12,8 @@ using TaskManagement.Api.Data;
 namespace TaskManagement.Api.Migrations
 {
     [DbContext(typeof(TaskManagementDbContext))]
-    [Migration("20251026193620_RegenerateSnapshot")]
-    partial class RegenerateSnapshot
+    [Migration("20251028013647_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

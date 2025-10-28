@@ -54,6 +54,9 @@
     <!-- Data layer -->
     <Compile Include="Data\TaskManagementDbContext.cs" />
 
+    <!-- Migrations -->
+    <Compile Include="Migrations\**\*.cs" />
+
     <!-- Controllers -->
     <Compile Include="Controllers\**\*.cs" />
 
