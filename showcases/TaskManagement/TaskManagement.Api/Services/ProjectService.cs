@@ -148,6 +148,7 @@ public class ProjectService : IProjectService
         {
             Console.WriteLine($"DEBUG: CreateProjectAsync called with userId: {userId}, isPrivate: {dto.IsPrivate}");
 
+            var now = DateTime.UtcNow;
             var project = new TaskProject
             {
                 Id = Guid.NewGuid(),
@@ -155,7 +156,8 @@ public class ProjectService : IProjectService
                 Description = dto.Description,
                 UserId = userId,
                 IsPrivate = dto.IsPrivate,
-                // Don't set CreatedAt/UpdatedAt - let database handle via CURRENT_TIMESTAMP
+                CreatedAt = now,
+                UpdatedAt = now,
             };
 
             Console.WriteLine($"DEBUG: Adding project to context: {project.Id}");
