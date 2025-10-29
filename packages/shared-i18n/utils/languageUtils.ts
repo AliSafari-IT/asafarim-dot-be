@@ -86,20 +86,14 @@ const getIdentityApiUrl = (): string => {
 
 /**
  * Update user language preference on backend
+ * Note: Language preference is stored in cookies across all apps
+ * No backend sync needed - cookies are shared across .asafarim.local domain
  */
 export const updateUserLanguagePreference = async (language: SupportedLanguage): Promise<boolean> => {
   try {
-    const baseUrl = getIdentityApiUrl();
-    const response = await fetch(`${baseUrl}/api/me/preferences`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
-      body: JSON.stringify({ preferredLanguage: language })
-    });
-    
-    return response.ok;
+    // Language is already set in cookie by setLanguageCookie()
+    // No backend call needed - cookies are the source of truth
+    return true;
   } catch (error) {
     console.error('Failed to update language preference:', error);
     return false;
@@ -108,19 +102,16 @@ export const updateUserLanguagePreference = async (language: SupportedLanguage):
 
 /**
  * Fetch user language preference from backend
+ * Note: Language preference is stored in cookies across all apps
+ * No backend sync needed - cookies are shared across .asafarim.local domain
  */
 export const fetchUserLanguagePreference = async (): Promise<SupportedLanguage | null> => {
   try {
-    const baseUrl = getIdentityApiUrl();
-    const response = await fetch(`${baseUrl}/api/me/preferences`, {
-      method: 'GET',
-      credentials: 'include'
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      const lang = data.preferredLanguage;
-      return isSupportedLanguage(lang) ? lang : null;
+    // Language is already available in cookie
+    // No backend call needed - cookies are the source of truth
+    const cookieLang = getLanguageFromCookie();
+    if (cookieLang && isSupportedLanguage(cookieLang)) {
+      return cookieLang;
     }
   } catch (error) {
     console.error('Failed to fetch language preference:', error);

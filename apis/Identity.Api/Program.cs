@@ -170,6 +170,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IPasswordSetupTokenService, PasswordSetupTokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient<ISmartOpsRoleService, SmartOpsRoleService>();
 
 // Configure authorization policies
 builder.Services.AddAuthorization(options =>

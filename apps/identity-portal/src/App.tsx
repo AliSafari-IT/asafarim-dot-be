@@ -130,6 +130,9 @@ function App() {
                 }
               />
 
+              {/* Logout endpoint - clears auth and redirects to login */}
+              <Route path="/logout" element={<SyncLogout />} />
+              
               {/* Logout sync endpoint (not protected) */}
               <Route path="/sync-logout" element={<SyncLogout />} />
 

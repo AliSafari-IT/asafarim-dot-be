@@ -22,10 +22,10 @@ export default function Chat() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
-  // Configure useAuth to use AI API proxy endpoints
+  // Configure useAuth to use Identity API endpoints
   const authApiBase = isProduction
     ? "/api/auth"
-    : "http://ai-api.asafarim.local:5103/auth";
+    : "http://identity.asafarim.local:5101/auth";
   const {
     isAuthenticated,
     loading: authLoading,

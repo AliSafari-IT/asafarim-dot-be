@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <!-- Explicitly include only the correct files -->
+  <ItemGroup>
+    <!-- Core application files -->
+    <Compile Include="Program.cs" />
+
+    <!-- Models -->
+    <Compile Include="Models\DeviceStatus.cs" />
+    <Compile Include="Models\Device.cs" />
+    <Compile Include="Models\Reading.cs" />
+    <Compile Include="Models\UserRole.cs" />
+    <Compile Include="Models\User.cs" />
+
+    <!-- Services -->
+    <Compile Include="Services\IPermissionService.cs" />
+    <Compile Include="Services\PermissionService.cs" />
+    <Compile Include="Services\IDeviceService.cs" />
+    <Compile Include="Services\DeviceService.cs" />
+    <Compile Include="Services\IReadingService.cs" />
+    <Compile Include="Services\ReadingService.cs" />
+
+    <!-- DTOs -->
+    <Compile Include="DTOs\DeviceDto.cs" />
+    <Compile Include="DTOs\ReadingDto.cs" />
+    <Compile Include="DTOs\UserDto.cs" />
+
+    <!-- Data layer -->
+    <Compile Include="Data\SmartOpsDbContext.cs" />
+
+    <!-- Migrations -->
+    <Compile Include="Migrations\**\*.cs" />
+
+    <!-- Controllers -->
+    <Compile Include="Controllers\**\*.cs" />
+
+    <!-- Properties -->
+    <Compile Include="Properties\**\*.cs" />
+
+    <!-- Configuration files -->
+    <None Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

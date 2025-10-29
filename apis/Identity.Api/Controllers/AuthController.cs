@@ -20,6 +20,7 @@ public class AuthController : ControllerBase
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IPasswordSetupTokenService _passwordSetupTokenService;
     private readonly IEmailService _emailService;
+    private readonly ISmartOpsRoleService _smartOpsRoleService;
     private readonly IOptions<AuthOptions> _authOptions;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
@@ -31,6 +32,7 @@ public class AuthController : ControllerBase
         IRefreshTokenService refreshTokenService,
         IPasswordSetupTokenService passwordSetupTokenService,
         IEmailService emailService,
+        ISmartOpsRoleService smartOpsRoleService,
         IOptions<AuthOptions> authOptions,
         IConfiguration configuration,
         ILogger<AuthController> logger
@@ -42,6 +44,7 @@ public class AuthController : ControllerBase
         _refreshTokenService = refreshTokenService;
         _passwordSetupTokenService = passwordSetupTokenService;
         _emailService = emailService;
+        _smartOpsRoleService = smartOpsRoleService;
         _authOptions = authOptions;
         _configuration = configuration;
         _logger = logger;
@@ -87,7 +90,7 @@ public class AuthController : ControllerBase
         _logger.LogInformation("User registered successfully: {Email}", req.Email);
 
         // Generate tokens
-        var roleNames = await _userManager.GetRolesAsync(user);
+        var roleNames = await GetMergedRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
         var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
             user.Id,
@@ -158,7 +161,7 @@ public class AuthController : ControllerBase
         _logger.LogInformation("User logged in successfully: {Email}", req.Email);
 
         // Generate tokens
-        var roleNames = await _userManager.GetRolesAsync(user);
+        var roleNames = await GetMergedRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
         var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
             user.Id,
@@ -401,7 +404,7 @@ public class AuthController : ControllerBase
         }
 
         // Generate new access token
-        var roleNames = await _userManager.GetRolesAsync(user);
+        var roleNames = await GetMergedRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
 
         // Set new cookies
@@ -706,6 +709,34 @@ public class AuthController : ControllerBase
         return HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
     }
 
+    /// <summary>
+    /// Get merged roles from Identity API and SmartOps API
+    /// </summary>
+    private async Task<IEnumerable<string>> GetMergedRolesAsync(AppUser user)
+    {
+        try
+        {
+            // Get Identity API roles
+            var identityRoles = await _userManager.GetRolesAsync(user);
+            var allRoles = new HashSet<string>(identityRoles);
+
+            // Get SmartOps roles and add them
+            var smartOpsRoles = await _smartOpsRoleService.GetMergedRolesAsync(user.Id);
+            foreach (var role in smartOpsRoles)
+            {
+                allRoles.Add(role);
+            }
+
+            return allRoles;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error getting merged roles for user {UserId}, falling back to Identity API roles", user.Id);
+            // Fallback to Identity API roles only
+            return await _userManager.GetRolesAsync(user);
+        }
+    }
+
     private AuthResponse CreateAuthResponse(
         AppUser user,
         IEnumerable<string> roles,
@@ -811,7 +842,7 @@ public class AuthController : ControllerBase
         _logger.LogInformation("Password set successfully for user: {Email}", user.Email);
 
         // Generate tokens
-        var roleNames = await _userManager.GetRolesAsync(user);
+        var roleNames = await GetMergedRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
         var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
             user.Id,

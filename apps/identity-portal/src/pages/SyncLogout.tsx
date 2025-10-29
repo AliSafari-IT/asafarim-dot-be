@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 /**
- * Cross-origin logout sync page
- * When loaded (even in a hidden iframe), clears this origin's localStorage and auth state.
+ * Logout page
+ * Clears auth state and redirects to login
  */
 export default function SyncLogout() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     try {
       // Clear local auth storage for this subdomain
@@ -12,25 +15,39 @@ export default function SyncLogout() {
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user_info');
 
-      // Best-effort: clear known cookies on parent domain
+      // Clear known cookies on parent domain
       const rootDomain = '.asafarim.local';
       ['atk', 'rtk'].forEach((name) => {
         document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${rootDomain}; samesite=lax`;
       });
 
+      // Also try to clear on localhost for development
+      ['atk', 'rtk'].forEach((name) => {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; samesite=lax`;
+      });
+
       // Signal within this origin
       window.dispatchEvent(new Event('auth-signout'));
-    } catch {
-      // no-op
-    }
 
-    // If opened directly, optionally redirect to login
-    const params = new URLSearchParams(window.location.search);
-    const redirect = params.get('redirect');
-    if (redirect) {
-      window.location.replace(redirect);
+      // Redirect to login after a short delay to ensure cookies are cleared
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') || '/login';
+      
+      setTimeout(() => {
+        if (redirect.startsWith('http')) {
+          window.location.replace(redirect);
+        } else {
+          navigate(redirect);
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still redirect to login even if there's an error
+      setTimeout(() => {
+        navigate('/login');
+      }, 100);
     }
-  }, []);
+  }, [navigate]);
 
   return null;
 }

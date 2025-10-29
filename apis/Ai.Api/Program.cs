@@ -1,8 +1,10 @@
+using System.Text;
 using Ai.Api.Data;
 using Ai.Api.Extensions;
 using Ai.Api.OpenAI;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +17,48 @@ var openAiTemperature = double.TryParse(openAi["Temperature"], out var t) ? t : 
 var openAiMaxTokens = int.TryParse(openAi["MaxTokens"], out var mt) ? mt : 512;
 var useMockOnFailure = bool.TryParse(openAi["UseMockOnFailure"], out var umf) ? umf : true;
 
-// Remove authentication for now - make endpoints public like JobTools
-// builder.Services.AddAuthentication();
-// builder.Services.AddAuthorization();
+// JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("AuthJwt");
+var issuer = jwtSettings["Issuer"];
+var audience = jwtSettings["Audience"];
+var key = jwtSettings["Key"];
+
+if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNullOrEmpty(audience))
+{
+    builder
+        .Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            };
+
+            // Extract token from cookie if present
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    if (context.Request.Cookies.TryGetValue("atk", out var token))
+                    {
+                        context.Token = token;
+                    }
+                    return Task.CompletedTask;
+                },
+            };
+        });
+    builder.Services.AddAuthorization();
+}
 
 // CORS for the AI UI app with production domains
 // Get allowed origins from environment or use defaults
@@ -81,8 +122,11 @@ var app = builder.Build();
 
 app.UseCors("frontend");
 
-app.UseAuthentication();
-app.UseAuthorization();
+if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNullOrEmpty(audience))
+{
+    app.UseAuthentication();
+    app.UseAuthorization();
+}
 
 if (app.Environment.IsDevelopment())
 {

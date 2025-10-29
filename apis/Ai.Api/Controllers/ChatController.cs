@@ -30,7 +30,7 @@ namespace Ai.Api.Controllers
         [HttpPost("chat")]
         public async Task<ActionResult<ChatResponseDto>> SendMessage([FromBody] SendMessageDto request)
         {
-            var userId = "anonymous"; // Remove authentication requirement
+            var userId = GetCurrentUserId() ?? "anonymous";
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             ChatSession session;
