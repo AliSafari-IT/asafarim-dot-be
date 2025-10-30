@@ -4,6 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>true</EnableDefaultEmbeddedResourceItems>
+    <EnableDefaultNoneItems>true</EnableDefaultNoneItems>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,45 +22,14 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
-  <!-- Explicitly include only the correct files -->
   <ItemGroup>
-    <!-- Core application files -->
-    <Compile Include="Program.cs" />
-
-    <!-- Models -->
-    <Compile Include="Models\DeviceStatus.cs" />
-    <Compile Include="Models\Device.cs" />
-    <Compile Include="Models\Reading.cs" />
-    <Compile Include="Models\UserRole.cs" />
-    <Compile Include="Models\User.cs" />
-
-    <!-- Services -->
-    <Compile Include="Services\IPermissionService.cs" />
-    <Compile Include="Services\PermissionService.cs" />
-    <Compile Include="Services\IDeviceService.cs" />
-    <Compile Include="Services\DeviceService.cs" />
-    <Compile Include="Services\IReadingService.cs" />
-    <Compile Include="Services\ReadingService.cs" />
-
-    <!-- DTOs -->
-    <Compile Include="DTOs\DeviceDto.cs" />
-    <Compile Include="DTOs\ReadingDto.cs" />
-    <Compile Include="DTOs\UserDto.cs" />
-
-    <!-- Data layer -->
-    <Compile Include="Data\SmartOpsDbContext.cs" />
-
-    <!-- Migrations -->
-    <Compile Include="Migrations\**\*.cs" />
-
-    <!-- Controllers -->
-    <Compile Include="Controllers\**\*.cs" />
-
-    <!-- Properties -->
-    <Compile Include="Properties\**\*.cs" />
-
-    <!-- Configuration files -->
-    <None Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Exclude obj and bin folders -->
+    <Compile Remove="obj\**" />
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="obj\**" />
+    <None Remove="bin\**" />
   </ItemGroup>
 
 </Project>

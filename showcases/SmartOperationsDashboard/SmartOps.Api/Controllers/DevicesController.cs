@@ -15,15 +15,19 @@ public class DevicesController : ControllerBase
 {
     private readonly IDeviceService _deviceService;
     private readonly IPermissionService _permissionService;
+    private readonly IReadingService _readingService;
     private readonly ILogger<DevicesController> _logger;
 
     public DevicesController(
         IDeviceService deviceService,
         IPermissionService permissionService,
-        ILogger<DevicesController> logger)
+        IReadingService readingService,
+        ILogger<DevicesController> logger
+    )
     {
         _deviceService = deviceService;
         _permissionService = permissionService;
+        _readingService = readingService;
         _logger = logger;
     }
 
@@ -54,7 +58,15 @@ public class DevicesController : ControllerBase
         try
         {
             var (devices, total) = await _deviceService.GetDevicesAsync(filter);
-            return Ok(new { devices, total, page = filter.Page, pageSize = filter.PageSize });
+            return Ok(
+                new
+                {
+                    devices,
+                    total,
+                    page = filter.Page,
+                    pageSize = filter.PageSize,
+                }
+            );
         }
         catch (Exception ex)
         {
@@ -157,6 +169,73 @@ public class DevicesController : ControllerBase
         {
             _logger.LogError(ex, "Error deleting device {DeviceId}", id);
             return StatusCode(500, new { error = "Failed to delete device" });
+        }
+    }
+
+    /// <summary>
+    /// Seed database with sample readings for testing (Development only)
+    /// </summary>
+    [HttpPost("seed-readings")]
+    [AllowAnonymous] // Temporarily allow anonymous for testing
+    public async Task<ActionResult<object>> SeedReadings()
+    {
+        try
+        {
+            var devices = (
+                await _deviceService.GetDevicesAsync(new DeviceFilterDto { PageSize = 1000 })
+            ).devices;
+
+            if (devices == null || !devices.Any())
+            {
+                return BadRequest(new { error = "No devices found in the database" });
+            }
+
+            var random = new Random();
+            var readingsCreated = 0;
+            var now = DateTime.UtcNow;
+
+            foreach (var device in devices)
+            {
+                try
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        var reading = new CreateReadingDto
+                        {
+                            DeviceId = device.Id,
+                            Temperature = Math.Round(20 + random.NextDouble() * 10, 1),
+                            Humidity = Math.Round(35 + random.NextDouble() * 25, 1),
+                            Pressure = Math.Round(980 + random.NextDouble() * 40, 1),
+                            PowerConsumption = Math.Round(10 + random.NextDouble() * 15, 1),
+                            OperationCount = random.Next(100, 1000),
+                            RecordedAt = now.AddHours(-i * 4),
+                        };
+
+                        await _readingService.CreateReadingAsync(reading);
+                        readingsCreated++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error creating readings for device {device.Id}");
+                    // Continue with next device
+                }
+            }
+
+            return Ok(
+                new
+                {
+                    message = $"Successfully seeded {readingsCreated} readings for {devices.Count} devices",
+                    devicesCount = devices.Count,
+                    readingsPerDevice = 6,
+                    totalReadings = readingsCreated,
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in SeedReadings");
+            return StatusCode(500, new { error = ex.Message, details = ex.StackTrace });
         }
     }
 }

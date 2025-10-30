@@ -45,7 +45,7 @@ export interface DeviceListResponse {
 }
 
 class DeviceService {
-  private baseUrl = `${API_BASE_URL}/devices`
+  private baseUrl = `${API_BASE_URL}/api/devices`
 
   async getDevices(filter?: DeviceFilter): Promise<DeviceListResponse> {
     const params = new URLSearchParams()
@@ -83,7 +83,7 @@ class DeviceService {
   }
 
   async getSummary(): Promise<DeviceSummary> {
-    const response = await fetch(`${this.baseUrl}/summary`, {
+    const response = await fetch(`${API_BASE_URL}/api/devices/summary`, {
       method: 'GET',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -136,6 +136,137 @@ class DeviceService {
     if (!response.ok) {
       throw new Error(`Failed to delete device: ${response.statusText}`)
     }
+  }
+
+  async archiveDevice(id: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/${id}/archive`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to archive device: ${response.statusText}`)
+    }
+  }
+
+
+  async unarchiveDevice(id: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/${id}/unarchive`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to unarchive device: ${response.statusText}`)
+    }
+  }
+
+  async getDevicesByUserId(userId: string): Promise<Device[]> {
+    const response = await fetch(`${this.baseUrl}/user/${userId}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch devices by user ID: ${response.statusText}`)
+    }
+
+    return response.json()
+  }
+
+  async getDevicesByArchived(userId: string): Promise<Device[]> {
+    const response = await fetch(`${this.baseUrl}/user/${userId}/archived`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch devices by user ID: ${response.statusText}`)
+    }
+
+    return response.json()
+  }
+
+  // getReadings
+  async getReadings(deviceId: string): Promise<Reading[]> {
+    const response = await fetch(`${this.baseUrl}/${deviceId}/readings`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch readings for device ID: ${response.statusText}`)
+    }
+
+    return response.json()
+  }
+
+  async createReading(deviceId: string, reading: Reading): Promise<Reading> {
+    const response = await fetch(`${this.baseUrl}/${deviceId}/readings`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reading),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to create reading for device ID: ${response.statusText}`)
+    }
+
+    return response.json()
+  }
+
+  async updateReading(deviceId: string, readingId: string, reading: Reading): Promise<Reading> {
+    const response = await fetch(`${this.baseUrl}/${deviceId}/readings/${readingId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reading),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to update reading for device ID: ${response.statusText}`)
+    }
+
+    return response.json()
+  }
+
+  async deleteReading(deviceId: string, readingId: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/${deviceId}/readings/${readingId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete reading for device ID: ${response.statusText}`)
+    }
+  }
+
+  async getAllReadings(startDate?: Date, endDate?: Date): Promise<Reading[]> {
+    const readingsUrl = `${API_BASE_URL}/api/readings`
+    const params = new URLSearchParams()
+    if (startDate) params.append('startDate', startDate.toISOString())
+    if (endDate) params.append('endDate', endDate.toISOString())
+
+    const url = params.toString() ? `${readingsUrl}?${params}` : readingsUrl
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch readings: ${response.statusText}`)
+    }
+    const data = await response.json()
+    console.log(data.readings)
+    return data.readings || []
   }
 }
 

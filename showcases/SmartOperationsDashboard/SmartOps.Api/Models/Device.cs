@@ -6,11 +6,14 @@ namespace SmartOps.Api.Models;
 public class Device
 {
     public Guid Id { get; set; }
+    public string Type { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string SerialNumber { get; set; } = string.Empty;
     public string Location { get; set; } = string.Empty;
     public DeviceStatus Status { get; set; } = DeviceStatus.Offline;
     public string? Description { get; set; }
+    public DateTime? LastSeen { get; set; }
+
     
     // Metadata
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

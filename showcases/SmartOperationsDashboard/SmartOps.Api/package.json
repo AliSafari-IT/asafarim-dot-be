@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "predev": "kill-port 5105",
+    "clean": "dotnet clean SmartOps.Api.csproj && rimraf obj && rimraf bin",
+    "predev": "kill-port 5105 && dotnet clean SmartOps.Api.csproj && rimraf obj && rimraf bin",
     "dev": "dotnet watch run --project SmartOps.Api.csproj",
     "start": "dotnet run --project SmartOps.Api.csproj",
     "build": "dotnet build SmartOps.Api.csproj",
@@ -12,7 +13,8 @@
     "api": "dotnet watch run --project SmartOps.Api.csproj"
   },
   "devDependencies": {
-    "kill-port": "^2.0.1"
+    "kill-port": "^2.0.1",
+    "rimraf": "^5.0.1"
   },
   "keywords": [],
   "author": "",

@@ -26,6 +26,7 @@ public class CreateReadingDto
     public double Pressure { get; set; }
     public double PowerConsumption { get; set; }
     public int OperationCount { get; set; }
+    public DateTime RecordedAt { get; set; }
 }
 
 /// <summary>

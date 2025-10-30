@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@asafarim/shared-ui-react'
-import { API_BASE_URL } from '../../api/config'
+import { API_BASE_URL, API_BASE_URL_ADMIN } from '../../api/config'
 import './UserManagement.css'
 
-interface UserPermission {
+interface User {
   id: string
-  appUserId: string
-  role: string
-  isActive: boolean
-  createdAt: string
-  updatedAt: string
+  email?: string
+  userName?: string
+  roles: string[]
+  isActive?: boolean
+  createdAt?: string
 }
 
 export default function UserManagement() {
   const { user, isAuthenticated } = useAuth()
-  const [users, setUsers] = useState<UserPermission[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const [roles, setRoles] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [dataActionLoading, setDataActionLoading] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [editRole, setEditRole] = useState<string>('Member')
+  const [editRole, setEditRole] = useState<string>('')
 
   useEffect(() => {
     if (!isAuthenticated) return
@@ -26,31 +29,38 @@ export default function UserManagement() {
   }, [isAuthenticated])
 
   const fetchUsers = async () => {
+    if (!isAuthenticated) return
+    
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/admin/users`, {
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
+      const [usersRes, rolesRes] = await Promise.all([
+        fetch(`${API_BASE_URL_ADMIN}/admin/users`, { credentials: 'include' }),
+        fetch(`${API_BASE_URL_ADMIN}/admin/roles`, { credentials: 'include' })
+      ])
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('🔐 Your session has expired. Please log in again.')
-        } else if (response.status === 403) {
-          throw new Error('🔒 You don\'t have permission to access user management.')
-        } else if (response.status === 404) {
-          throw new Error('❌ User management endpoint not found.')
-        } else {
-          throw new Error(`❌ Failed to fetch users: ${response.statusText}`)
-        }
+      if (!usersRes.ok || !rolesRes.ok) {
+        const status = !usersRes.ok ? usersRes.status : rolesRes.status
+        let message = 'Failed to load users and roles'
+        if (status === 401) message = '🔐 Your session has expired. Please log in again.'
+        if (status === 403) message = '🔒 You are not authorized to view this page (admin role required).'
+        const body = !usersRes.ok ? await usersRes.text() : await rolesRes.text()
+        throw new Error(`${message}${body ? `: ${body}` : ''}`)
       }
 
-      const data = await response.json()
-      setUsers(data)
+      const usersData = await usersRes.json()
+      const rolesData = await rolesRes.json()
+      
+      setUsers(usersData)
+      setRoles(rolesData.map((r: { name: string }) => r.name))
       setError(null)
     } catch (err) {
-      const message = err instanceof Error ? err.message : '❌ Failed to fetch users'
+      const message = err instanceof Error ? err.message : '❌ Failed to fetch users and roles'
       setError(message)
+      
+      // Redirect to login if not authenticated
+      if (message.toLowerCase().includes('not authenticated')) {
+        window.location.href = '/login?returnUrl=' + encodeURIComponent('/admin/users')
+      }
     } finally {
       setLoading(false)
     }
@@ -58,37 +68,147 @@ export default function UserManagement() {
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
-        method: 'PUT',
+      setDataActionLoading('update-role')
+      
+      // First get current user roles
+      const user = users.find(u => u.id === userId)
+      if (!user) throw new Error('User not found')
+      
+      // Update the roles array
+      const updatedRoles = [...user.roles]
+      const roleIndex = updatedRoles.findIndex(r => r === newRole)
+      
+      if (roleIndex === -1) {
+        // Add role if not present
+        updatedRoles.push(newRole)
+      } else {
+        // Remove role if already present (toggle)
+        updatedRoles.splice(roleIndex, 1)
+      }
+      
+      // Update the user's roles
+      const response = await fetch(`${API_BASE_URL_ADMIN}/admin/users/${userId}/roles`, {
+        method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: newRole, isActive: true }),
+        body: JSON.stringify({ Roles: updatedRoles })
+      })
+
+      if (!response.ok) {
+        const error = await response.text()
+        throw new Error(error || 'Failed to update roles')
+      }
+
+      // Update local state
+      setUsers(users.map(u => 
+        u.id === userId ? { ...u, roles: updatedRoles } : u
+      ))
+      
+      setSuccessMessage(roleIndex === -1 
+        ? `✅ Added role ${newRole} to user` 
+        : `✅ Removed role ${newRole} from user`)
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(null), 3000)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '❌ Failed to update user roles'
+      setError(message)
+    } finally {
+      setDataActionLoading(null)
+    }
+  }
+
+  const handleSeedTestData = async () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to seed test data?\n\nThis will create:\n• 3 test devices (HVAC, Generator, Lighting)\n• Sample readings for the past 7 days\n\nExisting data will not be overwritten.'
+    )
+    
+    if (!confirmed) return
+
+    try {
+      setDataActionLoading('seed')
+      setError(null)
+      setSuccessMessage(null)
+
+      const response = await fetch(`${API_BASE_URL}/api/admin/seed-test-data`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       })
 
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('🔐 Your session has expired. Please log in again.')
         } else if (response.status === 403) {
-          throw new Error('🔒 You don\'t have permission to update user roles.')
-        } else if (response.status === 404) {
-          throw new Error('❌ User not found.')
-        } else if (response.status === 400) {
-          throw new Error('⚠️ Invalid role. Please select Member, Manager, or Admin.')
+          throw new Error('🔒 You don\'t have permission to seed test data.')
         } else {
-          throw new Error(`❌ Failed to update user: ${response.statusText}`)
+          const error = await response.json()
+          throw new Error(error.error || `❌ Failed to seed test data: ${response.statusText}`)
         }
       }
 
-      const updated = await response.json()
-      setUsers(users.map(u => u.appUserId === userId ? { ...u, role: updated.role } : u))
-      setEditingId(null)
-      setError(null)
+      const result = await response.json()
       
-      // Show success message with refresh instructions
-      alert(`✅ Role updated to ${updated.role}!\n\n⚠️ Please refresh the page or log out and back in for the changes to take effect.`)
+      // Show detailed stats with total accumulated data
+      const message = result.totalReadings && result.totalDevices
+        ? `✅ ${result.message}! 📊 Total dataset: ${result.totalDevices} devices with ${result.totalReadings.toLocaleString()} readings across time.`
+        : '✅ ' + result.message
+      
+      setSuccessMessage(message)
+      
+      // Dispatch global event to refresh dashboard
+      window.dispatchEvent(new CustomEvent('data-seeded', { detail: { result } }))
+      
+      // Clear success message after 8 seconds (longer to read the stats)
+      setTimeout(() => setSuccessMessage(null), 8000)
     } catch (err) {
-      const message = err instanceof Error ? err.message : '❌ Failed to update user'
-      setError(message)
+      setError(err instanceof Error ? err.message : 'Failed to seed test data')
+    } finally {
+      setDataActionLoading(null)
+    }
+  }
+
+  const handleClearTestData = async () => {
+    const confirmed = window.confirm(
+      '⚠️ This will delete all TEST devices and their readings.\n\nTest devices with serial numbers:\n- HVAC-001-TEST-001\n- GEN-001-TEST-001\n- LIGHT-001-TEST-001\n\nDo you want to continue?'
+    )
+    
+    if (!confirmed) return
+
+    try {
+      setDataActionLoading('clear')
+      setError(null)
+      setSuccessMessage(null)
+
+      const response = await fetch(`${API_BASE_URL}/api/admin/clear-test-data`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('🔐 Your session has expired. Please log in again.')
+        } else if (response.status === 403) {
+          throw new Error('🔒 You don\'t have permission to clear test data.')
+        } else {
+          const error = await response.json()
+          throw new Error(error.error || `❌ Failed to clear test data: ${response.statusText}`)
+        }
+      }
+
+      const result = await response.json()
+      const message = result.devices !== undefined && result.readings !== undefined
+        ? `✅ Test data cleared! Removed ${result.devices} devices and ${result.readings} readings.`
+        : '✅ ' + result.message
+      setSuccessMessage(message)
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => setSuccessMessage(null), 5000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to clear test data')
+    } finally {
+      setDataActionLoading(null)
     }
   }
 
@@ -115,13 +235,61 @@ export default function UserManagement() {
   return (
     <div className="user-management-container">
       <div className="management-header">
-        <h1>User Management</h1>
-        <p className="subtitle">Manage user roles and permissions</p>
+        <div className="header-content">
+          <div>
+            <h1>Admin Dashboard</h1>
+            <p className="subtitle">Manage user roles and build test datasets for impressive charts</p>
+          </div>
+          <div className="data-management-buttons">
+            <button
+              className="btn-data btn-seed"
+              onClick={handleSeedTestData}
+              disabled={dataActionLoading === 'seed'}
+              title="Add more test readings to build up historical data. Devices are created on first run, then data is appended on subsequent runs."
+            >
+              {dataActionLoading === 'seed' ? (
+                <>
+                  <span className="spinner"></span>
+                  Adding Data...
+                </>
+              ) : (
+                <>
+                  <span className="icon">📊</span>
+                  Add Test Data
+                </>
+              )}
+            </button>
+            <button
+              className="btn-data btn-clear"
+              onClick={handleClearTestData}
+              disabled={dataActionLoading === 'clear'}
+              title="Remove all test devices (HVAC-001, Generator-001, Lighting-001) and their accumulated readings. Use this to start fresh."
+            >
+              {dataActionLoading === 'clear' ? (
+                <>
+                  <span className="spinner"></span>
+                  Removing...
+                </>
+              ) : (
+                <>
+                  <span className="icon">🗑️</span>
+                  Clear All Test Data
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
 
       {error && (
         <div className="error-banner">
           <p>{error}</p>
+        </div>
+      )}
+      
+      {successMessage && (
+        <div className="success-banner">
+          <p>{successMessage}</p>
         </div>
       )}
 
@@ -130,7 +298,7 @@ export default function UserManagement() {
           <table className="users-table">
             <thead>
               <tr>
-                <th>User ID</th>
+                <th>User</th>
                 <th>Role</th>
                 <th>Active</th>
                 <th>Created</th>
@@ -141,10 +309,10 @@ export default function UserManagement() {
               {users.map((userPerm) => (
                 <tr key={userPerm.id} className="user-row">
                   <td className="user-id-cell">
-                    <code>{userPerm.appUserId.substring(0, 8)}...</code>
+                    <code>{userPerm.userName || userPerm.email}</code>
                   </td>
                   <td className="role-cell">
-                    {editingId === userPerm.appUserId ? (
+                    {editingId === userPerm.id ? (
                       <select
                         value={editRole}
                         onChange={(e) => setEditRole(e.target.value)}
@@ -155,9 +323,13 @@ export default function UserManagement() {
                         <option value="Admin">Admin</option>
                       </select>
                     ) : (
-                      <span className={`role-badge role-${userPerm.role.toLowerCase()}`}>
-                        {userPerm.role}
-                      </span>
+                      <div className="role-badges">
+                        {userPerm.roles.map(role => (
+                          <span key={role} className={`role-badge role-${role.toLowerCase()}`}>
+                            {role}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </td>
                   <td className="active-cell">
@@ -168,14 +340,14 @@ export default function UserManagement() {
                     )}
                   </td>
                   <td className="date-cell">
-                    {new Date(userPerm.createdAt).toLocaleDateString()}
+                   {new Date(userPerm.createdAt || Date.now()).toLocaleDateString()}
                   </td>
                   <td className="actions-cell">
-                    {editingId === userPerm.appUserId ? (
+                    {editingId === userPerm.id ? (
                       <>
                         <button
                           className="btn-action btn-save"
-                          onClick={() => handleUpdateRole(userPerm.appUserId, editRole)}
+                          onClick={() => handleUpdateRole(userPerm.id, editRole)}
                         >
                           Save
                         </button>
@@ -190,8 +362,8 @@ export default function UserManagement() {
                       <button
                         className="btn-action btn-edit"
                         onClick={() => {
-                          setEditingId(userPerm.appUserId)
-                          setEditRole(userPerm.role)
+                          setEditingId(userPerm.id)
+                          setEditRole(userPerm.roles[0] || '')
                         }}
                       >
                         Edit

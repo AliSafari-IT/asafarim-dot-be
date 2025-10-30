@@ -12,6 +12,7 @@ export default function Navbar() {
   const navLinks: NavLinkItem[] = [
     { to: "/", label: "Dashboard" },
     { to: "/devices", label: "Devices" },
+    ...(user?.roles?.includes("admin") ? [{ to: "/admin/users", label: "Admin" }] : []),
   ];
 
   const renderLink = (link: NavLinkItem) => {
