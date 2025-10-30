@@ -35,6 +35,7 @@ public class DevicesController : ControllerBase
     /// Get device summary (total, active, offline counts and recent readings)
     /// </summary>
     [HttpGet("summary")]
+    [AllowAnonymous]
     public async Task<ActionResult<object>> GetSummary()
     {
         try
@@ -53,6 +54,7 @@ public class DevicesController : ControllerBase
     /// Get all devices with filtering and pagination
     /// </summary>
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<object>> GetDevices([FromQuery] DeviceFilterDto filter)
     {
         try
@@ -79,6 +81,7 @@ public class DevicesController : ControllerBase
     /// Get device by ID
     /// </summary>
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<DeviceDto>> GetDevice(Guid id)
     {
         try

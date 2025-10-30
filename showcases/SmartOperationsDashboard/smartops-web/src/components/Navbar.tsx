@@ -2,7 +2,7 @@ import { CentralNavbar, useAuth, isProduction } from "@asafarim/shared-ui-react"
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 
 export default function Navbar() {
-  const { isAuthenticated, user, loading } = useAuth({
+  const { isAuthenticated, user, loading, signOut } = useAuth({
     authApiBase: isProduction
       ? "https://identity.asafarim.be/auth"
       : "http://identity.asafarim.local:5101/auth",
@@ -36,7 +36,7 @@ export default function Navbar() {
   };
 
   return (
-    <CentralNavbar
+  <CentralNavbar
       appId="smartops"
       localLinks={navLinks}
       brand={{ logo: "/logo.svg", text: "SmartOps", href: "/" }}
@@ -45,14 +45,24 @@ export default function Navbar() {
         user: user ? { email: user.email, name: user.name } : undefined,
         loading,
         onSignIn: () => {
-          window.location.href = isProduction
+          const currentUrl = window.location.href;
+          const loginUrl = isProduction
             ? "https://identity.asafarim.be/login"
             : "http://identity.asafarim.local:5177/login";
+          window.location.href = `${loginUrl}?returnUrl=${encodeURIComponent(currentUrl)}`;
         },
         onSignOut: () => {
-          window.location.href = isProduction
-            ? "https://identity.asafarim.be/logout"
-            : "http://identity.asafarim.local:5177/logout";
+          // Get current path to check if it's a protected route
+          const currentPath = window.location.pathname;
+          const isProtectedRoute = !['/login', '/register', '/public'].some(route => 
+            currentPath.startsWith(route)
+          );
+          
+          // If current route is protected, redirect to home, otherwise stay
+          const redirectUrl = isProtectedRoute ? '/' : window.location.href;
+          
+          // Call signOut with the redirect URL
+          signOut(redirectUrl).catch(console.error);
         },
         labels: {
           signIn: "Sign In",

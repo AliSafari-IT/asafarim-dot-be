@@ -16,9 +16,7 @@ public class ReadingsController : ControllerBase
     private readonly IReadingService _readingService;
     private readonly ILogger<ReadingsController> _logger;
 
-    public ReadingsController(
-        IReadingService readingService,
-        ILogger<ReadingsController> logger)
+    public ReadingsController(IReadingService readingService, ILogger<ReadingsController> logger)
     {
         _readingService = readingService;
         _logger = logger;
@@ -28,12 +26,21 @@ public class ReadingsController : ControllerBase
     /// Get readings with filtering and pagination
     /// </summary>
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<object>> GetReadings([FromQuery] ReadingFilterDto filter)
     {
         try
         {
             var (readings, total) = await _readingService.GetReadingsAsync(filter);
-            return Ok(new { readings, total, page = filter.Page, pageSize = filter.PageSize });
+            return Ok(
+                new
+                {
+                    readings,
+                    total,
+                    page = filter.Page,
+                    pageSize = filter.PageSize,
+                }
+            );
         }
         catch (Exception ex)
         {
@@ -46,6 +53,7 @@ public class ReadingsController : ControllerBase
     /// Get reading by ID
     /// </summary>
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<ReadingDto>> GetReading(Guid id)
     {
         try
@@ -114,7 +122,8 @@ public class ReadingsController : ControllerBase
     public async Task<ActionResult<ReadingStatsDto>> GetStats(
         Guid deviceId,
         [FromQuery] DateTime startDate,
-        [FromQuery] DateTime endDate)
+        [FromQuery] DateTime endDate
+    )
     {
         try
         {

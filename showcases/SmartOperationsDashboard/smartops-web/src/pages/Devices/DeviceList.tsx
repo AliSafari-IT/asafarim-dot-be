@@ -5,30 +5,18 @@ import { useDevicesStore } from "../../hooks/useDevicesStore";
 import { deviceService } from "../../services/deviceService";
 import "./DeviceList.css";
 import { useAuth } from "@asafarim/shared-ui-react";
-import { useNotifications } from "@asafarim/shared-ui-react";
 
 export default function DeviceList() {
   const navigate = useNavigate();
-  const { addNotification } = useNotifications();
   const { devices, loading, error, fetchDevices, removeDevice, setError } =
     useDevicesStore();
   const [deleting, setDeleting] = useState<string | null>(null);
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
+
 
   useEffect(() => {
-    if (!isAuthenticated && !authLoading) {
-      addNotification("error", "You must be logged in to view this page");
-      navigate("/");
-    } else if (authLoading) {
-      return;
-    }
-  }, [isAuthenticated, navigate, addNotification, authLoading]);
-
-  useEffect(() => {
-    if (isAuthenticated && !authLoading) {
-      fetchDevices();
-    }
-  }, [isAuthenticated, fetchDevices, authLoading]);
+    fetchDevices();
+  }, [fetchDevices]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this device?")) {
@@ -108,13 +96,13 @@ export default function DeviceList() {
           <h1>Devices</h1>
           <p className="subtitle">Manage and monitor your IoT devices</p>
         </div>
-        <button
+        {isAuthenticated &&<button
           className="btn-add-device"
           onClick={() => navigate("/devices/create")}
         >
           <Plus size={20} />
           Add Device
-        </button>
+        </button>}
       </div>
 
       {/* Error Message */}
@@ -135,7 +123,7 @@ export default function DeviceList() {
                 <th>Location</th>
                 <th>Status</th>
                 <th>Updated At</th>
-                <th>Actions</th>
+                {isAuthenticated &&<th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -161,7 +149,7 @@ export default function DeviceList() {
                     </span>
                   </td>
                   <td className="date-cell">{formatDate(device.updatedAt)}</td>
-                  <td className="actions-cell">
+                  {isAuthenticated &&<td className="actions-cell">
                     <button
                       className="btn-action btn-edit"
                       onClick={() => navigate(`/devices/${device.id}/edit`)}
@@ -177,7 +165,7 @@ export default function DeviceList() {
                     >
                       <Trash2 size={18} />
                     </button>
-                  </td>
+                  </td>}
                 </tr>
               ))}
             </tbody>
