@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartOps.Api.Data;
@@ -13,7 +14,7 @@ namespace SmartOps.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[EnableCors("frontend")]
 public class AdminController : ControllerBase
 {
     private readonly SmartOpsDbContext _dbContext;
@@ -38,6 +39,7 @@ public class AdminController : ControllerBase
     /// Seed test data - Creates devices if needed, then appends new readings for rich historical data
     /// </summary>
     [HttpPost("seed-test-data")]
+    [Authorize]
     public async Task<IActionResult> SeedTestData()
     {
         try
@@ -271,6 +273,7 @@ public class AdminController : ControllerBase
     /// Clear test data (only removes devices with test serial numbers)
     /// </summary>
     [HttpDelete("clear-test-data")]
+    [Authorize]
     public async Task<IActionResult> ClearTestData()
     {
         try
@@ -342,6 +345,7 @@ public class AdminController : ControllerBase
     /// Get all user permissions
     /// </summary>
     [HttpGet("users")]
+    [Authorize]
     public async Task<ActionResult<object>> GetAllUsers()
     {
         try
@@ -371,6 +375,7 @@ public class AdminController : ControllerBase
     /// Get user permission by ID
     /// </summary>
     [HttpGet("users/{userId:guid}")]
+    [Authorize]
     public async Task<ActionResult<object>> GetUser(Guid userId)
     {
         try
@@ -405,6 +410,7 @@ public class AdminController : ControllerBase
     /// Create or update user permission
     /// </summary>
     [HttpPost("users")]
+    [Authorize]
     public async Task<ActionResult<object>> CreateOrUpdateUserPermission(
         [FromBody] CreateUserPermissionDto dto
     )
@@ -478,6 +484,7 @@ public class AdminController : ControllerBase
     /// Update user permission
     /// </summary>
     [HttpPut("users/{userId:guid}")]
+    [Authorize]
     public async Task<ActionResult<object>> UpdateUserPermission(
         Guid userId,
         [FromBody] UpdateUserPermissionDto dto
@@ -527,6 +534,7 @@ public class AdminController : ControllerBase
     /// Delete user permission
     /// </summary>
     [HttpDelete("users/{userId:guid}")]
+    [Authorize]
     public async Task<IActionResult> DeleteUserPermission(Guid userId)
     {
         try

@@ -1,5 +1,6 @@
 using Identity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,7 @@ namespace Identity.Api.Controllers;
 
 [ApiController]
 [Route("admin")]
-[Authorize(Roles = "admin")]
+[EnableCors("app")]
 public class AdminController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
@@ -35,6 +36,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("users")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetAllUsers()
     {
         var allUsers = _userManager.Users.ToList();
@@ -50,12 +52,14 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("roles")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetAllRoles()
     {
         return Ok(_roleManager.Roles.Select(r => new { id = r.Id, name = r.Name }));
     }
 
     [HttpGet("users/{id:guid}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetUserById(Guid id)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
@@ -66,6 +70,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("users")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> CreateUser(AdminUserUpsert req)
     {
         var user = new AppUser
@@ -90,6 +95,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("users/with-null-password")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> CreateUserWithNullPassword(AdminUserUpsert req)
     {
         try
@@ -181,6 +187,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPut("users/{id:guid}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> UpdateUser(Guid id, AdminUserUpsert req)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
@@ -203,6 +210,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpDelete("users/{id:guid}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
@@ -221,6 +229,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("users/{id:guid}/roles")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> SetUserRoles(Guid id, SetUserRolesRequest req)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
@@ -245,6 +254,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("users/{id:guid}/roles")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetUserRoles(Guid id)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
@@ -255,6 +265,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("users/{id:guid}/reset-password")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> ResetUserPassword(Guid id)
     {
         try

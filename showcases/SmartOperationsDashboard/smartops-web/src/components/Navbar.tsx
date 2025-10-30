@@ -7,6 +7,8 @@ export default function Navbar() {
       ? "https://identity.asafarim.be/auth"
       : "http://identity.asafarim.local:5101/auth",
     meEndpoint: "/me",
+    tokenEndpoint: "/token",
+    logoutEndpoint: "/logout",
   });
 
   const navLinks: NavLinkItem[] = [

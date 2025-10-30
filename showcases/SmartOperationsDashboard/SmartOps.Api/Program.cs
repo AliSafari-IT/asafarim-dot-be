@@ -17,7 +17,16 @@ var developmentOrigins = new[]
     "http://localhost:5173",
 };
 
-var productionOrigins = new[] { "https://smartops.asafarim.be" };
+var productionOrigins = new[] { 
+    "https://smartops.asafarim.be" ,
+    "https://www.asafarim.be",
+    "https://ai.asafarim.be",
+    "https://core.asafarim.be",
+    "https://blog.asafarim.be",
+    "https://identity.asafarim.be",
+    "https://web.asafarim.be",
+    "https://taskmanagement.asafarim.be",
+};
 
 string[] allowedOrigins = builder.Environment.IsProduction()
     ? productionOrigins
@@ -193,8 +202,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseCors("frontend");
+app.UseHttpsRedirection();
 
 // Only use authentication middleware if JWT is configured
 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNullOrEmpty(audience))

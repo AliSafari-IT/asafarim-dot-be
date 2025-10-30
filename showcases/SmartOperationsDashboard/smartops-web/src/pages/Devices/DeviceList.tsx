@@ -154,16 +154,20 @@ export default function DeviceList() {
                       className="btn-action btn-edit"
                       onClick={() => navigate(`/devices/${device.id}/edit`)}
                       title="Edit device"
+                      aria-label="Edit device"
                     >
                       <Edit2 size={18} />
+                      <span>Edit</span>
                     </button>
                     <button
                       className="btn-action btn-delete"
                       onClick={() => handleDelete(device.id)}
                       disabled={deleting === device.id}
                       title="Delete device"
+                      aria-label="Delete device"
                     >
                       <Trash2 size={18} />
+                      <span aria-hidden="true">{deleting === device.id ? 'Deleting...' : 'Delete'}</span>
                     </button>
                   </td>}
                 </tr>

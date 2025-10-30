@@ -229,7 +229,7 @@ done
 
 echo ""
 echo -e "${YELLOW}Select APIs to deploy:${NC}"
-echo -e "${CYAN}Examples: 1 | 1,3 | 1-2 | all | none${NC}"
+echo -e "${CYAN}Examples: 1 | 1,3,5 | 1-3 | all | none${NC}"
 read -p "API selection: " api_selection
 
 selected_apis=()

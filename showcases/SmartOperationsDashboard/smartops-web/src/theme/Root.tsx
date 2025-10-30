@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ThemeProvider } from '@asafarim/react-themes';
 import { AuthSyncProvider } from '@asafarim/shared-ui-react';
 
@@ -45,7 +45,11 @@ export default function Root({ children }: RootProps): React.ReactElement {
   }, []);
   
   return (
-    <ThemeProvider config={{ defaultMode: initialTheme, storageKey: 'asafarim-theme' }}>
+    <ThemeProvider config={useMemo(() => ({
+      storageKey: 'asafarim-theme',
+      // Only set defaultMode when known; otherwise fall back to provider default ('system')
+      ...(initialTheme ? { defaultMode: initialTheme } : {}),
+    }), [initialTheme])}>
       <AuthSyncProvider>
         {children}
       </AuthSyncProvider>

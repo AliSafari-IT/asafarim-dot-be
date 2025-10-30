@@ -48,7 +48,7 @@ export interface ReadingListResponse {
 }
 
 class ReadingService {
-  private baseUrl = `${API_BASE_URL}/api/readings`
+  private baseUrl = `${API_BASE_URL}/readings`
 
   async getReadings(filter?: ReadingFilter): Promise<ReadingListResponse> {
     const params = new URLSearchParams()

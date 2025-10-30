@@ -45,7 +45,7 @@ export interface DeviceListResponse {
 }
 
 class DeviceService {
-  private baseUrl = `${API_BASE_URL}/api/devices`
+  private baseUrl = `${API_BASE_URL}/devices`
 
   async getDevices(filter?: DeviceFilter): Promise<DeviceListResponse> {
     const params = new URLSearchParams()
@@ -83,7 +83,7 @@ class DeviceService {
   }
 
   async getSummary(): Promise<DeviceSummary> {
-    const response = await fetch(`${API_BASE_URL}/api/devices/summary`, {
+    const response = await fetch(`${API_BASE_URL}/devices/summary`, {
       method: 'GET',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -249,7 +249,7 @@ class DeviceService {
   }
 
   async getAllReadings(startDate?: Date, endDate?: Date): Promise<Reading[]> {
-    const readingsUrl = `${API_BASE_URL}/api/readings`
+    const readingsUrl = `${API_BASE_URL}/readings`
     const params = new URLSearchParams()
     if (startDate) params.append('startDate', startDate.toISOString())
     if (endDate) params.append('endDate', endDate.toISOString())
