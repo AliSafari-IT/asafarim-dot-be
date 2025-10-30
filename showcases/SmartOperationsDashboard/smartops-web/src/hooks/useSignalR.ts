@@ -21,8 +21,7 @@ export function useSignalR({
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(url)
-      .withAutomaticReconnect([0, 0, 0, 5000, 5000, 10000])
-      .withHubMethodInvocation(true)
+      .withAutomaticReconnect()
       .build()
 
     connectionRef.current = connection
@@ -47,9 +46,10 @@ export function useSignalR({
       onError?.(error)
     })
 
-    connection.start().catch((err) => {
+    connection.start().catch((err: unknown) => {
       console.error('SignalR connection failed:', err)
-      onError?.(err)
+      const error = err instanceof Error ? err : new Error(String(err))
+      onError?.(error)
     })
 
     return () => {

@@ -13,9 +13,9 @@ interface User {
 }
 
 export default function UserManagement() {
-  const { user, isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth()
   const [users, setUsers] = useState<User[]>([])
-  const [roles, setRoles] = useState<string[]>([])
+  const [, setRoles] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dataActionLoading, setDataActionLoading] = useState<string | null>(null)

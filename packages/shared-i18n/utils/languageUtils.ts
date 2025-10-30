@@ -91,8 +91,20 @@ const getIdentityApiUrl = (): string => {
  */
 export const updateUserLanguagePreference = async (language: SupportedLanguage): Promise<boolean> => {
   try {
-    // Language is already set in cookie by setLanguageCookie()
-    // No backend call needed - cookies are the source of truth
+    const baseUrl = getIdentityApiUrl();
+    const response = await fetch(`${baseUrl}/api/me/preferences`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ preferredLanguage: language }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      console.warn('Failed to sync language preference with backend:', response.status, text);
+      return false;
+    }
+
     return true;
   } catch (error) {
     console.error('Failed to update language preference:', error);
