@@ -1,6 +1,33 @@
 import { LANGUAGE_COOKIE_NAME, DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, type SupportedLanguage } from '../config/i18n';
 
 /**
+ * Resolve Identity API base URL from environment or hostname
+ */
+const getIdentityApiUrl = (): string => {
+  // Default to local identity API in development
+  let resolved = 'http://identity.asafarim.local:5101';
+
+  try {
+    // Prefer Vite env vars when available
+    // Guard access to import.meta for non-Vite environments
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const viteEnv = (typeof import.meta !== 'undefined') ? ((import.meta as any).env) : undefined;
+
+    if (viteEnv && (viteEnv as any).VITE_IDENTITY_API_URL) {
+      resolved = (viteEnv as any).VITE_IDENTITY_API_URL as string;
+    } else if (typeof window !== 'undefined') {
+      // Fallback based on hostname for runtime environments
+      const isProdHost = /asafarim\.be$/i.test(window.location.hostname);
+      resolved = isProdHost ? 'https://identity.asafarim.be' : 'http://identity.asafarim.local:5101';
+    }
+  } catch {
+    // Keep default if any detection fails
+  }
+
+  return resolved;
+};
+
+/**
  * Get language from cookie
  */
 export const getLanguageFromCookie = (): string | null => {
