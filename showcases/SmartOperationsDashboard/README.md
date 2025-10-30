@@ -161,7 +161,7 @@ SmartOperationsDashboard integrates with Identity.Api for single sign-on:
     "SmartOpsConnection": "Host=smartops-db;Port=5432;Database=smartops;Username=postgres;Password=${DB_PASSWORD}"
   },
   "AuthJwt": {
-    "Key": "0+a0ZklJy6DVL6osEj73W6P9inMk3+Ocn8KkQoUDR78=",
+    "Key": "0+a0ZklJy6DVL6osEj73W6P9inMk3-Ocn8KkQoUDR78=",
     "Issuer": "asafarim.be",
     "Audience": "asafarim.be"
   }
@@ -210,7 +210,7 @@ EXPOSE 80
 
 ```bash
 # Create device
-curl -X POST http://localhost:5180/api/devices \
+curl -X POST http://localhost:5105/api/devices \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -221,7 +221,7 @@ curl -X POST http://localhost:5180/api/devices \
   }'
 
 # Create reading
-curl -X POST http://localhost:5180/api/readings \
+curl -X POST http://localhost:5105/api/readings \
   -H "Content-Type: application/json" \
   -d '{
     "deviceId": "<device-id>",
@@ -236,7 +236,7 @@ curl -X POST http://localhost:5180/api/readings \
 ## 📚 Documentation
 
 - [SETUP_GUIDE.md](./SETUP_GUIDE.md) - Detailed setup and configuration guide
-- [Backend API Documentation](http://localhost:5180/swagger) - Swagger UI (development)
+- [Backend API Documentation](http://localhost:5105/swagger) - Swagger UI (development)
 
 ## 🔄 Integration with Monorepo
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@asafarim/shared-ui-react'
-import { API_BASE_URL, API_BASE_URL_ADMIN } from '../../api/config'
+import { API_BASE_URL } from '../../api/config'
 import './UserManagement.css'
 
 interface User {
@@ -34,8 +34,8 @@ export default function UserManagement() {
     try {
       setLoading(true)
       const [usersRes, rolesRes] = await Promise.all([
-        fetch(`${API_BASE_URL_ADMIN}/admin/users`, { credentials: 'include' }),
-        fetch(`${API_BASE_URL_ADMIN}/admin/roles`, { credentials: 'include' })
+        fetch(`${API_BASE_URL}/admin/users`, { credentials: 'include' }),
+        fetch(`${API_BASE_URL}/admin/roles`, { credentials: 'include' })
       ])
 
       if (!usersRes.ok || !rolesRes.ok) {
@@ -87,7 +87,7 @@ export default function UserManagement() {
       }
       
       // Update the user's roles
-      const response = await fetch(`${API_BASE_URL_ADMIN}/admin/users/${userId}/roles`, {
+      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/roles`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

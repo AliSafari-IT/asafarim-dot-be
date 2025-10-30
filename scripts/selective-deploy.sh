@@ -35,6 +35,7 @@ declare -A FRONTEND_APPS=(
     ["blog"]="apps/blog/build"
     ["jobs-ui"]="apps/jobs-ui/dist"
     ["taskmanagement-web"]="showcases/TaskManagement/taskmanagement-web/dist"
+    ["smartops-web"]="showcases/SmartOperationsDashboard/smartops-web/dist"
 )
 
 # .NET APIs with their project paths and output directories
@@ -43,6 +44,7 @@ declare -A API_PROJECTS=(
     ["Core.Api"]="apis/Core.Api/Core.Api.csproj"
     ["Ai.Api"]="apis/Ai.Api/Ai.Api.csproj"
     ["TaskManagement.Api"]="showcases/TaskManagement/TaskManagement.Api/TaskManagement.Api.csproj"
+    ["SmartOps.Api"]="showcases/SmartOperationsDashboard/SmartOps.Api/SmartOps.Api.csproj"
 )
 
 declare -A API_OUTPUTS=(
@@ -50,6 +52,7 @@ declare -A API_OUTPUTS=(
     ["Core.Api"]="$SITE_ROOT/apis/core"
     ["Ai.Api"]="$SITE_ROOT/apis/ai"
     ["TaskManagement.Api"]="$SITE_ROOT/apis/taskmanagement"
+    ["SmartOps.Api"]="$SITE_ROOT/apis/smartops"
 )
 
 # Systemd services
@@ -58,6 +61,7 @@ declare -A API_SERVICES=(
     ["Core.Api"]="dotnet-core"
     ["Ai.Api"]="dotnet-ai"
     ["TaskManagement.Api"]="dotnet-taskmanagement"
+    ["SmartOps.Api"]="dotnet-smartops"
 )
 
 #############################################

@@ -66,25 +66,6 @@ export const getInitialLanguage = (): SupportedLanguage => {
 };
 
 /**
- * Get the Identity API base URL based on environment
- */
-const getIdentityApiUrl = (): string => {
-  // Check if we're in production based on hostname
-  const isProd = typeof window !== 'undefined' && (
-    window.location.hostname.includes('asafarim.be') ||
-    window.location.protocol === 'https:'
-  );
-
-  if (isProd) {
-    return 'https://identity.asafarim.be';
-  }
-
-  // Development: use environment variable or default to localhost
-  const env = (import.meta.env as any) || {};
-  return env.VITE_IDENTITY_API_URL || 'http://localhost:5101';
-};
-
-/**
  * Update user language preference on backend
  * Note: Language preference is stored in cookies across all apps
  * No backend sync needed - cookies are shared across .asafarim.local domain
@@ -107,7 +88,7 @@ export const updateUserLanguagePreference = async (language: SupportedLanguage):
 
     return true;
   } catch (error) {
-    console.error('Failed to update language preference:', error);
+    console.error('Failed to update language preference: ' + language, error);
     return false;
   }
 };
