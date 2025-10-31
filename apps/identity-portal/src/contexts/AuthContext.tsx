@@ -9,6 +9,7 @@ import {
   identityService,
   type AuthResponse,
   type LoginRequest,
+  type PasswordSetupRequest,
   type RegisterRequest,
   type UserInfo,
 } from "../api/identityService";
@@ -230,7 +231,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Setup password for user with null password
   const setupPassword = useCallback(
-    async (data: { userId: string; password: string }) => {
+    async (data: PasswordSetupRequest) => {
       setIsLoading(true);
       setError(null);
 

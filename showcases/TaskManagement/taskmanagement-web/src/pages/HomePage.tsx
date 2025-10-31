@@ -1,10 +1,26 @@
-import { ButtonComponent, useAuth } from "@asafarim/shared-ui-react";
+import { ButtonComponent, useAuth, isProduction } from "@asafarim/shared-ui-react";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
 
 export default function HomePage() {
   const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    const identityLoginUrl = isProduction
+      ? 'https://identity.asafarim.be/login'
+      : 'http://identity.asafarim.local:5177/login';
+    const returnUrl = encodeURIComponent(window.location.href);
+    window.location.href = `${identityLoginUrl}?returnUrl=${returnUrl}`;
+  };
+
+  const handleRegister = () => {
+    const identityRegisterUrl = isProduction
+      ? 'https://identity.asafarim.be/register'
+      : 'http://identity.asafarim.local:5177/register';
+    const returnUrl = encodeURIComponent(window.location.href);
+    window.location.href = `${identityRegisterUrl}?returnUrl=${returnUrl}`;
+  };
 
   if (loading) {
     return <div className="homepage-loading">Loading...</div>;
@@ -39,13 +55,13 @@ export default function HomePage() {
               <>
                 <ButtonComponent
                   variant="primary"
-                  onClick={() => navigate("/login")}
+                  onClick={handleSignIn}
                 >
                   Sign In
                 </ButtonComponent>
                 <ButtonComponent
                   variant="secondary"
-                  onClick={() => navigate("/register")}
+                  onClick={handleRegister}
                 >
                   Create Account
                 </ButtonComponent>
@@ -165,14 +181,14 @@ export default function HomePage() {
             <ButtonComponent
               variant="primary"
               size="lg"
-              onClick={() => navigate("/register")}
+              onClick={handleRegister}
             >
               Create Free Account
             </ButtonComponent>
             <ButtonComponent
               variant="secondary"
               size="lg"
-              onClick={() => navigate("/login")}
+              onClick={handleSignIn}
             >
               Sign In
             </ButtonComponent>

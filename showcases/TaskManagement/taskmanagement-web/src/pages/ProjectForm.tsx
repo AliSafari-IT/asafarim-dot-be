@@ -46,7 +46,8 @@ export default function ProjectForm() {
         isPrivate: project.isPrivate,
       })
     } catch (err) {
-      setError('Failed to load project')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load project'
+      setError(errorMessage)
       console.error('Error loading project:', err)
     } finally {
       setLoadingProject(false)
@@ -73,7 +74,8 @@ export default function ProjectForm() {
 
       navigate('/projects')
     } catch (err) {
-      setError(isEditMode ? 'Failed to update project' : 'Failed to create project')
+      const errorMessage = err instanceof Error ? err.message : (isEditMode ? 'Failed to update project' : 'Failed to create project')
+      setError(errorMessage)
       console.error('Error saving project:', err)
     } finally {
       setLoading(false)

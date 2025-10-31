@@ -9,6 +9,24 @@ function getErrorMessage(error: string | null): { title: string; message: string
   if (!error) return null;
 
   // Map backend errors to user-friendly messages
+  // Check for specific error codes first (more precise)
+  // Error codes come in format: "code:message"
+  if (error.startsWith("user_not_found:") || error.includes("user_not_found")) {
+    return {
+      title: "Email Not Found",
+      message: "We couldn't find an account with this email address.",
+      action: "Please check the email and try again, or create a new account by clicking 'Sign up' below."
+    };
+  }
+
+  if (error.startsWith("invalid_credentials:") || error.includes("invalid_credentials")) {
+    return {
+      title: "Incorrect Password",
+      message: "The password you entered is incorrect.",
+      action: "Please try again. If you forgot your password, click 'Forgot password?' below."
+    };
+  }
+
   if (error.includes("Invalid email or password")) {
     return {
       title: "Login Failed",

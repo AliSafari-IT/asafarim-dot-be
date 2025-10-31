@@ -11,8 +11,18 @@ export interface LoginRequest {
 }
 
 export interface PasswordSetupRequest {
-  userId: string;
+  token: string;
   password: string;
+}
+
+export interface ValidateSetupTokenRequest {
+  token: string;
+}
+
+export interface ValidateSetupTokenResponse {
+  userId: string;
+  email: string;
+  message: string;
 }
 
 export interface PasswordSetupResponse {
@@ -69,12 +79,13 @@ export interface ChangePasswordRequestBody {
 
 export interface ApiError {
   message: string;
+  code?: string;
   errors?: Record<string, string[]>;
 }
 
 // Base API URL from environment variable
 // Remove the /api prefix as the endpoints don't include it
-const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
+const API_BASE_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101';
 
 /**
  * Handle API responses and errors
@@ -84,24 +95,39 @@ async function handleResponse<T>(response: Response): Promise<T> {
     console.log('API error response status:', response.status);
     console.log('API error response statusText:', response.statusText);
     
-    try {
-      const contentType = response.headers.get('content-type') || '';
-      if (contentType.includes('application/json')) {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      try {
         const errorData = await response.json();
         console.log('API error response body (json):', errorData);
-        const error: ApiError = {
-          message: errorData.message || `Server error: ${response.status} ${response.statusText}`,
-          errors: errorData.errors
-        };
+        
+        // Create error message that includes the code for frontend detection
+        let errorMessage = errorData.message || `Server error: ${response.status} ${response.statusText}`;
+        if (errorData.code) {
+          errorMessage = `${errorData.code}:${errorMessage}`;
+        }
+        
+        const error = new Error(errorMessage) as Error & { code?: string; errors?: Record<string, string[]> };
+        error.code = errorData.code;
+        error.errors = errorData.errors;
         throw error;
-      } else {
+      } catch (parseError) {
+        // If it's already our custom error with code, re-throw it
+        if (parseError instanceof Error && parseError.message.includes(':')) {
+          throw parseError;
+        }
+        console.error('Failed to parse error response:', parseError);
+        throw new Error(`API error ${response.status}: ${response.statusText}`);
+      }
+    } else {
+      try {
         const text = await response.text();
         console.log('API error response body (text):', text);
         throw new Error(text || `API error ${response.status}: ${response.statusText}`);
+      } catch (parseError) {
+        console.error('Failed to parse error response:', parseError);
+        throw new Error(`API error ${response.status}: ${response.statusText}`);
       }
-    } catch (parseError) {
-      console.error('Failed to parse error response:', parseError);
-      throw new Error(`API error ${response.status}: ${response.statusText}`);
     }
   }
   
@@ -315,6 +341,47 @@ export const identityService = {
       throw error;
     }
   },
+  
+  /**
+   * Request password reset (forgot password)
+   */
+  async requestPasswordReset(data: ForgotPasswordRequest): Promise<{ message: string }> {
+    console.log('Requesting password reset for email:', data.email);
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      console.log('Forgot password response status:', response.status);
+      return handleResponse<{ message: string }>(response);
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Validate password setup token (magic link)
+   */
+  async validateSetupToken(data: ValidateSetupTokenRequest): Promise<ValidateSetupTokenResponse> {
+    console.log('Validating setup token...');
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/validate-setup-token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      console.log('Validate setup token response status:', response.status);
+      return handleResponse<ValidateSetupTokenResponse>(response);
+    } catch (error) {
+      console.error('Validate setup token error:', error);
+      throw error;
+    }
+  },
+  
   
   /**
    * Logout the current user

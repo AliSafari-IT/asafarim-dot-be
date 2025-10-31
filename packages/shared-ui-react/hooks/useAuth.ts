@@ -90,7 +90,6 @@ async function fetchToken(base: string, tokenEndpoint: string): Promise<string |
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`,
         'Cache-Control': 'no-cache'
       }
     });

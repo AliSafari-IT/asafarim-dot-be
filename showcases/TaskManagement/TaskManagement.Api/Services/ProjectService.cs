@@ -31,7 +31,8 @@ public class ProjectService : IProjectService
     private bool IsGlobalAdmin()
     {
         var user = _httpContextAccessor?.HttpContext?.User;
-        var roles = user?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList() ?? new List<string>();
+        var roles =
+            user?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList() ?? new List<string>();
         return roles.Any(r => r.Equals("admin", StringComparison.OrdinalIgnoreCase));
     }
 
@@ -58,7 +59,9 @@ public class ProjectService : IProjectService
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
-            Console.WriteLine($"DEBUG: Found {projects.Count} projects in database for user {userId}");
+            Console.WriteLine(
+                $"DEBUG: Found {projects.Count} projects in database for user {userId}"
+            );
 
             var result = projects.Select(MapToDto).ToList();
             Console.WriteLine($"DEBUG: Mapped {result.Count} projects to DTOs");
@@ -75,60 +78,103 @@ public class ProjectService : IProjectService
 
     public async Task<List<ProjectDto>> GetSharedProjectsAsync(string userId)
     {
-        IQueryable<TaskProject> query;
-
-        if (IsGlobalAdmin())
+        try
         {
-            // Global admins see all projects
-            query = _context.Projects;
+            Console.WriteLine($"DEBUG: GetSharedProjectsAsync called with userId: {userId}");
+
+            IQueryable<TaskProject> query;
+
+            if (IsGlobalAdmin())
+            {
+                // Global admins see all projects
+                Console.WriteLine("DEBUG: User is global admin, showing all projects");
+                query = _context.Projects;
+            }
+            else
+            {
+                // Regular users see public projects and projects they're members of
+                Console.WriteLine($"DEBUG: User is not admin, filtering projects");
+                query = _context.Projects.Where(p =>
+                    p.UserId != userId && (!p.IsPrivate || p.Members.Any(m => m.UserId == userId))
+                );
+            }
+
+            var projects = await query
+                .Include(p => p.Tasks)
+                .Include(p => p.Members)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            Console.WriteLine($"DEBUG: Found {projects.Count} shared projects for user {userId}");
+            return projects.Select(MapToDto).ToList();
         }
-        else
+        catch (Exception ex)
         {
-            // Regular users see public projects and projects they're members of
-            query = _context.Projects.Where(p =>
-                p.UserId != userId && (!p.IsPrivate || p.Members.Any(m => m.UserId == userId))
-            );
+            Console.WriteLine($"ERROR in GetSharedProjectsAsync: {ex.Message}");
+            Console.WriteLine($"ERROR Stack: {ex.StackTrace}");
+            throw;
         }
-
-        var projects = await query
-            .Include(p => p.Tasks)
-            .Include(p => p.Members)
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
-
-        return projects.Select(MapToDto).ToList();
     }
 
     public async Task<List<ProjectDto>> GetPublicProjectsAsync()
     {
-        // Get all public projects (not private)
-        var projects = await _context.Projects
-            .Where(p => !p.IsPrivate)
-            .Include(p => p.Tasks)
-            .Include(p => p.Members)
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
+        try
+        {
+            Console.WriteLine("DEBUG: GetPublicProjectsAsync called");
 
-        return projects.Select(MapToDto).ToList();
+            // Temporary workaround: Get all projects and filter in memory
+            // This bypasses the EF Core IsPrivate column query issue
+            var allProjects = await _context.Projects.ToListAsync();
+            Console.WriteLine($"DEBUG: Got {allProjects.Count} total projects from database");
+
+            // Filter to public projects in memory
+            var publicProjects = allProjects.Where(p => !p.IsPrivate).ToList();
+
+            Console.WriteLine($"DEBUG: Filtered to {publicProjects.Count} public projects");
+
+            return publicProjects.Select(MapToDto).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR in GetPublicProjectsAsync: {ex.Message}");
+            Console.WriteLine($"ERROR Stack: {ex.StackTrace}");
+            throw;
+        }
     }
 
     public async Task<ProjectDto> CreateProjectAsync(CreateProjectDto dto, string userId)
     {
-        var project = new TaskProject
+        try
         {
-            Id = Guid.NewGuid(),
-            Name = dto.Name,
-            Description = dto.Description,
-            UserId = userId,
-            IsPrivate = dto.IsPrivate,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-        };
+            Console.WriteLine($"DEBUG: CreateProjectAsync called with userId: {userId}, isPrivate: {dto.IsPrivate}");
 
-        _context.Projects.Add(project);
-        await _context.SaveChangesAsync();
+            var now = DateTime.UtcNow;
+            var project = new TaskProject
+            {
+                Id = Guid.NewGuid(),
+                Name = dto.Name,
+                Description = dto.Description,
+                UserId = userId,
+                IsPrivate = dto.IsPrivate,
+                CreatedAt = now,
+                UpdatedAt = now,
+            };
 
-        return MapToDto(project);
+            Console.WriteLine($"DEBUG: Adding project to context: {project.Id}");
+            _context.Projects.Add(project);
+
+            Console.WriteLine("DEBUG: Saving changes to database");
+            await _context.SaveChangesAsync();
+
+            Console.WriteLine($"DEBUG: Project created successfully: {project.Id}");
+            return MapToDto(project);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR in CreateProjectAsync: {ex.Message}");
+            Console.WriteLine($"ERROR Stack: {ex.StackTrace}");
+            throw;
+        }
     }
 
     public async Task<ProjectDto> UpdateProjectAsync(
@@ -167,7 +213,7 @@ public class ProjectService : IProjectService
         var project = await _context
             .Projects.Include(p => p.Tasks)
             .FirstOrDefaultAsync(p => p.Id == projectId);
-        
+
         if (project == null)
             throw new KeyNotFoundException("Project not found");
 
@@ -182,20 +228,20 @@ public class ProjectService : IProjectService
         var taskIds = project.Tasks.Select(t => t.Id).ToList();
         if (taskIds.Count > 0)
         {
-            var comments = await _context.TaskComments
-                .Where(c => taskIds.Contains(c.TaskId))
+            var comments = await _context
+                .TaskComments.Where(c => taskIds.Contains(c.TaskId))
                 .ToListAsync();
             _context.TaskComments.RemoveRange(comments);
 
             // Delete all task assignments
-            var assignments = await _context.TaskAssignments
-                .Where(a => taskIds.Contains(a.TaskId))
+            var assignments = await _context
+                .TaskAssignments.Where(a => taskIds.Contains(a.TaskId))
                 .ToListAsync();
             _context.TaskAssignments.RemoveRange(assignments);
 
             // Delete all task attachments
-            var attachments = await _context.TaskAttachments
-                .Where(a => taskIds.Contains(a.TaskId))
+            var attachments = await _context
+                .TaskAttachments.Where(a => taskIds.Contains(a.TaskId))
                 .ToListAsync();
             _context.TaskAttachments.RemoveRange(attachments);
         }
@@ -204,8 +250,8 @@ public class ProjectService : IProjectService
         _context.Tasks.RemoveRange(project.Tasks);
 
         // Delete all project members
-        var members = await _context.ProjectMembers
-            .Where(m => m.ProjectId == projectId)
+        var members = await _context
+            .ProjectMembers.Where(m => m.ProjectId == projectId)
             .ToListAsync();
         _context.ProjectMembers.RemoveRange(members);
 

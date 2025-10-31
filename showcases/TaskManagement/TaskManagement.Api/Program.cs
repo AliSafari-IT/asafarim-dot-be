@@ -18,7 +18,7 @@ var developmentOrigins = new[]
     "http://localhost:5175",
 };
 
-var productionOrigins = new[] { "https://tasks.asafarim.be", "https://www.asafarim.be" };
+var productionOrigins = new[] { "https://taskmanagement.asafarim.be", "https://www.asafarim.be" };
 
 string[] allowedOrigins = builder.Environment.IsProduction()
     ? productionOrigins
@@ -67,21 +67,27 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Add database context
-var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
-if (!string.IsNullOrEmpty(defaultConnection))
+var taskManagementConnection =
+    builder.Configuration.GetConnectionString("TaskManagementConnection")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrEmpty(taskManagementConnection))
 {
     // Use PostgreSQL for both development and production
     builder.Services.AddDbContext<TaskManagementDbContext>(options =>
         options.UseNpgsql(
-            defaultConnection,
+            taskManagementConnection,
             npgsqlOptions =>
-                npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+            {
+                npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                npgsqlOptions.MigrationsAssembly("TaskManagement.Api");
+            }
         )
     );
 }
 
 // Add services
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
@@ -158,6 +164,22 @@ try
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<TaskManagementDbContext>();
 
+    // Debug: Check pending migrations
+    var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+    var appliedMigrations = await dbContext.Database.GetAppliedMigrationsAsync();
+    
+    Console.WriteLine($"DEBUG: Applied migrations count: {appliedMigrations.Count()}");
+    foreach (var migration in appliedMigrations)
+    {
+        Console.WriteLine($"DEBUG: Applied migration: {migration}");
+    }
+    
+    Console.WriteLine($"DEBUG: Pending migrations count: {pendingMigrations.Count()}");
+    foreach (var migration in pendingMigrations)
+    {
+        Console.WriteLine($"DEBUG: Pending migration: {migration}");
+    }
+
     // Always use migrations for both development and production
     await dbContext.Database.MigrateAsync();
     Console.WriteLine("DEBUG: Database migrations completed successfully");
@@ -205,8 +227,8 @@ app.UseCors("frontend");
 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNullOrEmpty(audience))
 {
     app.UseAuthentication();
+    app.UseAuthorization();
 }
-app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

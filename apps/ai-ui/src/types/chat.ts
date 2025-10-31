@@ -23,6 +23,7 @@ export interface ChatMessage {
 export interface CreateChatSessionDto {
   title: string;
   description?: string;
+  userId?: string;
 }
 
 export interface UpdateChatSessionDto {

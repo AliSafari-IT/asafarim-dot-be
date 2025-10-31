@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useToast } from '@asafarim/toast';
-import identityService from '../api/identityService';
+import { AuthContextCreated } from '../contexts/AuthContextCreated';
 import './auth-components.css';
 
 interface PasswordSetupFormProps {
@@ -16,6 +16,7 @@ export default function PasswordSetupForm({ userId, email, onSuccess, onCancel }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const toast = useToast();
+  const { setupPassword } = React.useContext(AuthContextCreated);
 
   // Password validation function
   const validatePassword = (pwd: string): string | null => {
@@ -39,39 +40,36 @@ export default function PasswordSetupForm({ userId, email, onSuccess, onCancel }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate password
     const validationError = validatePassword(password);
     if (validationError) {
       setError(validationError);
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
+
     setLoading(true);
     setError('');
-    
+
     try {
       console.log('Setting up password for user:', userId);
-      
-      const data = await identityService.setupPassword({
-        userId,
+
+      // Use auth context's setupPassword function which handles cookies properly
+      await setupPassword({
+        token: userId,  // userId is actually the magic link token
         password
       });
-      
-      // Store tokens in localStorage (if your app uses them)
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      
+
       toast.success('Password set successfully', {
         description: 'You are now logged in',
         durationMs: 4000
       });
-      
+
       onSuccess();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error occurred';

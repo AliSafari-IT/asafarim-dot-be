@@ -83,16 +83,29 @@ public class ProjectsController : ControllerBase
     [HttpGet("shared")]
     public async Task<ActionResult<List<ProjectDto>>> GetSharedProjects()
     {
-        var userId =
-            User.FindFirst("sub")?.Value
-            ?? User.FindFirst(
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-            )?.Value;
-        if (userId == null)
-            return Unauthorized();
+        try
+        {
+            var userId =
+                User.FindFirst("sub")?.Value
+                ?? User.FindFirst(
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+                )?.Value;
+            if (userId == null)
+                return Unauthorized(new { error = "User authentication required" });
 
-        var projects = await _projectService.GetSharedProjectsAsync(userId);
-        return Ok(projects);
+            Console.WriteLine($"DEBUG: User ID extracted from token: {userId}");
+
+            var projects = await _projectService.GetSharedProjectsAsync(userId);
+            Console.WriteLine($"DEBUG: Found {projects.Count} shared projects for user {userId}");
+
+            return Ok(projects);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"DEBUG: Error in GetSharedProjects: {ex.Message}");
+            Console.WriteLine($"DEBUG: Stack trace: {ex.StackTrace}");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     [HttpGet("public")]
@@ -128,6 +141,7 @@ public class ProjectsController : ControllerBase
             }
 
             Console.WriteLine($"DEBUG: Creating project for user: {userId}");
+            Console.WriteLine($"DEBUG: Project DTO - Name: {dto.Name}, Description: {dto.Description}, IsPrivate: {dto.IsPrivate}");
 
             var project = await _projectService.CreateProjectAsync(dto, userId);
             return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
@@ -135,6 +149,7 @@ public class ProjectsController : ControllerBase
         catch (Exception ex)
         {
             Console.WriteLine($"DEBUG: Error in CreateProject: {ex.Message}");
+            Console.WriteLine($"DEBUG: Stack trace: {ex.StackTrace}");
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }

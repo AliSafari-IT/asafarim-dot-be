@@ -7,7 +7,7 @@ import LoginHero from '../components/LoginHero';
 const LOGIN_COMPLETED_KEY = 'login_just_completed';
 
 export const Login = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, passwordSetupRequired } = useAuth();
   const navigate = useNavigate();
   const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
   const hasRedirectedRef = useRef(false);
@@ -117,6 +117,7 @@ export const Login = () => {
   return (
     <div className="login-page">
       <LoginHero 
+        passwordSetupRequired={passwordSetupRequired}
         returnUrl={returnUrl}
       />
     </div>

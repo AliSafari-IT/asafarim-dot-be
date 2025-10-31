@@ -1,5 +1,5 @@
 // API base URL - points to Core API
-export const API_BASE_URL = import.meta.env.VITE_CORE_API_URL || 'http://api.asafarim.local:5102/api/core';
+export const API_BASE_URL = import.meta.env.VITE_CORE_API_URL || 'http://core.asafarim.local:5102/api/core';
 
 // API endpoints
 export const endpoints = {

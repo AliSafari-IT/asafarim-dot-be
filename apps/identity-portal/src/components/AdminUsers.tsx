@@ -76,6 +76,29 @@ export default function AdminUsers() {
     }
   };
 
+  const deleteUser = async (u: AdminUser) => {
+    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101'}/admin/users/${u.id}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+    if (!res.ok) {
+      const message = (await res.text()) || 'Failed to delete user';
+      throw new Error(message);
+    }
+  };
+
+  const resetUserPassword = async (u: AdminUser) => {
+    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101'}/admin/users/${u.id}/reset-password`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    if (!res.ok) {
+      const message = (await res.text()) || 'Failed to reset password';
+      throw new Error(message);
+    }
+    return res.json();
+  };
+
   const persistUserFields = async (userId: string) => {
     const current = users.find(x => x.id === userId);
     if (!current) return;
@@ -214,25 +237,57 @@ export default function AdminUsers() {
                     </div>
                   </td>
                   <td>
-                    {/* TODO: Add a button to edit the user detaileds such as name, email, phone, etc. */}
-                    <button className="admin-table-button"
-                      onClick={() => {
-                        const targetUrl = `/admin/edit-user/${u.id}`;
-                        console.log('[AdminUsers] Edit button clicked for user:', u.id, 'Navigating to:', targetUrl);
-                        console.log('[AdminUsers] Current URL before navigation:', window.location.href);
-                        navigate(targetUrl);
-                        // Log URL after navigation
-                        setTimeout(() => {
-                          console.log('[AdminUsers] Current URL after navigation:', window.location.href);
-                        }, 100);
-                      }}
-                      aria-label="Edit user"
-                      title="Edit user"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="admin-table-button-icon">
-                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
+                    <div className="admin-table-actions">
+                      <button 
+                        className="admin-table-button admin-table-button-warning"
+                        onClick={async () => {
+                          if (!window.confirm(`Reset password for ${u.email || u.userName}? They will receive a magic link to set a new password.`)) {
+                            return;
+                          }
+                          try {
+                            await resetUserPassword(u);
+                            toast.success('Password reset', {
+                              description: `Magic link sent to ${u.email || u.userName}`,
+                              durationMs: 4000
+                            });
+                          } catch (err) {
+                            const description = err instanceof Error ? err.message : 'Unknown error';
+                            toast.error('Failed to reset password', { description, durationMs: 6000 });
+                          }
+                        }}
+                        aria-label="Reset password"
+                        title="Reset password - user will receive magic link"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="admin-table-button-icon">
+                          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16m0-5v5h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                      <button 
+                        className="admin-table-button admin-table-button-danger"
+                        onClick={async () => {
+                          if (!window.confirm(`Are you sure you want to remove user ${u.email || u.userName}? This action cannot be undone.`)) {
+                            return;
+                          }
+                          try {
+                            await deleteUser(u);
+                            setUsers(prev => prev.filter(x => x.id !== u.id));
+                            toast.success('User removed', {
+                              description: `${u.email || u.userName} has been removed`,
+                              durationMs: 4000
+                            });
+                          } catch (err) {
+                            const description = err instanceof Error ? err.message : 'Unknown error';
+                            toast.error('Failed to remove user', { description, durationMs: 6000 });
+                          }
+                        }}
+                        aria-label="Remove user"
+                        title="Remove user"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="admin-table-button-icon">
+                          <path d="M19 6l-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6m5 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-4 0h4M10 11v6m4-6v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

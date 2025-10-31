@@ -182,6 +182,10 @@
         "title": "Task Management",
         "description": "A productivity app to manage personal and team tasks with authentication and dashboards."
       },
+      "smartops": {
+        "title": "SmartOps",
+        "description": "SmartOps is a web application that provides a dashboard for monitoring and managing smart operations. It is built using React and TypeScript, and it is part of the SmartOps project."
+      },
       "identityPortal": {
         "title": "Identity Portal",
         "description": "A secure user management and authentication system integrated with ASafariM backend."

@@ -24,12 +24,12 @@ export const config: Config = getIsProduction() ? {
   },
   isProduction: true
 } : {
-  apiBaseUrl: 'http://api.asafarim.local:5101',
+  apiBaseUrl: 'http://identity.asafarim.local:5101',
   authEndpoints: {
-    me: 'http://api.asafarim.local:5101/auth/me',
-    login: 'http://api.asafarim.local:5101/auth/login',
-    register: 'http://api.asafarim.local:5101/auth/register',
-    logout: 'http://api.asafarim.local:5101/auth/logout',
+    me: 'http://identity.asafarim.local:5101/auth/me',
+    login: 'http://identity.asafarim.local:5101/auth/login',
+    register: 'http://identity.asafarim.local:5101/auth/register',
+    logout: 'http://identity.asafarim.local:5101/auth/logout',
   },
   isProduction: false
 };

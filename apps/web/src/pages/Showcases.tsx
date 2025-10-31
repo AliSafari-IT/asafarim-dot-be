@@ -20,6 +20,13 @@ export default function Showcases() {
         : "http://taskmanagement.asafarim.local:5176/"
     },
     {
+      title: t("showcases.projects.smartops.title"),
+      description: t("showcases.projects.smartops.description"),
+      url: isProduction
+        ? "https://smartops.asafarim.be/"
+        : "http://smartops.asafarim.local:5175/"
+    },
+    {
       title: t("showcases.projects.identityPortal.title"),
       description: t("showcases.projects.identityPortal.description"),
       url: isProduction

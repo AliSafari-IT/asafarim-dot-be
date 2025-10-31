@@ -168,6 +168,9 @@ builder
 // Register application services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IPasswordSetupTokenService, PasswordSetupTokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient<ISmartOpsRoleService, SmartOpsRoleService>();
 
 // Configure authorization policies
 builder.Services.AddAuthorization(options =>
@@ -188,6 +191,7 @@ var productionOrigins = new[]
     "https://identity.asafarim.be",
     "https://web.asafarim.be",
     "https://taskmanagement.asafarim.be",
+    "https://smartops.asafarim.be",
 };
 
 var developmentOrigins = new[]
@@ -197,6 +201,7 @@ var developmentOrigins = new[]
     "http://localhost:5174",
     "http://localhost:5175",
     "http://localhost:5176",
+    "http://localhost:5178",
     "http://localhost:4200",
     "http://localhost:5101",
     "http://asafarim.local",
@@ -213,6 +218,7 @@ var developmentOrigins = new[]
     "http://jobs.asafarim.local:4200",
     "http://blog.asafarim.local:3000",
     "http://web.asafarim.local:5175",
+    "http://smartops.asafarim.local:5178",
 };
 
 // Combine origins based on environment
@@ -243,13 +249,18 @@ builder.Services.AddCors(opt =>
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials()
-                    .SetIsOriginAllowedToAllowWildcardSubdomains() // Allow *.asafarim.be
                     .SetPreflightMaxAge(TimeSpan.FromHours(24)); // Reduce preflight requests
 
                 // Log the allowed origins for debugging
                 Console.WriteLine(
                     $"[CORS] Allowed origins for credentials: {string.Join(", ", allowedOrigins)}"
                 );
+                
+                // Additional logging for CORS policy
+                foreach (var origin in allowedOrigins)
+                {
+                    Console.WriteLine($"[CORS] Registered origin: {origin}");
+                }
             }
         }
     )
@@ -266,7 +277,9 @@ app.UseForwardedHeaders();
 // Apply rate limiting to auth endpoints
 app.UseRateLimiting();
 
+// CORS must be before HTTPS redirection
 app.UseCors("app");
+app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();

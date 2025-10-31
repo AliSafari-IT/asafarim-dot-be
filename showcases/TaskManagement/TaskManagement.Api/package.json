@@ -8,7 +8,7 @@
     "start": "dotnet run --project TaskManagement.Api.csproj",
     "build": "dotnet build TaskManagement.Api.csproj",
     "preapi": "kill-port 5104",
-    "api": "dotnet watch run --project TaskManagement.Api.csproj --no-hot-reload"
+    "api": "dotnet watch run --project TaskManagement.Api.csproj"
   },
   "devDependencies": {
     "kill-port": "^2.0.1"

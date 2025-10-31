@@ -11,4 +11,4 @@
 127.0.0.1 asafarim.local
 127.0.0.1 api.asafarim.local
 127.0.0.1 core-api.asafarim.local
-127.0.0.1 tasks.asafarim.local
+127.0.0.1 smartops.asafarim.local

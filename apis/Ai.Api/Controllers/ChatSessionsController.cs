@@ -28,14 +28,15 @@ namespace Ai.Api.Controllers
         [HttpGet("chatsessions")]
         public async Task<ActionResult<IEnumerable<ChatSessionDto>>> GetChatSessions()
         {
-            var userId = "anonymous"; // Remove authentication requirement
+            var userId = GetCurrentUserId() ?? "anonymous";
 
             var sessions = await _context
-                .ChatSessions.Where(s => !s.IsDeleted)
+                .ChatSessions.Where(s => !s.IsDeleted && s.UserId == userId)
                 .OrderByDescending(s => s.LastMessageAt ?? s.UpdatedAt)
                 .Select(s => new ChatSessionDto
                 {
                     Id = s.Id,
+                    UserId = s.UserId,
                     Title = s.Title,
                     Description = s.Description,
                     CreatedAt = s.CreatedAt,
@@ -53,7 +54,7 @@ namespace Ai.Api.Controllers
         [HttpGet("chatsessions/{id}")]
         public async Task<ActionResult<ChatSessionDto>> GetChatSession(Guid id)
         {
-            var userId = "anonymous"; // Remove authentication requirement
+            //  var userId = "anonymous"; // Remove authentication requirement
 
             var session = await _context
                 .ChatSessions.Include(s => s.Messages.OrderBy(m => m.CreatedAt))
@@ -72,13 +73,15 @@ namespace Ai.Api.Controllers
                 IsArchived = session.IsArchived,
                 LastMessageAt = session.LastMessageAt,
                 MessageCount = session.MessageCount,
-                Messages = session.Messages.Select(m => new ChatMessageDto
-                {
-                    Id = m.Id,
-                    Content = m.Content,
-                    Role = m.Role,
-                    CreatedAt = m.CreatedAt
-                }).ToList()
+                Messages = session
+                    .Messages.Select(m => new ChatMessageDto
+                    {
+                        Id = m.Id,
+                        Content = m.Content,
+                        Role = m.Role,
+                        CreatedAt = m.CreatedAt,
+                    })
+                    .ToList(),
             };
 
             return Ok(sessionDto);
@@ -90,12 +93,14 @@ namespace Ai.Api.Controllers
             CreateChatSessionDto createDto
         )
         {
-            var userId = "anonymous"; // Remove authentication requirement
-
+            Console.WriteLine("\n=== CreateChatSession called ===");
+            var userId = GetCurrentUserId();
+            Console.WriteLine($"UserId from GetCurrentUserId: {userId ?? "NULL"}");
+            
             var session = new ChatSession
             {
                 Id = Guid.NewGuid(),
-                UserId = "anonymous",
+                UserId = userId ?? "anonymous",
                 Title = createDto.Title,
                 Description = createDto.Description,
                 CreatedAt = DateTime.UtcNow,
@@ -127,7 +132,7 @@ namespace Ai.Api.Controllers
         [HttpPut("chatsessions/{id}")]
         public async Task<IActionResult> UpdateChatSession(Guid id, UpdateChatSessionDto updateDto)
         {
-            var userId = "anonymous"; // Remove authentication requirement
+            //  var userId = "anonymous"; // Remove authentication requirement
 
             var session = await _context.ChatSessions.FirstOrDefaultAsync(s =>
                 s.Id == id && !s.IsDeleted
@@ -150,7 +155,7 @@ namespace Ai.Api.Controllers
         [HttpDelete("chatsessions/{id}")]
         public async Task<IActionResult> DeleteChatSession(Guid id)
         {
-            var userId = "anonymous"; // Remove authentication requirement
+            //  var userId = "anonymous"; // Remove authentication requirement
 
             var session = await _context.ChatSessions.FirstOrDefaultAsync(s =>
                 s.Id == id && !s.IsDeleted
@@ -171,7 +176,7 @@ namespace Ai.Api.Controllers
         [HttpPost("chatsessions/{id}/archive")]
         public async Task<IActionResult> ArchiveChatSession(Guid id)
         {
-            var userId = "anonymous"; // Remove authentication requirement
+            //  var userId = "anonymous"; // Remove authentication requirement
 
             var session = await _context.ChatSessions.FirstOrDefaultAsync(s =>
                 s.Id == id && !s.IsDeleted
@@ -190,7 +195,30 @@ namespace Ai.Api.Controllers
 
         private string? GetCurrentUserId()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine($"\n=== GetCurrentUserId called ===");
+            
+            // Check if cookie exists
+            if (HttpContext.Request.Cookies.TryGetValue("atk", out var token))
+            {
+                Console.WriteLine($"✅ Found 'atk' cookie with token: {token.Substring(0, Math.Min(50, token.Length))}...");
+            }
+            else
+            {
+                Console.WriteLine($"❌ No 'atk' cookie found");
+            }
+            
+            // Check User claims
+            Console.WriteLine($"User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
+            Console.WriteLine($"User.Identity.AuthenticationType: {User.Identity?.AuthenticationType}");
+            Console.WriteLine($"User.Claims count: {User.Claims.Count()}");
+            foreach (var claim in User.Claims)
+            {
+                Console.WriteLine($"  Claim: {claim.Type} = {claim.Value}");
+            }
+            
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine($"Extracted userId: {userId ?? "NULL"}");
+            return userId;
         }
     }
 }

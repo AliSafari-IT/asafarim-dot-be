@@ -15,6 +15,8 @@ import Navbar from "./components/Navbar";
 // Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import SetupPassword from "./pages/SetupPassword";
 import SyncLogout from "./pages/SyncLogout";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -49,6 +51,22 @@ function App() {
                 element={
                   <ProtectedRoute requireAuth={false}>
                     <Register />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/forgot-password"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <ForgotPassword />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setup-password"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <SetupPassword />
                   </ProtectedRoute>
                 }
               />
@@ -112,6 +130,9 @@ function App() {
                 }
               />
 
+              {/* Logout endpoint - clears auth and redirects to login */}
+              <Route path="/logout" element={<SyncLogout />} />
+              
               {/* Logout sync endpoint (not protected) */}
               <Route path="/sync-logout" element={<SyncLogout />} />
 

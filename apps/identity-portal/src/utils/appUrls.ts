@@ -16,6 +16,7 @@ export const CORE_URL = env.VITE_CORE_URL || (isProd ? 'https://core.asafarim.be
 export const PUBLICATIONS_URL = env.VITE_PUBLICATIONS_URL || (isProd ? 'https://asafarim.be/portfolio/publications' : 'http://web.asafarim.local:5175/portfolio/publications');
 export const RESUME_URL = env.VITE_RESUME_URL || (isProd ? 'https://asafarim.be/portfolio/resume' : 'http://web.asafarim.local:5175/portfolio/resume');
 export const TASKS_URL = env.VITE_TASKS_URL || (isProd ? 'https://taskmanagement.asafarim.be/' : 'http://taskmanagement.asafarim.local:5176/');
+export const SMARTOPS_URL = env.VITE_SMARTOPS_URL || (isProd ? 'https://smartops.asafarim.be/' : 'http://smartops.asafarim.local:5178/');
 
 export function openInNewTab(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');

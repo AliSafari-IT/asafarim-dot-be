@@ -54,11 +54,17 @@
     <!-- Data layer -->
     <Compile Include="Data\TaskManagementDbContext.cs" />
 
+    <!-- Migrations -->
+    <Compile Include="Migrations\**\*.cs" />
+
     <!-- Controllers -->
     <Compile Include="Controllers\**\*.cs" />
 
     <!-- Properties -->
     <Compile Include="Properties\**\*.cs" />
+
+    <!-- Configuration files -->
+    <None Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
