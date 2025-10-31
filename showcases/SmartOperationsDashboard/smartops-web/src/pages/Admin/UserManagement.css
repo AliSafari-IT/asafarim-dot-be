@@ -197,14 +197,19 @@
   font-size: 0.75rem;
 }
 
-.role-member {
+.role-user {
   background-color: #dbeafe;
   color: #1e40af;
 }
 
-.role-manager {
+.role-editor {
   background-color: #fef3c7;
   color: #92400e;
+}
+
+.role-mediator {
+  background-color: #e0e7ff;
+  color: #3730a3;
 }
 
 .role-admin {

@@ -182,6 +182,11 @@
         "title": "Taakbeheer",
         "description": "Een productiviteitsapp voor het beheren van persoonlijke en teamtaken met authenticatie en dashboards."
       },
+      "smartops":
+      {
+        "title": "SmartOps",
+        "description": "SmartOps is een webapplicatie die een dashboard biedt voor het monitoren en beheren van slimme processen. De applicatie is gebouwd met React en TypeScript en maakt deel uit van het SmartOps-project."
+      },
       "identityPortal": {
         "title": "Identiteitsportaal",
         "description": "Een veilig gebruikersbeheer- en authenticatiesysteem geïntegreerd met ASafariM backend."

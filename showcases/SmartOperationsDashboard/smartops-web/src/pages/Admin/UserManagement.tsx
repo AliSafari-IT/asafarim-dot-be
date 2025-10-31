@@ -15,7 +15,7 @@ interface User {
 export default function UserManagement() {
   const { isAuthenticated } = useAuth()
   const [users, setUsers] = useState<User[]>([])
-  const [, setRoles] = useState<string[]>([])
+  const [roles, setRoles] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dataActionLoading, setDataActionLoading] = useState<string | null>(null)
@@ -51,6 +51,8 @@ export default function UserManagement() {
       const rolesData = await rolesRes.json()
       
       setUsers(usersData)
+      console.log('rolesData', rolesData, 'usersData', usersData)
+
       setRoles(rolesData.map((r: { name: string }) => r.name))
       setError(null)
     } catch (err) {
@@ -87,16 +89,25 @@ export default function UserManagement() {
       }
       
       // Update the user's roles
-      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/roles`, {
+      const payload = { roles: updatedRoles }
+      console.log('📤 Sending role update payload:', payload)
+      
+      const response = await fetch(`${IDENTITY_API_URL}/admin/users/${userId}/roles`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ Roles: updatedRoles })
+        body: JSON.stringify(payload)
       })
 
       if (!response.ok) {
-        const error = await response.text()
-        throw new Error(error || 'Failed to update roles')
+        const errorText = await response.text()
+        console.error('❌ Role update failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+          headers: Object.fromEntries(response.headers)
+        })
+        throw new Error(errorText || `Failed to update roles (${response.status})`)
       }
 
       // Update local state
@@ -318,13 +329,14 @@ export default function UserManagement() {
                         onChange={(e) => setEditRole(e.target.value)}
                         className="role-select"
                       >
-                        <option value="Member">Member</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Admin">Admin</option>
+                        <option value="">-- Select Role --</option>
+                        {roles.map((role: string) => (
+                          <option key={role} value={role}>{role}</option>
+                        ))}
                       </select>
                     ) : (
                       <div className="role-badges">
-                        {userPerm.roles.map(role => (
+                        {userPerm.roles.map((role: string) => (
                           <span key={role} className={`role-badge role-${role.toLowerCase()}`}>
                             {role}
                           </span>
