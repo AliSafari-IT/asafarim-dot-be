@@ -7,8 +7,8 @@ import "./Navbar.css";
 // Define your navigation links with optional icons and accessibility labels
 const navLinks: NavLinkItem[] = [
   {
-    to: "/admin/users",
-    label: "Users",
+    to: "/admin-area",
+    label: "Admin-Dashboard",
   },
   {
     to: "/me",

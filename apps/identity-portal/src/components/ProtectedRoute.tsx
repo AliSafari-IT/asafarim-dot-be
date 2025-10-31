@@ -44,7 +44,7 @@ export const ProtectedRoute = ({
   }
   
   // If authentication is required but user is not authenticated, redirect to login
-  if (requireAuth && !isAuthenticated) {
+  if (requireAuth && !isAuthenticated && !loading) {
     console.log('[ProtectedRoute] Access denied (no auth). Redirecting to /login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

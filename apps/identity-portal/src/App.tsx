@@ -25,6 +25,7 @@ import MeProfilePage from "./pages/MeProfilePage";
 import AddNewUserPage from "./pages/AddNewUserPage";
 import EditUserPage from "./pages/EditUserPage";
 import { PrelaunchNoticeBanner } from "@asafarim/shared-ui-react";
+import AdminDashboard from "./pages/admin-area/AdminDashboard";
 
 function App() {
   return (
@@ -83,6 +84,14 @@ function App() {
 
               {/* Admin users management */}
               <Route
+                path="/admin-area"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin/users"
                 element={
                   <ProtectedRoute>
@@ -108,10 +117,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/admin/user-profile"
-                element={<UserProfilePage />}
-              />
+              <Route path="/admin/user-profile" element={<UserProfilePage />} />
               <Route
                 path="/admin/user-profile/:id"
                 element={
@@ -132,7 +138,7 @@ function App() {
 
               {/* Logout endpoint - clears auth and redirects to login */}
               <Route path="/logout" element={<SyncLogout />} />
-              
+
               {/* Logout sync endpoint (not protected) */}
               <Route path="/sync-logout" element={<SyncLogout />} />
 
