@@ -1,7 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using SmartOps.Api.Data;
 using SmartOps.Api.DTOs;
 using SmartOps.Api.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace SmartOps.Api.Services;
 
@@ -17,7 +17,9 @@ public class ReadingService : IReadingService
         _dbContext = dbContext;
     }
 
-    public async Task<(List<ReadingDto> readings, int total)> GetReadingsAsync(ReadingFilterDto filter)
+    public async Task<(List<ReadingDto> readings, int total)> GetReadingsAsync(
+        ReadingFilterDto filter
+    )
     {
         var query = _dbContext.Readings.AsQueryable();
 
@@ -45,7 +47,7 @@ public class ReadingService : IReadingService
                 Pressure = r.Pressure,
                 PowerConsumption = r.PowerConsumption,
                 OperationCount = r.OperationCount,
-                RecordedAt = r.RecordedAt
+                RecordedAt = r.RecordedAt,
             })
             .ToListAsync();
 
@@ -67,14 +69,14 @@ public class ReadingService : IReadingService
             Pressure = reading.Pressure,
             PowerConsumption = reading.PowerConsumption,
             OperationCount = reading.OperationCount,
-            RecordedAt = reading.RecordedAt
+            RecordedAt = reading.RecordedAt,
         };
     }
 
     public async Task<ReadingDto?> GetLatestReadingAsync(Guid deviceId)
     {
-        var reading = await _dbContext.Readings
-            .Where(r => r.DeviceId == deviceId)
+        var reading = await _dbContext
+            .Readings.Where(r => r.DeviceId == deviceId)
             .OrderByDescending(r => r.RecordedAt)
             .FirstOrDefaultAsync();
 
@@ -90,7 +92,7 @@ public class ReadingService : IReadingService
             Pressure = reading.Pressure,
             PowerConsumption = reading.PowerConsumption,
             OperationCount = reading.OperationCount,
-            RecordedAt = reading.RecordedAt
+            RecordedAt = reading.RecordedAt,
         };
     }
 
@@ -110,7 +112,7 @@ public class ReadingService : IReadingService
             Pressure = dto.Pressure,
             PowerConsumption = dto.PowerConsumption,
             OperationCount = dto.OperationCount,
-            RecordedAt = DateTime.UtcNow
+            RecordedAt = DateTime.UtcNow,
         };
 
         _dbContext.Readings.Add(reading);
@@ -125,18 +127,26 @@ public class ReadingService : IReadingService
             Pressure = reading.Pressure,
             PowerConsumption = reading.PowerConsumption,
             OperationCount = reading.OperationCount,
-            RecordedAt = reading.RecordedAt
+            RecordedAt = reading.RecordedAt,
         };
     }
 
-    public async Task<ReadingStatsDto> GetReadingStatsAsync(Guid deviceId, DateTime startDate, DateTime endDate)
+    public async Task<ReadingStatsDto> GetReadingStatsAsync(
+        Guid deviceId,
+        DateTime startDate,
+        DateTime endDate
+    )
     {
-        var readings = await _dbContext.Readings
-            .Where(r => r.DeviceId == deviceId && r.RecordedAt >= startDate && r.RecordedAt <= endDate)
+        var readings = await _dbContext
+            .Readings.Where(r =>
+                r.DeviceId == deviceId && r.RecordedAt >= startDate && r.RecordedAt <= endDate
+            )
             .ToListAsync();
 
         if (readings.Count == 0)
-            throw new InvalidOperationException($"No readings found for device {deviceId} in the specified period");
+            throw new InvalidOperationException(
+                $"No readings found for device {deviceId} in the specified period"
+            );
 
         return new ReadingStatsDto
         {
@@ -148,7 +158,7 @@ public class ReadingService : IReadingService
             TotalOperations = readings.Sum(r => r.OperationCount),
             StartDate = startDate,
             EndDate = endDate,
-            ReadingCount = readings.Count
+            ReadingCount = readings.Count,
         };
     }
 }
