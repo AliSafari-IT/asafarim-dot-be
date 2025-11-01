@@ -10,16 +10,31 @@
 /* Layout */
 .admin-container {
   max-width: 1200px;
+  width: 50%;
   margin: 0 auto;
   padding: 2rem 1.5rem;
   min-height: 100vh;
 }
 
+@media (max-width: 768px) {
+  .admin-container {
+    width: 75%;
+  }
+}
+@media (max-width: 428px) {
+  .admin-container {
+    width: 100%;
+  }
+}
+
 .admin-header {
   display: flex;
+  direction: ltr;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .admin-header h1 {
