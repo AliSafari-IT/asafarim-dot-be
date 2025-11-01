@@ -93,7 +93,7 @@ function App() {
                 }
               />
               <Route
-                path="/admin/users"
+                path="/admin-area/users"
                 element={
                   <ProtectedRoute>
                     <AdminUsersPage />
@@ -101,7 +101,7 @@ function App() {
                 }
               />
               <Route
-                path="/admin/users/add"
+                path="/admin-area/users/add"
                 element={
                   <ProtectedRoute>
                     <AddNewUserPage />
@@ -109,7 +109,7 @@ function App() {
                 }
               />
               <Route
-                path="/admin/roles"
+                path="/admin-area/roles"
                 element={
                   <ProtectedRoute>
                     <RoleCrudOperations />
@@ -136,7 +136,7 @@ function App() {
               />
               {/* Admin edit user (admin-only) */}
               <Route
-                path="/admin/edit-user/:id"
+                path="/admin-area/edit-user/:id"
                 element={
                   <ProtectedRoute>
                     <EditUserPage />

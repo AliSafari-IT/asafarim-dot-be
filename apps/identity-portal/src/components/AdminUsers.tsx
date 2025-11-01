@@ -18,54 +18,57 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const toast = useToast();
   const navigate = useNavigate();
-// Add this state near the top of the component with other states
-const [editingUserId, setEditingUserId] = useState<string | null>(null);
-const [editForm, setEditForm] = useState<{ email?: string; userName?: string }>({ email: '', userName: '' });
+  // Add this state near the top of the component with other states
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<{
+    email?: string;
+    userName?: string;
+  }>({ email: "", userName: "" });
 
-// Add these functions before the return statement
-const startEditing = (user: AdminUser) => {
-  setEditingUserId(user.id);
-  setEditForm({
-    email: user.email || '',
-    userName: user.userName || ''
-  });
-};
-
-const cancelEditing = () => {
-  setEditingUserId(null);
-  setEditForm({ email: '', userName: '' });
-};
-
-const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target;
-  setEditForm(prev => ({ ...prev, [name]: value }));
-};
-
-const saveUserChanges = async (userId: string) => {
-  const current = users.find(u => u.id === userId);
-  if (!current) return;
-  
-  try {
-    await saveUser({
-      ...current,
-      email: editForm.email,
-      userName: editForm.userName
+  // Add these functions before the return statement
+  const startEditing = (user: AdminUser) => {
+    setEditingUserId(user.id);
+    setEditForm({
+      email: user.email || "",
+      userName: user.userName || "",
     });
-    setUsers(prev => 
-      prev.map(u => 
-        u.id === userId 
-          ? { ...u, email: editForm.email, userName: editForm.userName }
-          : u
-      )
-    );
+  };
+
+  const cancelEditing = () => {
     setEditingUserId(null);
-    toast.success('User updated successfully');
-  } catch (err) {
-    toast.error('Failed to update user', {
-      description: err instanceof Error ? err.message : 'Unknown error'
-    });
-  }
-};
+    setEditForm({ email: "", userName: "" });
+  };
+
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const saveUserChanges = async (userId: string) => {
+    const current = users.find((u) => u.id === userId);
+    if (!current) return;
+
+    try {
+      await saveUser({
+        ...current,
+        email: editForm.email,
+        userName: editForm.userName,
+      });
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId
+            ? { ...u, email: editForm.email, userName: editForm.userName }
+            : u
+        )
+      );
+      setEditingUserId(null);
+      toast.success("User updated successfully");
+    } catch (err) {
+      toast.error("Failed to update user", {
+        description: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  };
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -174,7 +177,7 @@ const saveUserChanges = async (userId: string) => {
   if (loading)
     return <div className="admin-loading">Loading users and roles...</div>;
 
-return (
+  return (
     <div className="admin-container">
       {/* Header Section */}
       <header className="admin-header">
@@ -207,7 +210,7 @@ return (
         <div className="stat-card">
           <h3>Admin Users</h3>
           <p className="stat-number">
-            {users.filter(u => u.roles.includes('Admin')).length}
+            {users.filter((u) => u.roles.includes("Admin")).length}
           </p>
         </div>
       </div>
@@ -225,67 +228,67 @@ return (
           <tbody>
             {users.map((user) => (
               <tr key={user.id}>
-                <td className="user-cell">
-  <div className="user-avatar">
-    {user.userName?.[0]?.toUpperCase() || 'U'}
-  </div>
-  <div>
-    {editingUserId === user.id ? (
-      <div className="edit-fields">
-        <input
-          type="email"
-          name="email"
-          value={editForm.email}
-          onChange={handleEditFormChange}
-          className="edit-input"
-          placeholder="Email"
-        />
-        <input
-          type="text"
-          name="userName"
-          value={editForm.userName}
-          onChange={handleEditFormChange}
-          className="edit-input"
-          placeholder="Username"
-        />
-      </div>
-    ) : (
-      <>
-        <div className="user-email">{user.email}</div>
-        <div className="user-name">
-          {user.userName || 'No username'}
-        </div>
-      </>
-    )}
-  </div>
-  {editingUserId === user.id ? (
-    <div className="edit-actions">
-      <button 
-        className="btn-icon success" 
-        onClick={() => saveUserChanges(user.id)}
-        title="Save changes"
-      >
-        <Save size={16} />
-      </button>
-      <button 
-        className="btn-icon" 
-        onClick={cancelEditing}
-        title="Cancel"
-      >
-        <X size={16} />
-      </button>
-    </div>
-  ) : (
-    <button 
-      className="btn-icon" 
-      onClick={() => startEditing(user)}
-      title="Edit user"
-    >
-      <Edit size={16} />
-    </button>
-  )}
-</td>
-                <td>
+                <td className="user-cell" data-label="User">
+                  <div className="user-avatar">
+                    {user.userName?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <div>
+                    {editingUserId === user.id ? (
+                      <div className="edit-fields">
+                        <input
+                          type="email"
+                          name="email"
+                          value={editForm.email}
+                          onChange={handleEditFormChange}
+                          className="edit-input"
+                          placeholder="Email"
+                        />
+                        <input
+                          type="text"
+                          name="userName"
+                          value={editForm.userName}
+                          onChange={handleEditFormChange}
+                          className="edit-input"
+                          placeholder="Username"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="user-email">{user.email}</div>
+                        <div className="user-name">
+                          {user.userName || "No username"}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {editingUserId === user.id ? (
+                    <div className="edit-actions">
+                      <button
+                        className="btn-icon success"
+                        onClick={() => saveUserChanges(user.id)}
+                        title="Save changes"
+                      >
+                        <Save size={16} />
+                      </button>
+                      <button
+                        className="btn-icon"
+                        onClick={cancelEditing}
+                        title="Cancel"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="btn-icon"
+                      onClick={() => startEditing(user)}
+                      title="Edit user"
+                    >
+                      <Edit size={16} />
+                    </button>
+                  )}
+                </td>
+                <td data-label="Roles">
                   <div className="roles-container">
                     {user.roles.map((role) => (
                       <span key={role} className="role-tag">
@@ -293,20 +296,27 @@ return (
                         <button
                           className="role-remove"
                           onClick={async () => {
-                            const nextRoles = user.roles.filter(r => r !== role);
-                            setUsers(prev => 
-                              prev.map(u => 
-                                u.id === user.id ? { ...u, roles: nextRoles } : u
+                            const nextRoles = user.roles.filter(
+                              (r) => r !== role
+                            );
+                            setUsers((prev) =>
+                              prev.map((u) =>
+                                u.id === user.id
+                                  ? { ...u, roles: nextRoles }
+                                  : u
                               )
                             );
                             try {
                               await setUserRoles(user, nextRoles);
-                              toast.success('Role removed', {
-                                description: `${role} removed from user`
+                              toast.success("Role removed", {
+                                description: `${role} removed from user`,
                               });
                             } catch (err) {
-                              toast.error('Failed to update roles', {
-                                description: err instanceof Error ? err.message : 'Unknown error'
+                              toast.error("Failed to update roles", {
+                                description:
+                                  err instanceof Error
+                                    ? err.message
+                                    : "Unknown error",
                               });
                             }
                           }}
@@ -321,31 +331,34 @@ return (
                         onChange={async (e) => {
                           const role = e.target.value;
                           if (!role) return;
-                          
+
                           const nextRoles = [...user.roles, role];
-                          setUsers(prev => 
-                            prev.map(u => 
+                          setUsers((prev) =>
+                            prev.map((u) =>
                               u.id === user.id ? { ...u, roles: nextRoles } : u
                             )
                           );
-                          
+
                           try {
                             await setUserRoles(user, nextRoles);
-                            toast.success('Role added', {
-                              description: `${role} added to user`
+                            toast.success("Role added", {
+                              description: `${role} added to user`,
                             });
                           } catch (err) {
-                            toast.error('Failed to add role', {
-                              description: err instanceof Error ? err.message : 'Unknown error'
+                            toast.error("Failed to add role", {
+                              description:
+                                err instanceof Error
+                                  ? err.message
+                                  : "Unknown error",
                             });
                           }
-                          e.target.value = '';
+                          e.target.value = "";
                         }}
                       >
                         <option value="">Add role...</option>
                         {roles
-                          .filter(r => !user.roles.includes(r))
-                          .map(role => (
+                          .filter((r) => !user.roles.includes(r))
+                          .map((role) => (
                             <option key={role} value={role}>
                               {role}
                             </option>
@@ -354,19 +367,26 @@ return (
                     </div>
                   </div>
                 </td>
-                <td>
+                <td data-label="Actions">
                   <div className="action-buttons">
                     <button
+                      type="button"
                       className="btn-icon"
                       title="Reset Password"
                       onClick={async () => {
-                        if (!window.confirm(`Reset password for ${user.email}?`)) return;
+                        if (
+                          !window.confirm(`Reset password for ${user.email}?`)
+                        )
+                          return;
                         try {
                           await resetUserPassword(user);
-                          toast.success('Password reset email sent');
+                          toast.success("Password reset email sent");
                         } catch (err) {
-                          toast.error('Failed to reset password', {
-                            description: err instanceof Error ? err.message : 'Unknown error'
+                          toast.error("Failed to reset password", {
+                            description:
+                              err instanceof Error
+                                ? err.message
+                                : "Unknown error",
                           });
                         }
                       }}
@@ -377,14 +397,24 @@ return (
                       className="btn-icon danger"
                       title="Delete User"
                       onClick={async () => {
-                        if (!window.confirm(`Delete user ${user.email}? This cannot be undone.`)) return;
+                        if (
+                          !window.confirm(
+                            `Delete user ${user.email}? This cannot be undone.`
+                          )
+                        )
+                          return;
                         try {
                           await deleteUser(user);
-                          setUsers(prev => prev.filter(u => u.id !== user.id));
-                          toast.success('User deleted');
+                          setUsers((prev) =>
+                            prev.filter((u) => u.id !== user.id)
+                          );
+                          toast.success("User deleted");
                         } catch (err) {
-                          toast.error('Failed to delete user', {
-                            description: err instanceof Error ? err.message : 'Unknown error'
+                          toast.error("Failed to delete user", {
+                            description:
+                              err instanceof Error
+                                ? err.message
+                                : "Unknown error",
                           });
                         }
                       }}

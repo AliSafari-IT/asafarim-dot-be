@@ -8,13 +8,13 @@ export default function AdminDashboard() {
       title: "User Management",
       description: "Manage platform users and their permissions.",
       icon: "👥",
-      link: "/admin/users",
+      link: "/admin-area/users",
     },
     "role-management": {
       title: "Role Management",
       description: "Define and update system roles and privileges.",
       icon: "🛡️",
-      link: "/admin/roles",
+      link: "/admin-area/roles",
     },
   };
 
