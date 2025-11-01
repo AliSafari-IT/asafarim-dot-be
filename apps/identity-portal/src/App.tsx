@@ -26,6 +26,7 @@ import AddNewUserPage from "./pages/AddNewUserPage";
 import EditUserPage from "./pages/EditUserPage";
 import { PrelaunchNoticeBanner } from "@asafarim/shared-ui-react";
 import AdminDashboard from "./pages/admin-area/AdminDashboard";
+import RoleCrudOperations from "./pages/admin-area/RoleCrudOperations";
 
 function App() {
   return (
@@ -107,7 +108,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
+              <Route
+                path="/admin/roles"
+                element={
+                  <ProtectedRoute>
+                    <RoleCrudOperations />
+                  </ProtectedRoute>
+                }
+              />
               {/* Admin user profile (admin-only) and Me profile (all authenticated) */}
               <Route
                 path="/me"
