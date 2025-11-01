@@ -106,6 +106,23 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+@media (min-width: 1024px) {
+  .admin-table th:nth-child(1),
+  .admin-table td:nth-child(1) {
+    width: 40%;
+  }
+
+  .admin-table th:nth-child(2),
+  .admin-table td:nth-child(2) {
+    width: 35%;
+  }
+
+  .admin-table th:nth-child(3),
+  .admin-table td:nth-child(3) {
+    width: 25%;
+  }
+}
+
 .admin-table th {
   background: var(--color-surface-muted);
   color: var(--color-text-muted);
@@ -156,9 +173,12 @@
 /* Roles */
 .roles-container {
   display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 0.5rem;
-  align-items: center;
+  position: relative;
 }
 
 .role-tag {
@@ -259,6 +279,10 @@
 
 .action-buttons {
   display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
   gap: 0.5rem;
 }
 
@@ -333,6 +357,47 @@
   
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .admin-table thead {
+    display: none;
+  }
+  
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td {
+    display: block;
+    width: 100%;
+  }
+  
+  .admin-table tr {
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+  
+  .admin-table td {
+    padding: 1rem;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    padding-left: 120px;
+  }
+  
+  .admin-table td:last-child {
+    border-bottom: none;
+  }
+  
+  .admin-table td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 1rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 }
 
