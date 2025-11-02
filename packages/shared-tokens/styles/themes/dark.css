@@ -84,8 +84,8 @@
   --color-brand-600: #60d3fa; /* Soft highlight */
   --color-brand-900: #eef2ff; /* Lightest tint */
   --color-brand-950: #f2f4f8; /* Near-white */
-  --color-phosphor: #c4e94f; /* Bright lime-green */
   --color-brand: #60a5fa; /* Primary brand tone */
+  --color-phosphor: #c4e94f; /* Bright lime-green */
 
   /* Background / text tokens */
   --color-bg: #111827;
