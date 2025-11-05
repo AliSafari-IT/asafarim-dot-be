@@ -1,0 +1,50 @@
+/* Sidebar Styles */
+.sidebar-test-automation {
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--color-primary-0);
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+  padding: 1rem 0;
+}
+
+.sidebar-test-automation .nav-links {
+  list-style: none;
+}
+
+.sidebar-test-automation .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: var(--color-primary-500);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.sidebar-test-automation .nav-link:hover {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-500);
+}
+
+.sidebar-test-automation .nav-link.active {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-500);
+  border-right: 3px solid var(--primary-color);
+}
+
+.sidebar-test-automation .nav-icon {
+  margin-right: 0.75rem;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar-test-automation {
+    display: none;
+  }
+}

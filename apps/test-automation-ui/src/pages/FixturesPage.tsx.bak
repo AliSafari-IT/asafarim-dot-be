@@ -1,0 +1,344 @@
+// apps/test-automation-ui/src/pages/FixturesPage.tsx
+import { useEffect, useState } from "react";
+import { api } from "../config/api";
+import "./FixturesPage.css";
+
+interface Fixture {
+  id: string;
+  functionalRequirementId: string;
+  name: string;
+  description?: string;
+  pageUrl?: string;
+  setupScript?: string;
+  teardownScript?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface FunctionalRequirement {
+  id: string;
+  name: string;
+}
+
+export default function FixturesPage() {
+  const [items, setItems] = useState<Fixture[]>([]);
+  const [frs, setFrs] = useState<FunctionalRequirement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<Fixture | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    pageUrl: "",
+    setupScript: "",
+    teardownScript: "",
+    functionalRequirementId: "" as string | undefined,
+  });
+
+  useEffect(() => {
+    loadItems();
+    loadFRs();
+  }, []);
+
+  const loadItems = async () => {
+    try {
+      const response = await api.get("/api/fixtures");
+      setItems(response.data);
+    } catch (error) {
+      console.error("Failed to load:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadFRs = async () => {
+    try {
+      const response = await api.get("/api/functional-requirements");
+      setFrs(response.data);
+    } catch (error) {
+      console.error("Failed to load FRs:", error);
+    }
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        FunctionalRequirementId: formData.functionalRequirementId,
+        Name: formData.name,
+        Description: formData.description || null,
+        PageUrl: formData.pageUrl || null,
+        SetupScript: formData.setupScript || null,
+        TeardownScript: formData.teardownScript || null,
+      };
+
+      await api.post("/api/fixtures", payload);
+      setCreating(false);
+      setFormData({
+        name: "",
+        description: "",
+        pageUrl: "",
+        setupScript: "",
+        teardownScript: "",
+        functionalRequirementId: "",
+      });
+      loadItems();
+    } catch (error: any) {
+      console.error("Failed to create:", error);
+      if (error.response?.data) {
+        console.error("Error details:", error.response.data);
+      }
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editing) return;
+    try {
+      // Convert to PascalCase to match backend DTO
+      const payload = {
+        Id: editing.id, // Required for update
+        FunctionalRequirementId: formData.functionalRequirementId,
+        Name: formData.name,
+        Description: formData.description || null,
+        PageUrl: formData.pageUrl || null,
+        SetupScript: formData.setupScript || null,
+        TeardownScript: formData.teardownScript || null,
+      };
+
+      await api.put(`/api/fixtures/${editing.id}`, payload);
+      setEditing(null);
+      setFormData({
+        name: "",
+        description: "",
+        pageUrl: "",
+        setupScript: "",
+        teardownScript: "",
+        functionalRequirementId: "",
+      });
+      loadItems();
+    } catch (error: any) {
+      console.error("Failed to update:", error);
+      if (error.response?.data) {
+        console.error("Error details:", error.response.data);
+      }
+    }
+  };
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this fixture?")) return;
+    try {
+      await api.delete(`/api/fixtures/${id}`);
+      loadItems();
+    } catch (error: any) {
+      console.error("Failed to delete:", error);
+    }
+  };
+
+  const startEdit = (item: Fixture) => {
+    setEditing(item);
+    setFormData({
+      name: item.name,
+      description: item.description || "",
+      pageUrl: item.pageUrl || "",
+      setupScript: item.setupScript || "",
+      teardownScript: item.teardownScript || "",
+      functionalRequirementId: item.functionalRequirementId,
+    });
+    setCreating(false);
+  };
+
+  const cancelEdit = () => {
+    setEditing(null);
+    setCreating(false);
+    setFormData({
+      name: "",
+      description: "",
+      pageUrl: "",
+      setupScript: "",
+      teardownScript: "",
+      functionalRequirementId: "",
+    });
+  };
+
+  const getFRName = (frId: string) => {
+    return frs.find((fr) => fr.id === frId)?.name || "Unknown";
+  };
+
+  if (loading) return <div className="empty-state">Loading...</div>;
+
+  return (
+    <div className="fixtures-container">
+      <div className="fixtures-header">
+        <h2 className="fixtures-title">Test Fixtures</h2>
+        <button
+          className="button button-primary"
+          onClick={() => setCreating(true)}
+          disabled={creating || editing !== null}
+        >
+          + New Fixture
+        </button>
+      </div>
+
+      {(creating || editing) && (
+        <form
+          className="fixture-form"
+          onSubmit={editing ? handleUpdate : handleCreate}
+        >
+          <h4 className="form-title">{editing ? "Edit" : "Create"} Fixture</h4>
+          <div className="form-group">
+            <label className="form-label">Functional Requirement *</label>
+            <select
+              className="form-control"
+              value={formData.functionalRequirementId}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  functionalRequirementId: e.target.value,
+                })
+              }
+              required
+            >
+              <option value="">Select a requirement</option>
+              {frs.map((fr) => (
+                <option key={fr.id} value={fr.id}>
+                  {fr.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Name *</label>
+            <input
+              type="text"
+              className="form-control"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Description</label>
+            <textarea
+              className="form-control"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              rows={3}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Page URL</label>
+            <input
+              type="url"
+              className="form-control"
+              value={formData.pageUrl}
+              onChange={(e) =>
+                setFormData({ ...formData, pageUrl: e.target.value })
+              }
+              placeholder="https://example.com"
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Setup Script</label>
+            <textarea
+              className="form-control"
+              value={formData.setupScript}
+              onChange={(e) =>
+                setFormData({ ...formData, setupScript: e.target.value })
+              }
+              rows={3}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Teardown Script</label>
+            <textarea
+              className="form-control"
+              value={formData.teardownScript}
+              onChange={(e) =>
+                setFormData({ ...formData, teardownScript: e.target.value })
+              }
+              rows={3}
+            />
+          </div>
+          <div className="action-buttons">
+            <button
+              type="submit"
+              className="button button-primary"
+              disabled={loading}
+            >
+              {editing ? "Update" : "Create"}
+            </button>
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={cancelEdit}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      <table className="fixtures-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Requirement</th>
+            <th>Page URL</th>
+            <th>Description</th>
+            <th>Setup Script</th>
+            <th>Teardown Script</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item) => (
+            <tr key={item.id}>
+              <td>{item.name}</td>
+              <td>{getFRName(item.functionalRequirementId)}</td>
+              <td>
+                {item.pageUrl && (
+                  <a
+                    href={item.pageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Link
+                  </a>
+                )}
+              </td>
+              <td>{item.description}</td>
+              <td>{item.setupScript}</td>
+              <td>{item.teardownScript}</td>
+              <td>
+                <div className="action-buttons">
+                  <button
+                    className="button button-secondary"
+                    onClick={() => startEdit(item)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="button button-danger"
+                    onClick={() => handleDelete(item.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {items.length === 0 && (
+        <div className="empty-state">
+          No fixtures found. Create one to get started.
+        </div>
+      )}
+    </div>
+  );
+}

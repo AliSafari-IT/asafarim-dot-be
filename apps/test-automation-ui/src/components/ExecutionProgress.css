@@ -1,0 +1,229 @@
+.exec-container {
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #111);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.exec-content {
+  padding: 1.25rem;
+}
+
+.exec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.exec-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.exec-runid {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.exec-progress-section {
+  margin-bottom: 1.5rem;
+}
+
+.exec-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.exec-progress-percent {
+  font-weight: 600;
+  color: #111;
+}
+
+.exec-progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.exec-progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, #4f46e5, #6366f1);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.exec-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.exec-card {
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #f9fafb;
+  transition: background 0.2s ease;
+}
+
+.exec-card.success {
+  background: #ecfdf5;
+}
+
+.exec-card.error {
+  background: #fef2f2;
+}
+
+.exec-card.running {
+  background: #eff6ff;
+}
+
+.exec-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.exec-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.exec-icon.success {
+  color: #16a34a;
+}
+
+.exec-icon.error {
+  color: #dc2626;
+}
+
+.exec-icon.running {
+  color: #2563eb;
+  animation: spin 1s linear infinite;
+}
+
+.exec-count {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.exec-count.success {
+  color: #16a34a;
+}
+
+.exec-count.error {
+  color: #dc2626;
+}
+
+.exec-count.running {
+  color: #2563eb;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .exec-content {
+    padding: 1rem;
+  }
+
+  .exec-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .exec-title {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .exec-runid {
+    font-size: 0.65rem;
+  }
+
+  .exec-progress-section {
+    margin-bottom: 1rem;
+  }
+
+  .exec-progress-info {
+    font-size: 0.75rem;
+  }
+
+  .exec-progress-bar {
+    height: 10px;
+  }
+
+  .exec-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .exec-card {
+    padding: 0.5rem;
+  }
+
+  .exec-card-header {
+    font-size: 0.65rem;
+    margin-bottom: 0.125rem;
+  }
+
+  .exec-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .exec-count {
+    font-size: 1.5rem;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .exec-container {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+
+  .exec-runid,
+  .exec-progress-info {
+    color: #9ca3af;
+  }
+
+  .exec-progress-bar {
+    background: #374151;
+  }
+
+  .exec-progress-fill {
+    background: linear-gradient(to right, #6366f1, #818cf8);
+  }
+
+  .exec-card.success {
+    background: rgba(16, 185, 129, 0.1);
+  }
+
+  .exec-card.error {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .exec-card.running {
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .exec-card-header span {
+    color: #9ca3af;
+  }
+}

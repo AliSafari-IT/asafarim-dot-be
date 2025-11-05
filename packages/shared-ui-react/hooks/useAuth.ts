@@ -169,7 +169,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   // The Identity API controller is at /auth (not /api/identity)
   const defaultIdentityApiBase = isProd
     ? 'https://identity.asafarim.be/auth'
-    : `${(import.meta.env as any)?.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101'}/auth`;
+    : `${(import.meta as any).env?.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101'}/auth`;
   
   console.log('🔐 shared-ui-react/hooks/useAuth.ts: isProd?', isProd);
   console.log('🔐 Identity API Base:', defaultIdentityApiBase);

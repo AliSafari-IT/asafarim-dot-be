@@ -34,13 +34,21 @@ const appUrlConfig = {
     production: 'https://core.asafarim.be',
     development: 'http://core.asafarim.local:5174'
   },
-  jobs: {
-    production: 'https://core.asafarim.be/jobs',
-    development: 'http://core.asafarim.local:5174/jobs'
+  testora: {
+    production: 'https://testora.asafarim.be',
+    development: 'http://testora.asafarim.local:5180'
   },
   identity: {
     production: 'https://identity.asafarim.be',
     development: 'http://identity.asafarim.local:5177'
+  },
+  taskmanagement: {
+    production: 'https://taskmanagement.asafarim.be',
+    development: 'http://taskmanagement.asafarim.local:5176'
+  },
+  smartops: {
+    production: 'https://smartops.asafarim.be',
+    development: 'http://smartops.asafarim.local:5178'
   }
 };
 
@@ -81,16 +89,28 @@ export const useAppRegistry = (): AppInfo[] => {
       description: t('apps.description.core')
     },
     {
-      id: 'jobs',
-      name: t('apps.appName.jobs'),
-      url: getAppUrl('jobs'),
-      description: t('apps.description.jobs')
+      id: 'testora',
+      name: t('apps.appName.testora'),
+      url: getAppUrl('testora'),
+      description: t('apps.description.testora')
     },
     {
       id: 'identity',
       name: t('apps.appName.identity'),
       url: getAppUrl('identity'),
       description: t('apps.description.identity')
+    },
+    {
+      id: 'taskmanagement',
+      name: t('apps.appName.taskmanagement'),
+      url: getAppUrl('taskmanagement'),
+      description: t('apps.description.taskmanagement')
+    },
+    {
+      id: 'smartops',
+      name: t('apps.appName.smartops'),
+      url: getAppUrl('smartops'),
+      description: t('apps.description.smartops')
     }
   ];
 };
@@ -123,10 +143,10 @@ export const getAppRegistry = (): AppInfo[] => [
     description: 'Core application features'
   },
   {
-    id: 'jobs',
-    name: 'Job Applications',
-    url: getAppUrl('jobs'),
-    description: 'Job application tracking'
+    id: 'testora',
+    name: 'Testora',
+    url: getAppUrl('testora'),
+    description: 'Test Automation app'
   },
   {
     id: 'identity',

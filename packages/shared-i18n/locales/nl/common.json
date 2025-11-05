@@ -46,7 +46,10 @@
       "ai": "AI hulpmiddelen",
       "core": "Core applicatie",
       "jobs": "Vacaturebeheer",
-      "identity": "Identiteitsportaal"
+      "identity": "Identiteitsportaal",
+      "testora": "Testora",
+      "taskmanagement": "Taakbeheer",
+      "smartops": "SmartOps"
     },
     "description": {
       "web": "ASafariM webportaal",
@@ -54,7 +57,10 @@
       "ai": "AI-hulpmiddelen en diensten",
       "core": "Kernfunctionaliteiten van de applicatie",
       "jobs": "Sollicitatiebeheer",
-      "identity": "Gebruikersbeheer en authenticatie"
+      "identity": "Gebruikersbeheer en authenticatie",
+      "testora": "Test Automation",
+      "taskmanagement": "Taakbeheer",
+      "smartops": "SmartOps"
     }
   }
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './dashboard.css';
 import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
-import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab, PUBLICATIONS_URL, RESUME_URL, TASKS_URL, SMARTOPS_URL } from '../utils/appUrls';
+import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab, PUBLICATIONS_URL, RESUME_URL, TASKS_URL, SMARTOPS_URL, TESTORA_URL } from '../utils/appUrls';
 import ChangePasswordModal from './ChangePasswordModal';
 import useAuth from '../hooks/useAuth';
 
@@ -92,6 +92,9 @@ export const Dashboard = () => {
             </Button>
             <Button onClick={() => openInNewTab(SMARTOPS_URL)} variant="brand">
               SmartOps
+            </Button>
+            <Button onClick={() => openInNewTab(TESTORA_URL)} variant="brand">
+              Test Automation
             </Button>
           </div>
         </section>

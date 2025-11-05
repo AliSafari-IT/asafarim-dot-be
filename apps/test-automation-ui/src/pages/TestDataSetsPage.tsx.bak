@@ -1,0 +1,302 @@
+// apps/test-automation-ui/src/pages/TestDataSetsPage.tsx
+import { useEffect, useState } from 'react';
+import { api } from '../config/api';
+import './TestDataSetsPage.css';
+
+interface TestDataSet {
+  id: string;
+  testCaseId: string;
+  name: string;
+  description?: string;
+  data: any; // Changed from inputData/expectedOutput to single data field
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface TestCase {
+  id: string;
+  name: string;
+}
+
+export default function TestDataSetsPage() {
+  const [items, setItems] = useState<TestDataSet[]>([]);
+  const [testCases, setTestCases] = useState<TestCase[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<TestDataSet | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    testCaseId: '',
+    data: '{}',
+    isActive: true
+  });
+
+  useEffect(() => {
+    loadItems();
+    loadTestCases();
+  }, []);
+
+  const loadItems = async () => {
+    try {
+      const response = await api.get('/api/test-data-sets');
+      setItems(response.data);
+    } catch (error) {
+      console.error('Failed to load:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadTestCases = async () => {
+    try {
+      const response = await api.get('/api/test-cases');
+      setTestCases(response.data);
+    } catch (error) {
+      console.error('Failed to load test cases:', error);
+    }
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // Parse JSON data and send camelCase payload
+      const payload = {
+        testCaseId: formData.testCaseId,
+        name: formData.name,
+        description: formData.description || null,
+        data: JSON.parse(formData.data),
+        isActive: formData.isActive,
+      };
+
+      await api.post("/api/test-data-sets", payload);
+      setCreating(false);
+      setFormData({
+        testCaseId: "",
+        name: "",
+        description: "",
+        data: "{}",
+        isActive: true,
+      });
+      loadItems();
+    } catch (error: any) {
+      console.error("Failed to create:", error);
+      if (error.response?.data) {
+        console.error("Error details:", error.response.data);
+      } else {
+        alert('Invalid JSON format. Please check your input data.');
+      }
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editing) return;
+    try {
+      // Parse JSON data and send camelCase payload
+      const payload = {
+        id: editing.id,
+        testCaseId: formData.testCaseId,
+        name: formData.name,
+        description: formData.description || null,
+        data: JSON.parse(formData.data),
+        isActive: formData.isActive,
+      };
+      
+      await api.put(`/api/test-data-sets/${editing.id}`, payload);
+      setEditing(null);
+      setFormData({
+        testCaseId: "",
+        name: "",
+        description: "",
+        data: "{}",
+        isActive: true,
+      });
+      loadItems();
+    } catch (error: any) {
+      console.error("Failed to update:", error);
+      if (error.response?.data) {
+        console.error("Error details:", error.response.data);
+      } else {
+        alert('Invalid JSON format. Please check your input data.');
+      }
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this test data set?')) return;
+    try {
+      await api.delete(`/api/test-data-sets/${id}`);
+      loadItems();
+    } catch (error) {
+      console.error('Failed to delete:', error);
+    }
+  };
+
+  const startEdit = (item: TestDataSet) => {
+    setEditing(item);
+    setFormData({
+      name: item.name,
+      description: item.description || '',
+      testCaseId: item.testCaseId,
+      data: JSON.stringify(item.data, null, 2), // Fixed: use data instead of inputData
+      isActive: item.isActive
+    });
+    setCreating(false);
+  };
+
+  const cancelEdit = () => {
+    setEditing(null);
+    setCreating(false);
+    setFormData({ 
+      name: '', 
+      description: '', 
+      testCaseId: '', 
+      data: '{}', // Fixed: use data instead of inputData
+      isActive: true 
+    });
+  };
+
+  const getTestCaseName = (testCaseId: string) => {
+    return testCases.find(tc => tc.id === testCaseId)?.name || 'Unknown';
+  };
+
+  if (loading) return <div className="loading">Loading...</div>;
+
+  return (
+    <div className="test-data-sets-container">
+      <div className="test-data-sets-header">
+        <h3 className="test-data-sets-title">Test Data Sets</h3>
+        <div className="test-data-sets-actions">
+          <button 
+            className="button button-primary" 
+            onClick={() => setCreating(true)} 
+            disabled={creating || editing !== null}
+          >
+            + New Data Set
+          </button>
+        </div>
+      </div>
+
+      {(creating || editing) && (
+        <form onSubmit={editing ? handleUpdate : handleCreate} className="test-data-set-form">
+          <h4>{editing ? 'Edit' : 'Create'} Test Data Set</h4>
+          <div className="test-data-set-form-group">
+            <label className="test-data-set-form-label">Test Case *</label>
+            <select
+              className="test-data-set-form-control"
+              value={formData.testCaseId}
+              onChange={(e) => setFormData({ ...formData, testCaseId: e.target.value })}
+              required
+            >
+              <option value="">Select a test case</option>
+              {testCases.map(tc => (
+                <option key={tc.id} value={tc.id}>{tc.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="test-data-set-form-group">
+            <label className="test-data-set-form-label">Name *</label>
+            <input
+              type="text"
+              className="test-data-set-form-control"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
+          </div>
+          <div className="test-data-set-form-group">
+            <label className="test-data-set-form-label">Description</label>
+            <textarea
+              className="test-data-set-form-control"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={2}
+            />
+          </div>
+          <div className="test-data-set-form-group">
+            <label className="test-data-set-form-label">Data (JSON) *</label>
+            <textarea
+              className="test-data-set-form-control json-editor"
+              value={formData.data}
+              onChange={(e) => setFormData({ ...formData, data: e.target.value })}
+              rows={6}
+              required
+              placeholder='{"key": "value"}'
+            />
+          </div>
+          <div className="test-data-set-form-group">
+            <label className="checkbox-container">
+              <input
+                type="checkbox"
+                className="checkbox-input"
+                checked={formData.isActive}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+              />
+              {' '}Active
+            </label>
+          </div>
+          <div className="test-data-set-form-actions">
+            <button type="submit" className="button button-primary">
+              {editing ? 'Update' : 'Create'}
+            </button>
+            <button type="button" className="button button-secondary" onClick={cancelEdit}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      {items.length === 0 ? (
+        <div className="empty-state">
+          No test data sets found
+        </div>
+      ) : (
+        <div className="table-container">
+          <table className="test-data-sets-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Test Case</th>
+                <th>Description</th>
+                <th style={{ textAlign: 'center' }}>Active</th>
+                <th style={{ textAlign: 'center' }}>Data</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.name}</td>
+                  <td>{getTestCaseName(item.testCaseId)}</td>
+                  <td>{item.description}</td>
+                  <td style={{ textAlign: 'center' }}>
+                    <span className={`status-badge ${item.isActive ? 'active' : 'inactive'}`}>
+                      {item.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="json-preview" title={JSON.stringify(item.data)}>
+                      {JSON.stringify(item.data)}
+                    </span>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div className="actions">
+                      <button className="button button-secondary" onClick={() => startEdit(item)}>
+                        Edit
+                      </button>
+                      <button className="button button-danger" onClick={() => handleDelete(item.id)}>
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}

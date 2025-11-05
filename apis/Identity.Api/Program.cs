@@ -196,6 +196,7 @@ var productionOrigins = new[]
     "https://web.asafarim.be",
     "https://taskmanagement.asafarim.be",
     "https://smartops.asafarim.be",
+    "https://testora.asafarim.be",
 };
 
 var developmentOrigins = new[]
@@ -222,7 +223,9 @@ var developmentOrigins = new[]
     "http://jobs.asafarim.local:4200",
     "http://blog.asafarim.local:3000",
     "http://web.asafarim.local:5175",
+    "http://taskmanagement.asafarim.local:5176",
     "http://smartops.asafarim.local:5178",
+    "http://testora.asafarim.local:5180",
 };
 
 // Combine origins based on environment
