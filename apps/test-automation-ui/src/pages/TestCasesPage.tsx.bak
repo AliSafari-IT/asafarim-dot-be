@@ -1,0 +1,487 @@
+import { useEffect, useState } from "react";
+import { api } from "../config/api";
+import "./TestCasesPage.css";
+
+interface TestCase {
+  id: string;
+  testSuiteId: string;
+  name: string;
+  description?: string;
+  testType: "Steps" | "Script";
+  steps?: TestStep[];
+  scriptText?: string;
+  timeoutMs: number;
+  retryCount: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface TestStep {
+  name: string;
+  description?: string;
+}
+
+interface TestSuite {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+export default function TestCasesPage() {
+  const [items, setItems] = useState<TestCase[]>([]);
+  const [suites, setSuites] = useState<TestSuite[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<TestCase | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    testSuiteId: "",
+    testType: "Steps" as "Steps" | "Script",
+    steps: [] as TestStep[],
+    scriptText: "",
+    timeoutMs: 30000,
+    retryCount: 0,
+    isActive: true,
+  });
+
+  useEffect(() => {
+    loadItems();
+    loadSuites();
+  }, []);
+
+  const loadItems = async () => {
+    try {
+      const response = await api.get("/api/test-cases");
+      setItems(response.data);
+    } catch (error) {
+      console.error("Failed to load:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadSuites = async () => {
+    try {
+      const response = await api.get("/api/test-suites");
+      setSuites(response.data);
+    } catch (error) {
+      console.error("Failed to load suites:", error);
+    }
+  };
+
+  // In TestCasesPage.tsx - update handleCreate and handleUpdate
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // Send the payload as camelCase to match the updated DTO
+      const payload = {
+        testSuiteId: formData.testSuiteId,
+        name: formData.name,
+        description: formData.description || null,
+        testType: formData.testType.toLowerCase(), // Send as lowercase string
+        steps: formData.testType === "Steps" ? formData.steps : null,
+        scriptText: formData.testType === "Script" ? formData.scriptText : null,
+        timeoutMs: formData.timeoutMs,
+        retryCount: formData.retryCount,
+        isActive: formData.isActive,
+      };
+
+      await api.post("/api/test-cases", payload);
+      setCreating(false);
+      setFormData({
+        name: "",
+        description: "",
+        testSuiteId: "",
+        testType: "Steps",
+        steps: [] as TestStep[],
+        scriptText: "",
+        timeoutMs: 30000,
+        retryCount: 0,
+        isActive: true,
+      });
+      loadItems();
+    } catch (error: any) {
+      console.error("Failed to create:", error);
+      if (error.response?.data) {
+        console.error("Error details:", error.response.data);
+      }
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editing) return;
+    try {
+      // Send the payload as camelCase to match the updated DTO
+      const payload = {
+        id: editing.id,
+        testSuiteId: formData.testSuiteId,
+        name: formData.name,
+        description: formData.description || null,
+        testType: formData.testType.toLowerCase(), // Send as lowercase string
+        steps: formData.testType === "Steps" ? formData.steps : null,
+        scriptText: formData.testType === "Script" ? formData.scriptText : null,
+        timeoutMs: formData.timeoutMs,
+        retryCount: formData.retryCount,
+        isActive: formData.isActive,
+      };
+
+      await api.put(`/api/test-cases/${editing.id}`, payload);
+      setEditing(null);
+      setFormData({
+        name: "",
+        description: "",
+        testSuiteId: "",
+        testType: "Steps",
+        steps: [] as TestStep[],
+        scriptText: "",
+        timeoutMs: 30000,
+        retryCount: 0,
+        isActive: true,
+      });
+      loadItems();
+    } catch (error: any) {
+      console.error("Failed to update:", error);
+      if (error.response?.data) {
+        console.error("Error details:", error.response.data);
+      }
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this test case?")) return;
+    try {
+      await api.delete(`/api/test-cases/${id}`);
+      loadItems();
+    } catch (error) {
+      console.error("Failed to delete:", error);
+    }
+  };
+
+  const startEdit = (item: TestCase) => {
+    setEditing(item);
+    setFormData({
+      name: item.name,
+      description: item.description || "",
+      testSuiteId: item.testSuiteId,
+      testType: item.testType,
+      steps: item.steps || [],
+      scriptText: item.scriptText || "",
+      timeoutMs: item.timeoutMs,
+      retryCount: item.retryCount,
+      isActive: item.isActive,
+    });
+    setCreating(false);
+  };
+
+  const cancelEdit = () => {
+    setEditing(null);
+    setCreating(false);
+    setFormData({
+      name: "",
+      description: "",
+      testSuiteId: "",
+      testType: "Steps",
+      steps: [],
+      scriptText: "",
+      timeoutMs: 30000,
+      retryCount: 0,
+      isActive: true,
+    });
+  };
+
+  const getSuiteName = (suiteId: string) => {
+    return suites.find((s) => s.id === suiteId)?.name || "Unknown";
+  };
+
+  const addStep = () => {
+    setFormData({
+      ...formData,
+      steps: [...formData.steps, { name: "", description: "" }],
+    });
+  };
+
+  // Add function to update a specific step
+  const updateStep = (index: number, field: keyof TestStep, value: string) => {
+    const updatedSteps = [...formData.steps];
+    updatedSteps[index] = { ...updatedSteps[index], [field]: value };
+    setFormData({ ...formData, steps: updatedSteps });
+  };
+
+  // Add function to remove a step
+  const removeStep = (index: number) => {
+    const updatedSteps = formData.steps.filter((_, i) => i !== index);
+    setFormData({ ...formData, steps: updatedSteps });
+  };
+
+  if (loading) return <div className="empty-state">Loading...</div>;
+
+  return (
+    <div className="test-cases-container">
+      <div className="test-cases-header">
+        <h2 className="test-cases-title">Test Cases</h2>
+        <button
+          className="button button-primary"
+          onClick={() => setCreating(true)}
+          disabled={creating || editing !== null}
+        >
+          + New Test Case
+        </button>
+      </div>
+
+      {(creating || editing) && (
+        <form
+          className="test-case-form"
+          onSubmit={editing ? handleUpdate : handleCreate}
+        >
+          <h4 className="test-case-form-title">{editing ? "Edit" : "Create"} Test Case</h4>
+          <div className="test-case-form-group">
+            <label className="test-case-form-label">
+              Test Suite *
+            </label>
+            <select
+              value={formData.testSuiteId}
+              onChange={(e) =>
+                setFormData({ ...formData, testSuiteId: e.target.value })
+              }
+              required
+              className="test-case-form-control"
+            >
+              <option value="">Select a test suite</option>
+              {suites.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="test-case-form-group">
+            <label className="test-case-form-label">Name *</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              required
+              className="test-case-form-control"
+            />
+          </div>
+          <div className="test-case-form-group">
+            <label className="test-case-form-label">
+              Description
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              rows={3}
+              className="test-case-form-control"
+            />
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: "block", marginBottom: 4 }}>
+              Test Type *
+            </label>
+            <select
+              value={formData.testType}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  testType: e.target.value as "Steps" | "Script",
+                })
+              }
+              required
+              className="test-case-form-control"
+            >
+              <option value="Steps">Steps</option>
+              <option value="Script">Script</option>
+            </select>
+          </div>
+          {formData.testType === "Steps" && (
+            <div className="test-case-form-group">
+              <label className="test-case-form-label">Test Steps</label>
+              <div className="steps-container">
+                {formData.steps.map((step, index) => (
+                  <div key={index} className="step-item">
+                    <div className="step-header">
+                      <span className="step-number">Step {index + 1}</span>
+                      <button
+                        type="button"
+                        className="button button-danger"
+                        onClick={() => removeStep(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="test-case-form-group">
+                      <input
+                        type="text"
+                        className="test-case-form-control"
+                        placeholder="Step name"
+                        value={step.name}
+                        onChange={(e) => updateStep(index, "name", e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="test-case-form-group">
+                      <textarea
+                        className="test-case-form-control"
+                        placeholder="Step description (optional)"
+                        value={step.description || ""}
+                        onChange={(e) =>
+                          updateStep(index, "description", e.target.value)
+                        }
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={addStep}
+                style={{ marginTop: 'var(--space-2)' }}
+              >
+                + Add Step
+              </button>
+            </div>
+          )}
+          {formData.testType === "Script" && (
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ display: "block", marginBottom: 4 }}>
+                Script Text
+              </label>
+              <textarea
+                value={formData.scriptText}
+                onChange={(e) =>
+                  setFormData({ ...formData, scriptText: e.target.value })
+                }
+                rows={3}
+                className="test-case-form-control"
+              />
+            </div>
+          )}
+          <div className="test-case-form-group">
+            <label className="test-case-form-label">
+              Timeout (ms)
+            </label>
+            <input
+              type="number"
+              value={formData.timeoutMs}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  timeoutMs: parseInt(e.target.value) || 30000,
+                })
+              }
+              className="test-case-form-control"
+            />
+          </div>
+          <div className="test-case-form-group">
+            <label className="test-case-form-label">
+              Retry Count
+            </label>
+            <input
+              type="number"
+              value={formData.retryCount}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  retryCount: parseInt(e.target.value) || 0,
+                })
+              }
+              min="0"
+              className="test-case-form-control"
+            />
+          </div>
+          <div className="test-case-form-group">
+            <label className="checkbox-container">
+              <input
+                type="checkbox"
+                className="checkbox-input"
+                checked={formData.isActive}
+                onChange={(e) =>
+                  setFormData({ ...formData, isActive: e.target.checked })
+                }
+              />
+              <span className="test-case-form-label">Active</span>
+            </label>
+          </div>
+          <div className="action-buttons">
+            <button 
+              type="submit" 
+              className="button button-primary"
+            >
+              {editing ? 'Update' : 'Create'}
+            </button>
+            <button 
+              type="button" 
+              className="button button-secondary"
+              onClick={cancelEdit}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      <table className="test-cases-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Suite</th>
+            <th>Type</th>
+            <th>Timeout</th>
+            <th>Retry</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item) => (
+            <tr key={item.id}>
+              <td>{item.name}</td>
+              <td>{getSuiteName(item.testSuiteId)}</td>
+              <td>{item.testType}</td>
+              <td className="text-center">{item.timeoutMs}ms</td>
+              <td className="text-center">{item.retryCount}</td>
+              <td className="text-center">
+                <span className={`status-badge ${item.isActive ? 'status-active' : 'status-inactive'}`}>
+                  {item.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </td>
+              <td>
+                <div className="action-buttons">
+                  <button 
+                    className="button button-secondary"
+                    onClick={() => startEdit(item)}
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    className="button button-danger"
+                    onClick={() => handleDelete(item.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {items.length === 0 && (
+        <div className="empty-state">
+          No test cases found. Create one to get started.
+        </div>
+      )}
+    </div>
+  );
+}

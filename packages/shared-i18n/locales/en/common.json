@@ -46,7 +46,10 @@
       "ai": "AI Tools",
       "core": "Core App",
       "jobs": "Job Applications",
-      "identity": "Identity Portal"
+      "identity": "Identity Portal",
+      "testora": "Testora",
+      "taskmanagement": "Task Management",
+      "smartops": "SmartOps"
     },
     "description": {
       "web": "ASafariM web portal",
@@ -54,7 +57,10 @@
       "ai": "AI-powered tools and services",
       "core": "Core application features",
       "jobs": "Job application tracking",
-      "identity": "User management and authentication"
+      "identity": "User management and authentication",
+      "testora": "Test Automation",
+      "taskmanagement": "Task Management",
+      "smartops": "SmartOps"
     }
   }
 }

@@ -1,0 +1,173 @@
+/* App.css */
+:root {
+  --sidebar-width: 240px;
+  --navbar-height: 60px;
+  --primary-color: #4f46e5;
+  --bg-color: #f9fafb;
+  --text-color: #111827;
+  --border-color: #e5e7eb;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  padding-top: var(--navbar-height);
+}
+
+.content-wrapper {
+  flex: 1;
+  padding: 1.5rem;
+  margin-left: var(--sidebar-width);
+  transition: margin 0.3s ease;
+}
+
+/* Mobile: hide sidebar and remove margin */
+@media (max-width: 768px) {
+  .content-wrapper {
+    margin-left: 0;
+    padding: 1rem;
+  }
+}
+
+/* Navbar Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-md, 1rem);
+  z-index: 100;
+}
+
+.navbar > * {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: calc(100vw - var(--sidebar-width));
+  padding-left: var(--spacing-md, 1rem);
+  padding-right: var(--spacing-md, 1rem);
+}
+
+/* Responsive padding for navbar */
+@media (min-width: 640px) {
+  .navbar {
+    padding: 0 var(--spacing-lg, 1.5rem);
+  }
+  
+  .navbar > * {
+    padding-left: var(--spacing-lg, 1.5rem);
+    padding-right: var(--spacing-lg, 1.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .navbar {
+    padding: 0 var(--spacing-xl, 2rem);
+  }
+  
+  .navbar > * {
+    padding-left: var(--spacing-xl, 2rem);
+    padding-right: var(--spacing-xl, 2rem);
+  }
+}
+
+.navbar-brand a {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+/* apps/test-automation-ui/src/App.css */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-container .spinner {
+  animation: spin 1s linear infinite;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #ef4444;
+}
+
+.error-container button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.no-data {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}

@@ -30,9 +30,24 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0;
-  padding: 0;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md, 1rem);
   height: var(--nav-height);
+  max-width: var(--width-2xl, 1200px);
+  width: 100%;
+}
+
+/* Responsive padding for navbar */
+@media (min-width: 640px) {
+  .nav-row {
+    padding: 0 var(--spacing-lg, 1.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-row {
+    padding: 0 var(--spacing-xl, 2rem);
+  }
 }
 
 /* Brand styles */

@@ -1,0 +1,271 @@
+// TestSuitesPage.tsx
+import { useEffect, useState } from 'react';
+import { api } from '../config/api';
+import './TestSuitesPage.css';
+
+interface TestSuite {
+  id: string;
+  fixtureId: string;
+  name: string;
+  description?: string;
+  executionOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Fixture {
+  id: string;
+  name: string;
+}
+
+export default function TestSuitesPage() {
+  const [items, setItems] = useState<TestSuite[]>([]);
+  const [fixtures, setFixtures] = useState<Fixture[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<TestSuite | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    fixtureId: '',
+    executionOrder: 0,
+    isActive: true
+  });
+
+  useEffect(() => {
+    loadItems();
+    loadFixtures();
+  }, []);
+
+  const loadItems = async () => {
+    try {
+      const response = await api.get('/api/test-suites');
+      setItems(response.data);
+    } catch (error) {
+      console.error('Failed to load:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadFixtures = async () => {
+    try {
+      const response = await api.get('/api/fixtures');
+      setFixtures(response.data);
+    } catch (error) {
+      console.error('Failed to load fixtures:', error);
+    }
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.post('/api/test-suites', formData);
+      setCreating(false);
+      setFormData({ name: '', description: '', fixtureId: '', executionOrder: 0, isActive: true });
+      loadItems();
+    } catch (error) {
+      console.error('Failed to create:', error);
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editing) return;
+    try {
+      await api.put(`/api/test-suites/${editing.id}`, formData);
+      setEditing(null);
+      setFormData({ name: '', description: '', fixtureId: '', executionOrder: 0, isActive: true });
+      loadItems();
+    } catch (error) {
+      console.error('Failed to update:', error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this test suite?')) return;
+    try {
+      await api.delete(`/api/test-suites/${id}`);
+      loadItems();
+    } catch (error) {
+      console.error('Failed to delete:', error);
+    }
+  };
+
+  const startEdit = (item: TestSuite) => {
+    setEditing(item);
+    setFormData({
+      name: item.name,
+      description: item.description || '',
+      fixtureId: item.fixtureId,
+      executionOrder: item.executionOrder,
+      isActive: item.isActive
+    });
+    setCreating(false);
+  };
+
+  const cancelEdit = () => {
+    setEditing(null);
+    setCreating(false);
+    setFormData({ name: '', description: '', fixtureId: '', executionOrder: 0, isActive: true });
+  };
+
+  const getFixtureName = (fixtureId: string) => {
+    return fixtures.find(f => f.id === fixtureId)?.name || 'Unknown';
+  };
+
+  if (loading) return <div className="test-suites-loading">Loading...</div>;
+
+  return (
+    <div className="test-suites-container">
+      <div className="test-suites-header">
+        <h3 className="test-suites-title">Test Suites</h3>
+        <button 
+          className="test-suites-button test-suites-button-primary"
+          onClick={() => setCreating(true)} 
+          disabled={creating || editing !== null}
+        >
+          + New Suite
+        </button>
+      </div>
+
+      {(creating || editing) && (
+        <form 
+          onSubmit={editing ? handleUpdate : handleCreate} 
+          className="test-suites-form"
+        >
+          <h4 className="test-suites-form-title">
+            {editing ? 'Edit' : 'Create'} Test Suite
+          </h4>
+          
+          <div className="test-suites-form-group">
+            <label className="test-suites-label">Fixture *</label>
+            <select
+              className="test-suites-select"
+              value={formData.fixtureId}
+              onChange={(e) => setFormData({ ...formData, fixtureId: e.target.value })}
+              required
+            >
+              <option value="">Select a fixture</option>
+              {fixtures.map(f => (
+                <option key={f.id} value={f.id}>
+                  {f.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="test-suites-form-group">
+            <label className="test-suites-label">Name *</label>
+            <input
+              type="text"
+              className="test-suites-input"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
+          </div>
+          
+          <div className="test-suites-form-group">
+            <label className="test-suites-label">Description</label>
+            <textarea
+              className="test-suites-textarea"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={3}
+            />
+          </div>
+          
+          <div className="test-suites-form-group">
+            <label className="test-suites-label">Execution Order</label>
+            <input
+              type="number"
+              className="test-suites-input"
+              value={formData.executionOrder}
+              onChange={(e) => setFormData({ ...formData, executionOrder: parseInt(e.target.value) || 0 })}
+            />
+          </div>
+          
+          <div className="test-suites-form-group">
+            <label className="test-suites-label">
+              <input
+                type="checkbox"
+                className="test-suites-checkbox"
+                checked={formData.isActive}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+              />
+              {' '}Active
+            </label>
+          </div>
+          
+          <div className="test-suites-form-actions">
+            <button 
+              type="submit" 
+              className="test-suites-button test-suites-button-primary"
+            >
+              {editing ? 'Update' : 'Create'}
+            </button>
+            <button 
+              type="button" 
+              onClick={cancelEdit}
+              className="test-suites-button test-suites-button-secondary"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      <table className="test-suites-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Fixture</th>
+            <th style={{ textAlign: 'center' }}>Order</th>
+            <th style={{ textAlign: 'center' }}>Status</th>
+            <th>Description</th>
+            <th style={{ textAlign: 'right' }}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(item => (
+            <tr key={item.id}>
+              <td>{item.name}</td>
+              <td>{getFixtureName(item.fixtureId)}</td>
+              <td style={{ textAlign: 'center' }}>{item.executionOrder}</td>
+              <td style={{ textAlign: 'center' }}>
+                <span className={`test-suites-status ${item.isActive ? 'test-suites-status-active' : 'test-suites-status-inactive'}`}>
+                  {item.isActive ? '✓' : '✗'}
+                </span>
+              </td>
+              <td>{item.description || '-'}</td>
+              <td>
+                <div className="test-suites-table-actions">
+                  <button 
+                    onClick={() => startEdit(item)}
+                    className="test-suites-button test-suites-button-secondary"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(item.id)}
+                    className="test-suites-button test-suites-button-danger"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {items.length === 0 && (
+        <div className="test-suites-empty">
+          No test suites found. Create one to get started!
+        </div>
+      )}
+    </div>
+  );
+}

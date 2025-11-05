@@ -13,3 +13,8 @@ export * from './Notifications';
 export * from './PrelaunchNotice/PrelaunchNotice';
 export * from './PrelaunchNotice/PrelaunchNoticeBanner';
 export * from './ShowcaseCard';
+export * from './Card';
+
+export * from './Avatar';
+export * from './Popover';
+export * from './User';
