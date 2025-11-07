@@ -69,6 +69,8 @@ public class TestAutomationDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.GeneratedTestCafeFile).HasColumnType("text");
+            entity.Property(e => e.GeneratedAt).HasColumnType("timestamp with time zone");
 
             entity
                 .HasOne(e => e.Fixture)

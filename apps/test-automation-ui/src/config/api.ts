@@ -7,6 +7,8 @@ const baseURL = isProduction ?
   'https://testora.asafarim.be' :
   'http://testora.asafarim.local:5200';
 
+export const API_BASE = baseURL;
+
 export const api = axios.create({
   baseURL,
   withCredentials: true,

@@ -153,6 +153,18 @@ export const getAppRegistry = (): AppInfo[] => [
     name: 'Identity Portal',
     url: getAppUrl('identity'),
     description: 'User management and authentication'
+  },
+  {
+    id: 'taskmanagement',
+    name: 'Task Management',
+    url: getAppUrl('taskmanagement'),
+    description: 'Task management features'
+  },
+  {
+    id: 'smartops',
+    name: 'SmartOps',
+    url: getAppUrl('smartops'),
+    description: 'SmartOps features'
   }
 ];
 
@@ -191,6 +203,9 @@ export const getCurrentAppId = (): string => {
   if (hostname === 'ai.asafarim.be') return 'ai';
   if (hostname === 'core.asafarim.be') return 'core';
   if (hostname === 'identity.asafarim.be') return 'identity';
+  if (hostname === 'taskmanagement.asafarim.be') return 'taskmanagement';
+  if (hostname === 'smartops.asafarim.be') return 'smartops';
+  if (hostname === 'testora.asafarim.be') return 'testora';
 
   // Check for development domains
   if (hostname.startsWith('web.') || hostname.includes('web.asafarim.local')) return 'web';
@@ -198,6 +213,9 @@ export const getCurrentAppId = (): string => {
   if (hostname.startsWith('ai.') || hostname.includes('ai.asafarim.local')) return 'ai';
   if (hostname.startsWith('core.') || hostname.includes('core.asafarim.local')) return 'core';
   if (hostname.startsWith('identity.') || hostname.includes('identity.asafarim.local')) return 'identity';
+  if (hostname.startsWith('taskmanagement.') || hostname.includes('taskmanagement.asafarim.local')) return 'taskmanagement';
+  if (hostname.startsWith('smartops.') || hostname.includes('smartops.asafarim.local')) return 'smartops';
+  if (hostname.startsWith('testora.') || hostname.includes('testora.asafarim.local')) return 'testora';
 
   // Default fallback
   return '';

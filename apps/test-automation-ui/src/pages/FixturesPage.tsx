@@ -60,18 +60,7 @@ export default function FixturesPage() {
     {
       header: "Page URL",
       field: "pageUrl",
-    },
-    {
-      header: "Active",
-      align: "center",
-      render: (item) => (
-        <span
-          className={`status-badge ${item.isActive ? "active" : "inactive"}`}
-        >
-          {item.isActive ? "Active" : "Inactive"}
-        </span>
-      ),
-    },
+    }
   ];
 
   // Define form fields
@@ -116,12 +105,7 @@ export default function FixturesPage() {
       type: "textarea",
       rows: 4,
       placeholder: "JavaScript code to run after tests",
-    },
-    {
-      name: "isActive",
-      label: "Active",
-      type: "checkbox",
-    },
+    }
   ];
 
   return (

@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using TestAutomation.Api.Data;
@@ -51,22 +52,45 @@ public class TestExecutionService : ITestExecutionService
         await _db.SaveChangesAsync();
 
         // Build payload for Node runner
-        var suites = request.TestSuiteIds != null ? (
+        var suites =
+            request.TestSuiteIds != null
+                ? (
                     await _db
                         .TestSuites.Where(s => request.TestSuiteIds.Contains(s.Id))
-                        .Select(s => new
-                        {
-                            id = s.Id,
-                            name = s.Name,
-                            fixtureId = s.FixtureId,
-                            testCases = s
-                                .TestCases.Where(tc => tc.IsActive)
-                                .Select(tc => new
+                        .Include(s => s.TestCases)
+                        .ThenInclude(tc => tc.TestDataSets)
+                        .ToListAsync()
+                )
+                    .Select(s => new
+                    {
+                        id = s.Id,
+                        name = s.Name,
+                        fixtureId = s.FixtureId,
+                        pageUrl = _db
+                            .TestFixtures.Where(f => f.Id == s.FixtureId)
+                            .Select(f => f.PageUrl)
+                            .FirstOrDefault(),
+                        testCases = s
+                            .TestCases.Where(tc => tc.IsActive)
+                            .Select(tc =>
+                            {
+                                var stepsJson = tc.Steps?.RootElement.GetRawText();
+                                if (stepsJson != null)
+                                {
+                                    _logger.LogInformation(
+                                        "Step data for test case {TestCaseId}: {StepData}",
+                                        tc.Id,
+                                        stepsJson
+                                    );
+                                }
+                                return new
                                 {
                                     id = tc.Id,
                                     name = tc.Name,
                                     testType = tc.TestType.ToString().ToLower(),
-                                    steps = tc.Steps,
+                                    steps = stepsJson != null
+                                        ? JsonSerializer.Deserialize<object>(stepsJson)
+                                        : null,
                                     scriptText = tc.ScriptText,
                                     testDataSets = tc
                                         .TestDataSets.Where(d => d.IsActive)
@@ -74,22 +98,44 @@ public class TestExecutionService : ITestExecutionService
                                         {
                                             id = d.Id,
                                             name = d.Name,
-                                            data = d.Data, // Fixed: use Data instead of InputData
+                                            data = JsonSerializer.Deserialize<object>(
+                                                d.Data.RootElement.GetRawText()
+                                            ),
                                         }),
-                                }),
-                        })
-                        .ToListAsync()
-                ).Cast<object>().ToList() : new List<object>();
+                                };
+                            }),
+                    })
+                    .Cast<object>()
+                    .ToList()
+                : new List<object>();
 
-        var testCasesDirect = request.TestCaseIds != null ? (
+        var testCasesDirect =
+            request.TestCaseIds != null
+                ? (
                     await _db
                         .TestCases.Where(tc => request.TestCaseIds.Contains(tc.Id))
-                        .Select(tc => new
+                        .Include(tc => tc.TestDataSets)
+                        .ToListAsync()
+                )
+                    .Select(tc =>
+                    {
+                        var stepsJson = tc.Steps?.RootElement.GetRawText();
+                        if (stepsJson != null)
+                        {
+                            _logger.LogInformation(
+                                "Step data for direct test case {TestCaseId}: {StepData}",
+                                tc.Id,
+                                stepsJson
+                            );
+                        }
+                        return new
                         {
                             id = tc.Id,
                             name = tc.Name,
                             testType = tc.TestType.ToString().ToLower(),
-                            steps = tc.Steps,
+                            steps = stepsJson != null
+                                ? JsonSerializer.Deserialize<object>(stepsJson)
+                                : null,
                             scriptText = tc.ScriptText,
                             testDataSets = tc
                                 .TestDataSets.Where(d => d.IsActive)
@@ -97,11 +143,15 @@ public class TestExecutionService : ITestExecutionService
                                 {
                                     id = d.Id,
                                     name = d.Name,
-                                    data = d.Data,
+                                    data = JsonSerializer.Deserialize<object>(
+                                        d.Data.RootElement.GetRawText()
+                                    ),
                                 }),
-                        })
-                        .ToListAsync()
-                ).Cast<object>().ToList() : new List<object>();
+                        };
+                    })
+                    .Cast<object>()
+                    .ToList()
+                : new List<object>();
 
         var payload = new
         {
@@ -116,16 +166,42 @@ public class TestExecutionService : ITestExecutionService
             testCases = testCasesDirect,
         };
 
-        // Send to Node runner
+        // Log the full payload for debugging
+        var payloadJson = System.Text.Json.JsonSerializer.Serialize(
+            payload,
+            new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
+        );
+        _logger.LogInformation("Sending test run payload to TestRunner: {Payload}", payloadJson);
+
+        // Send to Node runner (fire-and-forget - don't wait for tests to complete)
         var client = _httpClientFactory.CreateClient("TestRunnerClient");
         client.DefaultRequestHeaders.Add("x-api-key", _config["TestRunner:ApiKey"] ?? "");
-        var response = await client.PostAsJsonAsync("/run-tests", payload);
-        if (!response.IsSuccessStatusCode)
+
+        // Start the test run asynchronously without waiting for it to complete
+        _ = Task.Run(async () =>
         {
-            _logger.LogError("Failed to start Node runner: {Status}", response.StatusCode);
-            run.Status = TestRunStatus.Failed;
-            await _db.SaveChangesAsync();
-        }
+            try
+            {
+                var response = await client.PostAsJsonAsync("/run-tests", payload);
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError("Failed to start Node runner: {Status}", response.StatusCode);
+                    run.Status = TestRunStatus.Failed;
+                    await _db.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending test run request to TestRunner");
+                run.Status = TestRunStatus.Failed;
+                await _db.SaveChangesAsync();
+            }
+        });
+
+        _logger.LogInformation(
+            "Test run {RunId} started, tests are executing in background",
+            run.Id
+        );
 
         return new TestRunDto
         {
@@ -229,14 +305,126 @@ public class TestExecutionService : ITestExecutionService
                 CompletedAt = r.CompletedAt,
                 ExecutedBy = r.ExecutedById?.ToString(),
                 TriggerType = r.TriggerType.ToString(),
+                TotalTests = r.TotalTests,
+                PassedTests = r.PassedTests,
+                FailedTests = r.FailedTests,
+                SkippedTests = r.SkippedTests,
             })
             .ToList();
     }
 
-    public Task UpdateTestRunStatusAsync(Guid testRunId, string status)
+    public async Task UpdateTestRunStatusAsync(
+        Guid testRunId,
+        string status,
+        int? totalTests = null,
+        int? passedTests = null,
+        int? failedTests = null
+    )
     {
-        // Will be used by webhook or SignalR to update status from Node runner
-        throw new NotImplementedException();
+        _logger.LogInformation(
+            "🔍 UpdateTestRunStatusAsync called with - RunId: {TestRunId}, Status: {Status}, Total: {Total}, Passed: {Passed}, Failed: {Failed}",
+            testRunId,
+            status,
+            totalTests,
+            passedTests,
+            failedTests
+        );
+
+        var run = await _db.TestRuns.FindAsync(testRunId);
+        if (run == null)
+        {
+            _logger.LogWarning("❌ Test run {TestRunId} not found", testRunId);
+            return;
+        }
+
+        _logger.LogInformation(
+            "📝 Current run status: {CurrentStatus}, Current counts - Total: {CurrentTotal}, Passed: {CurrentPassed}, Failed: {CurrentFailed}",
+            run.Status,
+            run.TotalTests,
+            run.PassedTests,
+            run.FailedTests
+        );
+
+        // Update status if provided and valid
+        if (Enum.TryParse<TestRunStatus>(status, true, out var statusEnum))
+        {
+            run.Status = statusEnum;
+            _logger.LogInformation("🔄 Updated status to: {Status}", statusEnum);
+
+            // Set completion time if the run is now completed/failed/cancelled
+            if (
+                statusEnum
+                is TestRunStatus.Completed
+                    or TestRunStatus.Failed
+                    or TestRunStatus.Cancelled
+            )
+            {
+                run.CompletedAt = DateTime.UtcNow;
+                _logger.LogInformation("🏁 Run completed at: {CompletedAt}", run.CompletedAt);
+            }
+        }
+
+        // Update test result counts if provided
+        if (totalTests.HasValue)
+        {
+            run.TotalTests = totalTests.Value;
+            _logger.LogInformation("📊 Set TotalTests to: {Total}", totalTests.Value);
+        }
+
+        if (passedTests.HasValue)
+        {
+            run.PassedTests = passedTests.Value;
+            _logger.LogInformation("✅ Set PassedTests to: {Passed}", passedTests.Value);
+        }
+
+        if (failedTests.HasValue)
+        {
+            run.FailedTests = failedTests.Value;
+            _logger.LogInformation("❌ Set FailedTests to: {Failed}", failedTests.Value);
+        }
+
+        // Calculate skipped tests if we have total and passed/failed
+        if (totalTests.HasValue && (passedTests.HasValue || failedTests.HasValue))
+        {
+            run.SkippedTests = totalTests.Value - (passedTests ?? 0) - (failedTests ?? 0);
+            _logger.LogInformation("⏩ Calculated SkippedTests: {Skipped}", run.SkippedTests);
+        }
+
+        run.UpdatedAt = DateTime.UtcNow;
+
+        try
+        {
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("💾 Successfully saved changes to database");
+
+            // Verify the values were saved correctly
+            var savedRun = await _db
+                .TestRuns.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == testRunId);
+            if (savedRun != null)
+            {
+                _logger.LogInformation(
+                    "🔍 Database verification - Total: {Total}, Passed: {Passed}, Failed: {Failed}",
+                    savedRun.TotalTests,
+                    savedRun.PassedTests,
+                    savedRun.FailedTests
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Error saving test run updates to database");
+            throw;
+        }
+
+        _logger.LogInformation(
+            "✅ Updated test run {TestRunId} status to {Status} (Passed: {Passed}, Failed: {Failed}, Total: {Total})",
+            testRunId,
+            status,
+            run.PassedTests,
+            run.FailedTests,
+            run.TotalTests
+        );
     }
 
     public Task ProcessTestResultAsync(TestResultDto testResult)

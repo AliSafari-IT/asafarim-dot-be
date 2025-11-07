@@ -5,11 +5,12 @@ import { useAuth } from '@asafarim/shared-ui-react';
 import { createHubConnection } from '../services/signalr';
 import * as signalR from '@microsoft/signalr';
 import toast from 'react-hot-toast';
-import './TestRunPage.css';
 import TestSuiteSelector from '../components/TestSuiteSelector';
 import ExecutionLogs from '../components/ExecutionLogs';
 import ExecutionProgress from '../components/ExecutionProgress';
 import RunHistory from '../components/RunHistory';
+import './TestRunPage.css';
+import { useNavigate } from 'react-router-dom';
 
 interface TestSuite {
   id: string;
@@ -45,8 +46,9 @@ export default function TestRunPage() {
     passedTests: 0,
     failedTests: 0
   });
+  const navigate = useNavigate();
 
-  // Fetch test suites
+  // Fetch test suites and run history on page load
   useEffect(() => {
     const fetchSuites = async () => {
       try {
@@ -58,6 +60,7 @@ export default function TestRunPage() {
       }
     };
     fetchSuites();
+    fetchRunHistory();
   }, []);
 
   // Setup SignalR connection
@@ -72,6 +75,7 @@ export default function TestRunPage() {
     });
 
     hubConnection.on('TestRunUpdated', (update: any) => {
+      console.log('TestRunUpdated event received:', update);
       setProgress({
         totalTests: update.totalTests || progress.totalTests,
         completedTests: update.completedTests || progress.completedTests,
@@ -81,9 +85,34 @@ export default function TestRunPage() {
     });
 
     hubConnection.on('TestRunCompleted', (result: any) => {
+      console.log('✅ TestRunCompleted event received:', result);
       setIsRunning(false);
+      setProgress({
+        totalTests: result.totalTests || 0,
+        completedTests: result.totalTests || 0,
+        passedTests: result.passedTests || 0,
+        failedTests: result.failedTests || 0
+      });
       toast.success('Test run completed!');
       setLogs(prev => [...prev, `✓ Test run completed: ${result.passedTests} passed, ${result.failedTests} failed`]);
+      // Fetch updated run history
+      fetchRunHistory();
+    });
+
+    // Fallback for lowercase event name (SignalR case sensitivity)
+    hubConnection.on('testruncompleted', (result: any) => {
+      console.log('✅ testruncompleted event received:', result);
+      setIsRunning(false);
+      setProgress({
+        totalTests: result.totalTests || 0,
+        completedTests: result.totalTests || 0,
+        passedTests: result.passedTests || 0,
+        failedTests: result.failedTests || 0
+      });
+      toast.success('Test run completed!');
+      setLogs(prev => [...prev, `✓ Test run completed: ${result.passedTests} passed, ${result.failedTests} failed`]);
+      // Fetch updated run history
+      fetchRunHistory();
     });
 
     hubConnection.start()
@@ -103,9 +132,22 @@ export default function TestRunPage() {
     };
   }, [token]);
 
-  const handleSuiteSelection = (suiteId: string) => {
+  const fetchRunHistory = async () => {
+    try {
+      const response = await api.get('/api/test-execution/runs');
+      setRunHistory(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch run history:', error);
+    }
+  };
+
+  const handleSuiteSelection = (suiteIdOrMsg: string) => {
+    if (suiteIdOrMsg === "create-test-suite") {
+      navigate('/test-suites');
+      return;
+    }
     setSelectedSuiteIds(prev =>
-      prev.includes(suiteId) ? prev.filter(id => id !== suiteId) : [...prev, suiteId]
+      prev.includes(suiteIdOrMsg) ? prev.filter(id => id !== suiteIdOrMsg) : [...prev, suiteIdOrMsg]
     );
   };
 
@@ -134,10 +176,12 @@ export default function TestRunPage() {
       if (connection) {
         await connection.invoke('JoinTestRun', newRunId);
       }
-    } catch (error) {
+    } catch (error: any) {
       setIsRunning(false);
-      toast.error('Failed to start test run');
-      console.error(error);
+      const errorMsg = error.response?.data?.message || error.message || 'Failed to start test run';
+      toast.error(errorMsg);
+      console.error('Test run error:', error);
+      setLogs(prev => [...prev, `✗ Error: ${errorMsg}`]);
     }
   };
 

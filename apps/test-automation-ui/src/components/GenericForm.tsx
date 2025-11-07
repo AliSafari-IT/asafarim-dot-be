@@ -1,4 +1,3 @@
-// GenericForm.tsx - Reusable form component for any model
 import React from "react";
 
 export type FormFieldType =
@@ -45,7 +44,7 @@ export function GenericForm<T>({
   title,
   submitLabel = "Submit",
   cancelLabel = "Cancel",
-  className = "",
+  className = ""
 }: GenericFormProps<T>) {
   const handleFieldChange = (name: keyof T, value: any) => {
     onChange({ ...formData, [name]: value });
@@ -53,7 +52,6 @@ export function GenericForm<T>({
 
   const renderField = (field: FormFieldDefinition<T>) => {
     const value = formData[field.name];
-    // Use custom render function if provided
     if (field.render) {
       return field.render(value, (newValue) =>
         handleFieldChange(field.name, newValue)
@@ -79,6 +77,7 @@ export function GenericForm<T>({
             placeholder={field.placeholder}
             min={field.min}
             max={field.max}
+            data-testid={`input-${String(field.name)}`}
           />
         );
 
@@ -86,14 +85,13 @@ export function GenericForm<T>({
       case "json":
         return (
           <textarea
-            className={`form-control ${
-              field.type === "json" ? "json-editor" : ""
-            }`}
+            className={`form-control ${field.type === "json" ? "json-editor" : ""}`}
             value={value as string}
             onChange={(e) => handleFieldChange(field.name, e.target.value)}
             required={field.required}
             placeholder={field.placeholder}
             rows={field.rows || 3}
+            data-testid={`textarea-${String(field.name)}`}
           />
         );
 
@@ -101,9 +99,10 @@ export function GenericForm<T>({
         return (
           <select
             className="form-control"
-            value={value as string}
+            value={value as string || ""}
             onChange={(e) => handleFieldChange(field.name, e.target.value)}
             required={field.required}
+            data-testid={`select-${String(field.name)}`}
           >
             <option value="">Select {field.label}</option>
             {field.options?.map((option) => (
@@ -116,13 +115,13 @@ export function GenericForm<T>({
 
       case "checkbox":
         return (
-          <label className="checkbox-container">
+          <label className="checkbox-container" data-testid={`checkbox-${String(field.name)}`}>
             <input
               type="checkbox"
               className="checkbox-input"
               checked={value as boolean}
               onChange={(e) => handleFieldChange(field.name, e.target.checked)}
-            />{" "}
+            />
             {field.label}
           </label>
         );
@@ -133,12 +132,12 @@ export function GenericForm<T>({
   };
 
   return (
-    <form onSubmit={onSubmit} className={className}>
-      <h4>{title}</h4>
+    <form onSubmit={onSubmit} className={className} data-testid={"generic-form"}>
+      <h4 data-testid={"generic-form-title"}>{title}</h4>
       {fields
         .filter((field) => !field.condition || field.condition(formData))
         .map((field) => (
-          <div key={String(field.name)} className="form-group">
+          <div key={String(field.name)} className="form-group" data-testid={`form-group-${String(field.name)}`}>
             {field.type !== "checkbox" && !field.render && (
               <label className="form-label">
                 {field.label} {field.required && "*"}
@@ -147,14 +146,15 @@ export function GenericForm<T>({
             {renderField(field)}
           </div>
         ))}
-      <div className="form-actions">
-        <button type="submit" className="button button-primary">
+      <div className="form-actions" data-testid={"generic-form-actions"}>
+        <button type="submit" className="button button-primary" data-testid={"generic-form-submit"}>
           {submitLabel}
         </button>
         <button
           type="button"
           className="button button-secondary"
           onClick={onCancel}
+          data-testid={"generic-form-cancel"}
         >
           {cancelLabel}
         </button>

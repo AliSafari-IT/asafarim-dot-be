@@ -1,11 +1,12 @@
 // components/Sidebar.tsx
 import { NavLink } from 'react-router-dom';
-import { FiHome, FiPlay, FiLayers, FiGrid, FiList, FiDatabase } from 'react-icons/fi';
+import { FiHome, FiPlay, FiLayers, FiGrid, FiList, FiDatabase, FiActivity } from 'react-icons/fi';
 import './Sidebar.css';
 
 export default function Sidebar() {
   const navItems = [
     { to: '/dashboard', icon: <FiHome />, label: 'Dashboard' },
+    { to: '/test-runs', icon: <FiActivity />, label: 'Test Runs' },
     { to: '/run', icon: <FiPlay />, label: 'Run Tests' },
     { to: '/functional-requirements', icon: <FiLayers />, label: 'Requirements' },
     { to: '/fixtures', icon: <FiGrid />, label: 'Fixtures' },

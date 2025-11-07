@@ -6,7 +6,7 @@ public class StartTestRunDto
 {
     [Required]
     public string RunName { get; set; } = string.Empty;
-    
+
     public Guid? FunctionalRequirementId { get; set; }
     public List<Guid>? TestSuiteIds { get; set; }
     public List<Guid>? TestCaseIds { get; set; }

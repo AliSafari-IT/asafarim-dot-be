@@ -1,6 +1,6 @@
 .suite-container {
-  background: var(--color-neutral-950);
-  color: var(--color-neutral-50);
+  background: var(--color-neutral-50);
+  color: var(--color-neutral-950);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   overflow: hidden;
@@ -25,10 +25,13 @@
 }
 
 .suite-empty {
-  font-size: 0.875rem;
-  color: #777;
+  font-size: 1rem;
+  color: var(--color-warning-500);
   text-align: center;
-  padding: 1rem 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items:last baseline;
 }
 
 .suite-item {
@@ -36,25 +39,28 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border: 1px solid var(--border-color, #ddd);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .suite-item:hover {
-  background: #f8f9fb;
+  background: var(--color-neutral-200);
 }
 
 .suite-item--selected {
-  border-color: var(--color-primary, #4f46e5);
-  background: rgba(79, 70, 229, 0.08);
+  border-color: var(--color-primary-400);
 }
 
 .suite-checkbox {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
+}
+
+.suite-checkbox:hover {
+  fill: var(--color-primary-500);
 }
 
 .suite-info {
@@ -65,13 +71,13 @@
 .suite-name {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--color-text-strong, #222);
+  color: var(--color-primary-400);
   margin-bottom: 0.25rem;
 }
 
 .suite-desc {
   font-size: 0.75rem;
-  color: #666;
+  color: var(--color-neutral-600);
   margin-bottom: 0.25rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -82,7 +88,7 @@
   display: flex;
   align-items: center;
   font-size: 0.75rem;
-  color: #777;
+  color: var(--color-neutral-500);
 }
 
 .suite-icon {
@@ -101,15 +107,15 @@
 }
 
 .status-icon.success {
-  color: #22c55e;
+  color: var(--color-success-500);
 }
 
 .status-icon.error {
-  color: #ef4444;
+  color: var(--color-error-500);
 }
 
 .status-icon.running {
-  color: #3b82f6;
+  color: var(--color-primary-500);
   animation: spin 1s linear infinite;
 }
 
@@ -141,9 +147,9 @@
   }
 
   .suite-checkbox {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
     cursor: pointer;
   }
 
@@ -167,30 +173,5 @@
   .status-icon {
     width: 18px;
     height: 18px;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .suite-container {
-    background: #1f2937;
-    color: #f9fafb;
-  }
-
-  .suite-item {
-    border-color: #374151;
-  }
-
-  .suite-item:hover {
-    background: #2d3748;
-  }
-
-  .suite-item--selected {
-    background: rgba(79, 70, 229, 0.2);
-  }
-
-  .suite-desc,
-  .suite-meta {
-    color: #9ca3af;
   }
 }
