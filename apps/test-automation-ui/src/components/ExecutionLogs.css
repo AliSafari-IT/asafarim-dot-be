@@ -2,17 +2,9 @@
 
 /* Root container */
 .execution-logs {
-  background-color: var(--color-surface, #ffffff);
-  color: var(--color-text, #1a1a1a);
   border-radius: var(--radius-md, 0.5rem);
   box-shadow: var(--shadow-md, 0 2px 4px rgba(0, 0, 0, 0.1));
   overflow: hidden;
-}
-
-/* Dark mode support (if app toggles class="dark") */
-.dark .execution-logs {
-  background-color: var(--color-surface-dark, #1e293b);
-  color: var(--color-text-dark, #f5f5f5);
 }
 
 /* Inner padding */
@@ -26,16 +18,13 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--spacing-md, 1rem);
+  color: var(--color-text);
 }
 
 .execution-logs__title {
   font-size: var(--font-size-lg, 1.125rem);
   font-weight: var(--font-weight-medium, 500);
-  color: var(--color-heading, #111827);
-}
-
-.dark .execution-logs__title {
-  color: var(--color-heading-dark, #f9fafb);
+  color: var(--color-heading-text);
 }
 
 /* Header right side */
@@ -50,7 +39,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--color-success, #22c55e);
+  background-color: var(--color-success);
   animation: pulse 1.2s ease-in-out infinite;
 }
 
@@ -68,15 +57,15 @@
 
 /* Logs container */
 .execution-logs__terminal {
-  background-color: var(--color-terminal-bg, #0f172a);
-  color: var(--color-terminal-text, #e5e7eb);
+  background-color: var(--color-terminal-bg);
+  color: var(--color-terminal-text);
   border-radius: var(--radius-md, 0.5rem);
   padding: var(--spacing-md, 1rem);
   height: 24rem; /* ~h-96 */
   overflow-y: auto;
   font-family: var(--font-mono, monospace);
   font-size: var(--font-size-sm, 0.875rem);
-  border: 1px solid var(--color-border, #334155);
+  border: 1px solid var(--color-border);
 }
 
 .execution-logs__line {
@@ -84,12 +73,12 @@
 }
 
 .execution-logs__timestamp {
-  color: var(--color-terminal-muted, #94a3b8);
+  color: var(--color-terminal-muted);
 }
 
 /* Empty state */
 .execution-logs__empty {
-  color: var(--color-terminal-muted, #6b7280);
+  color: var(--color-terminal-muted);
 }
 
 /* Mobile responsive */

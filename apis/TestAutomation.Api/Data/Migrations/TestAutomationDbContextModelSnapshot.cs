@@ -340,12 +340,21 @@ namespace TestAutomation.Api.Data.Migrations
                     b.Property<Guid?>("ExecutedById")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("FailedTests")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("FunctionalRequirementId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("PassedTests")
+                        .HasColumnType("integer");
 
                     b.Property<string>("RunName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<int>("SkippedTests")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("StartedAt")
                         .HasColumnType("timestamp with time zone");
@@ -354,6 +363,9 @@ namespace TestAutomation.Api.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<int>("TotalTests")
+                        .HasColumnType("integer");
 
                     b.Property<string>("TriggerType")
                         .IsRequired()
@@ -397,6 +409,12 @@ namespace TestAutomation.Api.Data.Migrations
 
                     b.Property<Guid>("FixtureId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("GeneratedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GeneratedTestCafeFile")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");

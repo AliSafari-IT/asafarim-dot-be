@@ -32,6 +32,17 @@ const signalRService = new SignalRService(API_URL);
 // Initialize TestRunner service
 const testRunner = new TestRunnerService(signalRService);
 
+// Initialize SignalR connection
+let signalRConnected = false;
+signalRService.connect()
+    .then(() => {
+        signalRConnected = true;
+        logger.info('✅ SignalR connected successfully');
+    })
+    .catch((err) => {
+        logger.warn('⚠️ Failed to connect to SignalR initially, will retry on demand', { error: err.message });
+    });
+
 // Register routes
 app.post('/run', validateApiKey, async (req, res) => {
   const { testSuiteId } = req.body;
@@ -44,10 +55,6 @@ app.post('/run', validateApiKey, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  logger.info(`✅ TestRunner listening on port ${PORT}`);
-});
-
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'TestRunner' });
@@ -56,12 +63,27 @@ app.get('/health', (req, res) => {
 // Run tests endpoint
 app.post('/run-tests', validateApiKey, async (req, res) => {
     try {
-        logger.info('Received test run request', { runId: req.body.runId });
+        const firstSuite = req.body.testSuites?.[0];
+        const firstTestCase = firstSuite?.testCases?.[0];
+        
+        logger.info('Received test run request', { 
+            runId: req.body.runId,
+            testSuitesCount: req.body.testSuites?.length || 0,
+            testCasesCount: req.body.testCases?.length || 0,
+            firstSuiteTestCasesCount: firstSuite?.testCases?.length || 0,
+            firstTestCaseHasSteps: !!firstTestCase?.steps,
+            firstTestCaseStepsCount: firstTestCase?.steps?.length || 0,
+            firstTestCaseStepsPreview: firstTestCase?.steps ? JSON.stringify(firstTestCase.steps).substring(0, 200) : 'none'
+        });
+        
         const result = await testRunner.runTests(req.body);
         res.json(result);
     } catch (error: any) {
-        logger.error('Error running tests', { error: error.message });
-        res.status(500).json({ error: error.message });
+        logger.error('Error running tests', { 
+            error: error.message,
+            stack: error.stack
+        });
+        res.status(500).json({ error: error.message, details: error.stack });
     }
 });
 
@@ -81,6 +103,29 @@ app.post('/cancel/:runId', validateApiKey, async (req, res) => {
         return res.status(404).json({ error: 'Run not found or cannot be cancelled' });
     }
     res.json({ success: true });
+});
+
+// Run generated TestCafe file
+app.post('/run-generated-file', validateApiKey, async (req, res) => {
+    try {
+        const { testSuiteId, fileContent, browser, runId } = req.body;
+        
+        if (!testSuiteId || !fileContent) {
+            return res.status(400).json({ error: 'testSuiteId and fileContent are required' });
+        }
+
+        logger.info('Running generated TestCafe file', { testSuiteId, browser, runId });
+        const result = await testRunner.runGeneratedTestCafeFile(testSuiteId, fileContent, browser, runId);
+        res.json(result);
+    } catch (error: any) {
+        logger.error('Error running generated TestCafe file', { 
+            error: error.message,
+            stack: error.stack,
+            code: error.code,
+            details: error.toString()
+        });
+        res.status(500).json({ error: error.message, details: error.stack });
+    }
 });
 
 // Start server

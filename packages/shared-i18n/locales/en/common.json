@@ -58,7 +58,7 @@
       "core": "Core application features",
       "jobs": "Job application tracking",
       "identity": "User management and authentication",
-      "testora": "Test Automation",
+      "testora": "Test Automation System - Testora",
       "taskmanagement": "Task Management",
       "smartops": "SmartOps"
     }

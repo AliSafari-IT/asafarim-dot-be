@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestAutomation.Api.Data;
 using TestAutomation.Api.DTOs;
 using TestAutomation.Api.Models;
+using TestAutomation.Api.Services;
 
 namespace TestAutomation.Api.Controllers;
 
@@ -16,10 +17,15 @@ namespace TestAutomation.Api.Controllers;
 public class TestSuitesController : ControllerBase
 {
     private readonly TestAutomationDbContext _db;
+    private readonly TestCafeGeneratorService _generatorService;
 
-    public TestSuitesController(TestAutomationDbContext db)
+    public TestSuitesController(
+        TestAutomationDbContext db,
+        TestCafeGeneratorService generatorService
+    )
     {
         _db = db;
+        _generatorService = generatorService;
     }
 
     [HttpGet]
@@ -35,7 +41,9 @@ public class TestSuitesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var entity = await _db.TestSuites.FindAsync(id);
+        var entity = await _db
+            .TestSuites.Include(s => s.Fixture)
+            .FirstOrDefaultAsync(s => s.Id == id);
         return entity == null ? NotFound() : Ok(entity);
     }
 
@@ -139,6 +147,62 @@ public class TestSuitesController : ControllerBase
             nameof(GetById),
             new { id = suiteId },
             new { message = "Test case created successfully", testCase }
+        );
+    }
+
+    // 🔄 Generate TestCafe file for a test suite
+    [HttpPost("{id}/generate-testcafe")]
+    [Authorize(Policy = "TesterOnly")]
+    public async Task<IActionResult> GenerateTestCafeFile(Guid id)
+    {
+        try
+        {
+            var testSuite = await _db.TestSuites.FindAsync(id);
+            if (testSuite == null)
+                return NotFound(new { message = "Test suite not found." });
+
+            // Generate the TestCafe file
+            var generatedCode = await _generatorService.GenerateTestCafeFileAsync(id);
+
+            // Save to database
+            testSuite.GeneratedTestCafeFile = generatedCode;
+            testSuite.GeneratedAt = DateTime.UtcNow;
+            testSuite.UpdatedAt = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+
+            return Ok(
+                new
+                {
+                    message = "TestCafe file generated successfully",
+                    generatedAt = testSuite.GeneratedAt,
+                    fileContent = generatedCode,
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Failed to generate TestCafe file: {ex.Message}" });
+        }
+    }
+
+    // 📄 Get generated TestCafe file
+    [HttpGet("{id}/testcafe-file")]
+    public async Task<IActionResult> GetTestCafeFile(Guid id)
+    {
+        var testSuite = await _db.TestSuites.FindAsync(id);
+        if (testSuite == null)
+            return NotFound(new { message = "Test suite not found." });
+
+        if (string.IsNullOrEmpty(testSuite.GeneratedTestCafeFile))
+            return NotFound(new { message = "No TestCafe file has been generated yet." });
+
+        return Ok(
+            new
+            {
+                fileContent = testSuite.GeneratedTestCafeFile,
+                generatedAt = testSuite.GeneratedAt,
+            }
         );
     }
 }

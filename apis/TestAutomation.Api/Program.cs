@@ -30,6 +30,18 @@ builder
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new TestTypeStringConverter());
+        options.JsonSerializerOptions.PropertyNamingPolicy = System
+            .Text
+            .Json
+            .JsonNamingPolicy
+            .CamelCase;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.ReferenceHandler = System
+            .Text
+            .Json
+            .Serialization
+            .ReferenceHandler
+            .IgnoreCycles;
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -152,6 +164,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 // Register Services
 builder.Services.AddScoped<IIdentityApiClient, IdentityApiClient>();
 builder.Services.AddScoped<ITestExecutionService, TestExecutionService>();
+builder.Services.AddScoped<TestCafeGeneratorService>();
 
 // Configure SignalR
 builder.Services.AddSignalR();

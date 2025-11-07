@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { GenericCrudPage } from './GenericCrudPage';
 import { ColumnDefinition } from '../components/GenericTable';
 import { FormFieldDefinition } from '../components/GenericForm';
+import { TestCafeFileViewer } from '../components/TestCafeFileViewer';
 import { api } from '../config/api';
 
 interface TestSuite {
@@ -23,6 +24,7 @@ interface Fixture {
 
 export default function TestSuitesPage() {
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
+  const [viewingTestCafe, setViewingTestCafe] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     loadFixtures();
@@ -107,28 +109,45 @@ export default function TestSuitesPage() {
   ];
 
   return (
-    <GenericCrudPage<TestSuite>
-      title="Test Suites"
-      apiEndpoint="/api/test-suites"
-      getItemId={(item) => item.id}
-      columns={columns}
-      formFields={formFields}
-      getInitialFormData={() => ({
-        id: '',
-        fixtureId: '',
-        name: '',
-        description: '',
-        executionOrder: 0,
-        isActive: true,
-        createdAt: '',
-        updatedAt: '',
-      })}
-      // tableClassName="test-suites-table"
-      // formClassName="test-suites-form"
-      emptyMessage="No test suites found"
-      createButtonLabel="+ New Test Suite"
-      editFormTitle="Edit Test Suite"
-      createFormTitle="Create Test Suite"
-    />
+    <>
+      <GenericCrudPage<TestSuite>
+        title="Test Suites"
+        apiEndpoint="/api/test-suites"
+        getItemId={(item) => item.id}
+        columns={columns}
+        formFields={formFields}
+        getInitialFormData={() => ({
+          id: '',
+          fixtureId: '',
+          name: '',
+          description: '',
+          executionOrder: 0,
+          isActive: true,
+          createdAt: '',
+          updatedAt: '',
+        })}
+        customActions={(item) => (
+          <button
+            className="button button-primary"
+            onClick={() => setViewingTestCafe({ id: item.id, name: item.name })}
+            title="View/Generate TestCafe File"
+          >
+            📄 TestCafe
+          </button>
+        )}
+        emptyMessage="No test suites found"
+        createButtonLabel="+ New Test Suite"
+        editFormTitle="Edit Test Suite"
+        createFormTitle="Create Test Suite"
+      />
+
+      {viewingTestCafe && (
+        <TestCafeFileViewer
+          testSuiteId={viewingTestCafe.id}
+          testSuiteName={viewingTestCafe.name}
+          onClose={() => setViewingTestCafe(null)}
+        />
+      )}
+    </>
   );
 }

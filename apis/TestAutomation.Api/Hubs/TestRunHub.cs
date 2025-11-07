@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace TestAutomation.Api.Hubs;
 
-[Authorize]
 public class TestRunHub : Hub
 {
     private readonly ILogger<TestRunHub> _logger;
@@ -50,6 +48,18 @@ public class TestRunHub : Hub
     public async Task SendTestUpdate(string testRunId, TestUpdateMessage message)
     {
         await Clients.Group($"testrun-{testRunId}").SendAsync("TestUpdate", message);
+    }
+
+    public async Task SendTestRunCompleted(string testRunId, object result)
+    {
+        _logger.LogInformation($"SendTestRunCompleted called for test run {testRunId}");
+        await Clients.Group($"testrun-{testRunId}").SendAsync("TestRunCompleted", result);
+        _logger.LogInformation($"Broadcasted TestRunCompleted to group testrun-{testRunId}");
+    }
+
+    public async Task SendTestRunUpdated(string testRunId, object update)
+    {
+        await Clients.Group($"testrun-{testRunId}").SendAsync("TestRunUpdated", update);
     }
 }
 

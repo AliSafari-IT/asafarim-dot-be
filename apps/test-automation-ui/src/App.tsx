@@ -6,6 +6,8 @@ import { ToastProvider, Toaster } from '@asafarim/toast';
 import '@asafarim/toast/styles.css';
 import Dashboard from './pages/Dashboard';
 import TestRunPage from './pages/TestRunPage';
+import { TestRunsPage } from './pages/TestRunsPage';
+import { TestRunDetailsPage } from './pages/TestRunDetailsPage';
 import FunctionalRequirementsPage from './pages/FunctionalRequirementsPage';
 import FixturesPage from './pages/FixturesPage';
 import TestSuitesPage from './pages/TestSuitesPage';
@@ -54,6 +56,8 @@ function App() {
               <Routes>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/test-runs" element={<TestRunsPage />} />
+                <Route path="/test-runs/:id" element={<TestRunDetailsPage />} />
                 <Route path="/run" element={<TestRunPage />} />
                 <Route path="/functional-requirements" element={<FunctionalRequirementsPage />} />
                 <Route path="/fixtures" element={<FixturesPage />} />

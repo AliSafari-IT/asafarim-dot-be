@@ -1,4 +1,3 @@
-// GenericTable.tsx - Reusable table component for any model
 import React from 'react';
 import './GenericTable.css';
 
@@ -8,6 +7,7 @@ export interface ColumnDefinition<T> {
   render?: (item: T) => React.ReactNode;
   align?: 'left' | 'center' | 'right';
   width?: string;
+  dataTestId?: string;
 }
 
 interface GenericTableProps<T> {
@@ -15,6 +15,7 @@ interface GenericTableProps<T> {
   columns: ColumnDefinition<T>[];
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
+  customActions?: (item: T) => React.ReactNode;
   loading?: boolean;
   emptyMessage?: string;
   className?: string;
@@ -29,6 +30,7 @@ export function GenericTable<T>({
   columns,
   onEdit,
   onDelete,
+  customActions,
   loading = false,
   emptyMessage = 'No items found',
   className = '',
@@ -38,11 +40,11 @@ export function GenericTable<T>({
   getItemId,
 }: GenericTableProps<T>) {
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading" data-testid="table-loading">Loading...</div>;
   }
 
   if (data.length === 0) {
-    return <div className="empty-state">{emptyMessage}</div>;
+    return <div className="empty-state" data-testid="table-empty">{emptyMessage}</div>;
   }
 
   const renderCell = (item: T, column: ColumnDefinition<T>) => {
@@ -57,10 +59,10 @@ export function GenericTable<T>({
   };
 
   return (
-    <div className="table-container">
-      <table className={className}>
+    <div className="table-container" data-testid="table-container">
+      <table className={className} data-testid="generic-table">
         <thead>
-          <tr>
+          <tr data-testid="table-header-row">
             {columns.map((column, index) => (
               <th
                 key={index}
@@ -68,40 +70,47 @@ export function GenericTable<T>({
                   textAlign: column.align || 'left',
                   width: column.width,
                 }}
+                data-testid={column.dataTestId || `table-header-${index}`}
               >
                 {column.header}
               </th>
             ))}
             {showActions && onEdit && onDelete && (
-              <th style={{ textAlign: 'right' }}>Actions</th>
+              <th style={{ textAlign: 'right' }} data-testid="table-header-actions">
+                Actions
+              </th>
             )}
           </tr>
         </thead>
-        <tbody>
+        <tbody data-testid="table-body">
           {data.map((item) => (
-            <tr key={getItemId(item)}>
+            <tr key={getItemId(item)} data-testid={`table-row-${getItemId(item)}`}>
               {columns.map((column, index) => (
                 <td
                   key={index}
                   style={{
                     textAlign: column.align || 'left',
                   }}
+                  data-testid={`table-cell-${getItemId(item)}-${index}`}
                 >
                   {renderCell(item, column)}
                 </td>
               ))}
               {showActions && onEdit && onDelete && (
-                <td style={{ textAlign: 'right' }}>
+                <td style={{ textAlign: 'right' }} data-testid={`table-actions-${getItemId(item)}`}>
                   <div className="actions">
+                    {customActions && customActions(item)}
                     <button
                       className="button button-secondary"
                       onClick={() => onEdit(item)}
+                      data-testid={`edit-button-${getItemId(item)}`}
                     >
                       {editLabel}
                     </button>
                     <button
                       className="button button-danger"
                       onClick={() => onDelete(item)}
+                      data-testid={`delete-button-${getItemId(item)}`}
                     >
                       {deleteLabel}
                     </button>

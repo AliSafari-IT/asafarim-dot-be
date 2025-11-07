@@ -8,6 +8,8 @@ public class TestSuite
     public string? Description { get; set; }
     public int ExecutionOrder { get; set; } = 0;
     public bool IsActive { get; set; } = true;
+    public string? GeneratedTestCafeFile { get; set; }
+    public DateTime? GeneratedAt { get; set; }
     public Guid? CreatedById { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

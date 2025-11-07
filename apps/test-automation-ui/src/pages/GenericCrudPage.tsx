@@ -1,11 +1,10 @@
-// GenericCrudPage.tsx - Template for creating CRUD pages for any model
 import { useEffect, useState } from 'react';
+import React from 'react';
 import { api } from '../config/api';
 import { GenericTable, ColumnDefinition } from '../components/GenericTable';
 import { GenericForm, FormFieldDefinition } from '../components/GenericForm';
 
 interface GenericCrudPageProps<T> {
-  // Configuration
   title: string;
   apiEndpoint: string;
   getItemId: (item: T) => string;
@@ -13,9 +12,9 @@ interface GenericCrudPageProps<T> {
   formFields: FormFieldDefinition<T>[];
   getInitialFormData: () => T;
   preparePayload?: (formData: T) => any;
-  onItemLoaded?: (item: T) => T; // Transform item for editing
-  
-  // Optional customization
+  onItemLoaded?: (item: T) => T; 
+  customActions?: (item: T) => React.ReactNode;
+
   tableClassName?: string;
   formClassName?: string;
   emptyMessage?: string;
@@ -33,6 +32,7 @@ export function GenericCrudPage<T>({
   getInitialFormData,
   preparePayload,
   onItemLoaded,
+  customActions,
   tableClassName = 'generic-table',
   formClassName = 'generic-form',
   emptyMessage = 'No items found',
@@ -127,14 +127,15 @@ export function GenericCrudPage<T>({
   };
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <h3 className="page-title">{title}</h3>
+    <div className="page-container" data-testid="crud-page">
+      <div className="page-header" data-testid="crud-page-header">
+        <h3 className="page-title" data-testid="crud-page-title">{title}</h3>
         <div className="page-actions">
           <button
             className="button button-primary"
             onClick={() => setCreating(true)}
             disabled={creating || editing !== null}
+            data-testid="create-button"
           >
             {createButtonLabel}
           </button>
@@ -159,6 +160,7 @@ export function GenericCrudPage<T>({
         columns={columns}
         onEdit={startEdit}
         onDelete={handleDelete}
+        customActions={customActions}
         loading={loading}
         emptyMessage={emptyMessage}
         className={tableClassName}

@@ -1,0 +1,135 @@
+/* TestCafe File Viewer Styles */
+
+.testcafe-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-4);
+}
+
+.testcafe-viewer-modal {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: var(--width-2xl);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.testcafe-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.testcafe-viewer-header h3 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+}
+
+.testcafe-viewer-actions {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.generated-timestamp {
+  margin-left: auto;
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground-muted);
+}
+
+.testcafe-viewer-error {
+  padding: var(--space-4);
+  background-color: rgba(var(--color-error-rgb), 0.1);
+  color: var(--color-error);
+  border-radius: var(--radius-md);
+  margin: var(--space-4);
+}
+
+.testcafe-viewer-loading {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--color-foreground-muted);
+  font-size: var(--font-size-lg);
+}
+
+.testcafe-viewer-content {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-4);
+  background-color: var(--color-background);
+}
+
+.testcafe-viewer-content pre {
+  margin: 0;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-foreground);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.testcafe-viewer-content code {
+  font-family: inherit;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .testcafe-viewer-overlay {
+    padding: var(--space-2);
+  }
+
+  .testcafe-viewer-modal {
+    max-height: 95vh;
+  }
+
+  .testcafe-viewer-header {
+    padding: var(--space-3);
+  }
+
+  .testcafe-viewer-header h3 {
+    font-size: var(--font-size-lg);
+  }
+
+  .testcafe-viewer-actions {
+    padding: var(--space-3);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .testcafe-viewer-actions .button {
+    width: 100%;
+  }
+
+  .generated-timestamp {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .testcafe-viewer-content {
+    padding: var(--space-2);
+  }
+
+  .testcafe-viewer-content pre {
+    font-size: var(--font-size-xs);
+  }
+}
