@@ -10,10 +10,14 @@ export class TestRunnerService {
     private testCafe: any;
     private runningRuns: Map<string, TestRunStatus> = new Map();
     private signalR: SignalRService;
-    private tempDir = path.join(process.cwd(), 'temp-tests');
+    private tempDir = process.env.TEMP_TESTS_DIR || path.join(process.cwd(), 'temp-tests');
 
     constructor(signalRService: SignalRService) {
         this.signalR = signalRService;
+        // Fire-and-forget cleanup on startup
+        this.cleanupTempArtifacts().catch(err => {
+            logger.warn('Temp cleanup on startup failed', { error: err?.message });
+        });
     }
 
     // --- Shared helpers ------------------------------------------------------
@@ -162,6 +166,123 @@ export class TestRunnerService {
             runId,
             testName: result.testCaseName || result.name
         });
+    }
+
+    // --- Temp folder cleanup -------------------------------------------------
+
+    private async cleanupTempArtifacts() {
+        try {
+            await fs.mkdir(this.tempDir, { recursive: true });
+
+            // Configurable thresholds via env vars
+            const maxAgeHours = Number(process.env.TEMP_TESTS_MAX_AGE_HOURS || 24);
+            const maxTotalMb = Number(process.env.TEMP_TESTS_MAX_TOTAL_MB || 2048);
+            const minFilesToKeep = Number(process.env.TEMP_TESTS_MIN_FILES_TO_KEEP || 5);
+
+            const entries = await fs.readdir(this.tempDir, { withFileTypes: true });
+            const items = entries.map(e => ({
+                name: e.name,
+                path: path.join(this.tempDir, e.name),
+                isDir: e.isDirectory(),
+            }));
+
+            if (items.length === 0) {
+                logger.info('🧹 Temp cleanup: no items to clean');
+                return;
+            }
+
+            // Collect metadata: mtime, size
+            const itemsWithStats = await Promise.all(
+                items.map(async item => {
+                    try {
+                        const stat = await fs.stat(item.path);
+                        const size = item.isDir
+                            ? await this.getDirectorySize(item.path)
+                            : stat.size;
+                        return { ...item, mtime: stat.mtime, size };
+                    } catch {
+                        return { ...item, mtime: new Date(0), size: 0 };
+                    }
+                })
+            );
+
+            // Phase 1: Delete by age (older than maxAgeHours)
+            const now = Date.now();
+            const maxAgeMs = maxAgeHours * 60 * 60 * 1000;
+            const tooOld = itemsWithStats.filter(
+                item => now - item.mtime.getTime() > maxAgeMs
+            );
+
+            for (const item of tooOld) {
+                try {
+                    if (item.isDir) {
+                        await fs.rm(item.path, { recursive: true, force: true });
+                    } else {
+                        await fs.unlink(item.path);
+                    }
+                    logger.info(`🗑️ Cleaned old artifact: ${item.name} (age: ${Math.round((now - item.mtime.getTime()) / 1000 / 60)} min)`);
+                } catch (err: any) {
+                    logger.warn(`Failed to delete old artifact ${item.name}`, { error: err?.message });
+                }
+            }
+
+            // Recalculate after phase 1
+            const remaining = itemsWithStats.filter(
+                item => !tooOld.includes(item)
+            );
+            const totalSize = remaining.reduce((sum, item) => sum + item.size, 0);
+            const totalMb = totalSize / (1024 * 1024);
+
+            // Phase 2: Delete oldest if total size exceeds limit, but keep minimum
+            if (totalMb > maxTotalMb && remaining.length > minFilesToKeep) {
+                const sorted = remaining.sort((a, b) => a.mtime.getTime() - b.mtime.getTime());
+                let currentSize = totalSize;
+
+                for (const item of sorted) {
+                    if (remaining.length <= minFilesToKeep || currentSize <= maxTotalMb * 1024 * 1024) {
+                        break;
+                    }
+
+                    try {
+                        if (item.isDir) {
+                            await fs.rm(item.path, { recursive: true, force: true });
+                        } else {
+                            await fs.unlink(item.path);
+                        }
+                        currentSize -= item.size;
+                        remaining.splice(remaining.indexOf(item), 1);
+                        logger.info(`🗑️ Cleaned artifact to reduce size: ${item.name} (${(item.size / 1024 / 1024).toFixed(2)} MB)`);
+                    } catch (err: any) {
+                        logger.warn(`Failed to delete artifact ${item.name}`, { error: err?.message });
+                    }
+                }
+
+                logger.info(`🧹 Cleanup complete: ${remaining.length} items, ${(currentSize / 1024 / 1024).toFixed(2)} MB total`);
+            } else {
+                logger.info(`🧹 Cleanup complete: ${remaining.length} items, ${totalMb.toFixed(2)} MB total (within limits)`);
+            }
+        } catch (err: any) {
+            logger.error('❌ Temp cleanup failed', { error: err?.message, stack: err?.stack });
+        }
+    }
+
+    private async getDirectorySize(dirPath: string): Promise<number> {
+        let size = 0;
+        try {
+            const entries = await fs.readdir(dirPath, { withFileTypes: true });
+            for (const entry of entries) {
+                const fullPath = path.join(dirPath, entry.name);
+                if (entry.isDirectory()) {
+                    size += await this.getDirectorySize(fullPath);
+                } else {
+                    const stat = await fs.stat(fullPath);
+                    size += stat.size;
+                }
+            }
+        } catch {
+            // Ignore errors during size calculation
+        }
+        return size;
     }
 
     private async createTempDir() {
@@ -370,6 +491,10 @@ export class TestRunnerService {
             this.runningRuns.set(runId, status);
             await fs.rm(filePath, { force: true });
             await this.disposeTestCafe();
+            // Fire-and-forget cleanup after run completes
+            this.cleanupTempArtifacts().catch(err => {
+                logger.warn('Temp cleanup after run failed', { error: err?.message });
+            });
         }
     }
 
@@ -581,6 +706,10 @@ export class TestRunnerService {
         } finally {
             this.runningRuns.set(runId, status);
             await this.disposeTestCafe();
+            // Fire-and-forget cleanup after run completes
+            this.cleanupTempArtifacts().catch(err => {
+                logger.warn('Temp cleanup after run failed', { error: err?.message });
+            });
         }
     }
 

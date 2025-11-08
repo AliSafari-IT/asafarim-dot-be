@@ -315,20 +315,26 @@ public class TestRunsController : ControllerBase
             using var scope = _serviceScopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<TestAutomationDbContext>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<TestRunsController>>();
-            
+
             try
             {
-                logger.LogInformation("🔄 Starting background task to rerun {Count} failed test cases", testCaseIds.Count);
-                
+                logger.LogInformation(
+                    "🔄 Starting background task to rerun {Count} failed test cases",
+                    testCaseIds.Count
+                );
+
                 // Build payload for TestRunner - include TestSuite and Fixture info
                 var testCases = await db
                     .TestCases.Where(tc => testCaseIds.Contains(tc.Id))
                     .Include(tc => tc.TestDataSets)
                     .Include(tc => tc.TestSuite)
-                        .ThenInclude(ts => ts.Fixture)
+                    .ThenInclude(ts => ts.Fixture)
                     .ToListAsync();
-                
-                logger.LogInformation("📦 Loaded {Count} test cases from database", testCases.Count);
+
+                logger.LogInformation(
+                    "📦 Loaded {Count} test cases from database",
+                    testCases.Count
+                );
 
                 // Group test cases by test suite to include fixture info
                 var testSuiteGroups = testCases
@@ -338,7 +344,7 @@ public class TestRunsController : ControllerBase
                         var firstTestCase = g.First();
                         var testSuite = firstTestCase.TestSuite;
                         var fixture = testSuite?.Fixture;
-                        
+
                         return new
                         {
                             id = testSuite?.Id,
@@ -346,29 +352,33 @@ public class TestRunsController : ControllerBase
                             fixtureId = fixture?.Id,
                             pageUrl = fixture?.PageUrl ?? "about:blank",
                             testCases = g.Select(tc =>
-                            {
-                                var stepsJson = tc.Steps?.RootElement.GetRawText();
-                                return new
                                 {
-                                    id = tc.Id,
-                                    name = tc.Name,
-                                    testType = tc.TestType.ToString().ToLower(),
-                                    steps = stepsJson != null
-                                        ? System.Text.Json.JsonSerializer.Deserialize<object>(stepsJson)
-                                        : null,
-                                    scriptText = tc.ScriptText,
-                                    testDataSets = tc
-                                        .TestDataSets.Where(d => d.IsActive)
-                                        .Select(d => new
-                                        {
-                                            id = d.Id,
-                                            name = d.Name,
-                                            data = System.Text.Json.JsonSerializer.Deserialize<object>(
-                                                d.Data.RootElement.GetRawText()
-                                            ),
-                                        }),
-                                };
-                            }).Cast<object>().ToList(),
+                                    var stepsJson = tc.Steps?.RootElement.GetRawText();
+                                    return new
+                                    {
+                                        id = tc.Id,
+                                        name = tc.Name,
+                                        testType = tc.TestType.ToString().ToLower(),
+                                        steps = stepsJson != null
+                                            ? System.Text.Json.JsonSerializer.Deserialize<object>(
+                                                stepsJson
+                                            )
+                                            : null,
+                                        scriptText = tc.ScriptText,
+                                        testDataSets = tc
+                                            .TestDataSets.Where(d => d.IsActive)
+                                            .Select(d => new
+                                            {
+                                                id = d.Id,
+                                                name = d.Name,
+                                                data = System.Text.Json.JsonSerializer.Deserialize<object>(
+                                                    d.Data.RootElement.GetRawText()
+                                                ),
+                                            }),
+                                    };
+                                })
+                                .Cast<object>()
+                                .ToList(),
                         };
                     })
                     .Cast<object>()
@@ -387,12 +397,18 @@ public class TestRunsController : ControllerBase
                     testCases = new List<object>(),
                 };
 
-                logger.LogInformation("🚀 Sending payload to TestRunner at http://localhost:4000/run-tests");
-                logger.LogInformation("📋 Payload: {Payload}", System.Text.Json.JsonSerializer.Serialize(payload));
-                
-                var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+                logger.LogInformation(
+                    "🚀 Sending payload to TestRunner at http://localhost:4000/run-tests"
+                );
+                logger.LogInformation(
+                    "📋 Payload: {Payload}",
+                    System.Text.Json.JsonSerializer.Serialize(payload)
+                );
+
+                var httpClientFactory =
+                    scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
                 var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-                
+
                 var client = httpClientFactory.CreateClient("TestRunnerClient");
                 client.DefaultRequestHeaders.Add("x-api-key", config["TestRunner:ApiKey"] ?? "");
 
@@ -400,7 +416,7 @@ public class TestRunsController : ControllerBase
                     "http://localhost:4000/run-tests",
                     payload
                 );
-                
+
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();

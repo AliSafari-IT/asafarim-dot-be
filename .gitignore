@@ -121,7 +121,8 @@ yarn.lock
 pnpm-lock.yaml
 
 apis/TestRunner/temp-tests/*
-
+apis/TestAutomation.Api/IMPLEMENTATION_NOTES.md
+apis/TestRunner/test-browser-launch.js
 # Ignore .env and appsettings files
 appsettings*.json
 launchSettings*.json
@@ -131,5 +132,4 @@ launchSettings*.json
 deploy-production.sh
 nul
 
-apis/TestAutomation.Api/IMPLEMENTATION_NOTES.md
-apis/TestRunner/test-browser-launch.js
+
