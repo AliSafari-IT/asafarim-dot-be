@@ -178,11 +178,13 @@ builder.Services.AddCors(options =>
         {
             if (builder.Environment.IsDevelopment())
             {
-                // Allow any origin in dev to simplify local subdomain testing
+                // Allow UI, TestRunner, and production origins
                 policy
                     .WithOrigins(
-                        "http://testora.asafarim.local:5180",
-                        "https://testora.asafarim.be"
+                        "http://testora.asafarim.local:5180",    // Frontend UI
+                        "http://localhost:4000",                  // TestRunner service
+                        "http://testora.asafarim.local:5200",    // API itself (for TestRunner)
+                        "https://testora.asafarim.be"            // Production
                     )
                     .AllowAnyHeader()
                     .AllowAnyMethod()

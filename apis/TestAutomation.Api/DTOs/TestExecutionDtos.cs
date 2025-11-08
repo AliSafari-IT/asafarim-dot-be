@@ -34,6 +34,10 @@ public class TestRunDto
     public int SkippedTests { get; set; }
     public double? SuccessRate { get; set; }
     public List<TestResultDto>? Results { get; set; }
+    public Guid? CreatedById { get; set; }
+    public Guid? UpdatedById { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
 
 public class TestResultDto
@@ -43,8 +47,12 @@ public class TestResultDto
     public Guid? TestCaseId { get; set; }
     public string? TestCaseName { get; set; }
     public Guid? TestDataSetId { get; set; }
-    public string? TestDataSetName { get; set; }
+    public Guid? TestSuiteId { get; set; }
+    public Guid? FixtureId { get; set; }
+    public Guid? FunctionalRequirementId { get; set; }
+    public Guid? ExecutedById { get; set; }
     public string Status { get; set; } = string.Empty;
+    public string? TestDataSetName { get; set; }
     public int? DurationMs { get; set; }
     public string? ErrorMessage { get; set; }
     public string? StackTrace { get; set; }

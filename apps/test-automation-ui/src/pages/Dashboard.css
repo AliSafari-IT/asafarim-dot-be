@@ -65,7 +65,6 @@
 
 /* KPI Card Base */
 .kpi-card {
-  background: var(--color-surface);
   border-radius: var(--radius-md);
   padding: var(--space-4);
   border: 1px solid var(--color-border);
@@ -881,66 +880,4 @@
 .status-pending {
   background: #e5e7eb;
   color: #374151;
-}
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .dashboard {
-    background: var(--color-neutral-950, #0f172a);
-  }
-
-  .kpi-card,
-  .analytics-card,
-  .recent-runs {
-    background: var(--color-neutral-800, #1e293b);
-    border-color: var(--color-neutral-700, #334155);
-  }
-
-  .kpi-card:hover,
-  .analytics-card:hover {
-    border-color: var(--color-neutral-600, #475569);
-  }
-
-  .dashboard-title {
-    color: var(--color-neutral-50, #f1f5f9);
-  }
-
-  .dashboard-subtitle,
-  .kpi-title,
-  .card-period,
-  .bar-label {
-    color: var(--color-neutral-300, #cbd5e1);
-  }
-
-  .kpi-value,
-  .run-name-text,
-  .card-header h3 {
-    color: var(--color-neutral-50, #f1f5f9);
-  }
-
-  .table-header {
-    background: var(--color-neutral-950, #0f172a);
-    color: var(--color-neutral-300, #cbd5e1);
-  }
-
-  .table-row:hover {
-    background: var(--color-neutral-800, #1e293b);
-  }
-
-  .bar-container {
-    background: var(--color-neutral-700, #334155);
-  }
-
-  .card-header {
-    border-bottom-color: var(--color-neutral-700, #334155);
-  }
-
-  .section-header {
-    border-bottom-color: var(--color-neutral-700, #334155);
-  }
-
-  .table-header,
-  .table-row {
-    border-bottom-color: var(--color-neutral-700, #334155);
-  }
 }

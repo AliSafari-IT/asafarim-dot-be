@@ -33,8 +33,11 @@ interface TestRun {
 
 export default function TestRunPage() {
   const { token } = useAuth();
-  const [suites, setSuites] = useState<TestSuite[]>([]);
+  const [allSuites, setAllSuites] = useState<TestSuite[]>([]); // Store all suites
+  const [suites, setSuites] = useState<TestSuite[]>([]); // Filtered suites to display
   const [selectedSuiteIds, setSelectedSuiteIds] = useState<string[]>([]);
+  const [selectedFunctionalRequirementId, setSelectedFunctionalRequirementId] = useState<string>('');
+  const [functionalRequirements, setFunctionalRequirements] = useState<any[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [runId, setRunId] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
@@ -48,20 +51,55 @@ export default function TestRunPage() {
   });
   const navigate = useNavigate();
 
-  // Fetch test suites and run history on page load
+  // Fetch test suites, functional requirements, and run history on page load
   useEffect(() => {
     const fetchSuites = async () => {
       try {
         const response = await api.get('/api/test-suites');
-        setSuites(response.data || []);
+        const suitesData = response.data || [];
+        setAllSuites(suitesData);
+        setSuites(suitesData); // Initially show all suites
       } catch (error) {
         toast.error('Failed to fetch test suites');
         console.error(error);
       }
     };
+    
+    const fetchFunctionalRequirements = async () => {
+      try {
+        const response = await api.get('/api/functional-requirements');
+        setFunctionalRequirements(response.data || []);
+      } catch (error) {
+        console.error('Failed to fetch functional requirements:', error);
+      }
+    };
+    
     fetchSuites();
+    fetchFunctionalRequirements();
     fetchRunHistory();
   }, []);
+
+  // Filter test suites when functional requirement changes
+  useEffect(() => {
+    if (!selectedFunctionalRequirementId) {
+      // No FR selected, show all suites
+      setSuites(allSuites);
+      setSelectedSuiteIds([]); // Clear selection when filter changes
+    } else {
+      // FR selected, fetch filtered suites
+      const fetchFilteredSuites = async () => {
+        try {
+          const response = await api.get(`/api/test-suites?functionalRequirementId=${selectedFunctionalRequirementId}`);
+          setSuites(response.data || []);
+          setSelectedSuiteIds([]); // Clear selection when filter changes
+        } catch (error) {
+          console.error('Failed to fetch filtered test suites:', error);
+          toast.error('Failed to filter test suites');
+        }
+      };
+      fetchFilteredSuites();
+    }
+  }, [selectedFunctionalRequirementId, allSuites]);
 
   // Setup SignalR connection
   useEffect(() => {
@@ -166,7 +204,8 @@ export default function TestRunPage() {
         runName: `Manual Run - ${new Date().toLocaleString()}`,
         environment: 'Development',
         browser: 'chrome',
-        testSuiteIds: selectedSuiteIds
+        testSuiteIds: selectedSuiteIds,
+        functionalRequirementId: selectedFunctionalRequirementId || null
       });
 
       const newRunId = response.data.id;
@@ -232,6 +271,32 @@ export default function TestRunPage() {
         <div className="test-run-grid">
           {/* Test Suite Selector */}
           <div className="test-run-sidebar">
+            {/* Functional Requirement Selector */}
+            <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--color-surface)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>
+                Functional Requirement (Optional)
+              </label>
+              <select
+                value={selectedFunctionalRequirementId}
+                onChange={(e) => setSelectedFunctionalRequirementId(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  borderRadius: '4px',
+                  border: '1px solid var(--color-border)',
+                  background: 'var(--color-background)',
+                  color: 'var(--color-text-primary)'
+                }}
+              >
+                <option value="">-- Select Functional Requirement --</option>
+                {functionalRequirements.map((fr) => (
+                  <option key={fr.id} value={fr.id}>
+                    {fr.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
             <TestSuiteSelector
               suites={suites}
               selectedSuites={selectedSuiteIds}
