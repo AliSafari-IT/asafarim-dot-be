@@ -80,6 +80,11 @@ export function TestRunDetailsPage() {
 
         if (resultsResponse.ok) {
           const resultsData = await resultsResponse.json();
+          console.log("Fetched results from API:", resultsData);
+          console.log("Results count:", resultsData.length);
+          if (resultsData.length > 0) {
+            console.log("First result status:", resultsData[0].status);
+          }
           setResults(resultsData);
         }
       } catch (err: any) {
@@ -184,12 +189,14 @@ export function TestRunDetailsPage() {
     if (!id) return;
 
     try {
+      const token = localStorage.getItem("auth_token");
       const response = await fetch(
         `${API_BASE}/api/test-runs/${id}/rerun-failed`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           credentials: "include",
         }
@@ -198,8 +205,18 @@ export function TestRunDetailsPage() {
       if (response.ok) {
         const data = await response.json();
         navigate(`/test-runs/${data.runId}`);
+      } else if (response.status === 400) {
+        const error = await response.text();
+        if (error.includes("No failed tests to rerun")) {
+          alert("There are no failed tests to rerun.");
+        } else {
+          console.error("Rerun failed:", error);
+          alert(`Failed to create rerun: ${error}`);
+        }
       } else {
-        alert("Failed to create rerun");
+        const error = await response.text();
+        console.error("Rerun failed:", error);
+        alert(`Failed to create rerun: ${error}`);
       }
     } catch (err) {
       console.error("Failed to rerun failed tests:", err);
@@ -265,7 +282,21 @@ export function TestRunDetailsPage() {
     return <div className="error">Test run not found</div>;
   }
 
-  const filteredResults = results;
+  console.log("Current filter:", filter);
+  console.log("All results:", results);
+  console.log(
+    "Filtered results:",
+    results.filter(
+      (result) => result.status.toLowerCase() === filter.toLowerCase()
+    )
+  );
+
+  const filteredResults =
+    filter === "all"
+      ? results
+      : results.filter(
+          (result) => result.status.toLowerCase() === filter.toLowerCase()
+        );
 
   return (
     <div className="test-run-details-page" data-testid="test-run-details-page">
@@ -362,9 +393,15 @@ export function TestRunDetailsPage() {
             onChange={(e) => setFilter(e.target.value as FilterStatus)}
             data-testid="filter-select"
           >
-            <option value="all" data-testid="filter-all">All Tests ({results.length})</option>
-            <option value="passed" data-testid="filter-passed">Passed Only ({testRun.passedTests})</option>
-            <option value="failed" data-testid="filter-failed">Failed Only ({testRun.failedTests})</option>
+            <option value="all" data-testid="filter-all">
+              All Tests ({results.length})
+            </option>
+            <option value="passed" data-testid="filter-passed">
+              Passed Only ({testRun.passedTests})
+            </option>
+            <option value="failed" data-testid="filter-failed">
+              Failed Only ({testRun.failedTests})
+            </option>
             <option value="skipped" data-testid="filter-skipped">
               Skipped Only ({testRun.skippedTests})
             </option>

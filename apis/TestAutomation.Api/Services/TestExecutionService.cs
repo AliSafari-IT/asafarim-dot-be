@@ -46,6 +46,10 @@ public class TestExecutionService : ITestExecutionService
             StartedAt = DateTime.UtcNow,
             ExecutedById = Guid.TryParse(userId, out var uid) ? uid : null,
             TriggerType = TriggerType.Manual,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            CreatedById = Guid.TryParse(userId, out var uidc) ? uidc : null,
+            UpdatedById = Guid.TryParse(userId, out var uidu) ? uidu : null,
         };
 
         _db.TestRuns.Add(run);
@@ -214,6 +218,10 @@ public class TestExecutionService : ITestExecutionService
             StartedAt = run.StartedAt,
             ExecutedBy = userId,
             TriggerType = run.TriggerType.ToString(),
+            CreatedById = run.CreatedById,
+            UpdatedById = run.UpdatedById,
+            CreatedAt = run.CreatedAt,
+            UpdatedAt = run.UpdatedAt,
         };
     }
 
@@ -260,6 +268,10 @@ public class TestExecutionService : ITestExecutionService
             PassedTests = run.TestResults.Count(tr => tr.Status == TestStatus.Passed),
             FailedTests = run.TestResults.Count(tr => tr.Status == TestStatus.Failed),
             SkippedTests = run.TestResults.Count(tr => tr.Status == TestStatus.Skipped),
+            CreatedById = run.CreatedById,
+            UpdatedById = run.UpdatedById,
+            CreatedAt = run.CreatedAt,
+            UpdatedAt = run.UpdatedAt,
         };
     }
 
@@ -282,6 +294,10 @@ public class TestExecutionService : ITestExecutionService
                 StartedAt = r.StartedAt,
                 ExecutedBy = r.ExecutedById?.ToString(),
                 TriggerType = r.TriggerType.ToString(),
+                CreatedById = r.CreatedById,
+                UpdatedById = r.UpdatedById,
+                CreatedAt = r.CreatedAt,
+                UpdatedAt = r.UpdatedAt,
             })
             .ToList();
     }
@@ -309,6 +325,10 @@ public class TestExecutionService : ITestExecutionService
                 PassedTests = r.PassedTests,
                 FailedTests = r.FailedTests,
                 SkippedTests = r.SkippedTests,
+                CreatedById = r.CreatedById,
+                UpdatedById = r.UpdatedById,
+                CreatedAt = r.CreatedAt,
+                UpdatedAt = r.UpdatedAt,
             })
             .ToList();
     }
@@ -427,9 +447,124 @@ public class TestExecutionService : ITestExecutionService
         );
     }
 
-    public Task ProcessTestResultAsync(TestResultDto testResult)
+    public async Task ProcessTestResultAsync(TestResultDto testResultDto)
     {
-        // Will be used by webhook or SignalR to persist individual results during run
-        throw new NotImplementedException();
+        // Find the test run
+        var testRun = await _db.TestRuns.FindAsync(testResultDto.TestRunId);
+        if (testRun == null)
+        {
+            _logger.LogWarning("Test run {TestRunId} not found", testResultDto.TestRunId);
+            return;
+        }
+
+        // Parse status from string to enum
+        if (!Enum.TryParse<TestStatus>(testResultDto.Status, true, out var status))
+        {
+            _logger.LogWarning("Invalid test status: {Status}", testResultDto.Status);
+            return;
+        }
+
+        // Map DTO to entity
+        var testResult = new TestResult
+        {
+            Id = testResultDto.Id != Guid.Empty ? testResultDto.Id : Guid.NewGuid(),
+            TestRunId = testResultDto.TestRunId,
+            TestCaseId = testResultDto.TestCaseId,
+            TestDataSetId = testResultDto.TestDataSetId,
+            TestSuiteId = testResultDto.TestSuiteId,
+            FixtureId = testResultDto.FixtureId,
+            FunctionalRequirementId = testResultDto.FunctionalRequirementId,
+            Status = status,
+            DurationMs = testResultDto.DurationMs,
+            ErrorMessage = testResultDto.ErrorMessage,
+            StackTrace = testResultDto.StackTrace,
+            RunAt = testResultDto.RunAt == default ? DateTime.UtcNow : testResultDto.RunAt,
+            ExecutedById = testResultDto.ExecutedById,
+        };
+
+        // Hydrate suite/fixture from TestCase if needed
+        if (!testResult.TestSuiteId.HasValue || !testResult.FixtureId.HasValue)
+        {
+            if (testResult.TestCaseId.HasValue)
+            {
+                var tc = await _db.TestCases.Include(tc => tc.TestSuite)
+                                            .FirstOrDefaultAsync(tc => tc.Id == testResult.TestCaseId.Value);
+                if (tc != null)
+                {
+                    testResult.TestSuiteId ??= tc.TestSuiteId;
+                    testResult.FixtureId ??= tc.TestSuite?.FixtureId;
+                }
+            }
+        }
+
+        // Handle JSON data
+        if (testResultDto.Screenshots != null && testResultDto.Screenshots.Any())
+        {
+            testResult.Screenshots = JsonDocument.Parse(
+                JsonSerializer.Serialize(testResultDto.Screenshots)
+            );
+        }
+
+        if (testResultDto.JsonReport != null)
+        {
+            testResult.JsonReport = JsonDocument.Parse(
+                JsonSerializer.Serialize(testResultDto.JsonReport)
+            );
+        }
+
+        // Add to database
+        _db.TestResults.Add(testResult);
+
+        // Update test run counters
+        testRun.UpdatedAt = DateTime.UtcNow;
+        testRun.UpdatedById = testResult.ExecutedById;
+
+        switch (testResult.Status)
+        {
+            case TestStatus.Passed:
+                testRun.PassedTests++;
+                break;
+            case TestStatus.Failed:
+                testRun.FailedTests++;
+                break;
+            case TestStatus.Skipped:
+                testRun.SkippedTests++;
+                break;
+        }
+
+        testRun.TotalTests = testRun.PassedTests + testRun.FailedTests + testRun.SkippedTests;
+
+        // Save changes
+        await _db.SaveChangesAsync();
+
+        // Notify clients via SignalR
+        await _hubContext
+            .Clients.Group($"testrun-{testRun.Id}")
+            .SendAsync(
+                "TestResultAdded",
+                new
+                {
+                    id = testResult.Id,
+                    testRunId = testResult.TestRunId,
+                    testCaseId = testResult.TestCaseId,
+                    testCaseName = testResult.TestCase?.Name,
+                    status = testResult.Status.ToString(),
+                    durationMs = testResult.DurationMs,
+                    errorMessage = testResult.ErrorMessage,
+                    stackTrace = testResult.StackTrace,
+                    runAt = testResult.RunAt,
+                    hasJsonReport = testResult.JsonReport != null,
+                    jsonReport = testResult.JsonReport != null
+                        ? JsonSerializer.Serialize(testResult.JsonReport)
+                        : null,
+                }
+            );
+
+        _logger.LogInformation(
+            "Processed test result {TestResultId} for test run {TestRunId} with status {Status}",
+            testResult.Id,
+            testResult.TestRunId,
+            testResult.Status
+        );
     }
 }

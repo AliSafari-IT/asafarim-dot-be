@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -99,88 +100,126 @@ public class RunnerWebhookController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("result")] // Called by Node runner per test case
+    [HttpPost("result")]
     public async Task<IActionResult> AddResult([FromBody] RunnerTestResultDto dto)
     {
-        if (!Guid.TryParse(dto.RunId, out var runId))
-            return BadRequest();
-        
-        // Load test run with related entities
-        var run = await _db.TestRuns
-            .Include(r => r.FunctionalRequirement)
-            .FirstOrDefaultAsync(r => r.Id == runId);
-        if (run == null)
-            return NotFound();
+        try
+        {
+            _logger.LogInformation("📥 Result webhook received: {@Dto}", dto);
 
-        // Try to match test case by name if TestCaseId not provided
-        Guid? testCaseId = null;
-        Guid? testSuiteId = null;
-        Guid? fixtureId = null;
-        
-        if (Guid.TryParse(dto.TestCaseId, out var tcid))
-        {
-            testCaseId = tcid;
-        }
-        else if (!string.IsNullOrEmpty(dto.TestCaseName))
-        {
-            // Try to find test case by name
-            var testCase = await _db.TestCases
-                .Include(tc => tc.TestSuite)
-                .ThenInclude(ts => ts.Fixture)
-                .FirstOrDefaultAsync(tc => tc.Name == dto.TestCaseName);
-            
-            if (testCase != null)
+            if (string.IsNullOrEmpty(dto.RunId))
             {
-                testCaseId = testCase.Id;
-                testSuiteId = testCase.TestSuiteId;
-                fixtureId = testCase.TestSuite?.FixtureId;
+                _logger.LogError("❌ RunId is null or empty");
+                return BadRequest("RunId is required");
             }
-        }
 
-        var result = new TestResult
-        {
-            Id = Guid.NewGuid(),
-            TestRunId = run.Id,
-            TestCaseId = testCaseId,
-            TestSuiteId = testSuiteId,
-            FixtureId = fixtureId,
-            FunctionalRequirementId = run.FunctionalRequirementId,
-            ExecutedById = run.ExecutedById,
-            Status = Enum.TryParse<TestStatus>(dto.Status, true, out var st)
-                ? st
-                : TestStatus.Error,
-            DurationMs = dto.DurationMs,
-            ErrorMessage = dto.ErrorMessage,
-            StackTrace = dto.StackTrace,
-            JsonReport =
-                dto.JsonReport == null
-                    ? null
-                    : System.Text.Json.JsonDocument.Parse(
-                        System.Text.Json.JsonSerializer.Serialize(dto.JsonReport)
-                    ),
-            RunAt = DateTime.UtcNow,
-        };
-        _db.TestResults.Add(result);
-        await _db.SaveChangesAsync();
+            if (!Guid.TryParse(dto.RunId, out var runId))
+            {
+                _logger.LogError("❌ Invalid RunId format: {RunId}", dto.RunId);
+                return BadRequest("Invalid RunId format");
+            }
+            _logger.LogInformation("🔍 Looking for test run: {RunId}", runId);
 
-        // Broadcast individual test result to connected clients
-        _logger.LogInformation($"📤 Broadcasting TestResultAdded to group testrun-{runId}");
-        await _hubContext
-            .Clients.Group($"testrun-{runId}")
-            .SendAsync(
-                "TestResultAdded",
-                new
-                {
-                    id = result.Id,
-                    testRunId = result.TestRunId,
-                    testCaseId = result.TestCaseId,
-                    status = result.Status.ToString(),
-                    durationMs = result.DurationMs,
-                    errorMessage = result.ErrorMessage,
-                    runAt = result.RunAt,
-                }
+            // Log the incoming DTO for debugging
+            _logger.LogInformation(
+                "📥 Processing test result for RunId: {RunId}, TestCaseName: {TestCaseName}, Status: {Status}",
+                dto.RunId,
+                dto.TestCaseName,
+                dto.Status
             );
 
-        return Ok(new { id = result.Id });
+            // Load test run with related entities
+            var run = await _db
+                .TestRuns.Include(r => r.FunctionalRequirement)
+                .FirstOrDefaultAsync(r => r.Id == runId);
+
+            if (run == null)
+            {
+                _logger.LogError("❌ Test run not found: {RunId}", runId);
+                return NotFound($"Test run not found: {runId}");
+            }
+
+            // Try to match test case by name if TestCaseId not provided
+            Guid? testCaseId = null;
+            Guid? testSuiteId = null;
+            Guid? fixtureId = null;
+
+            if (Guid.TryParse(dto.TestCaseId, out var tcid))
+            {
+                testCaseId = tcid;
+                _logger.LogInformation("✅ Using provided TestCaseId: {TestCaseId}", testCaseId);
+            }
+            else if (!string.IsNullOrEmpty(dto.TestCaseName))
+            {
+                // Try to find test case by name
+                var testCase = await _db
+                    .TestCases.Include(tc => tc.TestSuite)
+                    .ThenInclude(ts => ts.Fixture)
+                    .FirstOrDefaultAsync(tc => tc.Name == dto.TestCaseName);
+
+                if (testCase != null)
+                {
+                    testCaseId = testCase.Id;
+                    testSuiteId = testCase.TestSuiteId;
+                    fixtureId = testCase.TestSuite?.FixtureId;
+                    _logger.LogInformation(
+                        "✅ Found test case by name: {TestCaseName} -> {TestCaseId}",
+                        dto.TestCaseName,
+                        testCaseId
+                    );
+                }
+                else
+                {
+                    _logger.LogWarning(
+                        "⚠️ Test case not found by name: {TestCaseName}",
+                        dto.TestCaseName
+                    );
+                }
+            }
+            else
+            {
+                _logger.LogWarning("⚠️ No TestCaseId or TestCaseName provided in the request");
+            }
+
+            // Parse optional test data set id
+            Guid? testDataSetId = null;
+            if (!string.IsNullOrWhiteSpace(dto.TestDataSetId) && Guid.TryParse(dto.TestDataSetId, out var dsid))
+            {
+                testDataSetId = dsid;
+            }
+
+            // Parse status (validated again in service)
+            var statusString = string.IsNullOrWhiteSpace(dto.Status) ? "error" : dto.Status;
+
+            var mapped = new TestResultDto
+            {
+                Id = Guid.Empty,
+                TestRunId = run.Id,
+                TestCaseId = testCaseId,
+                TestSuiteId = testSuiteId,
+                FixtureId = fixtureId,
+                FunctionalRequirementId = run.FunctionalRequirementId,
+                ExecutedById = run.ExecutedById,
+                Status = statusString,
+                DurationMs = dto.DurationMs,
+                ErrorMessage = dto.ErrorMessage,
+                StackTrace = dto.StackTrace,
+                JsonReport = dto.JsonReport,
+                RunAt = DateTime.UtcNow,
+                TestCaseName = dto.TestCaseName,
+                TestDataSetId = testDataSetId,
+            };
+
+            // Delegate persistence and notifications to the service for consistency
+            await _testExecutionService.ProcessTestResultAsync(mapped);
+
+            // Return success response
+            return Ok(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Unexpected error in AddResult");
+            return StatusCode(500, "An unexpected error occurred");
+        }
     }
 }

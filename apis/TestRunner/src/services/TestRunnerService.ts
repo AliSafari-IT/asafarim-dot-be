@@ -48,13 +48,20 @@ export class TestRunnerService {
 
     private async sendWebhookUpdate(runId: string, update: any, retries = 3) {
         const apiUrl = process.env.API_URL || 'http://localhost:5200';
-        
+
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
-                logger.info(`📡 Sending webhook update to ${apiUrl}/api/runner-webhook/status (attempt ${attempt}/${retries})`, { runId, status: update.status });
+                logger.info(`📡 Sending webhook update to ${apiUrl}/api/runner-webhook/status (attempt ${attempt}/${retries})`, {
+                    runId,
+                    status: update.status
+                });
+
                 const response = await fetch(`${apiUrl}/api/runner-webhook/status`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': 'test-runner-api-key-2024' // Add API key for authentication
+                    },
                     body: JSON.stringify({
                         runId,
                         status: update.status || 'running',
@@ -64,7 +71,7 @@ export class TestRunnerService {
                     }),
                     signal: AbortSignal.timeout(10000) // 10 second timeout
                 });
-                
+
                 if (!response.ok) {
                     logger.warn(`❌ Webhook update failed: ${response.status}`, { runId, attempt });
                     if (attempt < retries) {
@@ -76,29 +83,40 @@ export class TestRunnerService {
                     return; // Success, exit
                 }
             } catch (err: any) {
-                logger.warn(`❌ Failed to send webhook update (attempt ${attempt}/${retries})`, { error: err.message, runId });
+                logger.warn(`❌ Failed to send webhook update (attempt ${attempt}/${retries})`, {
+                    error: err.message,
+                    runId
+                });
                 if (attempt < retries) {
                     await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
                     continue;
                 }
             }
         }
-        
+
         logger.error(`❌ All webhook update attempts failed after ${retries} retries`, { runId });
     }
 
     private async sendTestResult(runId: string, result: any, retries = 3) {
         const apiUrl = process.env.API_URL || 'http://localhost:5200';
-        
+
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
-                logger.info(`📊 Sending test result to ${apiUrl}/api/runner-webhook/result (attempt ${attempt}/${retries})`, { runId, testName: result.name, status: result.status });
+                logger.info(`📊 Sending test result to ${apiUrl}/api/runner-webhook/result (attempt ${attempt}/${retries})`, {
+                    runId,
+                    testName: result.testCaseName || result.name,
+                    status: result.status
+                });
+
                 const response = await fetch(`${apiUrl}/api/runner-webhook/result`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': 'test-runner-api-key-2024' // Add API key for authentication
+                    },
                     body: JSON.stringify({
-                        runId,
-                        testCaseId: null, // Will be matched by name in backend
+                        runId: runId,
+                        testCaseName: result.testCaseName || result.name,
                         status: result.status,
                         durationMs: result.durationMs,
                         errorMessage: result.errorMessage,
@@ -107,27 +125,43 @@ export class TestRunnerService {
                     }),
                     signal: AbortSignal.timeout(10000) // 10 second timeout
                 });
-                
+
                 if (!response.ok) {
-                    logger.warn(`❌ Test result webhook failed: ${response.status}`, { runId, testName: result.name, attempt });
+                    const errorText = await response.text();
+                    logger.warn(`❌ Test result webhook failed: ${response.status} - ${errorText}`, {
+                        runId,
+                        testName: result.testCaseName || result.name,
+                        attempt
+                    });
                     if (attempt < retries) {
                         await new Promise(resolve => setTimeout(resolve, 500 * attempt));
                         continue;
                     }
                 } else {
-                    logger.info(`✅ Test result sent successfully`, { runId, testName: result.name, attempt });
+                    logger.info(`✅ Test result sent successfully`, {
+                        runId,
+                        testName: result.testCaseName || result.name,
+                        attempt
+                    });
                     return; // Success
                 }
             } catch (err: any) {
-                logger.warn(`❌ Failed to send test result (attempt ${attempt}/${retries})`, { error: err.message, runId, testName: result.name });
+                logger.warn(`❌ Failed to send test result (attempt ${attempt}/${retries})`, {
+                    error: err.message,
+                    runId,
+                    testName: result.testCaseName || result.name
+                });
                 if (attempt < retries) {
                     await new Promise(resolve => setTimeout(resolve, 500 * attempt));
                     continue;
                 }
             }
         }
-        
-        logger.error(`❌ All test result attempts failed after ${retries} retries`, { runId, testName: result.name });
+
+        logger.error(`❌ All test result send attempts failed after ${retries} retries`, {
+            runId,
+            testName: result.testCaseName || result.name
+        });
     }
 
     private async createTempDir() {
@@ -139,7 +173,8 @@ export class TestRunnerService {
     private async getTestCafeRunner(): Promise<any> {
         if (!this.testCafe) {
             logger.info('Creating new TestCafe instance');
-            this.testCafe = await createTestCafe('localhost');
+            // Try without hostname parameter to let TestCafe auto-detect
+            this.testCafe = await createTestCafe();
         }
         return this.testCafe.createRunner();
     }
@@ -155,11 +190,12 @@ export class TestRunnerService {
 
     async runGeneratedTestCafeFile(testSuiteId: string, fileContent: string, browser = 'chrome', providedRunId?: string) {
         const runId = providedRunId || nanoid();
-        
+        const apiUrl = process.env.API_URL || 'http://localhost:5200';
+
         // Count the number of test() calls in the file to get total tests
         const testMatches = fileContent.match(/test\s*\(/g);
         const totalTests = testMatches ? testMatches.length : 1;
-        
+
         const status: TestRunStatus = {
             runId,
             status: 'running',
@@ -188,41 +224,100 @@ export class TestRunnerService {
 
         try {
             const runner = await this.getTestCafeRunner();
-            
+
             // Track test results - use a temp file for JSON reporter
             const reportPath = path.join(this.tempDir, `${runId}-report.json`);
-            
+
             const failedCount = await runner
                 .src([filePath])
                 .browsers(browser)
                 .reporter('json', reportPath)
                 .run({ skipJsErrors: true });
-            
+
             // Read and parse the JSON report
             const testResults: any[] = [];
             try {
-                const reportContent = await fs.readFile(reportPath, 'utf8');
-                const report = JSON.parse(reportContent);
+                logger.info(`📄 Reading TestCafe report from: ${reportPath}`);
                 
+                // Check if report file exists
+                try {
+                    await fs.access(reportPath);
+                    logger.info(`✅ Report file exists at ${reportPath}`);
+                } catch {
+                    logger.warn(`⚠️ Report file does NOT exist at ${reportPath}`);
+                }
+                
+                const reportContent = await fs.readFile(reportPath, 'utf8');
+                logger.info(`📄 Report content length: ${reportContent.length} bytes`);
+                if (reportContent.length === 0) {
+                    logger.warn('⚠️ Report file is empty!');
+                } else {
+                    logger.info(`📄 Report content preview: ${reportContent.substring(0, 200)}`);
+                }
+
+                const report = JSON.parse(reportContent);
+                logger.info(`📊 Parsed report structure:`, {
+                    hasFixtures: !!report.fixtures,
+                    fixturesCount: report.fixtures?.length || 0,
+                    reportKeys: Object.keys(report)
+                });
+
                 if (report.fixtures) {
-                    report.fixtures.forEach((fixture: any) => {
-                        fixture.tests.forEach((test: any) => {
+                    report.fixtures.forEach((fixture: any, fixtureIndex: number) => {
+                        logger.info(`🔧 Processing fixture ${fixtureIndex}: ${fixture.name}, tests count: ${fixture.tests?.length || 0}`);
+                        fixture.tests.forEach((test: any, testIndex: number) => {
                             const hasErrors = test.errs && test.errs.length > 0;
-                            testResults.push({
+                            
+                            // Extract error message and stack trace
+                            let errorMessage = null;
+                            let stackTrace = null;
+                            
+                            if (hasErrors) {
+                                const err = test.errs[0];
+                                logger.info(`🔍 Full error object for ${test.name}:`, JSON.stringify(err, null, 2));
+                                
+                                // Try different error message fields
+                                errorMessage = err.errMsg || err.message || err.text || err.userAgent || 'Unknown error';
+                                
+                                // Try different stack trace fields
+                                if (err.callsite) {
+                                    stackTrace = JSON.stringify(err.callsite);
+                                } else if (err.stack) {
+                                    stackTrace = err.stack;
+                                } else {
+                                    stackTrace = JSON.stringify(err);
+                                }
+                            }
+                            
+                            const testResult = {
                                 name: test.name,
                                 status: hasErrors ? 'failed' : 'passed',
                                 durationMs: test.durationMs || 0,
-                                errorMessage: hasErrors ? test.errs[0].errMsg : null,
-                                stackTrace: hasErrors ? JSON.stringify(test.errs[0].callsite) : null
+                                errorMessage,
+                                stackTrace
+                            };
+                            testResults.push(testResult);
+                            logger.info(`✅ Added test result ${testIndex}: ${test.name} - ${testResult.status}`, {
+                                hasErrorMessage: !!testResult.errorMessage,
+                                hasStackTrace: !!testResult.stackTrace,
+                                errorMessagePreview: testResult.errorMessage?.substring(0, 100)
                             });
                         });
                     });
+                } else {
+                    logger.warn('⚠️ No fixtures found in report!');
                 }
-                
+
+                logger.info(`📊 Total test results collected: ${testResults.length}`);
+
                 // Clean up report file
-                await fs.unlink(reportPath).catch(() => {});
-            } catch (err) {
-                logger.warn('Failed to parse TestCafe report', { error: err });
+                await fs.unlink(reportPath).catch(() => { });
+            } catch (err: any) {
+                logger.error('❌ Failed to parse TestCafe report', {
+                    error: err.message,
+                    stack: err.stack,
+                    reportPath
+                });
             }
 
             const passedTests = totalTests - failedCount;
@@ -235,11 +330,14 @@ export class TestRunnerService {
             });
 
             // Send individual test results to webhook
+            logger.info(`🚀 Starting to send ${testResults.length} test results to API`);
+
+            if (testResults.length === 0) {
+                logger.warn('⚠️ No test results to send! testResults array is empty.');
+            }
+
             for (const result of testResults) {
-                await this.sendTestResult(runId, {
-                    ...result,
-                    testCaseName: result.name // Map name to testCaseName for backend
-                });
+                await this.sendTestResult(runId, result);
             }
 
             // Send final webhook update with results
@@ -321,27 +419,131 @@ export class TestRunnerService {
         const testFiles = await this.generateTestFiles(allCases, pageUrlMap);
 
         const runner = await this.getTestCafeRunner();
-        const browser = request.browser || 'chrome:headless';
+        const browser = request.browser || 'chrome';
         const start = Date.now();
+
+        // Setup JSON reporter to capture test results
+        const reportPath = path.join(this.tempDir, `${runId}-report.json`);
 
         try {
             logger.info('Running tests', this.context(runId, { total: allCases.length, browser }));
+            logger.info(`🔧 Test files to run: ${testFiles.join(', ')}`);
+            logger.info(`🌐 Browser: ${browser}`);
+            logger.info(`📊 Report path: ${reportPath}`);
 
-            const failedCount = await Promise.race([
-                runner.src(testFiles).browsers(browser).run({
+            logger.info('⏳ Starting TestCafe runner...');
+            logger.info(`📋 Runner configuration: browser=${browser}, files=${testFiles.length}, report=${reportPath}`);
+            
+            let failedCount: number;
+            try {
+                // Use browser directly without path specification
+                logger.info(`🔍 Launching browser: ${browser}`);
+                
+                failedCount = await runner.src(testFiles).browsers(browser).reporter('json', reportPath).run({
                     skipJsErrors: true,
                     selectorTimeout: 10000,
                     assertionTimeout: 10000,
-                }),
-                new Promise<number>((_, reject) =>
-                    setTimeout(() => reject(new Error('TestCafe timeout after 2 minutes')), 2 * 60 * 1000)
-                ),
-            ]);
+                    browserInitializationTimeout: 5 * 60 * 1000, // 5 minutes for browser init
+                });
+                
+                logger.info(`✅ TestCafe execution completed. Failed count: ${failedCount}`);
+            } catch (runError: any) {
+                logger.error('❌ TestCafe runner failed', {
+                    error: runError.message,
+                    stack: runError.stack,
+                    name: runError.name
+                });
+                throw runError;
+            }
+
+            // Parse JSON report and send individual test results
+            const testResults: any[] = [];
+            try {
+                logger.info(`📄 Reading TestCafe report from: ${reportPath}`);
+                const reportContent = await fs.readFile(reportPath, 'utf8');
+                logger.info(`📄 Report content length: ${reportContent.length} bytes`);
+
+                const report = JSON.parse(reportContent);
+                logger.info(`📊 Parsed report structure:`, {
+                    hasFixtures: !!report.fixtures,
+                    fixturesCount: report.fixtures?.length || 0,
+                    reportKeys: Object.keys(report)
+                });
+
+                if (report.fixtures) {
+                    report.fixtures.forEach((fixture: any, fixtureIndex: number) => {
+                        logger.info(`🔧 Processing fixture ${fixtureIndex}: ${fixture.name}, tests count: ${fixture.tests?.length || 0}`);
+                        fixture.tests.forEach((test: any, testIndex: number) => {
+                            const hasErrors = test.errs && test.errs.length > 0;
+                            
+                            // Extract error message and stack trace
+                            let errorMessage = null;
+                            let stackTrace = null;
+                            
+                            if (hasErrors) {
+                                const err = test.errs[0];
+                                logger.info(`🔍 Full error object for ${test.name}:`, JSON.stringify(err, null, 2));
+                                
+                                // Try different error message fields
+                                errorMessage = err.errMsg || err.message || err.text || err.userAgent || 'Unknown error';
+                                
+                                // Try different stack trace fields
+                                if (err.callsite) {
+                                    stackTrace = JSON.stringify(err.callsite);
+                                } else if (err.stack) {
+                                    stackTrace = err.stack;
+                                } else {
+                                    stackTrace = JSON.stringify(err);
+                                }
+                            }
+                            
+                            const testResult = {
+                                name: test.name,
+                                status: hasErrors ? 'failed' : 'passed',
+                                durationMs: test.durationMs || 0,
+                                errorMessage,
+                                stackTrace
+                            };
+                            testResults.push(testResult);
+                            logger.info(`✅ Added test result ${testIndex}: ${test.name} - ${testResult.status}`, {
+                                hasErrorMessage: !!testResult.errorMessage,
+                                hasStackTrace: !!testResult.stackTrace,
+                                errorMessagePreview: testResult.errorMessage?.substring(0, 100)
+                            });
+                        });
+                    });
+                } else {
+                    logger.warn('⚠️ No fixtures found in report!');
+                }
+
+                logger.info(`📊 Total test results collected: ${testResults.length}`);
+
+                // Clean up report file
+                await fs.unlink(reportPath).catch(() => { });
+            } catch (err: any) {
+                logger.error('❌ Failed to parse TestCafe report', {
+                    error: err.message,
+                    stack: err.stack,
+                    reportPath
+                });
+            }
+
+            // Send individual test results to webhook
+            const apiUrl = process.env.API_URL || 'http://localhost:5200';
+            logger.info(`🚀 Starting to send ${testResults.length} test results to API`);
+
+            if (testResults.length === 0) {
+                logger.warn('⚠️ No test results to send! testResults array is empty.');
+            }
+
+            for (const result of testResults) {
+                await this.sendTestResult(runId, result);
+            }
 
             status.status = failedCount > 0 ? 'failed' : 'completed';
             status.progress = 100;
-            await this.sendSignalRUpdate(runId, { 
-                status: status.status, 
+            await this.sendSignalRUpdate(runId, {
+                status: status.status,
                 progress: 100,
                 totalTests: allCases.length,
                 passedTests: allCases.length - failedCount,
@@ -360,10 +562,17 @@ export class TestRunnerService {
                 name: err.name,
                 timestamp: new Date().toISOString(),
             };
-            logger.error('Test run error', this.context(runId, { error: errorDetails }));
+            logger.error('❌ Test run error', this.context(runId, { error: errorDetails }));
+            logger.error('❌ Full error details:', {
+                message: err.message,
+                name: err.name,
+                code: err.code,
+                stack: err.stack?.substring(0, 1000),
+                toString: err.toString(),
+            });
             Object.assign(status, { status: 'failed', error: errorDetails });
-            await this.sendSignalRUpdate(runId, { 
-                status: 'failed', 
+            await this.sendSignalRUpdate(runId, {
+                status: 'failed',
                 error: errorDetails,
                 totalTests: allCases.length,
                 passedTests: 0,

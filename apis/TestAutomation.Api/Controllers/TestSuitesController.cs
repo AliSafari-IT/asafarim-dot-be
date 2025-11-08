@@ -29,11 +29,19 @@ public class TestSuitesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] Guid? fixtureId)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] Guid? fixtureId,
+        [FromQuery] Guid? functionalRequirementId
+    )
     {
-        var q = _db.TestSuites.AsQueryable();
+        var q = _db.TestSuites.Include(s => s.Fixture).AsQueryable();
+
         if (fixtureId.HasValue)
             q = q.Where(s => s.FixtureId == fixtureId);
+
+        if (functionalRequirementId.HasValue)
+            q = q.Where(s => s.Fixture.FunctionalRequirementId == functionalRequirementId);
+
         var items = await q.AsNoTracking().ToListAsync();
         return Ok(items);
     }
@@ -204,5 +212,95 @@ public class TestSuitesController : ControllerBase
                 generatedAt = testSuite.GeneratedAt,
             }
         );
+    }
+
+    // Run generated TestCafe file
+    [HttpPost("{id}/run-generated")]
+    [Authorize(Policy = "TesterOnly")]
+    public async Task<IActionResult> RunGeneratedTestCafeFile(
+        Guid id,
+        [FromQuery] string? browser = "chrome"
+    )
+    {
+        try
+        {
+            var testSuite = await _db.TestSuites.FindAsync(id);
+            if (testSuite == null)
+                return NotFound(new { message = "Test suite not found." });
+
+            if (string.IsNullOrEmpty(testSuite.GeneratedTestCafeFile))
+                return BadRequest(
+                    new
+                    {
+                        message = "No TestCafe file has been generated yet. Please generate the file first.",
+                    }
+                );
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+
+            // Create a test run record
+            var run = new TestRun
+            {
+                Id = Guid.NewGuid(),
+                RunName = $"Generated: {testSuite.Name}",
+                FunctionalRequirementId = null, // Generated runs don't have FR context
+                Environment = "local",
+                Browser = browser ?? "chrome",
+                Status = TestRunStatus.Running,
+                StartedAt = DateTime.UtcNow,
+                ExecutedById = Guid.TryParse(userId, out var uid) ? uid : null,
+                TriggerType = TriggerType.Manual,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                CreatedById = Guid.TryParse(userId, out var uidc) ? uidc : null,
+                UpdatedById = Guid.TryParse(userId, out var uidu) ? uidu : null,
+            };
+
+            _db.TestRuns.Add(run);
+            await _db.SaveChangesAsync();
+
+            // Call TestRunner service to execute the generated file
+            var httpClient = new HttpClient();
+            var testRunnerUrl = "http://localhost:4000"; // TODO: Move to config
+            httpClient.DefaultRequestHeaders.Add("x-api-key", "test-runner-api-key-2024"); // TODO: Move to config
+
+            var payload = new
+            {
+                testSuiteId = testSuite.Id.ToString(),
+                fileContent = testSuite.GeneratedTestCafeFile,
+                browser = browser ?? "chrome",
+                runId = run.Id.ToString(),
+            };
+
+            var response = await httpClient.PostAsJsonAsync(
+                $"{testRunnerUrl}/run-generated-file",
+                payload
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorText = await response.Content.ReadAsStringAsync();
+                return StatusCode(
+                    (int)response.StatusCode,
+                    new { message = $"Failed to start test run: {errorText}" }
+                );
+            }
+
+            return Ok(
+                new
+                {
+                    message = "Test run started successfully",
+                    runId = run.Id,
+                    testSuiteId = testSuite.Id,
+                    testSuiteName = testSuite.Name,
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(
+                new { message = $"Failed to run generated TestCafe file: {ex.Message}" }
+            );
+        }
     }
 }

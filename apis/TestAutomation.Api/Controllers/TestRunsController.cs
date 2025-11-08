@@ -14,10 +14,24 @@ namespace TestAutomation.Api.Controllers;
 public class TestRunsController : ControllerBase
 {
     private readonly TestAutomationDbContext _db;
+    private readonly ILogger<TestRunsController> _logger;
+    private readonly IConfiguration _config;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public TestRunsController(TestAutomationDbContext db)
+    public TestRunsController(
+        TestAutomationDbContext db,
+        ILogger<TestRunsController> logger,
+        IConfiguration config,
+        IHttpClientFactory httpClientFactory,
+        IServiceScopeFactory serviceScopeFactory
+    )
     {
         _db = db;
+        _logger = logger;
+        _config = config;
+        _httpClientFactory = httpClientFactory;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     [HttpGet]
@@ -30,7 +44,9 @@ public class TestRunsController : ControllerBase
             {
                 id = r.Id,
                 runName = r.RunName,
-                functionalRequirement = r.FunctionalRequirement != null ? r.FunctionalRequirement.Name : null,
+                functionalRequirement = r.FunctionalRequirement != null
+                    ? r.FunctionalRequirement.Name
+                    : null,
                 environment = r.Environment,
                 browser = r.Browser,
                 status = r.Status.ToString(),
@@ -40,7 +56,7 @@ public class TestRunsController : ControllerBase
                 passedTests = r.PassedTests,
                 failedTests = r.FailedTests,
                 skippedTests = r.SkippedTests,
-                successRate = r.TotalTests > 0 ? (double)r.PassedTests / r.TotalTests * 100 : 0
+                successRate = r.TotalTests > 0 ? (double)r.PassedTests / r.TotalTests * 100 : 0,
             })
             .ToListAsync();
 
@@ -85,9 +101,18 @@ public class TestRunsController : ControllerBase
     [HttpGet("{id}/results")]
     public async Task<IActionResult> GetResults(Guid id, [FromQuery] string? status = null)
     {
+        _logger.LogInformation(
+            "🔍 GetResults called for TestRunId: {TestRunId}, Status filter: {Status}",
+            id,
+            status ?? "all"
+        );
+
         var run = await _db.TestRuns.FindAsync(id);
         if (run == null)
+        {
+            _logger.LogWarning("❌ Test run {TestRunId} not found", id);
             return NotFound();
+        }
 
         var query = _db.TestResults.Include(r => r.TestCase).Where(r => r.TestRunId == id);
 
@@ -100,6 +125,12 @@ public class TestRunsController : ControllerBase
         }
 
         var results = await query.OrderBy(r => r.RunAt).ToListAsync();
+
+        _logger.LogInformation(
+            "✅ Found {Count} test results for TestRunId: {TestRunId}",
+            results.Count,
+            id
+        );
 
         return Ok(
             results.Select(r => new
@@ -232,6 +263,7 @@ public class TestRunsController : ControllerBase
         // Get failed test results from the original run
         var failedResults = await _db
             .TestResults.Include(r => r.TestCase)
+            .ThenInclude(tc => tc.TestSuite)
             .Where(r => r.TestRunId == id && r.Status == TestStatus.Failed)
             .ToListAsync();
 
@@ -239,6 +271,7 @@ public class TestRunsController : ControllerBase
             return BadRequest("No failed tests to rerun");
 
         // Create a new test run for the retry
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
         var newRun = new TestRun
         {
             Id = Guid.NewGuid(),
@@ -248,24 +281,153 @@ public class TestRunsController : ControllerBase
             Browser = originalRun.Browser,
             Status = TestRunStatus.Running,
             StartedAt = DateTime.UtcNow,
-            ExecutedById = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            ExecutedById = Guid.TryParse(userId, out var uid) ? uid : null,
             TriggerType = TriggerType.Manual,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            CreatedById = Guid.TryParse(userId, out var uidc) ? uidc : null,
+            UpdatedById = Guid.TryParse(userId, out var uidu) ? uidu : null,
         };
 
         _db.TestRuns.Add(newRun);
         await _db.SaveChangesAsync();
 
-        // Return the new run ID and failed test case IDs
+        // Get unique test case IDs
+        var testCaseIds = failedResults
+            .Where(r => r.TestCaseId.HasValue)
+            .Select(r => r.TestCaseId!.Value)
+            .Distinct()
+            .ToList();
+
+        // Start the test execution using TestExecutionService
+        var startRequest = new StartTestRunDto
+        {
+            RunName = newRun.RunName,
+            FunctionalRequirementId = newRun.FunctionalRequirementId,
+            Environment = newRun.Environment ?? "Development",
+            Browser = newRun.Browser ?? "chrome",
+            TestCaseIds = testCaseIds,
+        };
+
+        // Trigger test execution in background with new scope
+        _ = Task.Run(async () =>
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<TestAutomationDbContext>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<TestRunsController>>();
+            
+            try
+            {
+                logger.LogInformation("🔄 Starting background task to rerun {Count} failed test cases", testCaseIds.Count);
+                
+                // Build payload for TestRunner - include TestSuite and Fixture info
+                var testCases = await db
+                    .TestCases.Where(tc => testCaseIds.Contains(tc.Id))
+                    .Include(tc => tc.TestDataSets)
+                    .Include(tc => tc.TestSuite)
+                        .ThenInclude(ts => ts.Fixture)
+                    .ToListAsync();
+                
+                logger.LogInformation("📦 Loaded {Count} test cases from database", testCases.Count);
+
+                // Group test cases by test suite to include fixture info
+                var testSuiteGroups = testCases
+                    .GroupBy(tc => tc.TestSuiteId)
+                    .Select(g =>
+                    {
+                        var firstTestCase = g.First();
+                        var testSuite = firstTestCase.TestSuite;
+                        var fixture = testSuite?.Fixture;
+                        
+                        return new
+                        {
+                            id = testSuite?.Id,
+                            name = testSuite?.Name,
+                            fixtureId = fixture?.Id,
+                            pageUrl = fixture?.PageUrl ?? "about:blank",
+                            testCases = g.Select(tc =>
+                            {
+                                var stepsJson = tc.Steps?.RootElement.GetRawText();
+                                return new
+                                {
+                                    id = tc.Id,
+                                    name = tc.Name,
+                                    testType = tc.TestType.ToString().ToLower(),
+                                    steps = stepsJson != null
+                                        ? System.Text.Json.JsonSerializer.Deserialize<object>(stepsJson)
+                                        : null,
+                                    scriptText = tc.ScriptText,
+                                    testDataSets = tc
+                                        .TestDataSets.Where(d => d.IsActive)
+                                        .Select(d => new
+                                        {
+                                            id = d.Id,
+                                            name = d.Name,
+                                            data = System.Text.Json.JsonSerializer.Deserialize<object>(
+                                                d.Data.RootElement.GetRawText()
+                                            ),
+                                        }),
+                                };
+                            }).Cast<object>().ToList(),
+                        };
+                    })
+                    .Cast<object>()
+                    .ToList();
+
+                var payload = new
+                {
+                    runId = newRun.Id.ToString(),
+                    runName = newRun.RunName,
+                    functionalRequirementId = newRun.FunctionalRequirementId?.ToString(),
+                    environment = newRun.Environment,
+                    browser = newRun.Browser,
+                    apiUrl = _config["ApiBaseUrl"] ?? "http://localhost:5200",
+                    userId,
+                    testSuites = testSuiteGroups,
+                    testCases = new List<object>(),
+                };
+
+                logger.LogInformation("🚀 Sending payload to TestRunner at http://localhost:4000/run-tests");
+                logger.LogInformation("📋 Payload: {Payload}", System.Text.Json.JsonSerializer.Serialize(payload));
+                
+                var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+                var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+                
+                var client = httpClientFactory.CreateClient("TestRunnerClient");
+                client.DefaultRequestHeaders.Add("x-api-key", config["TestRunner:ApiKey"] ?? "");
+
+                var response = await client.PostAsJsonAsync(
+                    "http://localhost:4000/run-tests",
+                    payload
+                );
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    logger.LogError(
+                        "❌ Failed to start test runner for rerun: {StatusCode} - {Error}",
+                        response.StatusCode,
+                        errorContent
+                    );
+                }
+                else
+                {
+                    logger.LogInformation("✅ Successfully triggered test runner for rerun");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "❌ Error starting test runner for rerun");
+            }
+        });
+
+        // Return the new run ID
         return Ok(
             new
             {
                 runId = newRun.Id,
                 originalRunId = id,
-                testCaseIds = failedResults
-                    .Where(r => r.TestCaseId.HasValue)
-                    .Select(r => r.TestCaseId!.Value)
-                    .Distinct()
-                    .ToList(),
+                testCaseIds,
                 failedTestCount = failedResults.Count,
             }
         );
