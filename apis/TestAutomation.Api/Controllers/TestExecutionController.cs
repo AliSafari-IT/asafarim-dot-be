@@ -65,7 +65,7 @@ public class TestExecutionController : ControllerBase
     }
 
     [HttpGet("runs")]
-    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> GetRuns(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 50

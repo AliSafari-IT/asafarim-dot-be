@@ -26,6 +26,7 @@ public class FunctionalRequirementsController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
         _logger.LogInformation("🚀 Fetching all functional requirements");
@@ -34,6 +35,7 @@ public class FunctionalRequirementsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         _logger.LogInformation("🚀 Fetching functional requirement by id: {Id}", id);

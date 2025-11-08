@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
 import { GenericCrudPage } from './GenericCrudPage';
 import { ColumnDefinition } from '../components/GenericTable';
 import { FormFieldDefinition } from '../components/GenericForm';
-import { api } from '../config/api';
 
 interface FunctionalRequirement {
   id: string;

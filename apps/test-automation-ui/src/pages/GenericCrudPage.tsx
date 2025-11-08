@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
-import React from 'react';
-import { api } from '../config/api';
-import { GenericTable, ColumnDefinition } from '../components/GenericTable';
-import { GenericForm, FormFieldDefinition } from '../components/GenericForm';
+import { useEffect, useState } from "react";
+import React from "react";
+import { api } from "../config/api";
+import { GenericTable, ColumnDefinition } from "../components/GenericTable";
+import { GenericForm, FormFieldDefinition } from "../components/GenericForm";
+import { useAuth } from "@asafarim/shared-ui-react";
+import { useToast } from "@asafarim/toast";
 
 interface GenericCrudPageProps<T> {
   title: string;
@@ -12,7 +14,7 @@ interface GenericCrudPageProps<T> {
   formFields: FormFieldDefinition<T>[];
   getInitialFormData: () => T;
   preparePayload?: (formData: T) => any;
-  onItemLoaded?: (item: T) => T; 
+  onItemLoaded?: (item: T) => T;
   customActions?: (item: T) => React.ReactNode;
 
   tableClassName?: string;
@@ -33,18 +35,20 @@ export function GenericCrudPage<T>({
   preparePayload,
   onItemLoaded,
   customActions,
-  tableClassName = 'generic-table',
-  formClassName = 'generic-form',
-  emptyMessage = 'No items found',
-  createButtonLabel = '+ New Item',
-  editFormTitle = 'Edit Item',
-  createFormTitle = 'Create Item',
+  tableClassName = "generic-table",
+  formClassName = "generic-form",
+  emptyMessage = "No items found",
+  createButtonLabel = "+ New Item",
+  editFormTitle = "Edit Item",
+  createFormTitle = "Create Item",
 }: GenericCrudPageProps<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<T | null>(null);
   const [creating, setCreating] = useState(false);
   const [formData, setFormData] = useState<T>(getInitialFormData());
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const toast = useToast();
 
   useEffect(() => {
     loadItems();
@@ -55,7 +59,7 @@ export function GenericCrudPage<T>({
       const response = await api.get(apiEndpoint);
       setItems(response.data);
     } catch (error) {
-      console.error('Failed to load items:', error);
+      console.error("Failed to load items:", error);
     } finally {
       setLoading(false);
     }
@@ -70,12 +74,12 @@ export function GenericCrudPage<T>({
       setFormData(getInitialFormData());
       loadItems();
     } catch (error: any) {
-      console.error('Failed to create:', error);
+      console.error("Failed to create:", error);
       if (error.response?.data) {
-        console.error('Error details:', error.response.data);
+        console.error("Error details:", error.response.data);
         alert(`Failed to create: ${JSON.stringify(error.response.data)}`);
       } else {
-        alert('Failed to create item. Please check your input.');
+        alert("Failed to create item. Please check your input.");
       }
     }
   };
@@ -91,25 +95,29 @@ export function GenericCrudPage<T>({
       setFormData(getInitialFormData());
       loadItems();
     } catch (error: any) {
-      console.error('Failed to update:', error);
+      console.error("Failed to update:", error);
       if (error.response?.data) {
-        console.error('Error details:', error.response.data);
+        console.error("Error details:", error.response.data);
         alert(`Failed to update: ${JSON.stringify(error.response.data)}`);
       } else {
-        alert('Failed to update item. Please check your input.');
+        alert("Failed to update item. Please check your input.");
       }
     }
   };
 
   const handleDelete = async (item: T) => {
-    if (!confirm('Delete this item?')) return;
+    if (!isAuthenticated && !authLoading) {
+      toast.error("You must be authenticated to delete items.");
+      return;
+    }
+    if (!confirm("Delete this item?")) return;
     try {
       const itemId = getItemId(item);
       await api.delete(`${apiEndpoint}/${itemId}`);
       loadItems();
     } catch (error) {
-      console.error('Failed to delete:', error);
-      alert('Failed to delete item.');
+      console.error("Failed to delete:", error);
+      alert("Failed to delete item.");
     }
   };
 
@@ -129,11 +137,19 @@ export function GenericCrudPage<T>({
   return (
     <div className="page-container" data-testid="crud-page">
       <div className="page-header" data-testid="crud-page-header">
-        <h3 className="page-title" data-testid="crud-page-title">{title}</h3>
+        <h3 className="page-title" data-testid="crud-page-title">
+          {title}
+        </h3>
         <div className="page-actions">
           <button
             className="button button-primary"
-            onClick={() => setCreating(true)}
+            onClick={() => {
+              if (!isAuthenticated && !authLoading) {
+                toast.error("You must be authenticated to create items.");
+                return;
+              }
+              setCreating(true);
+            }}
             disabled={creating || editing !== null}
             data-testid="create-button"
           >
@@ -150,7 +166,7 @@ export function GenericCrudPage<T>({
           onSubmit={editing ? handleUpdate : handleCreate}
           onCancel={cancelEdit}
           title={editing ? editFormTitle : createFormTitle}
-          submitLabel={editing ? 'Update' : 'Create'}
+          submitLabel={editing ? "Update" : "Create"}
           className={formClassName}
         />
       )}
