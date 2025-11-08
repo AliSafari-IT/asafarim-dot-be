@@ -29,6 +29,7 @@ public class TestSuitesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll(
         [FromQuery] Guid? fixtureId,
         [FromQuery] Guid? functionalRequirementId
@@ -47,6 +48,7 @@ public class TestSuitesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id)
     {
         var entity = await _db
@@ -107,6 +109,7 @@ public class TestSuitesController : ControllerBase
 
     // 🧩 Get TestCases under a TestSuite
     [HttpGet("{id}/test-cases")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetTestCases(Guid id)
     {
         var testCases = await _db.TestCases.Where(tc => tc.TestSuiteId == id).ToListAsync();
@@ -196,6 +199,7 @@ public class TestSuitesController : ControllerBase
 
     // 📄 Get generated TestCafe file
     [HttpGet("{id}/testcafe-file")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetTestCafeFile(Guid id)
     {
         var testSuite = await _db.TestSuites.FindAsync(id);

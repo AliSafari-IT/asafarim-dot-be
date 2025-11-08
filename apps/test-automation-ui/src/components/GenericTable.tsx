@@ -1,5 +1,7 @@
 import React from 'react';
 import './GenericTable.css';
+import { useAuth } from '@asafarim/shared-ui-react';
+import { useToast } from '@asafarim/toast';
 
 export interface ColumnDefinition<T> {
   header: string;
@@ -39,6 +41,9 @@ export function GenericTable<T>({
   deleteLabel = 'Delete',
   getItemId,
 }: GenericTableProps<T>) {
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const toast = useToast();
+
   if (loading) {
     return <div className="loading" data-testid="table-loading">Loading...</div>;
   }
@@ -102,7 +107,12 @@ export function GenericTable<T>({
                     {customActions && customActions(item)}
                     <button
                       className="button button-secondary"
-                      onClick={() => onEdit(item)}
+                      onClick={() => {
+                        if (!isAuthenticated && !authLoading) {
+                          toast.error("You must be authenticated to edit items.");
+                          return;
+                        }
+                        onEdit(item);}}
                       data-testid={`edit-button-${getItemId(item)}`}
                     >
                       {editLabel}

@@ -36,12 +36,7 @@ const Dashboard: React.FC = () => {
       try {
         setLoading(true);
 
-        const response = await fetch(`${API_BASE}/api/test-runs`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-          },
-          credentials: 'include'
-        });
+        const response = await fetch(`${API_BASE}/api/test-runs`);
 
         if (response.ok) {
           const runs = await response.json();

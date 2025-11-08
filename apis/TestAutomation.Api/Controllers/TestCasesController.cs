@@ -23,6 +23,7 @@ public class TestCasesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll([FromQuery] Guid? testSuiteId)
     {
         var q = _db.TestCases.AsQueryable();
@@ -33,6 +34,7 @@ public class TestCasesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id)
     {
         var entity = await _db.TestCases.FindAsync(id);

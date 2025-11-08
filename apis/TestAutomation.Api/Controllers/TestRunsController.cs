@@ -35,6 +35,7 @@ public class TestRunsController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
         var runs = await _db
@@ -64,6 +65,7 @@ public class TestRunsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id)
     {
         var run = await _db
@@ -99,6 +101,7 @@ public class TestRunsController : ControllerBase
     }
 
     [HttpGet("{id}/results")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetResults(Guid id, [FromQuery] string? status = null)
     {
         _logger.LogInformation(
@@ -150,6 +153,7 @@ public class TestRunsController : ControllerBase
     }
 
     [HttpGet("{id}/download")]
+    [AllowAnonymous]
     public async Task<IActionResult> DownloadReport(Guid id, [FromQuery] string format = "json")
     {
         var run = await _db

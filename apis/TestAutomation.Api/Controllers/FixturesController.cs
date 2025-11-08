@@ -21,6 +21,7 @@ public class FixturesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll([FromQuery] Guid? functionalRequirementId)
     {
         var q = _db.TestFixtures.AsQueryable();
@@ -31,6 +32,7 @@ public class FixturesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id)
     {
         var entity = await _db.TestFixtures.FindAsync(id);
