@@ -4,6 +4,7 @@ import { HubConnectionBuilder, HubConnection } from "@microsoft/signalr";
 import { API_BASE } from "../config/api";
 import "./TestRunDetailsPage.css";
 import React from "react";
+import { ButtonComponent } from "@asafarim/shared-ui-react";
 
 interface TestRun {
   id: string;
@@ -409,39 +410,39 @@ export function TestRunDetailsPage() {
         </div>
 
         <div className="action-buttons">
-          <button
-            className="btn btn-secondary"
+          <ButtonComponent
+            variant="secondary"
             onClick={() => downloadReport("html")}
             data-testid="download-html"
           >
             📄 Download HTML
-          </button>
-          <button
-            className="btn btn-secondary"
+          </ButtonComponent>
+          <ButtonComponent
+            variant="secondary"
             onClick={() => downloadReport("json")}
             data-testid="download-json"
           >
             📋 Download JSON
-          </button>
+          </ButtonComponent>
 
           {testRun.failedTests > 0 && testRun.status !== "Running" && (
-            <button
-              className="btn btn-warning"
+            <ButtonComponent
+              variant="success"
               onClick={rerunFailed}
               data-testid="rerun-failed"
             >
               🔄 Re-run Failed Tests
-            </button>
+            </ButtonComponent>
           )}
 
           {testRun.status === "Running" && (
-            <button
-              className="btn btn-danger"
+            <ButtonComponent
+              variant="danger"
               onClick={stopRun}
               data-testid="stop-run"
             >
               🛑 Stop Run
-            </button>
+            </ButtonComponent>
           )}
         </div>
       </div>

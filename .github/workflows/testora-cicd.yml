@@ -44,24 +44,24 @@ jobs:
 
       - name: Start Backend API
         run: |
-          dotnet run --project apis/TestAutomation.Api/TestAutomation.Api.csproj --urls http://localhost:5200 &
+          dotnet run --project apis/TestAutomation.Api/TestAutomation.Api.csproj --urls http://localhost:5106 &
         shell: pwsh
 
       - name: Wait for API
         run: |
-          $retries = 0; do { try { Invoke-RestMethod http://localhost:5200/swagger/v1/swagger.json; $ok=$true } catch { Start-Sleep -Seconds 3; $retries++ } } while (-not $ok -and $retries -lt 20)
+          $retries = 0; do { try { Invoke-RestMethod http://localhost:5106/swagger/v1/swagger.json; $ok=$true } catch { Start-Sleep -Seconds 3; $retries++ } } while (-not $ok -and $retries -lt 20)
         shell: pwsh
 
       - name: Run Tests via Runner
         env:
-          API_URL: http://localhost:5200
+          API_URL: http://localhost:5106
           API_KEY: ${{ secrets.TEST_RUNNER_API_KEY }}
           API_TOKEN: ${{ secrets.CI_JWT }}
         working-directory: apis/TestRunner
         run: |
           node dist/index.js &
           Start-Sleep -Seconds 2
-          curl -X POST http://localhost:4000/run-tests -H "Content-Type: application/json" -H "x-api-key: $env:API_KEY" -d '{"runId": "ci-run", "runName": "CI Run", "environment": "CI", "browser": "chrome", "apiUrl": "http://localhost:5200", "userId": "ci"}'
+          curl -X POST http://localhost:4000/run-tests -H "Content-Type: application/json" -H "x-api-key: $env:API_KEY" -d '{"runId": "ci-run", "runName": "CI Run", "environment": "CI", "browser": "chrome", "apiUrl": "http://localhost:5106", "userId": "ci"}'
         shell: pwsh
 
       - name: Archive Results

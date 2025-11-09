@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,17 +20,20 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.File("logs/testautomation-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("logs/testora-api-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
-// Add services
+// Add services to the container
 builder
     .Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new TestTypeStringConverter());
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter()
+        );
         options.JsonSerializerOptions.PropertyNamingPolicy = System
             .Text
             .Json
@@ -161,10 +165,21 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Configure MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+// Configure Data Protection for encryption
+builder
+    .Services.AddDataProtection()
+    .SetApplicationName("TestAutomation.Api")
+    .PersistKeysToFileSystem(
+        new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "keys"))
+    );
+
 // Register Services
 builder.Services.AddScoped<IIdentityApiClient, IdentityApiClient>();
 builder.Services.AddScoped<ITestExecutionService, TestExecutionService>();
 builder.Services.AddScoped<TestCafeGeneratorService>();
+builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
+builder.Services.AddScoped<IGitHubActionsService, GitHubActionsService>();
+builder.Services.AddHttpClient<IGitHubActionsService, GitHubActionsService>();
 
 // Configure SignalR
 builder.Services.AddSignalR();
@@ -181,10 +196,10 @@ builder.Services.AddCors(options =>
                 // Allow UI, TestRunner, and production origins
                 policy
                     .WithOrigins(
-                        "http://testora.asafarim.local:5180",    // Frontend UI
-                        "http://localhost:4000",                  // TestRunner service
-                        "http://testora.asafarim.local:5200",    // API itself (for TestRunner)
-                        "https://testora.asafarim.be"            // Production
+                        "http://testora.asafarim.local:5180", // Frontend UI
+                        "http://localhost:4000", // TestRunner service
+                        "http://testora.asafarim.local:5106", // API itself (for TestRunner)
+                        "https://testora.asafarim.be" // Production
                     )
                     .AllowAnyHeader()
                     .AllowAnyMethod()

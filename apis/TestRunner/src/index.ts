@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 const API_KEY = process.env.API_KEY || 'test-runner-api-key-2024';
-const API_URL = process.env.API_URL || 'http://localhost:5200';
+const API_URL = process.env.API_URL || 'http://testora.asafarim.local:5106';
 
 // Middleware
 app.use(cors());

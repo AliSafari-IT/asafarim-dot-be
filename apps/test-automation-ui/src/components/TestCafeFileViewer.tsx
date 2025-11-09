@@ -3,7 +3,7 @@ import { api } from '../config/api';
 import { isProduction } from '@asafarim/shared-ui-react';
 import './TestCafeFileViewer.css';
 
-const API_BASE = isProduction ? 'https://testora.asafarim.be' : 'http://testora.asafarim.local:5200';
+const API_BASE = isProduction ? 'https://testora.asafarim.be' : 'http://testora.asafarim.local:5106';
 
 interface TestCafeFileViewerProps {
   testSuiteId: string;

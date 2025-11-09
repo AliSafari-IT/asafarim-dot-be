@@ -7,7 +7,7 @@
     "dev": "dotnet watch run --project TestAutomation.Api.csproj",
     "start": "dotnet run --project TestAutomation.Api.csproj",
     "build": "dotnet build TestAutomation.Api.csproj",
-    "preapi": "kill-port 5200 5201",
+    "preapi": "kill-port 5106",
     "api": "dotnet watch run --project TestAutomation.Api.csproj"
   },
   "devDependencies": {
