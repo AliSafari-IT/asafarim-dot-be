@@ -18,6 +18,8 @@ function getErrorMessage(error: string | null): { title: string; message: string
     };
   }
 
+  
+
   if (error.includes("Password")) {
     return {
       title: "Password Requirements",
