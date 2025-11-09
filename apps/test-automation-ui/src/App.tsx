@@ -1,6 +1,6 @@
 // App.tsx
-//import { useEffect } from 'react';
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 //import { isProduction, useAuth, ThemeProvider } from '@asafarim/shared-ui-react';
 import Dashboard from "./pages/Dashboard";
 import TestRunPage from "./pages/TestRunPage";
@@ -14,43 +14,21 @@ import TestDataSetsPage from "./pages/TestDataSetsPage";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import "./App.css";
+import HomePage from "./pages/HomePage";
 
 function App() {
-  // const authApiBase = isProduction
-  //   ? 'https://identity.asafarim.be/auth'
-  //   : 'http://identity.asafarim.local:5101/auth';
-
-  // const { user, loading, isAuthenticated } = useAuth({
-  //   authApiBase,
-  //   identityLoginUrl: isProduction
-  //     ? 'https://identity.asafarim.be/login'
-  //     : 'http://identity.asafarim.local:5177/login'
-  // });
-
-  // // Redirect to login if not authenticated
-  // useEffect(() => {
-  //   if (loading) return;
-
-  //   if (!isAuthenticated) {
-  //     const redirectUrl = isProduction ?
-  //       'https://identity.asafarim.be/login?redirect=' + encodeURIComponent(window.location.href) :
-  //       'http://identity.asafarim.local:5177/login?redirect=' + encodeURIComponent(window.location.href);
-  //     window.location.href = redirectUrl;
-  //   }
-  // }, [isAuthenticated, loading]);
-
-  // if (loading || !isAuthenticated) {
-  //   return <div className="loading-container">Loading...</div>;
-  // }
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   return (
     <div className="app-container">
       <Navbar />
       <div className="main-content">
-        <Sidebar />
-        <div className="content-wrapper">
+        {!isHomePage && <Sidebar />}
+        <div className={`content-wrapper ${isHomePage ? "full-width" : ""}`}>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<HomePage />} />
+            {/* <Route path="/" element={<Navigate to="/dashboard" replace />} /> */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/test-runs" element={<TestRunsPage />} />
             <Route path="/test-runs/:id" element={<TestRunDetailsPage />} />

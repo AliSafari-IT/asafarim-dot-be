@@ -88,6 +88,7 @@ public class TestSuitesController : ControllerBase
             return NotFound();
         testSuite.Name = model.Name;
         testSuite.Description = model.Description;
+        testSuite.FixtureId = model.FixtureId;
         testSuite.ExecutionOrder = model.ExecutionOrder;
         testSuite.IsActive = model.IsActive;
         testSuite.UpdatedAt = DateTime.UtcNow;

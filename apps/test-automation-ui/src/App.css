@@ -1,11 +1,17 @@
 /* App.css */
 :root {
   --sidebar-width: 240px;
-  --navbar-height: 60px;
+  --navbar-height: 0;
   --primary-color: #4f46e5;
   --bg-color: #f9fafb;
   --text-color: #111827;
   --border-color: #e5e7eb;
+}
+
+@media (max-width: 1580px) {
+  :root {
+    --navbar-height: 60px;
+  }
 }
 
 * {
@@ -29,14 +35,17 @@ body {
 .main-content {
   display: flex;
   flex: 1;
-  padding-top: var(--navbar-height);
 }
 
 .content-wrapper {
   flex: 1;
-  padding: 1.5rem;
   margin-left: var(--sidebar-width);
   transition: margin 0.3s ease;
+}
+
+/* Full width when sidebar is hidden (e.g., on homepage) */
+.content-wrapper.full-width {
+  margin-left: 0;
 }
 
 /* Mobile: hide sidebar and remove margin */

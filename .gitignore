@@ -123,6 +123,7 @@ pnpm-lock.yaml
 apis/TestRunner/temp-tests/*
 apis/TestAutomation.Api/IMPLEMENTATION_NOTES.md
 apis/TestRunner/test-browser-launch.js
+apis/TestRunner/screenshots/
 # Ignore .env and appsettings files
 appsettings*.json
 launchSettings*.json
