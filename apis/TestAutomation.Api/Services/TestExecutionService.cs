@@ -164,7 +164,7 @@ public class TestExecutionService : ITestExecutionService
             functionalRequirementId = run.FunctionalRequirementId?.ToString(),
             environment = run.Environment,
             browser = run.Browser,
-            apiUrl = _config["ApiBaseUrl"] ?? "http://localhost:5200",
+            apiUrl = _config["ApiBaseUrl"] ?? "http://testora.asafarim.local:5106",
             userId,
             testSuites = suites,
             testCases = testCasesDirect,

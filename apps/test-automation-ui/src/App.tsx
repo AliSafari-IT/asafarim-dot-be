@@ -11,6 +11,8 @@ import FixturesPage from "./pages/FixturesPage";
 import TestSuitesPage from "./pages/TestSuitesPage";
 import TestCasesPage from "./pages/TestCasesPage";
 import TestDataSetsPage from "./pages/TestDataSetsPage";
+import IntegrationsPage from "./pages/IntegrationsPage";
+import SettingsPage from "./pages/SettingsPage";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import "./App.css";
@@ -41,6 +43,8 @@ function App() {
             <Route path="/test-suites" element={<TestSuitesPage />} />
             <Route path="/test-cases" element={<TestCasesPage />} />
             <Route path="/test-data-sets" element={<TestDataSetsPage />} />
+            <Route path="/integrations" element={<IntegrationsPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </div>

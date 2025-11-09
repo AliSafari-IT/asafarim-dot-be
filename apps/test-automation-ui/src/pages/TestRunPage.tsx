@@ -115,7 +115,7 @@ export default function TestRunPage() {
 
     const hubUrl =
       (import.meta as any).env.VITE_SIGNALR_URL ||
-      "http://testora.asafarim.local:5200/hubs/testrun";
+      "http://testora.asafarim.local:5106/hubs/testrun";
     const hubConnection = createHubConnection(hubUrl, token);
 
     hubConnection.on("TestUpdate", (msg: any) => {

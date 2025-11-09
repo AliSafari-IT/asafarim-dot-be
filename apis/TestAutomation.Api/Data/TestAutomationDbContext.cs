@@ -18,6 +18,13 @@ public class TestAutomationDbContext : DbContext
     public DbSet<TestResult> TestResults { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
 
+    // User settings and configurations
+    public DbSet<Integration> Integrations { get; set; }
+    public DbSet<TestEnvironment> TestEnvironments { get; set; }
+    public DbSet<UserCredential> UserCredentials { get; set; }
+    public DbSet<AutomationSettings> AutomationSettings { get; set; }
+    public DbSet<NotificationSettings> NotificationSettings { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -238,6 +245,82 @@ public class TestAutomationDbContext : DbContext
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => new { e.EntityType, e.EntityId });
+        });
+
+        // Configure Integration
+        modelBuilder.Entity<Integration>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(50);
+            entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
+
+            entity
+                .Property(e => e.Credentials)
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => v == null ? null : v.RootElement.GetRawText(),
+                    v => v == null ? null : JsonDocument.Parse(v, default)
+                );
+
+            entity
+                .Property(e => e.Settings)
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => v == null ? null : v.RootElement.GetRawText(),
+                    v => v == null ? null : JsonDocument.Parse(v, default)
+                );
+
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => new { e.UserId, e.Type });
+        });
+
+        // Configure TestEnvironment
+        modelBuilder.Entity<TestEnvironment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.BaseUrl).HasMaxLength(500).IsRequired();
+
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => new { e.UserId, e.IsDefault });
+        });
+
+        // Configure UserCredential
+        modelBuilder.Entity<UserCredential>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(50);
+            entity.Property(e => e.EncryptedValue).IsRequired();
+
+            entity.HasIndex(e => e.UserId);
+        });
+
+        // Configure AutomationSettings
+        modelBuilder.Entity<AutomationSettings>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+
+            // Ensure only one settings record per user
+            entity.HasIndex(e => e.UserId).IsUnique();
+        });
+
+        // Configure NotificationSettings
+        modelBuilder.Entity<NotificationSettings>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            entity.Property(e => e.SlackWebhookUrl).HasMaxLength(500);
+            entity.Property(e => e.ReportFormat).HasConversion<string>().HasMaxLength(50);
+
+            // Ensure only one settings record per user
+            entity.HasIndex(e => e.UserId).IsUnique();
         });
     }
 }

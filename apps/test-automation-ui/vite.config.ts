@@ -37,9 +37,9 @@ export default defineConfig(
     host: 'testora.asafarim.local',
     port: 5180,
     proxy: {
-      '/api': 'http://localhost:5200',
+      '/api': 'http://testora.asafarim.local:5106',
        '/hubs': {
-        target: 'http://localhost:5200',
+        target: 'http://testora.asafarim.local:5106',
         ws: true,
         changeOrigin: true
       }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using TestAutomation.Api.Data;
 using TestAutomation.Api.DTOs;
 using TestAutomation.Api.Models;
+using TestAutomation.Api.Services;
 
 namespace TestAutomation.Api.Controllers;
 
@@ -18,13 +19,17 @@ public class TestRunsController : ControllerBase
     private readonly IConfiguration _config;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IGitHubActionsService _gitHubService;
+    private readonly IEncryptionService _encryptionService;
 
     public TestRunsController(
         TestAutomationDbContext db,
         ILogger<TestRunsController> logger,
         IConfiguration config,
         IHttpClientFactory httpClientFactory,
-        IServiceScopeFactory serviceScopeFactory
+        IServiceScopeFactory serviceScopeFactory,
+        IGitHubActionsService gitHubService,
+        IEncryptionService encryptionService
     )
     {
         _db = db;
@@ -32,6 +37,8 @@ public class TestRunsController : ControllerBase
         _config = config;
         _httpClientFactory = httpClientFactory;
         _serviceScopeFactory = serviceScopeFactory;
+        _gitHubService = gitHubService;
+        _encryptionService = encryptionService;
     }
 
     [HttpGet]
@@ -96,6 +103,123 @@ public class TestRunsController : ControllerBase
                 successRate = run.TotalTests > 0
                     ? (double)run.PassedTests / run.TotalTests * 100
                     : 0,
+            }
+        );
+    }
+
+    [HttpPost]
+    [Authorize(Policy = "TesterOnly")]
+    public async Task<IActionResult> CreateTestRun([FromBody] StartTestRunDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+
+        var testRun = new TestRun
+        {
+            Id = Guid.NewGuid(),
+            RunName = dto.RunName,
+            FunctionalRequirementId = dto.FunctionalRequirementId,
+            Environment = dto.Environment ?? "Development",
+            Browser = dto.Browser ?? "chrome",
+            Status = TestRunStatus.Running,
+            StartedAt = DateTime.UtcNow,
+            ExecutedById = Guid.TryParse(userId, out var uid) ? uid : null,
+            TriggerType = TriggerType.Manual,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            CreatedById = Guid.TryParse(userId, out var uidc) ? uidc : null,
+            UpdatedById = Guid.TryParse(userId, out var uidu) ? uidu : null,
+        };
+
+        _db.TestRuns.Add(testRun);
+        await _db.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Created test run {TestRunId} ({RunName})",
+            testRun.Id,
+            testRun.RunName
+        );
+
+        // Trigger GitHub Actions if connected
+        _ = Task.Run(async () =>
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<TestAutomationDbContext>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<TestRunsController>>();
+            var gitHubService = scope.ServiceProvider.GetRequiredService<IGitHubActionsService>();
+            var encryptionService = scope.ServiceProvider.GetRequiredService<IEncryptionService>();
+
+            try
+            {
+                var githubIntegration = await db.Integrations.FirstOrDefaultAsync(i =>
+                    i.UserId == userId
+                    && i.Type == IntegrationType.CiCd
+                    && i.Name == "GitHub Actions"
+                    && i.Status == IntegrationStatus.Connected
+                );
+
+                if (githubIntegration != null)
+                {
+                    var config = githubIntegration.GetGitHubConfig();
+                    if (config != null)
+                    {
+                        try
+                        {
+                            // Decrypt token before using
+                            var decryptedToken = encryptionService.Decrypt(config.Token);
+
+                            logger.LogInformation(
+                                "🚀 Triggering GitHub Actions workflow for test run {TestRunId}",
+                                testRun.Id
+                            );
+
+                            var success = await gitHubService.TriggerWorkflowAsync(
+                                config.Repository,
+                                config.WorkflowPath,
+                                decryptedToken,
+                                testRun
+                            );
+
+                            if (success)
+                            {
+                                logger.LogInformation(
+                                    "✅ Successfully triggered GitHub Actions workflow for test run {TestRunId}",
+                                    testRun.Id
+                                );
+                            }
+                            else
+                            {
+                                logger.LogWarning(
+                                    "⚠️ Failed to trigger GitHub Actions workflow for test run {TestRunId}",
+                                    testRun.Id
+                                );
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(
+                                ex,
+                                "❌ Error triggering GitHub Actions workflow for test run {TestRunId}",
+                                testRun.Id
+                            );
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "❌ Error in GitHub Actions trigger background task");
+            }
+        });
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = testRun.Id },
+            new
+            {
+                id = testRun.Id,
+                runName = testRun.RunName,
+                status = testRun.Status.ToString(),
+                startedAt = testRun.StartedAt,
             }
         );
     }
@@ -395,7 +519,7 @@ public class TestRunsController : ControllerBase
                     functionalRequirementId = newRun.FunctionalRequirementId?.ToString(),
                     environment = newRun.Environment,
                     browser = newRun.Browser,
-                    apiUrl = _config["ApiBaseUrl"] ?? "http://localhost:5200",
+                    apiUrl = _config["ApiBaseUrl"] ?? "http://testora.asafarim.local:5106",
                     userId,
                     testSuites = testSuiteGroups,
                     testCases = new List<object>(),

@@ -5,7 +5,7 @@ import axios from 'axios';
 // Use absolute URLs in production
 const baseURL = isProduction ?
   'https://testora.asafarim.be' :
-  'http://testora.asafarim.local:5200';
+  'http://testora.asafarim.local:5106';
 
 export const API_BASE = baseURL;
 

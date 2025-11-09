@@ -51,7 +51,7 @@ export class TestRunnerService {
     }
 
     private async sendWebhookUpdate(runId: string, update: any, retries = 3) {
-        const apiUrl = process.env.API_URL || 'http://localhost:5200';
+        const apiUrl = process.env.API_URL || 'http://testora.asafarim.local:5106';
 
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
@@ -102,7 +102,7 @@ export class TestRunnerService {
     }
 
     private async sendTestResult(runId: string, result: any, retries = 3) {
-        const apiUrl = process.env.API_URL || 'http://localhost:5200';
+        const apiUrl = process.env.API_URL || 'http://testora.asafarim.local:5106';
 
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
@@ -311,7 +311,7 @@ export class TestRunnerService {
 
     async runGeneratedTestCafeFile(testSuiteId: string, fileContent: string, browser = 'chrome', providedRunId?: string) {
         const runId = providedRunId || nanoid();
-        const apiUrl = process.env.API_URL || 'http://localhost:5200';
+        const apiUrl = process.env.API_URL || 'http://testora.asafarim.local:5106';
 
         // Count the number of test() calls in the file to get total tests
         const testMatches = fileContent.match(/test\s*\(/g);
@@ -654,7 +654,7 @@ export class TestRunnerService {
             }
 
             // Send individual test results to webhook
-            const apiUrl = process.env.API_URL || 'http://localhost:5200';
+            const apiUrl = process.env.API_URL || 'http://testora.asafarim.local:5106';
             logger.info(`🚀 Starting to send ${testResults.length} test results to API`);
 
             if (testResults.length === 0) {
