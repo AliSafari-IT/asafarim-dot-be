@@ -98,67 +98,11 @@ export function TestCafeFileViewer({ testSuiteId, testSuiteName, onClose }: Test
       setRunning(true);
       setError(null);
       
-      // Step 1: Fetch test suite details to get fixture and functional requirement
-      const suiteResponse = await fetch(`${API_BASE}/api/test-suites/${testSuiteId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
-        credentials: 'include'
-      });
-
-      if (!suiteResponse.ok) {
-        throw new Error(`Failed to fetch test suite: ${suiteResponse.statusText}`);
-      }
-
-      const suite = await suiteResponse.json();
-      console.log('📦 Test suite data:', suite);
-      console.log('🔍 Fixture:', suite.fixture);
-      console.log('🎯 FunctionalRequirementId:', suite.fixture?.functionalRequirementId);
+      // Call backend API to run the generated TestCafe file
+      // The backend will handle calling the TestRunner service
+      const response = await api.post(`/api/test-suites/${testSuiteId}/run-generated?browser=chrome`);
       
-      // Step 2: Create a test run in TestAutomation API to get a runId
-      const createRunResponse = await fetch(`${API_BASE}/api/test-execution/run`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          runName: `${testSuiteName} - ${new Date().toLocaleString()}`,
-          functionalRequirementId: suite.fixture?.functionalRequirementId || null,
-          testSuiteIds: [testSuiteId],
-          environment: 'development',
-          browser: 'chrome'
-        })
-      });
-
-      if (!createRunResponse.ok) {
-        throw new Error(`Failed to create test run: ${createRunResponse.statusText}`);
-      }
-
-      const { id: runId } = await createRunResponse.json();
-      
-      // Step 2: Call the TestRunner API with the runId
-      const response = await fetch('http://localhost:4000/run-generated-file', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': 'test-runner-api-key-2024'
-        },
-        body: JSON.stringify({
-          testSuiteId,
-          fileContent,
-          browser: 'chrome',
-          runId // Pass the runId from TestAutomation API
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
+      const { runId } = response.data;
       setError(null);
       alert(`✅ Test run started! Run ID: ${runId}`);
     } catch (err: any) {
