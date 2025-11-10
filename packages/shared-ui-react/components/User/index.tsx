@@ -2,7 +2,7 @@
 import { cn } from '../../lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../Avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
-import { forwardRef, HTMLAttributes } from 'react';
+import { forwardRef, type HTMLAttributes } from 'react';
 
 export interface UserProps extends HTMLAttributes<HTMLDivElement> {
   name: string;
@@ -10,6 +10,7 @@ export interface UserProps extends HTMLAttributes<HTMLDivElement> {
   avatar?: string;
   className?: string;
 }
+
 
 const User = forwardRef<HTMLDivElement, UserProps>(
   ({ name, email, avatar, className, ...props }, ref) => {

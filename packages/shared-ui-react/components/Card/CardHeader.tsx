@@ -1,6 +1,7 @@
 // CardHeader.tsx
 import { cn } from '../../lib/utils';
-import { HTMLAttributes, forwardRef } from 'react';
+import { type HTMLAttributes, forwardRef } from 'react';
+
 
 const CardHeader = forwardRef<
   HTMLDivElement,

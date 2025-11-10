@@ -294,4 +294,15 @@ export const identityService = {
   },
 };
 
+export async function requestPasswordReset(data: { email: string }): Promise<void> {
+  // Replace with your API call implementation
+  return fetch('/api/password-reset', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data),
+  }).then((res) => {
+    if (!res.ok) throw new Error('Failed to send password reset email');
+  });
+}
+
 export default identityService;

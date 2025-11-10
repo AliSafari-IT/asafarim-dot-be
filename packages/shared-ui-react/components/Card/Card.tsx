@@ -1,6 +1,7 @@
 // Card.tsx
 import { cn } from '../../lib/utils';
-import { forwardRef, HTMLAttributes } from 'react';
+import { forwardRef, type HTMLAttributes } from 'react';
+
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'outlined';
