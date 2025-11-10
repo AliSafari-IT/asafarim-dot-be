@@ -37,7 +37,8 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      await identityService.requestPasswordReset({ email });
+            await identityService.forgotPassword({ email });
+
 
       toast.success('Email Sent', {
         description: 'Check your email for password reset instructions',
