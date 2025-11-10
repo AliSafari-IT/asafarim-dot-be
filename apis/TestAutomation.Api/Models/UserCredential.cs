@@ -9,7 +9,7 @@ public enum CredentialType
     ApiKey,
     Token,
     Password,
-    Certificate
+    Certificate,
 }
 
 public class UserCredential
