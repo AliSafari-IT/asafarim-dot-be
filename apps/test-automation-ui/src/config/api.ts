@@ -7,6 +7,11 @@ const baseURL = isProduction ?
   'https://testora.asafarim.be' :
   'http://testora.asafarim.local:5106';
 
+// SignalR WebSocket URL (wss for HTTPS, ws for HTTP)
+const signalRProtocol = isProduction ? 'wss' : 'ws';
+const signalRHost = isProduction ? 'testora.asafarim.be' : 'testora.asafarim.local:5106';
+export const SIGNALR_URL = `${signalRProtocol}://${signalRHost}/hubs/testrun`;
+
 export const API_BASE = baseURL;
 
 export const api = axios.create({
