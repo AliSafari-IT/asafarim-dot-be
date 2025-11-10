@@ -31,16 +31,39 @@ public class TestExecutionController : ControllerBase
     [Authorize(Policy = "TesterOnly")]
     public async Task<IActionResult> StartRun([FromBody] StartTestRunDto request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var run = await _testExecutionService.StartTestRunAsync(request, userId);
+        try
+        {
+            if (request == null)
+            {
+                _logger.LogWarning("StartRun called with null request");
+                return BadRequest(new { message = "Request body is required" });
+            }
 
-        // Add user to SignalR group BEFORE test run completes
-        var username = User.Identity?.Name ?? "Unknown";
-        _logger.LogInformation($"👥 Adding user {username} to SignalR group testrun-{run.Id}");
-        // Note: We can't add to group here because we don't have the connection ID
-        // The UI must call JoinTestRun immediately after receiving the runId
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            _logger.LogInformation("Starting test run - RunName: {RunName}, TestSuiteIds: {TestSuiteIds}, TestCaseIds: {TestCaseIds}",
+                request.RunName, 
+                request.TestSuiteIds != null ? string.Join(", ", request.TestSuiteIds) : "none",
+                request.TestCaseIds != null ? string.Join(", ", request.TestCaseIds) : "none");
 
-        return Ok(run);
+            var run = await _testExecutionService.StartTestRunAsync(request, userId);
+
+            // Add user to SignalR group BEFORE test run completes
+            var username = User.Identity?.Name ?? "Unknown";
+            _logger.LogInformation($"👥 Adding user {username} to SignalR group testrun-{run.Id}");
+            // Note: We can't add to group here because we don't have the connection ID
+            // The UI must call JoinTestRun immediately after receiving the runId
+
+            return Ok(run);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Error starting test run: {Message}", ex.Message);
+            return StatusCode(500, new { 
+                message = "Failed to start test run", 
+                error = ex.Message,
+                details = ex.StackTrace
+            });
+        }
     }
 
     [HttpPost("cancel/{runId}")]

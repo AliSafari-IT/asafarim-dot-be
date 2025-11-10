@@ -500,6 +500,10 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                 
                 if dotnet publish "$REPO_DIR/$project_path" -c Release -o "$output_path" --no-restore; then
                     print_success "$key published successfully"
+                    
+                    # Set proper permissions for .NET API
+                    chown -R www-data:www-data "$output_path"
+                    chmod -R 755 "$output_path"
                 else
                     print_error "Failed to publish $key"
                     exit 1
@@ -556,10 +560,25 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                     cp -r dist/* "$output_path/"
                     cp package.json "$output_path/"
                     cp package-lock.json "$output_path/" 2>/dev/null || true
+                    cp pnpm-lock.yaml "$output_path/" 2>/dev/null || true
                     
                     # Install production dependencies
                     cd "$output_path"
                     pnpm install --prod
+                    
+                    # Set proper permissions for Node.js API
+                    chown -R www-data:www-data "$output_path"
+                    chmod -R 755 "$output_path"
+                    
+                    # For TestRunner, ensure temp directory exists and has proper permissions
+                    if [ "$key" = "TestRunner" ]; then
+                        print_info "Setting up TestRunner temp directory..."
+                        TEMP_DIR="${TEMP_TESTS_DIR:-/var/tmp/testrunner-tests}"
+                        mkdir -p "$TEMP_DIR"
+                        chown www-data:www-data "$TEMP_DIR" 2>/dev/null || true
+                        chmod 1777 "$TEMP_DIR" 2>/dev/null || chmod 755 "$TEMP_DIR"
+                        print_success "TestRunner temp directory ready: $TEMP_DIR"
+                    fi
                     
                     print_success "$key deployed successfully"
                 else

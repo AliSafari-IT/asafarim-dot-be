@@ -1,0 +1,27 @@
+[Unit]
+Description=Testora TestRunner Service (Node.js)
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/asafarim-dot-be/apis/testrunner
+ExecStart=/usr/bin/node /var/www/asafarim-dot-be/apis/testrunner/index.js
+Restart=always
+RestartSec=5
+SyslogIdentifier=testrunner
+User=www-data
+
+# Environment
+Environment=NODE_ENV=production
+Environment=PORT=4000
+Environment=API_URL=http://127.0.0.1:5106
+Environment=TEMP_TESTS_DIR=/var/tmp/testrunner-tests
+EnvironmentFile=/etc/asafarim/env
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=no
+ProtectHome=true
+PrivateTmp=false
+
+[Install]
+WantedBy=multi-user.target

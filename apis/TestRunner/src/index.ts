@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fs from 'fs/promises';
+import path from 'path';
 import { TestRunnerService } from './services/TestRunnerService';
 import { SignalRService } from './services/SignalRService';
 import { logger } from './utils/logger';
@@ -31,6 +33,21 @@ const signalRService = new SignalRService(API_URL);
 
 // Initialize TestRunner service
 const testRunner = new TestRunnerService(signalRService);
+
+// Ensure temp directory exists on startup
+const tempDir = process.env.TEMP_TESTS_DIR || 
+    (process.platform === 'win32' 
+        ? path.join(process.env.TEMP || process.env.TMP || 'C:\\temp', 'testrunner-tests')
+        : path.join(process.env.TMPDIR || '/var/tmp', 'testrunner-tests'));
+
+fs.mkdir(tempDir, { recursive: true })
+    .then(() => {
+        logger.info(`✅ Temp directory ready: ${tempDir}`);
+    })
+    .catch((err: any) => {
+        logger.error(`❌ Failed to create temp directory: ${tempDir}`, { error: err.message });
+        logger.error('Service may not function correctly. Please check permissions or set TEMP_TESTS_DIR environment variable.');
+    });
 
 // Initialize SignalR connection
 let signalRConnected = false;
@@ -76,10 +93,24 @@ app.post('/run-tests', validateApiKey, async (req, res) => {
             firstTestCaseStepsPreview: firstTestCase?.steps ? JSON.stringify(firstTestCase.steps).substring(0, 200) : 'none'
         });
         
-        const result = await testRunner.runTests(req.body);
-        res.json(result);
+        // Start test execution asynchronously (don't wait for completion)
+        // This allows the API to return immediately while tests run in background
+        testRunner.runTests(req.body).catch((error: any) => {
+            logger.error('Test execution failed after start', {
+                runId: req.body.runId,
+                error: error.message,
+                stack: error.stack
+            });
+        });
+        
+        // Return immediately with runId to indicate test run has started
+        res.json({ 
+            runId: req.body.runId || 'unknown',
+            status: 'started',
+            message: 'Test run initiated successfully'
+        });
     } catch (error: any) {
-        logger.error('Error running tests', { 
+        logger.error('Error starting test run', { 
             error: error.message,
             stack: error.stack
         });

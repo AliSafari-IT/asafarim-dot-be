@@ -1,9 +1,11 @@
 // apis/TestAutomation.Api/Controllers/TestSuitesController.cs
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TestAutomation.Api.Data;
 using TestAutomation.Api.DTOs;
 using TestAutomation.Api.Models;
@@ -18,14 +20,23 @@ public class TestSuitesController : ControllerBase
 {
     private readonly TestAutomationDbContext _db;
     private readonly TestCafeGeneratorService _generatorService;
+    private readonly IConfiguration _configuration;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<TestSuitesController> _logger;
 
     public TestSuitesController(
         TestAutomationDbContext db,
-        TestCafeGeneratorService generatorService
+        TestCafeGeneratorService generatorService,
+        IConfiguration config,
+        IHttpClientFactory httpClientFactory,
+        ILogger<TestSuitesController> logger
     )
     {
         _db = db;
         _generatorService = generatorService;
+        _configuration = config;
+        _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -229,17 +240,25 @@ public class TestSuitesController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("Running generated TestCafe file for test suite {TestSuiteId} with browser {Browser}", id, browser);
+            
             var testSuite = await _db.TestSuites.FindAsync(id);
             if (testSuite == null)
+            {
+                _logger.LogWarning("Test suite {TestSuiteId} not found", id);
                 return NotFound(new { message = "Test suite not found." });
+            }
 
             if (string.IsNullOrEmpty(testSuite.GeneratedTestCafeFile))
+            {
+                _logger.LogWarning("Test suite {TestSuiteId} has no generated TestCafe file", id);
                 return BadRequest(
                     new
                     {
                         message = "No TestCafe file has been generated yet. Please generate the file first.",
                     }
                 );
+            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
@@ -263,32 +282,78 @@ public class TestSuitesController : ControllerBase
 
             _db.TestRuns.Add(run);
             await _db.SaveChangesAsync();
+            _logger.LogInformation("Created test run {RunId} for test suite {TestSuiteId}", run.Id, id);
 
             // Call TestRunner service to execute the generated file
-            var httpClient = new HttpClient();
-            var testRunnerUrl = "http://localhost:4000"; // TODO: Move to config
-            httpClient.DefaultRequestHeaders.Add("x-api-key", "test-runner-api-key-2024"); // TODO: Move to config
-
-            var payload = new
+            var testRunnerUrl = _configuration["TestRunner:BaseUrl"] ?? "http://localhost:4000";
+            var apiKey = _configuration["TestRunner:ApiKey"] ?? "test-runner-api-key-2024";
+            
+            _logger.LogInformation("Sending request to TestRunner at {TestRunnerUrl}/run-generated-file", testRunnerUrl);
+            
+            try
             {
-                testSuiteId = testSuite.Id.ToString(),
-                fileContent = testSuite.GeneratedTestCafeFile,
-                browser = browser ?? "chrome",
-                runId = run.Id.ToString(),
-            };
+                var httpClient = _httpClientFactory?.CreateClient("TestRunnerClient");
+                if (httpClient == null)
+                {
+                    throw new InvalidOperationException("HttpClientFactory is not available");
+                }
+                
+                httpClient.DefaultRequestHeaders.Remove("x-api-key");
+                httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
 
-            var response = await httpClient.PostAsJsonAsync(
-                $"{testRunnerUrl}/run-generated-file",
-                payload
-            );
+                var payload = new
+                {
+                    testSuiteId = testSuite.Id.ToString(),
+                    fileContent = testSuite.GeneratedTestCafeFile,
+                    browser = browser ?? "chrome",
+                    runId = run.Id.ToString(),
+                };
 
-            if (!response.IsSuccessStatusCode)
+                _logger.LogInformation("Payload prepared: testSuiteId={TestSuiteId}, runId={RunId}, browser={Browser}, fileContentLength={FileLength}",
+                    testSuite.Id, run.Id, browser, testSuite.GeneratedTestCafeFile?.Length ?? 0);
+
+                var response = await httpClient.PostAsJsonAsync("/run-generated-file", payload);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorText = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("TestRunner returned error status {StatusCode}: {Error}", response.StatusCode, errorText);
+                    
+                    // Update test run status to failed
+                    run.Status = TestRunStatus.Failed;
+                    run.CompletedAt = DateTime.UtcNow;
+                    await _db.SaveChangesAsync();
+                    
+                    return StatusCode(
+                        (int)response.StatusCode,
+                        new { message = $"Failed to start test run: {errorText}" }
+                    );
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation("TestRunner accepted request: {Response}", responseContent);
+            }
+            catch (HttpRequestException httpEx)
             {
-                var errorText = await response.Content.ReadAsStringAsync();
-                return StatusCode(
-                    (int)response.StatusCode,
-                    new { message = $"Failed to start test run: {errorText}" }
-                );
+                _logger.LogError(httpEx, "HTTP error connecting to TestRunner: {Message}", httpEx.Message);
+                run.Status = TestRunStatus.Failed;
+                run.CompletedAt = DateTime.UtcNow;
+                await _db.SaveChangesAsync();
+                return StatusCode(500, new { 
+                    message = $"Failed to connect to TestRunner: {httpEx.Message}",
+                    error = httpEx.Message
+                });
+            }
+            catch (TaskCanceledException timeoutEx)
+            {
+                _logger.LogError(timeoutEx, "Timeout connecting to TestRunner: {Message}", timeoutEx.Message);
+                run.Status = TestRunStatus.Failed;
+                run.CompletedAt = DateTime.UtcNow;
+                await _db.SaveChangesAsync();
+                return StatusCode(500, new { 
+                    message = "TestRunner request timed out",
+                    error = timeoutEx.Message
+                });
             }
 
             return Ok(
@@ -303,9 +368,12 @@ public class TestSuitesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(
-                new { message = $"Failed to run generated TestCafe file: {ex.Message}" }
-            );
+            _logger.LogError(ex, "Error running generated TestCafe file for test suite {TestSuiteId}", id);
+            return StatusCode(500, new { 
+                message = $"Failed to run generated TestCafe file: {ex.Message}",
+                error = ex.Message,
+                details = ex.StackTrace
+            });
         }
     }
 }

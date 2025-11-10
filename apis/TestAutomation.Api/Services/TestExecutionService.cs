@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
@@ -78,34 +79,68 @@ public class TestExecutionService : ITestExecutionService
                             .TestCases.Where(tc => tc.IsActive)
                             .Select(tc =>
                             {
-                                var stepsJson = tc.Steps?.RootElement.GetRawText();
-                                if (stepsJson != null)
+                                string? stepsJson = null;
+                                try
                                 {
-                                    _logger.LogInformation(
-                                        "Step data for test case {TestCaseId}: {StepData}",
-                                        tc.Id,
-                                        stepsJson
-                                    );
+                                    if (tc.Steps != null && tc.Steps.RootElement.ValueKind != System.Text.Json.JsonValueKind.Null)
+                                    {
+                                        stepsJson = tc.Steps.RootElement.GetRawText();
+                                        if (!string.IsNullOrWhiteSpace(stepsJson))
+                                        {
+                                            _logger.LogInformation(
+                                                "Step data for test case {TestCaseId}: {StepData}",
+                                                tc.Id,
+                                                stepsJson.Substring(0, Math.Min(200, stepsJson.Length))
+                                            );
+                                        }
+                                    }
                                 }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogWarning(ex, "Failed to parse steps for test case {TestCaseId}", tc.Id);
+                                }
+
+                                object? steps = null;
+                                if (!string.IsNullOrWhiteSpace(stepsJson))
+                                {
+                                    try
+                                    {
+                                        steps = JsonSerializer.Deserialize<object>(stepsJson);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.LogWarning(ex, "Failed to deserialize steps JSON for test case {TestCaseId}", tc.Id);
+                                    }
+                                }
+
                                 return new
                                 {
                                     id = tc.Id,
                                     name = tc.Name,
                                     testType = tc.TestType.ToString().ToLower(),
-                                    steps = stepsJson != null
-                                        ? JsonSerializer.Deserialize<object>(stepsJson)
-                                        : null,
+                                    steps = steps,
                                     scriptText = tc.ScriptText,
                                     testDataSets = tc
-                                        .TestDataSets.Where(d => d.IsActive)
-                                        .Select(d => new
+                                        .TestDataSets?.Where(d => d.IsActive)
+                                        .Select(d =>
                                         {
-                                            id = d.Id,
-                                            name = d.Name,
-                                            data = JsonSerializer.Deserialize<object>(
-                                                d.Data.RootElement.GetRawText()
-                                            ),
-                                        }),
+                                            try
+                                            {
+                                                return new
+                                                {
+                                                    id = d.Id,
+                                                    name = d.Name,
+                                                    data = d.Data != null && d.Data.RootElement.ValueKind != System.Text.Json.JsonValueKind.Null
+                                                        ? JsonSerializer.Deserialize<object>(d.Data.RootElement.GetRawText())
+                                                        : null,
+                                                };
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                _logger.LogWarning(ex, "Failed to parse test data set {DataSetId} for test case {TestCaseId}", d.Id, tc.Id);
+                                                return new { id = d.Id, name = d.Name, data = (object?)null };
+                                            }
+                                        }) ?? Enumerable.Empty<object>(),
                                 };
                             }),
                     })
@@ -123,34 +158,68 @@ public class TestExecutionService : ITestExecutionService
                 )
                     .Select(tc =>
                     {
-                        var stepsJson = tc.Steps?.RootElement.GetRawText();
-                        if (stepsJson != null)
+                        string? stepsJson = null;
+                        try
                         {
-                            _logger.LogInformation(
-                                "Step data for direct test case {TestCaseId}: {StepData}",
-                                tc.Id,
-                                stepsJson
-                            );
+                            if (tc.Steps != null && tc.Steps.RootElement.ValueKind != System.Text.Json.JsonValueKind.Null)
+                            {
+                                stepsJson = tc.Steps.RootElement.GetRawText();
+                                if (!string.IsNullOrWhiteSpace(stepsJson))
+                                {
+                                    _logger.LogInformation(
+                                        "Step data for direct test case {TestCaseId}: {StepData}",
+                                        tc.Id,
+                                        stepsJson.Substring(0, Math.Min(200, stepsJson.Length))
+                                    );
+                                }
+                            }
                         }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Failed to parse steps for direct test case {TestCaseId}", tc.Id);
+                        }
+
+                        object? steps = null;
+                        if (!string.IsNullOrWhiteSpace(stepsJson))
+                        {
+                            try
+                            {
+                                steps = JsonSerializer.Deserialize<object>(stepsJson);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogWarning(ex, "Failed to deserialize steps JSON for direct test case {TestCaseId}", tc.Id);
+                            }
+                        }
+
                         return new
                         {
                             id = tc.Id,
                             name = tc.Name,
                             testType = tc.TestType.ToString().ToLower(),
-                            steps = stepsJson != null
-                                ? JsonSerializer.Deserialize<object>(stepsJson)
-                                : null,
+                            steps = steps,
                             scriptText = tc.ScriptText,
                             testDataSets = tc
-                                .TestDataSets.Where(d => d.IsActive)
-                                .Select(d => new
+                                .TestDataSets?.Where(d => d.IsActive)
+                                .Select(d =>
                                 {
-                                    id = d.Id,
-                                    name = d.Name,
-                                    data = JsonSerializer.Deserialize<object>(
-                                        d.Data.RootElement.GetRawText()
-                                    ),
-                                }),
+                                    try
+                                    {
+                                        return new
+                                        {
+                                            id = d.Id,
+                                            name = d.Name,
+                                            data = d.Data != null && d.Data.RootElement.ValueKind != System.Text.Json.JsonValueKind.Null
+                                                ? JsonSerializer.Deserialize<object>(d.Data.RootElement.GetRawText())
+                                                : null,
+                                        };
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.LogWarning(ex, "Failed to parse test data set {DataSetId} for direct test case {TestCaseId}", d.Id, tc.Id);
+                                        return new { id = d.Id, name = d.Name, data = (object?)null };
+                                    }
+                                }) ?? Enumerable.Empty<object>(),
                         };
                     })
                     .Cast<object>()
@@ -186,19 +255,54 @@ public class TestExecutionService : ITestExecutionService
         {
             try
             {
+                _logger.LogInformation("🚀 Sending test run request to TestRunner at {BaseUrl}/run-tests", 
+                    _config["TestRunner:BaseUrl"] ?? "http://localhost:4000");
+                
                 var response = await client.PostAsJsonAsync("/run-tests", payload);
+                
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogError("Failed to start Node runner: {Status}", response.StatusCode);
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("❌ Failed to start Node runner: {Status} - {Error}", 
+                        response.StatusCode, errorContent);
+                    
                     run.Status = TestRunStatus.Failed;
+                    run.CompletedAt = DateTime.UtcNow;
                     await _db.SaveChangesAsync();
+                    
+                    // Send SignalR update about the failure
+                    await _hubContext.Clients.Group($"testrun-{run.Id}")
+                        .SendAsync("ReceiveTestUpdate", new
+                        {
+                            testRunId = run.Id.ToString(),
+                            status = "failed",
+                            message = $"Failed to start test runner: {response.StatusCode} - {errorContent}",
+                            timestamp = DateTime.UtcNow
+                        });
+                }
+                else
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogInformation("✅ TestRunner accepted test run request: {Response}", responseContent);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error sending test run request to TestRunner");
+                _logger.LogError(ex, "❌ Error sending test run request to TestRunner: {Message}", ex.Message);
                 run.Status = TestRunStatus.Failed;
+                run.CompletedAt = DateTime.UtcNow;
                 await _db.SaveChangesAsync();
+                
+                // Send SignalR update about the failure
+                await _hubContext.Clients.Group($"testrun-{run.Id}")
+                    .SendAsync("ReceiveTestUpdate", new
+                    {
+                        testRunId = run.Id.ToString(),
+                        status = "failed",
+                        message = $"Error connecting to TestRunner: {ex.Message}",
+                        error = new { message = ex.Message, stack = ex.StackTrace },
+                        timestamp = DateTime.UtcNow
+                    });
             }
         });
 
