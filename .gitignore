@@ -124,13 +124,16 @@ apis/TestRunner/temp-tests/*
 apis/TestAutomation.Api/IMPLEMENTATION_NOTES.md
 apis/TestRunner/test-browser-launch.js
 apis/TestRunner/screenshots/
+publish/
+nul
+
 # Ignore .env and appsettings files
+
 appsettings*.json
 launchSettings*.json
 .env
 .env.local
 .env.*
 deploy-production.sh
-nul
 
 
