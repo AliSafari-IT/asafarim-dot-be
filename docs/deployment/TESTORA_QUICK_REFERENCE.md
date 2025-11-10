@@ -22,6 +22,7 @@ TestRunner (port 4000)
 ## Three Services to Deploy
 
 ### 1. TestAutomation.Api (.NET Backend)
+
 - **Port**: 5106 (internal only, proxied via nginx)
 - **Runtime**: .NET 8
 - **Database**: PostgreSQL
@@ -29,12 +30,14 @@ TestRunner (port 4000)
 - **Logs**: `/var/www/asafarim-dot-be/logs/testora-api-*.txt`
 
 ### 2. TestRunner (Node.js Test Executor)
+
 - **Port**: 4000 (internal only)
 - **Runtime**: Node.js 18+
 - **Service**: `testrunner.service`
 - **Logs**: `journalctl -u testrunner`
 
 ### 3. test-automation-ui (React Frontend)
+
 - **Port**: 443 (HTTPS via nginx)
 - **Build Output**: `/var/www/asafarim-dot-be/apps/test-automation-ui/`
 - **Nginx Config**: `/etc/nginx/sites-available/testora.asafarim.be.conf`
@@ -44,6 +47,7 @@ TestRunner (port 4000)
 ## Deployment Steps (Summary)
 
 ### Step 1: Prepare Server
+
 ```bash
 # Install dependencies
 sudo apt-get update
@@ -56,6 +60,7 @@ sudo chown -R www-data:www-data /var/www/asafarim-dot-be
 ```
 
 ### Step 2: Setup Database
+
 ```bash
 # Create database
 sudo -u postgres psql
@@ -69,6 +74,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 ```
 
 ### Step 3: Deploy TestAutomation.Api
+
 ```bash
 # Build on dev machine
 cd apis/TestAutomation.Api
@@ -89,6 +95,7 @@ sudo systemctl start dotnet-testora
 ```
 
 ### Step 4: Deploy TestRunner
+
 ```bash
 # Build on dev machine
 cd apis/TestRunner
@@ -105,6 +112,7 @@ sudo systemctl start testrunner
 ```
 
 ### Step 5: Deploy Frontend
+
 ```bash
 # Build on dev machine
 cd apps/test-automation-ui
@@ -115,6 +123,7 @@ scp -r ./dist/* user@server:/var/www/asafarim-dot-be/apps/test-automation-ui/
 ```
 
 ### Step 6: Configure Nginx
+
 ```bash
 # Copy nginx config
 sudo cp /path/to/testora.asafarim.be.conf /etc/nginx/sites-available/
@@ -126,6 +135,7 @@ sudo systemctl reload nginx
 ```
 
 ### Step 7: Setup SSL Certificates
+
 ```bash
 # Generate Let's Encrypt certificate
 sudo certbot certonly --nginx -d testora.asafarim.be
@@ -139,15 +149,18 @@ sudo systemctl enable certbot.timer
 ## Configuration Files
 
 ### 1. appsettings.Production.json
+
 Location: `/var/www/asafarim-dot-be/apis/TestAutomation.Api/appsettings.Production.json`
 
 **Key Settings**:
+
 - `ConnectionStrings.DefaultConnection` - PostgreSQL connection string
-- `IdentityApi.BaseUrl` - https://identity.asafarim.be
-- `TestRunner.BaseUrl` - http://127.0.0.1:4000
+- `IdentityApi.BaseUrl` - <https://identity.asafarim.be>
+- `TestRunner.BaseUrl` - <http://127.0.0.1:4000>
 - `TestRunner.ApiKey` - Secure API key for TestRunner communication
 
 ### 2. Environment Variables
+
 Location: `/etc/asafarim/env`
 
 ```bash
@@ -161,11 +174,13 @@ JWT_SECRET=0+a0ZklJy6DVL6osEj73W6P9inMk3+Ocn8KkQoUDR78=
 ```
 
 ### 3. Nginx Configuration
+
 Location: `/etc/nginx/sites-available/testora.asafarim.be.conf`
 
 **Key Proxies**:
-- `/api/*` → http://127.0.0.1:5106 (API backend)
-- `/signalr` → http://127.0.0.1:5106 (WebSocket for real-time updates)
+
+- `/api/*` → <http://127.0.0.1:5106> (API backend)
+- `/signalr` → <http://127.0.0.1:5106> (WebSocket for real-time updates)
 - `/*` → React SPA (try_files $uri $uri/ /index.html)
 
 ---
@@ -201,6 +216,7 @@ curl -I https://testora.asafarim.be/
 ## Common Issues & Solutions
 
 ### API Service Won't Start
+
 ```bash
 # Check logs
 sudo journalctl -u dotnet-testora -n 50
@@ -213,6 +229,7 @@ sudo lsof -i :5106
 ```
 
 ### TestRunner Not Connecting
+
 ```bash
 # Check if port 4000 is listening
 sudo netstat -tlnp | grep 4000
@@ -223,6 +240,7 @@ grep ApiKey /var/www/asafarim-dot-be/apis/TestAutomation.Api/appsettings.Product
 ```
 
 ### Frontend Not Loading
+
 ```bash
 # Check nginx config
 sudo nginx -t
@@ -235,6 +253,7 @@ sudo tail -f /var/log/nginx/testora.asafarim.be.error.log
 ```
 
 ### Database Connection Issues
+
 ```bash
 # Test connection
 psql -h localhost -U testora_user -d testora_production
@@ -296,6 +315,7 @@ sudo systemctl restart dotnet-testora testrunner nginx
 ## Backup & Recovery
 
 ### Backup Database
+
 ```bash
 # Manual backup
 pg_dump -U testora_user testora_production | gzip > testora_backup_$(date +%Y%m%d).sql.gz
@@ -305,6 +325,7 @@ gunzip < testora_backup_20240101.sql.gz | psql -U testora_user testora_productio
 ```
 
 ### Backup Application Files
+
 ```bash
 # Backup API
 tar -czf testora-api-backup.tar.gz /var/www/asafarim-dot-be/apis/TestAutomation.Api/
@@ -321,6 +342,7 @@ tar -czf testora-ui-backup.tar.gz /var/www/asafarim-dot-be/apps/test-automation-
 ## Performance Tuning
 
 ### PostgreSQL
+
 ```sql
 -- Increase connections
 ALTER SYSTEM SET max_connections = 200;
@@ -333,6 +355,7 @@ SELECT pg_reload_conf();
 ```
 
 ### Nginx
+
 ```nginx
 # In /etc/nginx/nginx.conf
 worker_processes auto;
@@ -341,6 +364,7 @@ gzip on;
 ```
 
 ### .NET Runtime
+
 ```bash
 # In systemd service
 Environment=DOTNET_TieredCompilation=1
@@ -352,6 +376,7 @@ Environment=DOTNET_TieredCompilationQuickJit=1
 ## Security Hardening
 
 ### Firewall
+
 ```bash
 sudo ufw allow 22/tcp
 sudo ufw allow 80/tcp
@@ -361,6 +386,7 @@ sudo ufw enable
 ```
 
 ### API Key Rotation
+
 ```bash
 # Generate new key
 openssl rand -base64 32

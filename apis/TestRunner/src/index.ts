@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 const API_KEY = process.env.API_KEY || 'test-runner-api-key-2024';
-const API_URL = process.env.API_URL || 'http://testora.asafarim.local:5106';
+const API_URL = process.env.API_URL || 'http://localhost:5106';
 
 // Middleware
 app.use(cors());
@@ -29,14 +29,15 @@ const validateApiKey = (req: express.Request, res: express.Response, next: expre
 };
 
 // Initialize SignalR service
+logger.info(`🔗 Connecting to TestAutomation API at: ${API_URL}`);
 const signalRService = new SignalRService(API_URL);
 
 // Initialize TestRunner service
 const testRunner = new TestRunnerService(signalRService);
 
 // Ensure temp directory exists on startup
-const tempDir = process.env.TEMP_TESTS_DIR || 
-    (process.platform === 'win32' 
+const tempDir = process.env.TEMP_TESTS_DIR ||
+    (process.platform === 'win32'
         ? path.join(process.env.TEMP || process.env.TMP || 'C:\\temp', 'testrunner-tests')
         : path.join(process.env.TMPDIR || '/var/tmp', 'testrunner-tests'));
 
@@ -62,14 +63,14 @@ signalRService.connect()
 
 // Register routes
 app.post('/run', validateApiKey, async (req, res) => {
-  const { testSuiteId } = req.body;
-  try {
-    const runId = await testRunner.runTests(testSuiteId);
-    res.json({ runId });
-  } catch (err) {
-    logger.error('Run failed', err);
-    res.status(500).json({ error: 'Test run failed' });
-  }
+    const { testSuiteId } = req.body;
+    try {
+        const runId = await testRunner.runTests(testSuiteId);
+        res.json({ runId });
+    } catch (err) {
+        logger.error('Run failed', err);
+        res.status(500).json({ error: 'Test run failed' });
+    }
 });
 
 // Health check
@@ -82,8 +83,8 @@ app.post('/run-tests', validateApiKey, async (req, res) => {
     try {
         const firstSuite = req.body.testSuites?.[0];
         const firstTestCase = firstSuite?.testCases?.[0];
-        
-        logger.info('Received test run request', { 
+
+        logger.info('Received test run request', {
             runId: req.body.runId,
             testSuitesCount: req.body.testSuites?.length || 0,
             testCasesCount: req.body.testCases?.length || 0,
@@ -92,7 +93,7 @@ app.post('/run-tests', validateApiKey, async (req, res) => {
             firstTestCaseStepsCount: firstTestCase?.steps?.length || 0,
             firstTestCaseStepsPreview: firstTestCase?.steps ? JSON.stringify(firstTestCase.steps).substring(0, 200) : 'none'
         });
-        
+
         // Start test execution asynchronously (don't wait for completion)
         // This allows the API to return immediately while tests run in background
         testRunner.runTests(req.body).catch((error: any) => {
@@ -102,15 +103,15 @@ app.post('/run-tests', validateApiKey, async (req, res) => {
                 stack: error.stack
             });
         });
-        
+
         // Return immediately with runId to indicate test run has started
-        res.json({ 
+        res.json({
             runId: req.body.runId || 'unknown',
             status: 'started',
             message: 'Test run initiated successfully'
         });
     } catch (error: any) {
-        logger.error('Error starting test run', { 
+        logger.error('Error starting test run', {
             error: error.message,
             stack: error.stack
         });
@@ -140,7 +141,7 @@ app.post('/cancel/:runId', validateApiKey, async (req, res) => {
 app.post('/run-generated-file', validateApiKey, async (req, res) => {
     try {
         const { testSuiteId, fileContent, browser, runId } = req.body;
-        
+
         if (!testSuiteId || !fileContent) {
             return res.status(400).json({ error: 'testSuiteId and fileContent are required' });
         }
@@ -149,7 +150,7 @@ app.post('/run-generated-file', validateApiKey, async (req, res) => {
         const result = await testRunner.runGeneratedTestCafeFile(testSuiteId, fileContent, browser, runId);
         res.json(result);
     } catch (error: any) {
-        logger.error('Error running generated TestCafe file', { 
+        logger.error('Error running generated TestCafe file', {
             error: error.message,
             stack: error.stack,
             code: error.code,
