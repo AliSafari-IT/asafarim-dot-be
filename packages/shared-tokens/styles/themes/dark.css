@@ -109,21 +109,6 @@
   --color-neutral: #6b7280;
   --color-neutral-muted: #9ca3af;
 
-  /* Border color */
-  --border-color: #374151;
-  --border-hover-color: #4b5563;
-  --border-active-color: #6b7280;
-  --border-disabled-color: #9ca3af;
-  --border-focus-color: #9ca3af;
-  --border-focus-visible-color: #9ca3af;
-
-  /* focus colors */
-  --focus-color: #1d4ed8;
-  --focus-border-color: #4972fa;
-  --focus-border-visible-color: #284191;
-  --focus-visible-color: #073bc9;
-  --focus-visible-border-color: #284191;
-
   /* Semantic colors (updated) */
   /* Success */
   --color-success-0: #022c22;

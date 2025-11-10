@@ -12,3 +12,6 @@
 127.0.0.1 api.asafarim.local
 127.0.0.1 core-api.asafarim.local
 127.0.0.1 smartops.asafarim.local
+127.0.0.1 testautomation.asafarim.local
+127.0.0.1 testora.asafarim.local
+

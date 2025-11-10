@@ -34,13 +34,21 @@ const appUrlConfig = {
     production: 'https://core.asafarim.be',
     development: 'http://core.asafarim.local:5174'
   },
-  jobs: {
-    production: 'https://core.asafarim.be/jobs',
-    development: 'http://core.asafarim.local:5174/jobs'
+  testora: {
+    production: 'https://testora.asafarim.be',
+    development: 'http://testora.asafarim.local:5180'
   },
   identity: {
     production: 'https://identity.asafarim.be',
     development: 'http://identity.asafarim.local:5177'
+  },
+  taskmanagement: {
+    production: 'https://taskmanagement.asafarim.be',
+    development: 'http://taskmanagement.asafarim.local:5176'
+  },
+  smartops: {
+    production: 'https://smartops.asafarim.be',
+    development: 'http://smartops.asafarim.local:5178'
   }
 };
 
@@ -81,16 +89,28 @@ export const useAppRegistry = (): AppInfo[] => {
       description: t('apps.description.core')
     },
     {
-      id: 'jobs',
-      name: t('apps.appName.jobs'),
-      url: getAppUrl('jobs'),
-      description: t('apps.description.jobs')
+      id: 'testora',
+      name: t('apps.appName.testora'),
+      url: getAppUrl('testora'),
+      description: t('apps.description.testora')
     },
     {
       id: 'identity',
       name: t('apps.appName.identity'),
       url: getAppUrl('identity'),
       description: t('apps.description.identity')
+    },
+    {
+      id: 'taskmanagement',
+      name: t('apps.appName.taskmanagement'),
+      url: getAppUrl('taskmanagement'),
+      description: t('apps.description.taskmanagement')
+    },
+    {
+      id: 'smartops',
+      name: t('apps.appName.smartops'),
+      url: getAppUrl('smartops'),
+      description: t('apps.description.smartops')
     }
   ];
 };
@@ -123,16 +143,28 @@ export const getAppRegistry = (): AppInfo[] => [
     description: 'Core application features'
   },
   {
-    id: 'jobs',
-    name: 'Job Applications',
-    url: getAppUrl('jobs'),
-    description: 'Job application tracking'
+    id: 'testora',
+    name: 'Testora',
+    url: getAppUrl('testora'),
+    description: 'Test Automation app'
   },
   {
     id: 'identity',
     name: 'Identity Portal',
     url: getAppUrl('identity'),
     description: 'User management and authentication'
+  },
+  {
+    id: 'taskmanagement',
+    name: 'Task Management',
+    url: getAppUrl('taskmanagement'),
+    description: 'Task management features'
+  },
+  {
+    id: 'smartops',
+    name: 'SmartOps',
+    url: getAppUrl('smartops'),
+    description: 'SmartOps features'
   }
 ];
 
@@ -171,6 +203,9 @@ export const getCurrentAppId = (): string => {
   if (hostname === 'ai.asafarim.be') return 'ai';
   if (hostname === 'core.asafarim.be') return 'core';
   if (hostname === 'identity.asafarim.be') return 'identity';
+  if (hostname === 'taskmanagement.asafarim.be') return 'taskmanagement';
+  if (hostname === 'smartops.asafarim.be') return 'smartops';
+  if (hostname === 'testora.asafarim.be') return 'testora';
 
   // Check for development domains
   if (hostname.startsWith('web.') || hostname.includes('web.asafarim.local')) return 'web';
@@ -178,6 +213,9 @@ export const getCurrentAppId = (): string => {
   if (hostname.startsWith('ai.') || hostname.includes('ai.asafarim.local')) return 'ai';
   if (hostname.startsWith('core.') || hostname.includes('core.asafarim.local')) return 'core';
   if (hostname.startsWith('identity.') || hostname.includes('identity.asafarim.local')) return 'identity';
+  if (hostname.startsWith('taskmanagement.') || hostname.includes('taskmanagement.asafarim.local')) return 'taskmanagement';
+  if (hostname.startsWith('smartops.') || hostname.includes('smartops.asafarim.local')) return 'smartops';
+  if (hostname.startsWith('testora.') || hostname.includes('testora.asafarim.local')) return 'testora';
 
   // Default fallback
   return '';

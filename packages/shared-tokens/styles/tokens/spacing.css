@@ -82,4 +82,10 @@
   --space-38: 9.5rem;
   --space-39: 9.75rem;
   --space-40: 10rem;
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.25rem;
 }

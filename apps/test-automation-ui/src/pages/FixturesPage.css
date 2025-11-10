@@ -1,0 +1,255 @@
+/* Fixtures Page Styling with Shared Tokens */
+.fixtures-container {
+  max-width: var(--width-2xl);
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+/* Header */
+.fixtures-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.fixtures-title {
+  margin: 0;
+  color: var(--color-foreground);
+  font-size: var(--font-size-4);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Form Styling */
+.fixture-form {
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-title {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  color: var(--color-foreground);
+  font-size: var(--font-size-3);
+}
+
+.form-group {
+  margin-bottom: var(--space-4);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--color-foreground);
+  font-size: var(--font-size-2);
+  font-weight: var(--font-weight-medium);
+}
+
+.form-control {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-2);
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+textarea.form-control {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Buttons */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.button-primary:hover {
+  background-color: var(--color-primary-600);
+}
+
+.button-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-foreground);
+  border-color: var(--color-border);
+}
+
+.button-secondary:hover {
+  background-color: var(--bg-hover-color);
+}
+
+.button-danger {
+  background-color: var(--color-error);
+  color: white;
+}
+
+.button-danger:hover {
+  background-color: var(--color-error-dark);
+}
+
+.button + .button {
+  margin-left: var(--space-2);
+}
+
+/* Table Styling */
+.fixtures-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.fixtures-table th,
+.fixtures-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.fixtures-table th {
+  background-color: var(--bg-hover-color);
+  color: var(--color-foreground);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  font-size: var(--font-size-1);
+  letter-spacing: 0.05em;
+}
+
+.fixtures-table tr:last-child td {
+  border-bottom: none;
+}
+
+.fixtures-table tr:hover {
+  background-color: var(--bg-hover-color);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Empty State */
+.empty-state {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .fixtures-container {
+    padding: var(--space-2);
+  }
+  
+  .fixtures-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: var(--space-2);
+  }
+  
+  .fixtures-title {
+    font-size: 1.5rem;
+  }
+  
+  .fixture-form {
+    padding: var(--space-3);
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-title {
+    font-size: 1rem;
+    margin-bottom: var(--space-3);
+  }
+  
+  .form-group {
+    margin-bottom: var(--space-3);
+  }
+  
+  .form-label {
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--space-1);
+  }
+  
+  .form-control,
+  textarea.form-control {
+    font-size: 16px;
+    padding: var(--space-2);
+  }
+  
+  textarea.form-control {
+    min-height: 80px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .button {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+  
+  .button + .button {
+    margin-left: 0;
+    margin-top: var(--space-2);
+  }
+  
+  .fixtures-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: var(--font-size-xs);
+  }
+  
+  .fixtures-table th,
+  .fixtures-table td {
+    padding: var(--space-2) var(--space-2);
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  
+  .action-buttons .button {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+}

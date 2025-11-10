@@ -17,6 +17,7 @@ export interface HeroProps {
   secondaryCta?: Cta;
   media?: ReactNode; // optional image, illustration, or any custom node
   className?: string;
+  mediaClassName?: string;
 }
 
 export function Hero({
@@ -28,6 +29,7 @@ export function Hero({
   secondaryCta = { label: "", to: "" },
   media,
   className = "",
+  mediaClassName = "",
 }: HeroProps) {
   return (
     <section className={`hero-section ${className}`}>
@@ -101,7 +103,7 @@ export function Hero({
 
           {/* Media column */}
           {media && (
-            <div className="hero-media">
+            <div className={`hero-media ${mediaClassName}`}>
               <div className="hero-media-card">
                 <div className="hero-media-content">
                   {media}

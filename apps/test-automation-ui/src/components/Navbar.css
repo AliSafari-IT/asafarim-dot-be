@@ -1,0 +1,11 @@
+/* Test Automation-specific navbar styles - MINIMAL overrides only */
+
+/* Container max-width for centering content */
+.test-automation-navbar .nav-row {
+}
+
+@media (min-width: 768px) {
+}
+
+@media (min-width: 1024px) {
+}
