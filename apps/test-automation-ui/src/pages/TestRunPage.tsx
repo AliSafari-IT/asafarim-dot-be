@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Play, Square } from "lucide-react";
-import { api } from "../config/api";
+import { api, SIGNALR_URL } from "../config/api";
 import { useAuth } from "@asafarim/shared-ui-react";
 import { createHubConnection } from "../services/signalr";
 import * as signalR from "@microsoft/signalr";
@@ -113,10 +113,7 @@ export default function TestRunPage() {
   useEffect(() => {
     if (!token) return;
 
-    const hubUrl =
-      (import.meta as any).env.VITE_SIGNALR_URL ||
-      "http://testora.asafarim.local:5106/hubs/testrun";
-    const hubConnection = createHubConnection(hubUrl, token);
+    const hubConnection = createHubConnection(SIGNALR_URL, token);
 
     hubConnection.on("TestUpdate", (msg: any) => {
       setLogs((prev) => [...prev, msg.message || JSON.stringify(msg)]);
