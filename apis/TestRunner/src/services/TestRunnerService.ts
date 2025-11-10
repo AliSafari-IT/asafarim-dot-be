@@ -10,7 +10,11 @@ export class TestRunnerService {
     private testCafe: any;
     private runningRuns: Map<string, TestRunStatus> = new Map();
     private signalR: SignalRService;
-    private tempDir = process.env.TEMP_TESTS_DIR || path.join(process.cwd(), 'temp-tests');
+    // Use system temp directory or configured path - ensures writability
+    private tempDir = process.env.TEMP_TESTS_DIR || 
+        (process.platform === 'win32' 
+            ? path.join(process.env.TEMP || process.env.TMP || 'C:\\temp', 'testrunner-tests')
+            : path.join(process.env.TMPDIR || '/var/tmp', 'testrunner-tests'));
 
     constructor(signalRService: SignalRService) {
         this.signalR = signalRService;
@@ -286,7 +290,17 @@ export class TestRunnerService {
     }
 
     private async createTempDir() {
-        await fs.mkdir(this.tempDir, { recursive: true });
+        try {
+            await fs.mkdir(this.tempDir, { recursive: true });
+            logger.info(`✅ Temp directory ready: ${this.tempDir}`);
+        } catch (error: any) {
+            logger.error(`❌ Failed to create temp directory: ${this.tempDir}`, {
+                error: error.message,
+                code: error.code,
+                suggestion: 'Check permissions or set TEMP_TESTS_DIR environment variable to a writable location'
+            });
+            throw new Error(`Cannot create temp directory: ${this.tempDir}. Error: ${error.message}. Please ensure the directory is writable or set TEMP_TESTS_DIR environment variable.`);
+        }
     }
 
     // --- TestCafe lifecycle --------------------------------------------------
@@ -349,9 +363,12 @@ export class TestRunnerService {
             // Track test results - use a temp file for JSON reporter
             const reportPath = path.join(this.tempDir, `${runId}-report.json`);
 
+            // Ensure browser runs in headless mode for server environments
+            const browserConfig = browser.includes(':') ? browser : `${browser}:headless`;
+
             const failedCount = await runner
                 .src([filePath])
-                .browsers(browser)
+                .browsers(browserConfig)
                 .reporter('json', reportPath)
                 .run({ skipJsErrors: true });
 
@@ -515,13 +532,61 @@ export class TestRunnerService {
         await this.ensureSignalR(runId);
         await this.createTempDir();
 
+        logger.info('📋 Collecting test cases from request', this.context(runId, {
+            testSuitesCount: request.testSuites?.length || 0,
+            testCasesCount: request.testCases?.length || 0
+        }));
+
         const allCases = this.collectTestCases(request);
+        logger.info(`📊 Collected ${allCases.length} test case(s)`, this.context(runId));
+        
         if (allCases.length === 0) {
             const msg = 'No test cases found in request';
-            logger.error(msg, this.context(runId));
+            logger.error(msg, this.context(runId, {
+                requestKeys: Object.keys(request),
+                testSuites: request.testSuites,
+                testCases: request.testCases
+            }));
             await this.sendSignalRUpdate(runId, { status: 'failed', error: { message: msg } });
-            return;
+            await this.sendWebhookUpdate(runId, { status: 'failed', error: { message: msg } });
+            Object.assign(status, { status: 'failed', error: { message: msg } });
+            this.runningRuns.set(runId, status);
+            return { runId, status: 'failed', error: { message: msg } };
         }
+
+        // Validate that test cases have steps or scriptText
+        logger.info('🔍 Validating test cases have steps or scripts', this.context(runId));
+        const invalidCases = allCases.filter(tc => {
+            const hasSteps = tc.steps && Array.isArray(tc.steps) && tc.steps.length > 0;
+            const hasScript = tc.testType === 'script' && tc.scriptText && tc.scriptText.trim().length > 0;
+            const isValid = hasSteps || hasScript;
+            
+            if (!isValid) {
+                logger.warn(`⚠️ Test case ${tc.name || tc.id} is invalid: no steps and no script`, this.context(runId, {
+                    testCaseId: tc.id,
+                    testCaseName: tc.name,
+                    testType: tc.testType,
+                    hasSteps: !!tc.steps,
+                    stepsIsArray: Array.isArray(tc.steps),
+                    stepsLength: tc.steps && Array.isArray(tc.steps) ? tc.steps.length : 0,
+                    hasScriptText: !!(tc.scriptText && tc.scriptText.trim().length > 0)
+                }));
+            }
+            
+            return !isValid;
+        });
+
+        if (invalidCases.length > 0) {
+            const msg = `Found ${invalidCases.length} test case(s) without steps or script: ${invalidCases.map(tc => tc.name || tc.id).join(', ')}`;
+            logger.error(msg, this.context(runId, { invalidCases: invalidCases.map(tc => ({ id: tc.id, name: tc.name })) }));
+            await this.sendSignalRUpdate(runId, { status: 'failed', error: { message: msg } });
+            await this.sendWebhookUpdate(runId, { status: 'failed', error: { message: msg } });
+            Object.assign(status, { status: 'failed', error: { message: msg } });
+            this.runningRuns.set(runId, status);
+            return { runId, status: 'failed', error: { message: msg } };
+        }
+        
+        logger.info(`✅ All ${allCases.length} test case(s) are valid`, this.context(runId));
 
         status.totalTests = allCases.length;
 
@@ -541,14 +606,20 @@ export class TestRunnerService {
             if (url && tc?.id) pageUrlMap.set(tc.id, url);
         });
 
+        logger.info('📝 Generating test files', this.context(runId, { testCasesCount: allCases.length }));
         const testFiles = await this.generateTestFiles(allCases, pageUrlMap);
+        logger.info(`✅ Generated ${testFiles.length} test file(s)`, this.context(runId, { files: testFiles }));
 
+        logger.info('🔧 Getting TestCafe runner instance', this.context(runId));
         const runner = await this.getTestCafeRunner();
+        logger.info('✅ TestCafe runner obtained', this.context(runId));
+        
         const browser = request.browser || 'chrome';
         const start = Date.now();
 
         // Setup JSON reporter to capture test results
         const reportPath = path.join(this.tempDir, `${runId}-report.json`);
+        logger.info(`📊 Report will be written to: ${reportPath}`, this.context(runId));
 
         try {
             logger.info('Running tests', this.context(runId, { total: allCases.length, browser }));
@@ -556,28 +627,80 @@ export class TestRunnerService {
             logger.info(`🌐 Browser: ${browser}`);
             logger.info(`📊 Report path: ${reportPath}`);
 
+            // Send initial progress update
+            await this.sendSignalRUpdate(runId, {
+                status: 'running',
+                progress: 0,
+                totalTests: allCases.length,
+                message: `Starting execution of ${allCases.length} test(s)...`
+            });
+            await this.sendWebhookUpdate(runId, {
+                status: 'running',
+                totalTests: allCases.length,
+                passedTests: 0,
+                failedTests: 0
+            });
+
             logger.info('⏳ Starting TestCafe runner...');
             logger.info(`📋 Runner configuration: browser=${browser}, files=${testFiles.length}, report=${reportPath}`);
             
             let failedCount: number;
             try {
                 // Use browser directly without path specification
-                logger.info(`🔍 Launching browser: ${browser}`);
+                logger.info(`🔍 Launching browser: ${browser}`, this.context(runId));
+                logger.info(`📁 Test files exist check:`, this.context(runId, {
+                    files: await Promise.all(testFiles.map(async (f) => {
+                        try {
+                            const exists = await fs.access(f).then(() => true).catch(() => false);
+                            const stats = exists ? await fs.stat(f) : null;
+                            return { path: f, exists, size: stats?.size || 0 };
+                        } catch {
+                            return { path: f, exists: false, size: 0 };
+                        }
+                    }))
+                }));
                 
-                failedCount = await runner.src(testFiles).browsers(browser).reporter('json', reportPath).run({
+                await this.sendSignalRUpdate(runId, {
+                    status: 'running',
+                    progress: 5,
+                    message: `Launching ${browser} browser...`
+                });
+                
+                logger.info(`🚀 Starting TestCafe run with ${testFiles.length} file(s)`, this.context(runId));
+                const runPromise = runner.src(testFiles).browsers(browser).reporter('json', reportPath).run({
                     skipJsErrors: true,
                     selectorTimeout: 10000,
                     assertionTimeout: 10000,
                     browserInitializationTimeout: 5 * 60 * 1000, // 5 minutes for browser init
                 });
                 
-                logger.info(`✅ TestCafe execution completed. Failed count: ${failedCount}`);
+                logger.info(`⏳ Waiting for TestCafe execution to complete...`, this.context(runId));
+                failedCount = await runPromise;
+                
+                logger.info(`✅ TestCafe execution completed. Failed count: ${failedCount}`, this.context(runId));
             } catch (runError: any) {
                 logger.error('❌ TestCafe runner failed', {
                     error: runError.message,
                     stack: runError.stack,
                     name: runError.name
                 });
+                
+                // Send error update via SignalR and webhook
+                await this.sendSignalRUpdate(runId, {
+                    status: 'failed',
+                    error: {
+                        message: runError.message,
+                        stack: runError.stack
+                    },
+                    message: `TestCafe execution failed: ${runError.message}`
+                });
+                await this.sendWebhookUpdate(runId, {
+                    status: 'failed',
+                    totalTests: allCases.length,
+                    passedTests: 0,
+                    failedTests: allCases.length
+                });
+                
                 throw runError;
             }
 
@@ -666,19 +789,32 @@ export class TestRunnerService {
             }
 
             status.status = failedCount > 0 ? 'failed' : 'completed';
+            status.completedTests = allCases.length;
+            status.passedTests = allCases.length - failedCount;
+            status.failedTests = failedCount;
             status.progress = 100;
+            
             await this.sendSignalRUpdate(runId, {
                 status: status.status,
                 progress: 100,
                 totalTests: allCases.length,
-                passedTests: allCases.length - failedCount,
-                failedTests: failedCount
+                passedTests: status.passedTests,
+                failedTests: status.failedTests,
+                message: `Test run ${status.status}: ${status.passedTests} passed, ${status.failedTests} failed`
+            });
+            await this.sendWebhookUpdate(runId, {
+                status: status.status,
+                totalTests: allCases.length,
+                passedTests: status.passedTests,
+                failedTests: status.failedTests
             });
 
             logger.info('Test run completed', this.context(runId, {
                 failedCount,
                 duration: `${Date.now() - start}ms`,
             }));
+
+            return { runId, status: status.status, failedCount, passedTests: status.passedTests };
         } catch (err: any) {
             const errorDetails = {
                 id: nanoid(),
@@ -701,8 +837,18 @@ export class TestRunnerService {
                 error: errorDetails,
                 totalTests: allCases.length,
                 passedTests: 0,
+                failedTests: allCases.length,
+                message: `Test run failed: ${err.message}`
+            });
+            await this.sendWebhookUpdate(runId, {
+                status: 'failed',
+                totalTests: allCases.length,
+                passedTests: 0,
                 failedTests: allCases.length
             });
+            
+            // Return error result
+            return { runId, status: 'failed', error: errorDetails };
         } finally {
             this.runningRuns.set(runId, status);
             await this.disposeTestCafe();
@@ -725,6 +871,14 @@ export class TestRunnerService {
             total: cases.length,
             fromSuites: request.testSuites?.length || 0,
             directCases: request.testCases?.length || 0,
+            caseDetails: cases.map(tc => ({
+                id: tc.id,
+                name: tc.name,
+                testType: tc.testType,
+                hasSteps: !!(tc.steps && Array.isArray(tc.steps) && tc.steps.length > 0),
+                stepsCount: tc.steps && Array.isArray(tc.steps) ? tc.steps.length : 0,
+                hasScript: !!(tc.testType === 'script' && tc.scriptText && tc.scriptText.trim().length > 0)
+            }))
         });
 
         return cases;
