@@ -42,7 +42,7 @@
     "api:testora:build": "dotnet build showcases/TestAutomation/TestAutomation.Api/TestAutomation.Api.csproj",
     "api:build": "concurrently -n ai,identity,core,tasks,testora -c \"blue,magenta,yellow,orange\" \"pnpm api:ai:build\" \"pnpm api:identity:build\" \"pnpm api:core:build\" \"pnpm api:tasks:build\" \"pnpm api:smartops:build\" \"pnpm api:testora:build\"",
     "preapi": "kill-port 5000 5001 5101 5102 5103 5054 5104 5105 5106 4000",
-    "api": "concurrently -n ai,identity,core,tasks,testora,runner -c \"blue,magenta,yellow,orange,green\" \"pnpm api:ai\" \"pnpm api:identity\" \"pnpm api:core\" \"pnpm api:tasks\" \"pnpm api:testora\" \"pnpm api:testrunner\"",
+    "api": "concurrently -n ai,identity,core,tasks,testora,runner,smartops -c \"blue,magenta,yellow,orange,green\" \"pnpm api:ai\" \"pnpm api:identity\" \"pnpm api:core\" \"pnpm api:tasks\" \"pnpm api:smartops\" \"pnpm api:testora\" \"pnpm api:testrunner\"",
     "app": "pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev\" \"pnpm api\"",
     "app:ai:build": "pnpm --filter @asafarim/ai-ui build",
     "app:core:build": "pnpm --filter @asafarim/core-app build",
@@ -74,7 +74,7 @@
   "author": "ASafariM",
   "email": "asafarim.it@gmail.com",
   "license": "CC BY 4.0",
-  "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd",
+  "packageManager": "pnpm@10.21.0+sha512.da3337267e400fdd3d479a6c68079ac6db01d8ca4f67572083e722775a796788a7a9956613749e000fac20d424b594f7a791a5f4e2e13581c5ef947f26968a40",
   "dependencies": {
     "cookie": "^1.0.2",
     "pkill": "^2.0.0",

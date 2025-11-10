@@ -16,13 +16,12 @@ public class TestRun
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public Guid? UpdatedById { get; set; }
     public Guid? CreatedById { get; set; }
-    
+
     // Test result counts
     public int TotalTests { get; set; }
     public int PassedTests { get; set; }
     public int FailedTests { get; set; }
     public int SkippedTests { get; set; }
-    
 
     // Navigation properties
     public virtual FunctionalRequirement? FunctionalRequirement { get; set; }
@@ -35,12 +34,12 @@ public enum TestRunStatus
     Running,
     Completed,
     Failed,
-    Cancelled
+    Cancelled,
 }
 
 public enum TriggerType
 {
     Manual,
     Scheduled,
-    CiCd
+    CiCd,
 }
