@@ -543,21 +543,22 @@ test('${tc.name}', async t => {
 
             } catch (runError: any) {
                 lastRunError = runError;
-                logger.error(`❌ Browser ${browserConfig} failed to run tests`, this.context(runId, {
+                const errorDetails = {
                     browser: browserConfig,
-                    error: runError?.message || runError,
-                    stack: runError?.stack
-                }));
+                    error: runError?.message || String(runError),
+                    stack: runError?.stack,
+                    code: runError?.code,
+                    type: runError?.constructor?.name
+                };
+                
+                logger.error(`❌ Browser ${browserConfig} failed to run tests`, this.context(runId, errorDetails));
+                logger.error(`Full error object:`, runError);
                 
                 await this.sendSignalRUpdate(runId, {
                     status: 'running',
-                    progress: 5 + (attemptedBrowsers.length * 5),
-                    errorMessage: `Browser ${browserConfig} failed: ${runError?.message || 'Unknown error'}`
+                    progress: Math.max(10, 100 - (browserCandidates.length - attemptedBrowsers.length) * 10),
+                    errorMessage: `Browser ${browserConfig} failed: ${runError?.message || String(runError)}`
                 });
-                
-                // Cleanup stray processes for this browser type
-                const browserName = browserConfig.split(':')[0];
-                await this.cleanupStrayProcesses(browserName);
             }
         }
 

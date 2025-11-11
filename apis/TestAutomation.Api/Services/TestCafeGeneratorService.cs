@@ -32,20 +32,49 @@ public class TestCafeGeneratorService
         sb.AppendLine("import { Selector } from 'testcafe';");
         sb.AppendLine();
 
+        // Add setup script as fixture-level selectors if it contains selector definitions
+        string? setupScript = null;
+        if (testSuite.Fixture.SetupScript != null)
+        {
+            setupScript = testSuite.Fixture.SetupScript.RootElement.GetString();
+            if (!string.IsNullOrEmpty(setupScript))
+            {
+                // Extract selector definitions (lines starting with "const" and containing "Selector")
+                var lines = setupScript.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                var selectorLines = lines
+                    .Where(l => l.Trim().StartsWith("const") && l.Contains("Selector"))
+                    .ToList();
+                var otherLines = lines
+                    .Where(l => !l.Trim().StartsWith("const") || !l.Contains("Selector"))
+                    .ToList();
+
+                // Add selectors at fixture level
+                if (selectorLines.Any())
+                {
+                    sb.AppendLine();
+                    sb.AppendLine("// Common Selectors");
+                    foreach (var line in selectorLines)
+                    {
+                        sb.AppendLine(line.Trim());
+                    }
+                    sb.AppendLine();
+                }
+
+                // Keep other setup code for beforeEach
+                setupScript = string.Join("\n", otherLines);
+            }
+        }
+
         // Add fixture
         sb.AppendLine($"fixture('{EscapeString(testSuite.Name)}')");
         sb.AppendLine($"    .page('{EscapeString(testSuite.Fixture.PageUrl)}')");
 
-        // Add setup script if exists
-        if (testSuite.Fixture.SetupScript != null)
+        // Add beforeEach only if there's non-selector setup code
+        if (!string.IsNullOrWhiteSpace(setupScript))
         {
-            var setupScript = testSuite.Fixture.SetupScript.RootElement.GetString();
-            if (!string.IsNullOrEmpty(setupScript))
-            {
-                sb.AppendLine("    .beforeEach(async t => {");
-                sb.AppendLine($"        {IndentCode(setupScript, 8)}");
-                sb.AppendLine("    })");
-            }
+            sb.AppendLine("    .beforeEach(async t => {");
+            sb.AppendLine($"        {IndentCode(setupScript, 8)}");
+            sb.AppendLine("    })");
         }
 
         // Add teardown script if exists
@@ -76,21 +105,24 @@ public class TestCafeGeneratorService
                 try
                 {
                     var stepsJson = testCase.Steps.RootElement.GetRawText();
-                    Console.WriteLine($"[TestCafe Generator] Raw Steps JSON for test '{testCase.Name}': {stepsJson}");
-                    
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    };
+                    Console.WriteLine(
+                        $"[TestCafe Generator] Raw Steps JSON for test '{testCase.Name}': {stepsJson}"
+                    );
+
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     var steps = JsonSerializer.Deserialize<List<TestStep>>(stepsJson, options);
-                    
-                    Console.WriteLine($"[TestCafe Generator] Deserialized {steps?.Count ?? 0} steps");
-                    
+
+                    Console.WriteLine(
+                        $"[TestCafe Generator] Deserialized {steps?.Count ?? 0} steps"
+                    );
+
                     if (steps != null && steps.Count > 0)
                     {
                         foreach (var step in steps)
                         {
-                            Console.WriteLine($"[TestCafe Generator] Step - Action: '{step.Action}', Selector: '{step.Selector}', Value: '{step.Value}'");
+                            Console.WriteLine(
+                                $"[TestCafe Generator] Step - Action: '{step.Action}', Selector: '{step.Selector}', Value: '{step.Value}'"
+                            );
                             sb.AppendLine($"    // Step: {EscapeString(step.Description ?? "")}");
                             sb.AppendLine($"    {GenerateStepCode(step)}");
                         }
@@ -98,12 +130,16 @@ public class TestCafeGeneratorService
                     else
                     {
                         sb.AppendLine("    // No steps found or deserialization failed");
-                        Console.WriteLine($"[TestCafe Generator] WARNING: No steps found for test '{testCase.Name}'");
+                        Console.WriteLine(
+                            $"[TestCafe Generator] WARNING: No steps found for test '{testCase.Name}'"
+                        );
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[TestCafe Generator] ERROR deserializing steps: {ex.Message}");
+                    Console.WriteLine(
+                        $"[TestCafe Generator] ERROR deserializing steps: {ex.Message}"
+                    );
                     sb.AppendLine($"    // Error deserializing steps: {ex.Message}");
                 }
             }
@@ -126,7 +162,6 @@ public class TestCafeGeneratorService
     private string GenerateStepCode(TestStep step)
     {
         var code = new StringBuilder();
-
 
         var action = step.Action?.ToLower() ?? "";
 
