@@ -189,7 +189,7 @@ export default function AdminUsers() {
         </div>
         <button
           className="btn btn-primary"
-          onClick={() => navigate("/admin/users/add")}
+          onClick={() => navigate("/admin-area/users/add")}
         >
           <UserPlus size={16} />
           <span>Add New User</span>
