@@ -13,6 +13,7 @@ import CoreAppHome from './pages/CoreAppHome'
 import { createBrowserRouter } from 'react-router-dom'
 import JobTracker from './components/JobTracker/JobTracker'
 import { ToastProvider } from '@asafarim/toast'
+import ProtectedRoute from './components/ProtectedRoute'
 // import { Portfolio } from './components/Portfolio'
 // import { PortfolioPublicView } from './pages/Portfolio/PortfolioPublicView'
 // import { PortfolioDashboard } from './pages/Portfolio/PortfolioDashboard'
@@ -27,9 +28,21 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <CoreAppHome /> },
-      { path: "jobs", element: <JobTracker /> },
-      { path: "jobs/:jobId/edit", element: <JobEdit /> },
-      { path: "jobs/:jobId/view", element: <JobView /> },
+      { path: "jobs", element: (
+        <ProtectedRoute>
+          <JobTracker />
+        </ProtectedRoute>
+      ) },
+      { path: "jobs/:jobId/edit", element: (
+        <ProtectedRoute>
+          <JobEdit />
+        </ProtectedRoute>
+      ) },
+      { path: "jobs/:jobId/view", element: (
+        <ProtectedRoute>
+          <JobView />
+        </ProtectedRoute>
+      ) },
       // { path: "portfolio", element: <Portfolio /> },
       // { path: "u/:username", element: <PortfolioPublicView /> },
       // { path: "dashboard/portfolio", element: <PortfolioDashboard /> },
