@@ -1,6 +1,5 @@
 import React from 'react';
-import { useAuth, ButtonComponent, Card, CardContent as CardBody, CardHeader } from '@asafarim/shared-ui-react';
-import { useLocation } from 'react-router-dom';
+import { useAuth, ButtonComponent, Card, CardContent as CardBody, CardHeader, isProduction } from '@asafarim/shared-ui-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -8,7 +7,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, loading, signIn } = useAuth();
-  const returnTo = useLocation().pathname;
+  const returnTo = isProduction ? 'https://core.asafarim.be/jobs' : 'http://asafarim.local:5173/jobs';
   
 
   if (loading) return null;
