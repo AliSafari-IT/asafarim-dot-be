@@ -12,6 +12,7 @@ export const useIdentityPortalAuth = () => {
   const sharedAuth = useSharedAuth(authConfig);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [passwordSetupRequired, setPasswordSetupRequired] = useState<{ userId: string; email: string } | null>(null);
 
   // Direct login method for identity-portal
   const login = useCallback(async (data: LoginRequest) => {
@@ -24,8 +25,12 @@ export const useIdentityPortalAuth = () => {
       
       // Check if password setup is required
       if ('requiresPasswordSetup' in response && response.requiresPasswordSetup) {
-        // Handle password setup case if needed
-        setError('Password setup required');
+        console.log('🔐 Password setup required for user:', response.email);
+        setPasswordSetupRequired({
+          userId: response.userId,
+          email: response.email
+        });
+        setError(null); // Clear any previous errors
         return false;
       }
       
@@ -99,8 +104,18 @@ export const useIdentityPortalAuth = () => {
       
       return true;
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to login";
-      console.error('❌ Login failed:', errorMessage);
+      let errorMessage = "Failed to login";
+      
+      // Check if error has a code property (from ApiError)
+      if (error && typeof error === 'object' && 'code' in error) {
+        const apiError = error as { message?: string; code?: string };
+        errorMessage = apiError.message || errorMessage;
+        console.error('❌ Login failed with code:', apiError.code, 'Message:', errorMessage);
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+        console.error('❌ Login failed:', errorMessage);
+      }
+      
       setError(errorMessage);
       return false;
     } finally {
@@ -114,19 +129,69 @@ export const useIdentityPortalAuth = () => {
     setError(null);
     
     try {
-      await identityService.register(data);
+      const response = await identityService.register(data);
       
       // After successful registration, cookies should be set
-      console.log('Registration successful, cookies should be set');
+      console.log('✅ Registration successful, cookies should be set by server');
+      console.log('📦 Response received with token and user info');
       
-      // Wait a bit to ensure cookies are fully set before triggering auth check
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Store the user info in localStorage as backup (non-sensitive data only)
+      try {
+        localStorage.setItem('user_info', JSON.stringify({
+          id: response.user.id,
+          email: response.user.email,
+          firstName: response.user.firstName,
+          roles: response.user.roles,
+          // Do not store the token in localStorage - it should be in HTTP-only cookie
+        }));
+        console.log('📝 User info stored in localStorage as backup');
+      } catch (storageError) {
+        console.warn('⚠️ Failed to store user info in localStorage:', storageError);
+      }
       
-      // Don't dispatch storage event with empty newValue - it triggers logout!
-      // The shared useAuth hook will detect the auth state change naturally
-      // window.dispatchEvent(new Event('focus'));
-      // window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
+      // CRITICAL: Wait longer to ensure cookies are fully written to browser
+      console.log('⏱️ Waiting for cookies to be properly set...');
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
+      // Verify cookies are actually set by making a test request
+      console.log('🔍 Verifying authentication after registration...');
+      const apiBaseUrl = import.meta.env.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
+      try {
+        const verifyResponse = await fetch(`${apiBaseUrl}/auth/me`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (verifyResponse.ok) {
+          console.log('✅ Authentication verified successfully');
+          const userData = await verifyResponse.json();
+          console.log('👤 User data:', userData);
+        } else {
+          console.warn('⚠️ Authentication verification failed:', verifyResponse.status);
+          console.warn('⚠️ Cookies may not be set correctly for subdomains');
+          console.warn('⚠️ This is normal for cross-domain scenarios, continuing...');
+          
+          // Diagnose possible issues (but don't fail the registration)
+          const cookieStr = document.cookie;
+          console.log('📄 Current document.cookie string:', cookieStr);
+          
+          // Check if there are any cookies at all
+          if (!cookieStr) {
+            console.warn('⚠️ No cookies present in document.cookie');
+          } else {
+            console.log('🔍 Cookies found in document.cookie');
+          }
+        }
+      } catch (verifyError) {
+        console.error('❌ Failed to verify authentication:', verifyError);
+        console.warn('⚠️ Verification failed but registration succeeded - this is normal for cross-domain cookie scenarios');
+      }
+      
+      console.log('✅ Registration complete, returning success');
       return true;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Failed to register";
@@ -182,6 +247,8 @@ export const useIdentityPortalAuth = () => {
     clearError,
     isLoading,
     updateProfile,
+    passwordSetupRequired,
+    setPasswordSetupRequired,
   };
 };
 

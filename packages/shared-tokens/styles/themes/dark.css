@@ -84,8 +84,8 @@
   --color-brand-600: #60d3fa; /* Soft highlight */
   --color-brand-900: #eef2ff; /* Lightest tint */
   --color-brand-950: #f2f4f8; /* Near-white */
-  --color-phosphor: #c4e94f; /* Bright lime-green */
   --color-brand: #60a5fa; /* Primary brand tone */
+  --color-phosphor: #c4e94f; /* Bright lime-green */
 
   /* Background / text tokens */
   --color-bg: #111827;
@@ -108,21 +108,6 @@
   --color-border-muted: #4b5563;
   --color-neutral: #6b7280;
   --color-neutral-muted: #9ca3af;
-
-  /* Border color */
-  --border-color: #374151;
-  --border-hover-color: #4b5563;
-  --border-active-color: #6b7280;
-  --border-disabled-color: #9ca3af;
-  --border-focus-color: #9ca3af;
-  --border-focus-visible-color: #9ca3af;
-
-  /* focus colors */
-  --focus-color: #1d4ed8;
-  --focus-border-color: #4972fa;
-  --focus-border-visible-color: #284191;
-  --focus-visible-color: #073bc9;
-  --focus-visible-border-color: #284191;
 
   /* Semantic colors (updated) */
   /* Success */
@@ -167,6 +152,19 @@
   --color-error-900: #fef2f2;
   --color-error-950: #fffafa;
 
+  /* Info */
+  --color-info-0: #142035;
+  --color-info-50: #203452;
+  --color-info-100: #2c4a6f;
+  --color-info-200: #38608c;
+  --color-info-300: #4a78a9;
+  --color-info-400: #60a5fa;
+  --color-info-500: #89a6c5;
+  --color-info-600: #a9bed3;
+  --color-info-700: #c9d5e1;
+  --color-info-800: #eceff3;
+  --color-info-900: #dbe2ea;
+  --color-info-950: #f6fefb;
 
   /* Accents */
   --color-accent-0: #24003d;

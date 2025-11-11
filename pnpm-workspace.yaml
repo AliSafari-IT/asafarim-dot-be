@@ -1,7 +1,5 @@
 packages:
-  - 'packages/shared-ui-react'
-  - 'packages/shared-tokens'
-  - 'packages/react-themes'
-  - 'packages/shared-i18n'
+  - 'packages/*'
   - 'apps/*'
   - 'apis/*'
+  - 'showcases/*/*'

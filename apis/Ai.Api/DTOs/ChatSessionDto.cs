@@ -3,6 +3,7 @@ namespace Ai.Api.DTOs
     public class ChatSessionDto
     {
         public Guid Id { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -17,6 +18,7 @@ namespace Ai.Api.DTOs
     {
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
+        public string UserId { get; set; } = string.Empty;
     }
 
     public class UpdateChatSessionDto

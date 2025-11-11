@@ -14,18 +14,19 @@
   --width-11: 80px;
   --width-12: 40px;
 
-  --width-2xs: var(--width-7);
-  --width-xs: var(--width-5);
-  --width-sm: var(--width-4);
-  --width-md: var(--width-3);
-  --width-lg: var(--width-2);
-  --width-xl: var(--width-1);
-  --width-2xl: var(--width-0);
-  
+  --width-2xs: 240px;
+  --width-xs: 320px;
+  --width-sm: 480px;
+  --width-md: 640px;
+  --width-lg: 768px;
+  --width-xl: 1024px;
+  --width-2xl: 1200px;
+
   --sidebar-width: 260px;
+  --max-width: 1200px;
 
   --height-navbar: 60px;
-  --height-sidebar: calc(100vh - var(--height-navbar));
+  --height-sidebar: calc(100vh - 60px);
   --height-2xs: 120px;
   --height-xs: 240px;
   --height-sm: 320px;
@@ -81,4 +82,10 @@
   --space-38: 9.5rem;
   --space-39: 9.75rem;
   --space-40: 10rem;
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.25rem;
 }

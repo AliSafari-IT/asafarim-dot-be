@@ -17,6 +17,61 @@ public class UserController : ControllerBase
         _userManager = userManager;
     }
 
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetUserById(string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+            return BadRequest("User ID is required");
+
+        // Validate that userId is a valid GUID
+        if (!Guid.TryParse(userId, out _))
+            return BadRequest("Invalid user ID format");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return NotFound();
+
+        return Ok(
+            new
+            {
+                id = user.Id.ToString(),
+                email = user.Email,
+                userName = user.UserName,
+            }
+        );
+    }
+
+    [HttpPost("batch")]
+    public async Task<IActionResult> GetUsersByIds([FromBody] BatchUsersRequest request)
+    {
+        if (request?.UserIds == null || request.UserIds.Length == 0)
+            return BadRequest("User IDs are required");
+
+        var users = new List<BatchUsersResponse>();
+
+        foreach (var userId in request.UserIds)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                continue;
+
+            // Validate that userId is a valid GUID
+            if (!Guid.TryParse(userId, out _))
+                continue;
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                users.Add(new BatchUsersResponse(
+                    user.Id.ToString(),
+                    user.Email,
+                    user.UserName
+                ));
+            }
+        }
+
+        return Ok(users);
+    }
+
     [HttpPut("me")]
     public async Task<IActionResult> UpdateProfile(UpdateProfileRequest req)
     {

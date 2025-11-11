@@ -145,12 +145,36 @@ builder
                     ctx.Token = token;
                 return Task.CompletedTask;
             },
+            OnTokenValidated = async ctx =>
+            {
+                // After JWT is validated, check if refresh token has been revoked
+                // This ensures that even if the access token is still valid,
+                // a revoked refresh token means the user is logged out
+                if (
+                    ctx.Request.Cookies.TryGetValue("rtk", out var refreshToken)
+                    && !string.IsNullOrEmpty(refreshToken)
+                )
+                {
+                    var refreshTokenService =
+                        ctx.HttpContext.RequestServices.GetRequiredService<IRefreshTokenService>();
+                    var isValid = await refreshTokenService.ValidateRefreshTokenAsync(refreshToken);
+
+                    if (!isValid)
+                    {
+                        // Refresh token is revoked/invalid, reject the request
+                        ctx.Fail("Refresh token has been revoked");
+                    }
+                }
+            },
         };
     });
 
 // Register application services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IPasswordSetupTokenService, PasswordSetupTokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient<ISmartOpsRoleService, SmartOpsRoleService>();
 
 // Configure authorization policies
 builder.Services.AddAuthorization(options =>
@@ -170,6 +194,9 @@ var productionOrigins = new[]
     "https://blog.asafarim.be",
     "https://identity.asafarim.be",
     "https://web.asafarim.be",
+    "https://taskmanagement.asafarim.be",
+    "https://smartops.asafarim.be",
+    "https://testora.asafarim.be",
 };
 
 var developmentOrigins = new[]
@@ -179,6 +206,7 @@ var developmentOrigins = new[]
     "http://localhost:5174",
     "http://localhost:5175",
     "http://localhost:5176",
+    "http://localhost:5178",
     "http://localhost:4200",
     "http://localhost:5101",
     "http://asafarim.local",
@@ -195,6 +223,9 @@ var developmentOrigins = new[]
     "http://jobs.asafarim.local:4200",
     "http://blog.asafarim.local:3000",
     "http://web.asafarim.local:5175",
+    "http://taskmanagement.asafarim.local:5176",
+    "http://smartops.asafarim.local:5178",
+    "http://testora.asafarim.local:5180",
 };
 
 // Combine origins based on environment
@@ -225,13 +256,18 @@ builder.Services.AddCors(opt =>
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials()
-                    .SetIsOriginAllowedToAllowWildcardSubdomains() // Allow *.asafarim.be
                     .SetPreflightMaxAge(TimeSpan.FromHours(24)); // Reduce preflight requests
 
                 // Log the allowed origins for debugging
                 Console.WriteLine(
                     $"[CORS] Allowed origins for credentials: {string.Join(", ", allowedOrigins)}"
                 );
+
+                // Additional logging for CORS policy
+                foreach (var origin in allowedOrigins)
+                {
+                    Console.WriteLine($"[CORS] Registered origin: {origin}");
+                }
             }
         }
     )
@@ -248,7 +284,9 @@ app.UseForwardedHeaders();
 // Apply rate limiting to auth endpoints
 app.UseRateLimiting();
 
+// CORS must be before HTTPS redirection
 app.UseCors("app");
+app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();

@@ -1,0 +1,92 @@
+/* Professional Tool Card - Using ONLY Shared Design Tokens */
+
+.ai-ui-tool-card {
+  background: var(--color-primary-0);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+  height: 100%;
+}
+
+.ai-ui-tool-card:hover {
+  transform: translateY(calc(-1 * var(--space-1)));
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+
+.ai-ui-tool-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+.ai-ui-tool-card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--space-3);
+}
+
+.ai-ui-tool-card-icon {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-none);
+  transition: transform var(--transition-normal);
+}
+
+.ai-ui-tool-card:hover .ai-ui-tool-card-icon {
+  transform: scale(1.1);
+}
+
+.ai-ui-tool-card-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-success-500);
+  margin: 0;
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+}
+
+.ai-ui-tool-card-description {
+  font-size: var(--font-size-base);
+  color: var(--color-primary-900);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.ai-ui-tool-card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  transition: all var(--transition-normal);
+  opacity: 0;
+  transform: translateX(calc(-1 * var(--space-2)));
+}
+
+.ai-ui-tool-card:hover .ai-ui-tool-card-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .ai-ui-tool-card {
+    padding: var(--space-5);
+  }
+  
+  .ai-ui-tool-card-title {
+    font-size: var(--font-size-lg);
+  }
+  
+  .ai-ui-tool-card-description {
+    font-size: var(--font-size-sm);
+  }
+}

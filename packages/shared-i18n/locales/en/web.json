@@ -173,6 +173,41 @@
     "title": "Portfolio",
     "description": "View my work and projects"
   },
+  "showcases": {
+    "title": "Featured Applications",
+    "intro": "Explore my featured applications and ongoing projects.",
+    "visitButton": "Visit App",
+    "projects": {
+      "taskManagement": {
+        "title": "Task Management",
+        "description": "A productivity app to manage personal and team tasks with authentication and dashboards."
+      },
+      "smartops": {
+        "title": "SmartOps",
+        "description": "SmartOps is a web application that provides a dashboard for monitoring and managing smart operations. It is built using React and TypeScript, and it is part of the SmartOps project."
+      },
+      "identityPortal": {
+        "title": "Identity Portal",
+        "description": "A secure user management and authentication system integrated with ASafariM backend."
+      },
+      "coreApp": {
+        "title": "Core App",
+        "description": "Central hub for managing resumes, portfolios, and professional content."
+      },
+      "aiPlatform": {
+        "title": "AI Platform",
+        "description": "Advanced AI-powered tools and utilities for intelligent automation."
+      },
+      "jobsPortal": {
+        "title": "Jobs Portal",
+        "description": "Job listings and career opportunities integrated with the core platform."
+      },
+      "blog": {
+        "title": "Blog",
+        "description": "Technical articles, insights, and documentation about my projects."
+      }
+    }
+  },
   "resume": {
     "loading": "Loading resume...",
     "error": "Failed to load resume details",

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePortfolioStore } from '../../stores/portfolioStore';
 import './PortfolioDashboard.css';
 import type { Project } from '../../types/portfolio.types';
+import { ButtonComponent } from '@asafarim/shared-ui-react';
 
 export const PortfolioDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ export const PortfolioDashboard: React.FC = () => {
       try {
         await deleteProject(projectId);
         alert('Project deleted successfully!');
-      } catch (err) {
+      } catch {
         alert('Failed to delete project');
       }
     }
@@ -49,10 +50,24 @@ export const PortfolioDashboard: React.FC = () => {
   }
 
   if (error && !portfolio) {
+    const isNotFoundError = error.includes('Portfolio not found') || error.includes('Please create a resume first');
+    
     return (
       <div className="dashboard-error">
-        <h2>Error Loading Portfolio</h2>
         <p>{error}</p>
+        <h2>{isNotFoundError ? 'No Portfolio Yet' : 'Error Loading Portfolio'}</h2>
+        {isNotFoundError && (
+          <div style={{ marginTop: '1.5rem' }}>
+            <p>You need to create a resume first to set up your portfolio.</p>
+            <ButtonComponent 
+              onClick={() => navigate('/resumes')}
+              variant="primary"
+              size="md"
+            >
+              Create Resume
+            </ButtonComponent>
+          </div>
+        )}
       </div>
     );
   }
@@ -69,12 +84,13 @@ export const PortfolioDashboard: React.FC = () => {
         <header className="dashboard-header">
           <h1>Portfolio Dashboard</h1>
           <div className="dashboard-header__actions">
-            <button 
+            <ButtonComponent 
               onClick={() => navigate('/portfolio')}
-              className="btn btn--secondary"
+              variant="secondary"
+              size="md"
             >
               Preview
-            </button>
+            </ButtonComponent>
             {portfolio.settings.isPublic && (
               <a 
                 href={publicUrl}

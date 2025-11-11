@@ -90,7 +90,6 @@ async function fetchToken(base: string, tokenEndpoint: string): Promise<string |
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`,
         'Cache-Control': 'no-cache'
       }
     });
@@ -170,7 +169,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   // The Identity API controller is at /auth (not /api/identity)
   const defaultIdentityApiBase = isProd
     ? 'https://identity.asafarim.be/auth'
-    : `${(import.meta.env as any)?.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101'}/auth`;
+    : `${(import.meta as any).env?.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101'}/auth`;
   
   console.log('🔐 shared-ui-react/hooks/useAuth.ts: isProd?', isProd);
   console.log('🔐 Identity API Base:', defaultIdentityApiBase);
@@ -290,8 +289,21 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
           }
         }
         
+        // CRITICAL FIX: Add delay to allow cross-domain cookies to be sent on first load
+        // When navigating between subdomains, the browser needs time to include cookies in requests
+        // 1000ms is needed for reliable cross-subdomain cookie transmission in development
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         // Now check with the server
-        const ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
+        let ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
+        
+        // RETRY LOGIC: If first check fails and we have stored user info, retry once more
+        // This handles the case where cookies weren't sent on first request
+        if (!ok && fallbackUserInfo) {
+          console.log('⚠️ First auth check failed but user info in localStorage, retrying...');
+          await new Promise(resolve => setTimeout(resolve, 300));
+          ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
+        }
 
         if (ok) {
           console.log('✅ User is authenticated via server');

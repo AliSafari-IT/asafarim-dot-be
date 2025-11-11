@@ -25,3 +25,8 @@ public record AdminUserUpsert(
 );
 
 public record SetUserRolesRequest(string[] Roles);
+
+// Batch users DTOs
+public record BatchUsersRequest(string[] UserIds);
+
+public record BatchUsersResponse(string UserId, string? Email, string? UserName);

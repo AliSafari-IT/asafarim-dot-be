@@ -14,7 +14,7 @@ const prodConfig: UseAuthOptions = {
 
 // Local development config
 const devConfig: UseAuthOptions = {
-  authApiBase: 'http://api.asafarim.local:5101/auth',  // Identity API backend (not the portal frontend)
+  authApiBase: 'http://identity.asafarim.local:5101/auth',  // Identity API backend (not the portal frontend)
   meEndpoint: '/me',
   tokenEndpoint: '/token',
   logoutEndpoint: '/logout',

@@ -7,11 +7,11 @@ function preferSubdomain(base: string, subdomainBase: string): string {
   return base;
 }
 
-const AI_API_BASE_RAW = import.meta.env.VITE_AI_API_BASE || "http://ai-api.asafarim.local:5103";
+const AI_API_BASE_RAW = import.meta.env.VITE_AI_API_BASE || "http://ai.asafarim.local:5103";
 
-export const AI_API_BASE = preferSubdomain(AI_API_BASE_RAW, "http://ai-api.asafarim.local:5103");
+export const AI_API_BASE = preferSubdomain(AI_API_BASE_RAW, "http://ai.asafarim.local:5103");
 
-export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function aiApi<T>(path: string, init: RequestInit = {}): Promise<T> {
   console.log("ai api call:", AI_API_BASE, path);
   const res = await fetch(`${AI_API_BASE}${path}`, {
     credentials: "include",

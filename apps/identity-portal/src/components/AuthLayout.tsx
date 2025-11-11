@@ -4,15 +4,17 @@ import "./auth-layout.css";
 
 interface AuthLayoutProps {
   children: ReactNode;
-  key: string;
+    title?: string;
 }
 
-export const AuthLayout = ({ children, key }: AuthLayoutProps) => {
+export const AuthLayout = ({ children, title }: AuthLayoutProps) => {
+
+  // page title
+  document.title = title || "Identity Portal";
 
   return (
-    <div className="auth-container" key={key}>     
+    <div className={`auth-container ${title ? "auth-container--with-title" : ""}`}>     
       {children}
-
       <FooterContainer />
     </div>
   );

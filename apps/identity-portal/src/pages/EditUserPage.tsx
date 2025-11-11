@@ -26,9 +26,7 @@ export default function EditUserPage() {
   }, [isAuthenticated, user, navigate, loading]);
 
   return (
-    <AuthLayout 
-      key={'identity-portal-edit-user'}
-    >
+    <AuthLayout>
       <EditUser />
     </AuthLayout>
   );

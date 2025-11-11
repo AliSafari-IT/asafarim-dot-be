@@ -30,8 +30,7 @@
   --color-bg: var(--color-primary-0);
   --color-bg-muted: var(--color-primary-50);
   --color-text: var(--color-primary-900);
-  --color-text-muted: var(--color-primary-100);
-  --color-text-muted-hover: var(--color-primary-200);
+  --color-neutral-500-hover: var(--color-primary-200);
   --bg-hover-color: var(--color-primary-100);
   --bg-active-color: var(--color-primary-200);
   --bg-disabled-color: var(--color-primary-100);
@@ -84,7 +83,7 @@
   --text-primary: var(--color-primary);
   --text-secondary: var(--color-primary-muted);
   --text-tertiary: var(--color-primary-muted-hover);
-  --text-muted: var(--color-text-muted);
+  --text-muted: var(--color-neutral-500);
 
   /* Responsive breakpoints */
   --breakpoint-sm: 640px;
@@ -95,13 +94,13 @@
   /* Additional semantic colors for backward compatibility */
   --color-primary-dark: var(--color-primary-700);
   --color-foreground: var(--color-text);
-  --color-foreground-muted: var(--color-text-muted);
+  --color-foreground-muted: var(--color-neutral-500);
   --color-background-alt: var(--color-surface-muted);
   --color-border: var(--color-neutral-200);
 
   /* Footer */
   --footer-bg: var(--color-background-alt);
-  --footer-text: var(--color-text-muted);
+  --footer-text: var(--color-neutral-500);
   --footer-text-hover: var(--color-text);
   --footer-divider: var(--color-neutral-200);
   --footer-link-hover: var(--color-primary);
@@ -283,9 +282,20 @@
   --transition-fast: 0.2s ease;
   --transition-speed: 0.2s;
 
+  /* Navigation */
   --nav-text: var(--color-phosphor);
-  --nav-hover: var(--color-text-muted);
+  --nav-hover: var(--color-neutral-500);
   --bg-nav-hover-color: var(--color-primary);
   --bg-nav-active-color: var(--color-primary-50);
   --nav-height: 60px;
+
+  /* Heading */
+  --color-heading-text: var(--color-primary);
+  --color-heading-bg: var(--color-background);
+  --color-heading-border: var(--color-border);
+
+  /* Terminal */
+  --color-terminal-bg: var(--color-neutral-100);
+  --color-terminal-text: var(--color-neutral-600);
+  --color-terminal-muted: var(--color-neutral-400);
 }

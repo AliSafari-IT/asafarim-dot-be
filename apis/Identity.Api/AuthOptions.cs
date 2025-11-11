@@ -8,4 +8,10 @@ public class AuthOptions
     public string CookieDomain { get; set; } = ".asafarim.local";
     public int AccessMinutes { get; set; } = 240; // 4 hours for development
     public int RefreshDays { get; set; } = 30;
+    public PasswordSetupOptions? PasswordSetup { get; set; }
+}
+
+public class PasswordSetupOptions
+{
+    public string BaseUrl { get; set; } = "http://localhost:5177";
 }

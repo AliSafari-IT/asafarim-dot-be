@@ -5,6 +5,53 @@ import { useAuth } from '../hooks/useAuth';
 import { Arrow, ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./auth-layout.css";
 
+// Helper function to provide user-friendly error messages
+function getErrorMessage(error: string | null): { title: string; message: string; action?: string } | null {
+  if (!error) return null;
+
+  // Map backend errors to user-friendly messages
+  if (error.includes("Email is already registered")) {
+    return {
+      title: "Email Already Registered",
+      message: "This email is already associated with an account.",
+      action: "Try logging in instead, or use a different email to register."
+    };
+  }
+
+  
+
+  if (error.includes("Password")) {
+    return {
+      title: "Password Requirements",
+      message: "Your password does not meet the requirements.",
+      action: "Ensure your password is at least 8 characters long and contains a mix of letters and numbers."
+    };
+  }
+
+  if (error.includes("Failed to fetch") || error.includes("Network")) {
+    return {
+      title: "Connection Error",
+      message: "Unable to connect to the authentication server.",
+      action: "Please check your internet connection and try again."
+    };
+  }
+
+  if (error.includes("validation")) {
+    return {
+      title: "Validation Error",
+      message: "Please check your input and try again.",
+      action: "Make sure all fields are filled correctly."
+    };
+  }
+
+  // Default error message
+  return {
+    title: "Registration Failed",
+    message: error,
+    action: "Please try again or contact support if the problem persists."
+  };
+}
+
 export const RegisterForm = () => {
   const { register, error, clearError, isLoading } = useAuth();
   const [formData, setFormData] = useState({
@@ -73,17 +120,74 @@ export const RegisterForm = () => {
       const success = await register(formData);
       if (success) {
         // Show success notification
-        console.log('Registration successful! Redirecting to dashboard...');
-        // Redirect happens automatically via the useEffect in the Register component
+        console.log('✅ Registration successful! Redirecting...');
+        
+        // Set flag to prevent Register page's useEffect from also redirecting
+        sessionStorage.setItem('registration_just_completed', 'true');
+        console.log('✅ Set registration_just_completed flag in sessionStorage');
+        
+        // Get returnUrl from query params
+        let returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+        console.log('🔄 Original returnUrl:', returnUrl);
+        
+        // Prevent infinite loop: if returnUrl points to register page, use dashboard instead
+        const isReturnUrlRegisterPage = returnUrl && (
+          returnUrl === '/register' || 
+          returnUrl.endsWith('/register') ||
+          returnUrl.includes('/register?') ||
+          returnUrl.includes('/register#')
+        );
+        
+        if (isReturnUrlRegisterPage) {
+          console.log('⚠️ returnUrl points to register page, redirecting to dashboard instead');
+          returnUrl = null; // Will use default '/dashboard'
+        }
+        
+        // Get the target URL
+        const targetPath = returnUrl || '/dashboard';
+        
+        // Check if we need to perform a cross-domain redirect
+        const isCrossDomainRedirect = returnUrl && (
+          returnUrl.startsWith('http://') || 
+          returnUrl.startsWith('https://') || 
+          returnUrl.includes('.asafarim.be')
+        );
+        
+        if (returnUrl && isCrossDomainRedirect) {
+          // For cross-domain redirects, we need to ensure cookies are fully established
+          const targetUrl = returnUrl.startsWith('http') 
+            ? returnUrl 
+            : `https://${returnUrl}`;
+            
+          console.log('🌐 Performing cross-domain redirect to:', targetUrl);
+          
+          // Add a timestamp to prevent caching issues
+          const separator = targetUrl.includes('?') ? '&' : '?';
+          const finalUrl = `${targetUrl}${separator}_t=${Date.now()}`;
+          
+          // Use window.location for cross-domain redirects
+          window.location.href = finalUrl;
+        } else {
+          // Internal navigation - use window.location to ensure it actually happens
+          console.log('🏠 Redirecting to internal path:', targetPath);
+          
+          // Force a small delay to ensure cookies are readable by the browser
+          setTimeout(() => {
+            // Use replace() to avoid back button issues
+            window.location.replace(targetPath);
+          }, 500);
+        }
       }
     } catch {
       // Error is handled by the auth context
     }
   };
 
+  const errorInfo = getErrorMessage(error);
+
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
-      {error && (
+      {errorInfo && (
         <div className="message message-error">
           <div className="message-header">
             <svg xmlns="http://www.w3.org/2000/svg" className="message-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -91,9 +195,12 @@ export const RegisterForm = () => {
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            <p className="message-title">Error</p>
+            <p className="message-title">{errorInfo.title}</p>
           </div>
-          <p className="message-content">{error}</p>
+          <p className="message-content">{errorInfo.message}</p>
+          {errorInfo.action && (
+            <p className="message-action">{errorInfo.action}</p>
+          )}
         </div>
       )}
       

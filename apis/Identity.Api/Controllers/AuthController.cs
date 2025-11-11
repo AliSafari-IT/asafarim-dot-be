@@ -18,7 +18,11 @@ public class AuthController : ControllerBase
     private readonly SignInManager<AppUser> _signInManager;
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
+    private readonly IPasswordSetupTokenService _passwordSetupTokenService;
+    private readonly IEmailService _emailService;
+    private readonly ISmartOpsRoleService _smartOpsRoleService;
     private readonly IOptions<AuthOptions> _authOptions;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
@@ -26,7 +30,11 @@ public class AuthController : ControllerBase
         SignInManager<AppUser> signInManager,
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
+        IPasswordSetupTokenService passwordSetupTokenService,
+        IEmailService emailService,
+        ISmartOpsRoleService smartOpsRoleService,
         IOptions<AuthOptions> authOptions,
+        IConfiguration configuration,
         ILogger<AuthController> logger
     )
     {
@@ -34,7 +42,11 @@ public class AuthController : ControllerBase
         _signInManager = signInManager;
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
+        _passwordSetupTokenService = passwordSetupTokenService;
+        _emailService = emailService;
+        _smartOpsRoleService = smartOpsRoleService;
         _authOptions = authOptions;
+        _configuration = configuration;
         _logger = logger;
     }
 
@@ -78,7 +90,7 @@ public class AuthController : ControllerBase
         _logger.LogInformation("User registered successfully: {Email}", req.Email);
 
         // Generate tokens
-        var roleNames = await _userManager.GetRolesAsync(user);
+        var roleNames = await GetMergedRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
         var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
             user.Id,
@@ -106,7 +118,9 @@ public class AuthController : ControllerBase
         if (user == null)
         {
             _logger.LogWarning("Login attempt for non-existent user: {Email}", req.Email);
-            return Unauthorized(new { message = "Invalid email or password" });
+            return Unauthorized(
+                new { message = "Invalid email or password", code = "user_not_found" }
+            );
         }
 
         // Check if user needs to set password
@@ -129,7 +143,9 @@ public class AuthController : ControllerBase
         {
             _logger.LogWarning("Failed login attempt for user: {Email}", req.Email);
             await _userManager.AccessFailedAsync(user); // Track failed attempts
-            return Unauthorized(new { message = "Invalid email or password" });
+            return Unauthorized(
+                new { message = "Invalid email or password", code = "invalid_credentials" }
+            );
         }
 
         // Check if account is locked
@@ -145,7 +161,7 @@ public class AuthController : ControllerBase
         _logger.LogInformation("User logged in successfully: {Email}", req.Email);
 
         // Generate tokens
-        var roleNames = await _userManager.GetRolesAsync(user);
+        var roleNames = await GetMergedRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
         var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
             user.Id,
@@ -169,7 +185,8 @@ public class AuthController : ControllerBase
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown";
 
         // Get user ID before clearing cookies (for logging purposes only)
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
+        var userId =
+            User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
 
         _logger.LogInformation(
             "🚪 LOGOUT STARTED - Environment: {Environment}, IP: {IpAddress}, User: {UserId}",
@@ -287,18 +304,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetCurrentUser()
     {
-        // CRITICAL: Check if refresh token has been revoked (for logout to work with persistent cookies)
-        if (Request.Cookies.TryGetValue("rtk", out var refreshToken) && !string.IsNullOrWhiteSpace(refreshToken))
-        {
-            var isValid = await _refreshTokenService.ValidateRefreshTokenAsync(refreshToken);
-            if (!isValid)
-            {
-                _logger.LogWarning("GetCurrentUser: Refresh token has been revoked - forcing logout");
-                // Clear cookies to help browser understand the session is invalid
-                ClearAuthCookies();
-                return Unauthorized(new { message = "Session has been revoked" });
-            }
-        }
+        // NOTE: The [Authorize] attribute already validates the JWT access token
+        // We don't need to validate the refresh token here - that's only needed for token refresh
+        // Validating refresh token here causes false logouts when cookies are set but not yet in DB
 
         var userId =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
@@ -396,7 +404,7 @@ public class AuthController : ControllerBase
         }
 
         // Generate new access token
-        var roleNames = await _userManager.GetRolesAsync(user);
+        var roleNames = await GetMergedRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roleNames);
 
         // Set new cookies
@@ -405,57 +413,6 @@ public class AuthController : ControllerBase
         _logger.LogInformation("Token refreshed for user: {Email}", user.Email);
 
         return Ok(CreateAuthResponse(user, roleNames, accessToken, newRefreshToken.Token));
-    }
-
-    /// <summary>
-    /// Setup password for users created without password
-    /// </summary>
-    [HttpPost("setup-password")]
-    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SetupPassword([FromBody] SetupPasswordRequest req)
-    {
-        if (!ModelState.IsValid)
-            return ValidationProblem(ModelState);
-
-        if (string.IsNullOrEmpty(req.UserId) || string.IsNullOrEmpty(req.Password))
-        {
-            return BadRequest(new { message = "User ID and password are required" });
-        }
-
-        var user = await _userManager.FindByIdAsync(req.UserId);
-        if (user == null)
-        {
-            return NotFound(new { message = "User not found" });
-        }
-
-        if (!string.IsNullOrEmpty(user.PasswordHash))
-        {
-            return BadRequest(new { message = "User already has a password set" });
-        }
-
-        var result = await _userManager.AddPasswordAsync(user, req.Password);
-        if (!result.Succeeded)
-        {
-            var errors = result
-                .Errors.Select(e => new { code = e.Code, description = e.Description })
-                .ToList();
-            return BadRequest(new { message = "Password validation failed", errors });
-        }
-
-        _logger.LogInformation("Password setup completed for user: {Email}", user.Email);
-
-        // Generate tokens and log user in
-        var roleNames = await _userManager.GetRolesAsync(user);
-        var accessToken = _tokenService.CreateAccessToken(user, roleNames);
-        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
-            user.Id,
-            GetIpAddress()
-        );
-
-        SetAuthCookies(accessToken, refreshToken.Token, persistent: true, user);
-
-        return Ok(CreateAuthResponse(user, roleNames, accessToken, refreshToken.Token));
     }
 
     /// <summary>
@@ -695,9 +652,10 @@ public class AuthController : ControllerBase
                 foreach (var domain in manualDomains)
                 {
                     var domainPart = string.IsNullOrEmpty(domain) ? "" : $"; Domain={domain}";
-                    var header = $"{cookieName}=; Path=/; Expires={expiry}; Max-Age=0{httpOnlyPart}{securePart}{sameSitePart}{domainPart}";
+                    var header =
+                        $"{cookieName}=; Path=/; Expires={expiry}; Max-Age=0{httpOnlyPart}{securePart}{sameSitePart}{domainPart}";
                     Response.Headers.Append("Set-Cookie", header);
-                    
+
                     _logger.LogDebug("📤 Manual Set-Cookie: {Header}", header);
                 }
             }
@@ -705,8 +663,10 @@ public class AuthController : ControllerBase
             // Add Clear-Site-Data header as backup
             Response.Headers.TryAdd("Clear-Site-Data", "\"cookies\"");
 
-            _logger.LogInformation("🍪 DEVELOPMENT additional cookie clearing complete with {Count} manual headers", 
-                Response.Headers.Where(h => h.Key == "Set-Cookie").SelectMany(h => h.Value).Count());
+            _logger.LogInformation(
+                "🍪 DEVELOPMENT additional cookie clearing complete with {Count} manual headers",
+                Response.Headers.Where(h => h.Key == "Set-Cookie").SelectMany(h => h.Value).Count()
+            );
         }
         else
         {
@@ -749,6 +709,34 @@ public class AuthController : ControllerBase
         return HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
     }
 
+    /// <summary>
+    /// Get merged roles from Identity API and SmartOps API
+    /// </summary>
+    private async Task<IEnumerable<string>> GetMergedRolesAsync(AppUser user)
+    {
+        try
+        {
+            // Get Identity API roles
+            var identityRoles = await _userManager.GetRolesAsync(user);
+            var allRoles = new HashSet<string>(identityRoles);
+
+            // Get SmartOps roles and add them
+            var smartOpsRoles = await _smartOpsRoleService.GetMergedRolesAsync(user.Id);
+            foreach (var role in smartOpsRoles)
+            {
+                allRoles.Add(role);
+            }
+
+            return allRoles;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error getting merged roles for user {UserId}, falling back to Identity API roles", user.Id);
+            // Fallback to Identity API roles only
+            return await _userManager.GetRolesAsync(user);
+        }
+    }
+
     private AuthResponse CreateAuthResponse(
         AppUser user,
         IEnumerable<string> roles,
@@ -771,6 +759,159 @@ public class AuthController : ControllerBase
                 Roles = roles.ToArray(),
             },
         };
+    }
+
+    /// <summary>
+    /// Validate password setup token (magic link)
+    /// </summary>
+    [HttpPost("validate-setup-token")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ValidateSetupToken([FromBody] ValidateSetupTokenRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Token))
+            return BadRequest(new { message = "Token is required" });
+
+        var (isValid, userId, email) = await _passwordSetupTokenService.ValidateTokenAsync(
+            req.Token
+        );
+
+        if (!isValid)
+            return BadRequest(new { message = "Invalid or expired token" });
+
+        _logger.LogInformation("Password setup token validated for user: {Email}", email);
+
+        return Ok(
+            new
+            {
+                userId = userId.ToString(),
+                email = email,
+                message = "Token is valid. You can now set your password.",
+            }
+        );
+    }
+
+    /// <summary>
+    /// Set password using magic link token
+    /// </summary>
+    [HttpPost("setup-password")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SetupPassword([FromBody] SetupPasswordRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Token))
+            return BadRequest(new { message = "Token is required" });
+
+        if (string.IsNullOrWhiteSpace(req.Password))
+            return BadRequest(new { message = "Password is required" });
+
+        var (isValid, userId) = await _passwordSetupTokenService.ValidateAndConsumeTokenAsync(
+            req.Token
+        );
+
+        if (!isValid)
+            return BadRequest(new { message = "Invalid or expired token" });
+
+        var user = await _userManager.FindByIdAsync(userId.ToString()!);
+        if (user == null)
+            return BadRequest(new { message = "User not found" });
+
+        // Set or reset the password
+        IdentityResult result;
+        if (string.IsNullOrEmpty(user.PasswordHash))
+        {
+            // User doesn't have a password yet, add one
+            result = await _userManager.AddPasswordAsync(user, req.Password);
+        }
+        else
+        {
+            // User already has a password, reset it
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            result = await _userManager.ResetPasswordAsync(user, resetToken, req.Password);
+        }
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Code, error.Description);
+            }
+            return ValidationProblem(ModelState);
+        }
+
+        _logger.LogInformation("Password set successfully for user: {Email}", user.Email);
+
+        // Generate tokens
+        var roleNames = await GetMergedRolesAsync(user);
+        var accessToken = _tokenService.CreateAccessToken(user, roleNames);
+        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
+            user.Id,
+            GetIpAddress()
+        );
+
+        // Set cookies
+        SetAuthCookies(accessToken, refreshToken.Token, persistent: true, user);
+
+        return Ok(CreateAuthResponse(user, roleNames, accessToken, refreshToken.Token));
+    }
+
+    /// <summary>
+    /// Request password reset (forgot password)
+    /// </summary>
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Email))
+            return BadRequest(new { message = "Email is required" });
+
+        var user = await _userManager.FindByEmailAsync(req.Email);
+        if (user == null)
+        {
+            // Don't reveal if user exists or not (security best practice)
+            _logger.LogWarning(
+                "Password reset requested for non-existent user: {Email}",
+                req.Email
+            );
+            return Ok(
+                new
+                {
+                    message = "If an account exists with this email, you will receive a password reset link",
+                }
+            );
+        }
+
+        // Generate password setup token
+        var token = await _passwordSetupTokenService.GenerateTokenAsync(user.Id);
+
+        _logger.LogInformation(
+            "Generated password setup token for user {UserId}, expires in 1440 minutes",
+            user.Id
+        );
+
+        // Get the base URL from configuration
+        var baseUrl =
+            _configuration["PasswordSetup:BaseUrl"] ?? "http://identity.asafarim.local:5101";
+        var resetLink = $"{baseUrl}/setup-password?token={token}";
+
+        // Send email with reset link
+        try
+        {
+            await _emailService.SendPasswordResetEmailAsync(user.Email!, resetLink);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send password reset email to {Email}", user.Email);
+            // Don't expose error details to client - still return success message for security
+        }
+
+        return Ok(
+            new
+            {
+                message = "If an account exists with this email, you will receive a password reset link",
+            }
+        );
     }
 
     #endregion
@@ -798,6 +939,22 @@ public class UserInfo
 public class TokenResponse
 {
     public string Token { get; set; } = default!;
+}
+
+public class ValidateSetupTokenRequest
+{
+    public string Token { get; set; } = default!;
+}
+
+public class SetupPasswordRequest
+{
+    public string Token { get; set; } = default!;
+    public string Password { get; set; } = default!;
+}
+
+public class ForgotPasswordRequest
+{
+    public string Email { get; set; } = default!;
 }
 
 #endregion

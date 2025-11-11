@@ -1,8 +1,10 @@
+using System.Text;
 using Ai.Api.Data;
 using Ai.Api.Extensions;
 using Ai.Api.OpenAI;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +17,48 @@ var openAiTemperature = double.TryParse(openAi["Temperature"], out var t) ? t : 
 var openAiMaxTokens = int.TryParse(openAi["MaxTokens"], out var mt) ? mt : 512;
 var useMockOnFailure = bool.TryParse(openAi["UseMockOnFailure"], out var umf) ? umf : true;
 
-// Remove authentication for now - make endpoints public like JobTools
-// builder.Services.AddAuthentication();
-// builder.Services.AddAuthorization();
+// JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("AuthJwt");
+var issuer = jwtSettings["Issuer"];
+var audience = jwtSettings["Audience"];
+var key = jwtSettings["Key"];
+
+if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNullOrEmpty(audience))
+{
+    builder
+        .Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            };
+
+            // Extract token from cookie if present
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    if (context.Request.Cookies.TryGetValue("atk", out var token))
+                    {
+                        context.Token = token;
+                    }
+                    return Task.CompletedTask;
+                },
+            };
+        });
+    builder.Services.AddAuthorization();
+}
 
 // CORS for the AI UI app with production domains
 // Get allowed origins from environment or use defaults
@@ -30,17 +71,13 @@ var productionOrigins = new[]
     "https://core.asafarim.be",
     "https://blog.asafarim.be",
     "https://identity.asafarim.be",
-    "https://*.asafarim.be"  // Wildcard for all subdomains
+    "https://*.asafarim.be", // Wildcard for all subdomains
 };
 
-var developmentOrigins = new[]
-{
-    "http://ai.asafarim.local:5173",
-    "http://localhost:5173"
-};
+var developmentOrigins = new[] { "http://ai.asafarim.local:5173", "http://localhost:5173" };
 
 // Combine origins based on environment
-string[] allowedOrigins = builder.Environment.IsProduction() 
+string[] allowedOrigins = builder.Environment.IsProduction()
     ? productionOrigins.Concat(corsOriginsEnv?.Split(',') ?? Array.Empty<string>()).ToArray()
     : developmentOrigins.Concat(productionOrigins).ToArray();
 
@@ -48,10 +85,7 @@ builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(
         "frontend",
-        p => p.WithOrigins(allowedOrigins)
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
+        p => p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()
     );
 });
 
@@ -88,8 +122,11 @@ var app = builder.Build();
 
 app.UseCors("frontend");
 
-app.UseAuthentication();
-app.UseAuthorization();
+if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNullOrEmpty(audience))
+{
+    app.UseAuthentication();
+    app.UseAuthorization();
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -100,14 +137,20 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 // Add health endpoint
-app.MapGet("/health", () => Results.Ok(new
-{
-    Status = "Healthy",
-    Service = "AI API",
-    Version = "1.0.0",
-    Environment = app.Environment.EnvironmentName,
-    Timestamp = DateTime.UtcNow
-}));
+app.MapGet(
+    "/health",
+    () =>
+        Results.Ok(
+            new
+            {
+                Status = "Healthy",
+                Service = "AI API",
+                Version = "1.0.0",
+                Environment = app.Environment.EnvironmentName,
+                Timestamp = DateTime.UtcNow,
+            }
+        )
+);
 
 // Run the app with automatic migrations
 app.MigrateDatabase<SharedDbContext>().Run();

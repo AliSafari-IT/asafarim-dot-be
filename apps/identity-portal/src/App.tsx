@@ -15,6 +15,8 @@ import Navbar from "./components/Navbar";
 // Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import SetupPassword from "./pages/SetupPassword";
 import SyncLogout from "./pages/SyncLogout";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -23,6 +25,8 @@ import MeProfilePage from "./pages/MeProfilePage";
 import AddNewUserPage from "./pages/AddNewUserPage";
 import EditUserPage from "./pages/EditUserPage";
 import { PrelaunchNoticeBanner } from "@asafarim/shared-ui-react";
+import AdminDashboard from "./pages/admin-area/AdminDashboard";
+import RoleCrudOperations from "./pages/admin-area/RoleCrudOperations";
 
 function App() {
   return (
@@ -52,6 +56,22 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/forgot-password"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <ForgotPassword />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setup-password"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <SetupPassword />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Protected routes (require authentication) */}
               <Route
@@ -65,7 +85,15 @@ function App() {
 
               {/* Admin users management */}
               <Route
-                path="/admin/users"
+                path="/admin-area"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-area/users"
                 element={
                   <ProtectedRoute>
                     <AdminUsersPage />
@@ -73,14 +101,21 @@ function App() {
                 }
               />
               <Route
-                path="/admin/users/add"
+                path="/admin-area/users/add"
                 element={
                   <ProtectedRoute>
                     <AddNewUserPage />
                   </ProtectedRoute>
                 }
               />
-
+              <Route
+                path="/admin-area/roles"
+                element={
+                  <ProtectedRoute>
+                    <RoleCrudOperations />
+                  </ProtectedRoute>
+                }
+              />
               {/* Admin user profile (admin-only) and Me profile (all authenticated) */}
               <Route
                 path="/me"
@@ -90,10 +125,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/admin/user-profile"
-                element={<UserProfilePage />}
-              />
+              <Route path="/admin/user-profile" element={<UserProfilePage />} />
               <Route
                 path="/admin/user-profile/:id"
                 element={
@@ -104,13 +136,16 @@ function App() {
               />
               {/* Admin edit user (admin-only) */}
               <Route
-                path="/admin/edit-user/:id"
+                path="/admin-area/edit-user/:id"
                 element={
                   <ProtectedRoute>
                     <EditUserPage />
                   </ProtectedRoute>
                 }
               />
+
+              {/* Logout endpoint - clears auth and redirects to login */}
+              <Route path="/logout" element={<SyncLogout />} />
 
               {/* Logout sync endpoint (not protected) */}
               <Route path="/sync-logout" element={<SyncLogout />} />

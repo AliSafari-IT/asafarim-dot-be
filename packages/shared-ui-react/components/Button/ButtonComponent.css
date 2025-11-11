@@ -136,13 +136,13 @@
 }
 
 .btn--danger {
-  background-color: var(--color-canceled);
-  color: white;
+  background-color: var(--color-error-600);
+  color: var(--color-error-50);
   box-shadow: var(--global-shadow-sm);
 }
 
 .btn--danger:hover:not(:disabled) {
-  background-color: var(--color-canceled, #dc2626);
+  background-color: var(--color-error-700);
   transform: translateY(-1px);
   box-shadow: var(--global-shadow-md);
 }
@@ -153,13 +153,13 @@
 }
 
 .btn--info {
-  background-color: var(--color-info);
-  color: white;
+  background-color: var(--color-primary-500);
+  color: var(--color-primary-0);
   box-shadow: var(--global-shadow-sm);
 }
 
 .btn--info:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color:var(--color-primary-600);
   transform: translateY(-1px);
   box-shadow: var(--global-shadow-md);
 }
@@ -186,13 +186,13 @@
 }
 
 .btn--outline {
-  background-color: transparent;
   color: var(--color-primary);
   border: 2px solid var(--color-primary);
+  background-color: transparent;
 }
 
 .btn--outline:hover:not(:disabled) {
-  background-color: var(--color-primary);
+  background-color: var(--color-primary-400);
   color: white;
   transform: translateY(-1px);
   box-shadow: var(--global-shadow-sm);
@@ -204,7 +204,7 @@
 
 .btn--link {
   background-color: transparent;
-  color: var(--color-primary);
+  color: var(--color-primary-500);
   border: none;
   padding: 0;
   text-decoration: underline;

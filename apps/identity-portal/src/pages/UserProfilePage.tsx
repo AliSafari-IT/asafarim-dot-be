@@ -19,9 +19,7 @@ export const UserProfilePage = () => {
   }, [isAuthenticated, navigate, returnUrl, loading]);
 
   return (
-    <AuthLayout 
-      key={'identity-portal-user-profile'}
-    >
+    <AuthLayout>
       <UserProfile />
     </AuthLayout>
   );

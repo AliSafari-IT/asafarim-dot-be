@@ -1,0 +1,323 @@
+.identity-portal-admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+.dashboard-card {
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-btn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--accent-primary);
+  color: var(--text-on-accent);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-btn:hover {
+  background-color: var(--accent-primary-hover);
+}
+
+/* RoleCrudOperations */
+
+/* Flex utilities */
+.flex {
+  display: flex;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+/* Margin utilities */
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+/* Text utilities */
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+/* Role Management specific styles */
+.role-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Loading and empty states */
+.loading-state,
+.empty-state {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 1rem;
+  }
+
+  .action-buttons {
+    flex-wrap: nowrap;
+  }
+}
+
+/* Table improvements */
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem 1rem;
+}
+
+.admin-table th:last-child,
+.admin-table td:last-child {
+  text-align: right;
+}
+
+/* Form input in table */
+.admin-table .form-input {
+  min-width: 200px;
+  margin: -0.5rem 0;
+}
+
+/* Add more spacing above the role management section */
+.role-management-section {
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 1.5rem;
+}
+
+/* Style the page header with back button and title */
+.page-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+/* Style the back button */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+/* Improve table container */
+.table-container {
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+/* Style the table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background-color: var(--surface-hover);
+  text-align: left;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+/* Style the action buttons */
+.admin-table .action-button {
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.edit-button {
+  background-color: var(--color-accent-500);
+  color: var(--text-neutral-500);
+}
+
+.delete-button {
+  background-color: var(--color-danger);
+  color: white;
+  margin-left: 0.5rem;
+}
+
+/* Loading and empty states */
+.loading-state,
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  margin-top: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+ .admin-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table td, 
+  .admin-table th {
+    padding: 0.75rem 0.5rem;
+  }
+
+  /* Make form inputs full width in table cells */
+  .admin-table .form-input {
+    width: 100%;
+    margin: 0;
+  }
+
+  /* Action buttons container */
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  /* Remove extra spacing in actions column */
+  .admin-table td:last-child {
+    padding-right: 0.5rem;
+  }
+
+  /* Stack buttons on very small screens */
+  @media (max-width: 400px) {
+    .action-buttons {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .action-button {
+      width: 100%;
+      margin-left: 0 !important;
+    }
+  }
+}
+
+/* Fix table layout on desktop */
+@media (min-width: 769px) {
+  .admin-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+  
+  /* Distribute column widths */
+  .admin-table th:first-child,
+  .admin-table td:first-child {
+    width: 60%;
+  }
+  
+  .admin-table th:last-child,
+  .admin-table td:last-child {
+    width: 40%;
+    text-align: right;
+    padding-right: 1rem;
+  }
+}
+
+/* Ensure form inputs have proper spacing */
+.form-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Adjust action buttons */
+.action-button {
+  white-space: nowrap;
+  margin: 0.25rem 0;
+}
+
+/* Remove extra right padding from the last cell in the row */
+.admin-table tr > *:last-child {
+  padding-right: 0.5rem;
+}

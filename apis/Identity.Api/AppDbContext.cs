@@ -12,6 +12,7 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
         : base(options) { }
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<PasswordSetupToken> PasswordSetupTokens => Set<PasswordSetupToken>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -29,6 +30,22 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             entity.Property(e => e.CreatedByIp).IsRequired().HasMaxLength(45);
             entity.Property(e => e.RevokedByIp).HasMaxLength(45);
             entity.Property(e => e.ReplacedByToken).HasMaxLength(512);
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure PasswordSetupToken entity
+        builder.Entity<PasswordSetupToken>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Token).IsUnique();
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.ExpiresAt);
+            
+            entity.Property(e => e.Token).IsRequired().HasMaxLength(512);
 
             entity.HasOne(e => e.User)
                 .WithMany()

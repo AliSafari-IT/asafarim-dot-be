@@ -40,6 +40,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.removeItem("auth_token");
       localStorage.removeItem("refresh_token");
       localStorage.removeItem("user_info");
+      localStorage.removeItem("logout_in_progress");
+      localStorage.removeItem("logout_timestamp");
       // CRITICAL FIX: Use correct cookie names 'atk' and 'rtk'
       console.log('🍪 Deleting authentication cookies for domain:', COOKIE_DOMAIN);
       document.cookie = `atk=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${COOKIE_DOMAIN}`;
@@ -52,8 +54,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       setUser(null);
       setIsLoading(false);
+      
+      // Redirect to login page with _logout flag so Login page knows to stay on login
+      console.log('🚪 Logout complete, redirecting to login page with _logout flag');
+      window.location.href = `/login?_logout=${Date.now()}`;
     }
-  }, []);
+  }, [COOKIE_DOMAIN]);
 
   // Handle successful authentication
   const handleAuthSuccess = useCallback(async (authResponse: AuthResponse) => {

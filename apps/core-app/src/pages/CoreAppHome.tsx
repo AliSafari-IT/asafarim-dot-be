@@ -7,7 +7,7 @@ import './CoreAppHome.css';
 
 export default function CoreAppHome() {
     // Configure useAuth to use Core API proxy endpoints instead of Identity API directly
-    const authApiBase = isProduction ? '/api/auth' : 'http://api.asafarim.local:5101/auth';
+    const authApiBase = isProduction ? '/api/auth' : 'http://identity.asafarim.local:5101/auth';
 
     const auth = useAuth({
         authApiBase,
@@ -106,7 +106,7 @@ export default function CoreAppHome() {
                                 Get Started Free
                             </Button>
                             <Button
-                                onClick={() => navigate('/u/demo')}
+                                onClick={() => navigate('/jobs')}
                                 variant="outline"
                                 size="lg"
                                 rounded

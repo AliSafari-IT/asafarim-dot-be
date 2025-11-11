@@ -1,5 +1,5 @@
 // AI UI Hero component
-import { Hero as SharedHero } from "@asafarim/shared-ui-react";
+import { isProduction, Hero as SharedHero } from "@asafarim/shared-ui-react";
 
 export default function Hero() {
   const kicker = "ASafariM • Core Suite";
@@ -10,7 +10,7 @@ export default function Hero() {
     "Tailor resumes with AI precision"
   ];
   const primaryCta = { label: "Start Your Journey", to: "/jobs" };
-  const secondaryCta = { label: "View Portfolio", to: "/portfolio" };
+  const secondaryCta = { label: "View Portfolio", to: isProduction ? "https://asafarim.be/portfolio" : "http://web.asafarim.local:5175/portfolio" };
 
   return (
     <SharedHero

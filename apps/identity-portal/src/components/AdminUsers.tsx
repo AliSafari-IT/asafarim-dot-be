@@ -1,9 +1,16 @@
-import { useEffect, useState } from 'react';
-import { useToast } from '@asafarim/toast';
-import './admin-components.css';
-import { useNavigate } from 'react-router-dom';
+// AdminUsers.tsx
+import { useEffect, useState } from "react";
+import { useToast } from "@asafarim/toast";
+import { useNavigate } from "react-router-dom";
+import { Trash2, Key, Plus, X, Edit, Save, UserPlus } from "lucide-react";
+import "./admin-components.css";
 
-type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
+type AdminUser = {
+  id: string;
+  email?: string;
+  userName?: string;
+  roles: string[];
+};
 
 export default function AdminUsers() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -11,25 +18,80 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const toast = useToast();
   const navigate = useNavigate();
+  // Add this state near the top of the component with other states
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<{
+    email?: string;
+    userName?: string;
+  }>({ email: "", userName: "" });
 
+  // Add these functions before the return statement
+  const startEditing = (user: AdminUser) => {
+    setEditingUserId(user.id);
+    setEditForm({
+      email: user.email || "",
+      userName: user.userName || "",
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingUserId(null);
+    setEditForm({ email: "", userName: "" });
+  };
+
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const saveUserChanges = async (userId: string) => {
+    const current = users.find((u) => u.id === userId);
+    if (!current) return;
+
+    try {
+      await saveUser({
+        ...current,
+        email: editForm.email,
+        userName: editForm.userName,
+      });
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId
+            ? { ...u, email: editForm.email, userName: editForm.userName }
+            : u
+        )
+      );
+      setEditingUserId(null);
+      toast.success("User updated successfully");
+    } catch (err) {
+      toast.error("Failed to update user", {
+        description: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  };
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
-        const base = import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101';
+        const base =
+          import.meta.env.VITE_IDENTITY_API_URL || "http://localhost:5101";
         const [usersRes, rolesRes] = await Promise.all([
-          fetch(`${base}/admin/users`, { credentials: 'include' }),
-          fetch(`${base}/admin/roles`, { credentials: 'include' })
+          fetch(`${base}/admin/users`, { credentials: "include" }),
+          fetch(`${base}/admin/roles`, { credentials: "include" }),
         ]);
 
-        // Handle non-OK responses explicitly to avoid leaving the UI stuck on loading
         if (!usersRes.ok || !rolesRes.ok) {
           const status = !usersRes.ok ? usersRes.status : rolesRes.status;
-          let message = 'Failed to load users and roles';
-          if (status === 401) message = 'You are not authenticated. Please sign in.';
-          if (status === 403) message = 'You are not authorized to view this page (admin role required).';
-          const body = !usersRes.ok ? await usersRes.text() : await rolesRes.text();
-          throw new Error(`${message}${body ? `: ${body}` : ''}`);
+          let message = "Failed to load users and roles";
+          if (status === 401)
+            message = "You are not authenticated. Please sign in.";
+          if (status === 403)
+            message =
+              "You are not authorized to view this page (admin role required).";
+          const body = !usersRes.ok
+            ? await usersRes.text()
+            : await rolesRes.text();
+          throw new Error(`${message}${body ? `: ${body}` : ""}`);
         }
 
         const usersJson = await usersRes.json();
@@ -37,11 +99,14 @@ export default function AdminUsers() {
         setUsers(usersJson);
         setRoles(rolesJson.map((r: { name: string }) => r.name));
       } catch (err) {
-        const description = err instanceof Error ? err.message : 'Unknown error';
-        toast.error('Failed to load admin data', { description, durationMs: 6000 });
-        // If unauthenticated, redirect to login and preserve return URL
-        if (description.toLowerCase().includes('not authenticated')) {
-          navigate(`/login?returnUrl=${encodeURIComponent('/admin/users')}`);
+        const description =
+          err instanceof Error ? err.message : "Unknown error";
+        toast.error("Failed to load admin data", {
+          description,
+          durationMs: 6000,
+        });
+        if (description.toLowerCase().includes("not authenticated")) {
+          navigate(`/login?returnUrl=${encodeURIComponent("/admin/users")}`);
         }
       } finally {
         setLoading(false);
@@ -51,196 +116,318 @@ export default function AdminUsers() {
   }, []);
 
   const saveUser = async (u: AdminUser) => {
-    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101'}/admin/users/${u.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ email: u.email, userName: u.userName })
-    });
-    if (!res.ok) {
-      const message = (await res.text()) || 'Failed to save user';
-      throw new Error(message);
-    }
+    const res = await fetch(
+      `${
+        import.meta.env.VITE_IDENTITY_API_URL || "http://localhost:5101"
+      }/admin/users/${u.id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: u.email, userName: u.userName }),
+      }
+    );
+    if (!res.ok) throw new Error((await res.text()) || "Failed to save user");
   };
 
   const setUserRoles = async (u: AdminUser, nextRoles: string[]) => {
-    const res = await fetch(`${import.meta.env.VITE_IDENTITY_API_URL || 'http://localhost:5101'}/admin/users/${u.id}/roles`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ roles: nextRoles })
-    });
-    if (!res.ok) {
-      const message = (await res.text()) || 'Failed to update roles';
-      throw new Error(message);
-    }
+    const res = await fetch(
+      `${
+        import.meta.env.VITE_IDENTITY_API_URL || "http://localhost:5101"
+      }/admin/users/${u.id}/roles`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ roles: nextRoles }),
+      }
+    );
+    if (!res.ok)
+      throw new Error((await res.text()) || "Failed to update roles");
   };
 
-  const persistUserFields = async (userId: string) => {
-    const current = users.find(x => x.id === userId);
-    if (!current) return;
-    try {
-      await saveUser(current);
-      toast.success('User updated', {
-        description: 'Profile fields saved successfully',
-        durationMs: 4000
-      });
-    } catch (err) {
-      const description = err instanceof Error ? err.message : 'Unknown error';
-      toast.error('Failed to update user', { description, durationMs: 6000 });
-    }
+  const deleteUser = async (u: AdminUser) => {
+    const res = await fetch(
+      `${
+        import.meta.env.VITE_IDENTITY_API_URL || "http://localhost:5101"
+      }/admin/users/${u.id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+    if (!res.ok) throw new Error((await res.text()) || "Failed to delete user");
   };
 
-  if (loading) return <div className="admin-loading">Loading users and roles...</div>;
+  const resetUserPassword = async (u: AdminUser) => {
+    const res = await fetch(
+      `${
+        import.meta.env.VITE_IDENTITY_API_URL || "http://localhost:5101"
+      }/admin/users/${u.id}/reset-password`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+    if (!res.ok)
+      throw new Error((await res.text()) || "Failed to reset password");
+    return res.json();
+  };
+
+  if (loading)
+    return <div className="admin-loading">Loading users and roles...</div>;
 
   return (
-    <div className="container">
-        {/* Premium Header */}
-        <div className="hero">
-          <h1 className="hero__title">Admin: User Management</h1>
-          <p className="hero__subtitle">Manage all user accounts, roles, and permissions</p>
-          <div className="hero__actions">
-            <button 
-              className="btn btn-primary" 
-              onClick={() => navigate('/admin/users/add')}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="btn-icon">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              Add User with Null Password
-            </button>
-          </div>
+    <div className="admin-container">
+      {/* Header Section */}
+      <header className="admin-header">
+        <div>
+          <h1>User Management</h1>
+          <p className="admin-subtitle">
+            Manage user accounts, roles, and permissions
+          </p>
         </div>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/admin-area/users/add")}
+        >
+          <UserPlus size={16} />
+          <span>Add New User</span>
+          <Plus size={16} />
+        </button>
+      </header>
 
-        {/* Table Body */}
-        <div className="admin-users-body">
-          <table className="admin-users-table">
-            <thead>
-              <tr>
-                <th>Email Address</th>
-                <th>Username</th>
-                <th>Assigned Roles</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u.id}>
-                  <td>
-                    <input
-                      className="admin-table-input"
-                      type="email"
-                      value={u.email || ''}
-                      onChange={e => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, email: e.target.value } : x))}
-                      onBlur={() => { void persistUserFields(u.id); }}
-                      placeholder="Enter email"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      className="admin-table-input"
-                      type="text"
-                      value={u.userName || ''}
-                      onChange={e => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, userName: e.target.value } : x))}
-                      onBlur={() => { void persistUserFields(u.id); }}
-                      placeholder="Enter username"
-                    />
-                  </td>
-                  <td>
-                    <div className="role-tags-container">
-                      {u.roles.map(role => (
-                        <span key={role} className="role-tag">
-                          <button
-                            className="role-tag-remove"
-                            onClick={async () => {
-                              const next = u.roles.filter(r => r !== role);
-                              setUsers(prev => prev.map(x => x.id === u.id ? { ...x, roles: next } : x));
-                              try {
-                                await setUserRoles(u, next);
-                                toast.success('Role removed', {
-                                  description: `${role} removed from user`,
-                                  durationMs: 3500
-                                });
-                              } catch (err) {
-                                const description = err instanceof Error ? err.message : 'Unknown error';
-                                toast.error('Failed to update roles', { description, durationMs: 6000 });
-                              }
-                            }}
-                            aria-label={`Remove ${role} role`}
-                            title={`Remove ${role} role`}
-                          >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </button>
-                          {role}
-                        </span>
-                      ))}
-                    </div>
-                    {/* Available roles list (unselected) */}
-                    <div className="available-roles-container">
-                      {roles.filter(r => !u.roles.includes(r)).map(r => (
-                        <button
-                          key={r}
-                          className="role-chip"
-                          onClick={async () => {
-                            const next = Array.from(new Set([...u.roles, r]));
-                            setUsers(prev => prev.map(x => x.id === u.id ? { ...x, roles: next } : x));
-                            try {
-                              await setUserRoles(u, next);
-                              toast.success('Role added', {
-                                description: `${r} added to user`,
-                                durationMs: 3500
-                              });
-                            } catch (err) {
-                              const description = err instanceof Error ? err.message : 'Unknown error';
-                              toast.error('Failed to update roles', { description, durationMs: 6000 });
-                            }
-                          }}
-                          aria-label={`Add ${r} role`}
-                          title={`Add ${r} role`}
-                        >
-                          <span className="role-chip-add" aria-hidden>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </span>
-                          {r}
-                        </button>
-                      ))}
-                      {roles.filter(r => !u.roles.includes(r)).length === 0 && (
-                        <span className="available-roles-empty">All roles assigned</span>
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    {/* TODO: Add a button to edit the user detaileds such as name, email, phone, etc. */}
-                    <button className="admin-table-button"
-                      onClick={() => {
-                        const targetUrl = `/admin/edit-user/${u.id}`;
-                        console.log('[AdminUsers] Edit button clicked for user:', u.id, 'Navigating to:', targetUrl);
-                        console.log('[AdminUsers] Current URL before navigation:', window.location.href);
-                        navigate(targetUrl);
-                        // Log URL after navigation
-                        setTimeout(() => {
-                          console.log('[AdminUsers] Current URL after navigation:', window.location.href);
-                        }, 100);
-                      }}
-                      aria-label="Edit user"
-                      title="Edit user"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="admin-table-button-icon">
-                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Stats Cards */}
+      <div className="stats-grid">
+        <div className="stat-card">
+          <h3>Total Users</h3>
+          <p className="stat-number">{users.length}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Active Today</h3>
+          <p className="stat-number">-</p>
+        </div>
+        <div className="stat-card">
+          <h3>Admin Users</h3>
+          <p className="stat-number">
+            {users.filter((u) => u.roles.includes("Admin")).length}
+          </p>
         </div>
       </div>
+
+      {/* Users Table */}
+      <div className="table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Roles</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td className="user-cell" data-label="User">
+                  <div className="user-avatar">
+                    {user.userName?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <div>
+                    {editingUserId === user.id ? (
+                      <div className="edit-fields">
+                        <input
+                          type="email"
+                          name="email"
+                          value={editForm.email}
+                          onChange={handleEditFormChange}
+                          className="edit-input"
+                          placeholder="Email"
+                        />
+                        <input
+                          type="text"
+                          name="userName"
+                          value={editForm.userName}
+                          onChange={handleEditFormChange}
+                          className="edit-input"
+                          placeholder="Username"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="user-email">{user.email}</div>
+                        <div className="user-name">
+                          {user.userName || "No username"}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {editingUserId === user.id ? (
+                    <div className="edit-actions">
+                      <button
+                        className="btn-icon success"
+                        onClick={() => saveUserChanges(user.id)}
+                        title="Save changes"
+                      >
+                        <Save size={16} />
+                      </button>
+                      <button
+                        className="btn-icon"
+                        onClick={cancelEditing}
+                        title="Cancel"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="btn-icon"
+                      onClick={() => startEditing(user)}
+                      title="Edit user"
+                    >
+                      <Edit size={16} />
+                    </button>
+                  )}
+                </td>
+                <td data-label="Roles">
+                  <div className="roles-container">
+                    {user.roles.map((role) => (
+                      <span key={role} className="role-tag">
+                        {role}
+                        <button
+                          className="role-remove"
+                          onClick={async () => {
+                            const nextRoles = user.roles.filter(
+                              (r) => r !== role
+                            );
+                            setUsers((prev) =>
+                              prev.map((u) =>
+                                u.id === user.id
+                                  ? { ...u, roles: nextRoles }
+                                  : u
+                              )
+                            );
+                            try {
+                              await setUserRoles(user, nextRoles);
+                              toast.success("Role removed", {
+                                description: `${role} removed from user`,
+                              });
+                            } catch (err) {
+                              toast.error("Failed to update roles", {
+                                description:
+                                  err instanceof Error
+                                    ? err.message
+                                    : "Unknown error",
+                              });
+                            }
+                          }}
+                        >
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                    <div className="add-role-dropdown">
+                      <select
+                        value=""
+                        onChange={async (e) => {
+                          const role = e.target.value;
+                          if (!role) return;
+
+                          const nextRoles = [...user.roles, role];
+                          setUsers((prev) =>
+                            prev.map((u) =>
+                              u.id === user.id ? { ...u, roles: nextRoles } : u
+                            )
+                          );
+
+                          try {
+                            await setUserRoles(user, nextRoles);
+                            toast.success("Role added", {
+                              description: `${role} added to user`,
+                            });
+                          } catch (err) {
+                            toast.error("Failed to add role", {
+                              description:
+                                err instanceof Error
+                                  ? err.message
+                                  : "Unknown error",
+                            });
+                          }
+                          e.target.value = "";
+                        }}
+                      >
+                        <option value="">Add role...</option>
+                        {roles
+                          .filter((r) => !user.roles.includes(r))
+                          .map((role) => (
+                            <option key={role} value={role}>
+                              {role}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                </td>
+                <td data-label="Actions">
+                  <div className="action-buttons">
+                    <button
+                      type="button"
+                      className="btn-icon"
+                      title="Reset Password"
+                      onClick={async () => {
+                        if (
+                          !window.confirm(`Reset password for ${user.email}?`)
+                        )
+                          return;
+                        try {
+                          await resetUserPassword(user);
+                          toast.success("Password reset email sent");
+                        } catch (err) {
+                          toast.error("Failed to reset password", {
+                            description:
+                              err instanceof Error
+                                ? err.message
+                                : "Unknown error",
+                          });
+                        }
+                      }}
+                    >
+                      <Key size={16} />
+                    </button>
+                    <button
+                      className="btn-icon danger"
+                      title="Delete User"
+                      onClick={async () => {
+                        if (
+                          !window.confirm(
+                            `Delete user ${user.email}? This cannot be undone.`
+                          )
+                        )
+                          return;
+                        try {
+                          await deleteUser(user);
+                          setUsers((prev) =>
+                            prev.filter((u) => u.id !== user.id)
+                          );
+                          toast.success("User deleted");
+                        } catch (err) {
+                          toast.error("Failed to delete user", {
+                            description:
+                              err instanceof Error
+                                ? err.message
+                                : "Unknown error",
+                          });
+                        }
+                      }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
-
-

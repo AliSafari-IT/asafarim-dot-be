@@ -32,21 +32,36 @@ declare -A FRONTEND_APPS=(
     ["core-app"]="apps/core-app/dist"
     ["ai-ui"]="apps/ai-ui/dist"
     ["identity-portal"]="apps/identity-portal/dist"
+    ["testora-ui"]="apps/test-automation-ui/dist"
     ["blog"]="apps/blog/build"
     ["jobs-ui"]="apps/jobs-ui/dist"
+    ["taskmanagement-web"]="showcases/TaskManagement/taskmanagement-web/dist"
+    ["smartops-web"]="showcases/SmartOperationsDashboard/smartops-web/dist"
 )
 
 # .NET APIs with their project paths and output directories
-declare -A API_PROJECTS=(
+declare -A DotNet_API_PROJECTS=(
     ["Identity.Api"]="apis/Identity.Api/Identity.Api.csproj"
     ["Core.Api"]="apis/Core.Api/Core.Api.csproj"
     ["Ai.Api"]="apis/Ai.Api/Ai.Api.csproj"
+    ["TestAutomation.Api"]="apis/TestAutomation.Api/TestAutomation.Api.csproj"
+    ["TaskManagement.Api"]="showcases/TaskManagement/TaskManagement.Api/TaskManagement.Api.csproj"
+    ["SmartOps.Api"]="showcases/SmartOperationsDashboard/SmartOps.Api/SmartOps.Api.csproj"
 )
+
+# Nodejs APIs with their project paths and output directories
+declare -A Nodejs_API_PROJECTS=(
+    ["TestRunner"]="apis/TestRunner/src/index.ts"
+    )
 
 declare -A API_OUTPUTS=(
     ["Identity.Api"]="$SITE_ROOT/apis/identity"
     ["Core.Api"]="$SITE_ROOT/apis/core"
     ["Ai.Api"]="$SITE_ROOT/apis/ai"
+    ["TestAutomation.Api"]="$SITE_ROOT/apis/testora"
+    ["TestRunner"]="$SITE_ROOT/apis/testrunner"
+    ["TaskManagement.Api"]="$SITE_ROOT/apis/taskmanagement"
+    ["SmartOps.Api"]="$SITE_ROOT/apis/smartops"
 )
 
 # Systemd services
@@ -54,6 +69,10 @@ declare -A API_SERVICES=(
     ["Identity.Api"]="dotnet-identity"
     ["Core.Api"]="dotnet-core"
     ["Ai.Api"]="dotnet-ai"
+    ["TestAutomation.Api"]="dotnet-testora"
+    ["TestRunner"]="nodejs-testora"
+    ["TaskManagement.Api"]="dotnet-taskmanagement"
+    ["SmartOps.Api"]="dotnet-smartops"
 )
 
 #############################################
@@ -210,18 +229,36 @@ else
     mapfile -t selected_frontends < <(parse_selection "$frontend_selection" "${#frontend_keys[@]}")
 fi
 
-# API Menu
+# API Menu - Combine .NET and Node.js APIs
 echo ""
 print_header "API Services"
-api_keys=($(printf '%s\n' "${!API_PROJECTS[@]}" | sort))
+
+# Create combined list of all APIs (.NET + Node.js)
+declare -A ALL_API_PROJECTS
+declare -A ALL_API_TYPES
+
+# Add .NET APIs
+for key in "${!DotNet_API_PROJECTS[@]}"; do
+    ALL_API_PROJECTS[$key]="${DotNet_API_PROJECTS[$key]}"
+    ALL_API_TYPES[$key]="dotnet"
+done
+
+# Add Node.js APIs
+for key in "${!Nodejs_API_PROJECTS[@]}"; do
+    ALL_API_PROJECTS[$key]="${Nodejs_API_PROJECTS[$key]}"
+    ALL_API_TYPES[$key]="nodejs"
+done
+
+api_keys=($(printf '%s\n' "${!ALL_API_PROJECTS[@]}" | sort))
 for i in "${!api_keys[@]}"; do
     key="${api_keys[$i]}"
-    echo -e "${PURPLE}$((i+1)).${NC} ${key} (${API_PROJECTS[$key]})"
+    api_type="${ALL_API_TYPES[$key]}"
+    echo -e "${PURPLE}$((i+1)).${NC} ${key} [${api_type}] (${ALL_API_PROJECTS[$key]})"
 done
 
 echo ""
 echo -e "${YELLOW}Select APIs to deploy:${NC}"
-echo -e "${CYAN}Examples: 1 | 1,3 | 1-2 | all | none${NC}"
+echo -e "${CYAN}Examples: 1 | 1,3,5 | 1-3 | all | none${NC}"
 read -p "API selection: " api_selection
 
 selected_apis=()
@@ -256,7 +293,8 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
     echo -e "${GREEN}APIs to deploy:${NC}"
     for idx in "${selected_apis[@]}"; do
         key="${api_keys[$((idx-1))]}"
-        echo -e "  • ${key}"
+        api_type="${ALL_API_TYPES[$key]}"
+        echo -e "  • ${key} [${api_type}]"
     done
 else
     echo -e "${YELLOW}No APIs selected${NC}"
@@ -284,7 +322,9 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
     # Clean node_modules for selected apps
     for idx in "${selected_frontends[@]}"; do
         key="${frontend_keys[$((idx-1))]}"
-        app_path="$REPO_DIR/apps/$key"
+        build_path="${FRONTEND_APPS[$key]}"
+        # Extract app directory from build path (e.g., "apps/web/dist" -> "apps/web")
+        app_path="$REPO_DIR/${build_path%/dist}"
         if [ -d "$app_path/node_modules" ]; then
             print_info "Cleaning node_modules for $key"
             rm -rf "$app_path/node_modules"
@@ -345,7 +385,18 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
         key="${frontend_keys[$((idx-1))]}"
         print_info "Building $key..."
         
-        cd "$REPO_DIR/apps/$key"
+        build_path="${FRONTEND_APPS[$key]}"
+        # Extract app directory from build path
+        # Handle both /dist and /build suffixes (e.g., "apps/web/dist" -> "apps/web", "apps/blog/build" -> "apps/blog")
+        app_dir="$REPO_DIR/${build_path%/dist}"
+        app_dir="${app_dir%/build}"
+        
+        if [ ! -d "$app_dir" ]; then
+            print_error "App directory not found: $app_dir"
+            exit 1
+        fi
+        
+        cd "$app_dir"
         if pnpm build; then
             print_success "$key built successfully"
         else
@@ -363,7 +414,15 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
         key="${frontend_keys[$((idx-1))]}"
         build_path="${FRONTEND_APPS[$key]}"
         source_path="$REPO_DIR/$build_path"
-        dest_path="$SITE_ROOT/apps/$key"
+        
+        # Determine destination based on app location
+        if [[ "$build_path" == showcases/* ]]; then
+            # For showcases apps, deploy to apps/ directory with app name
+            dest_path="$SITE_ROOT/apps/$key"
+        else
+            # For regular apps, deploy to apps/ directory with app name
+            dest_path="$SITE_ROOT/apps/$key"
+        fi
         
         if [ -d "$source_path" ]; then
             # Backup existing deployment
@@ -396,44 +455,142 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
     
     mkdir -p "$SITE_ROOT/apis"
     
-    # Restore NuGet packages
-    print_info "Restoring NuGet packages for APIs..."
-    cd "$REPO_DIR"
-    dotnet restore
-    print_success "NuGet packages restored"
+    # Separate .NET and Node.js APIs
+    dotnet_apis=()
+    nodejs_apis=()
     
     for idx in "${selected_apis[@]}"; do
         key="${api_keys[$((idx-1))]}"
-        project_path="${API_PROJECTS[$key]}"
-        output_path="${API_OUTPUTS[$key]}"
+        api_type="${ALL_API_TYPES[$key]}"
         
-        print_info "Building $key..."
-        
-        # Verify build succeeds
-        if dotnet build "$REPO_DIR/$project_path" -c Release --no-restore; then
-            print_success "$key build verification successful"
-            
-            # Remove existing output directory
-            if [ -d "$output_path" ]; then
-                print_info "Removing existing deployment for $key"
-                rm -rf "$output_path"
-            fi
-            
-            # Publish the API
-            print_info "Publishing $key to $output_path"
-            mkdir -p "$output_path"
-            
-            if dotnet publish "$REPO_DIR/$project_path" -c Release -o "$output_path" --no-restore; then
-                print_success "$key published successfully"
-            else
-                print_error "Failed to publish $key"
-                exit 1
-            fi
-        else
-            print_error "Failed to build $key"
-            exit 1
+        if [ "$api_type" = "dotnet" ]; then
+            dotnet_apis+=("$idx")
+        elif [ "$api_type" = "nodejs" ]; then
+            nodejs_apis+=("$idx")
         fi
     done
+    
+    # Deploy .NET APIs
+    if [ ${#dotnet_apis[@]} -gt 0 ]; then
+        print_info "Restoring NuGet packages for .NET APIs..."
+        cd "$REPO_DIR"
+        dotnet restore
+        print_success "NuGet packages restored"
+        
+        for idx in "${dotnet_apis[@]}"; do
+            key="${api_keys[$((idx-1))]}"
+            project_path="${DotNet_API_PROJECTS[$key]}"
+            output_path="${API_OUTPUTS[$key]}"
+            
+            print_info "Building $key..."
+            
+            # Verify build succeeds
+            if dotnet build "$REPO_DIR/$project_path" -c Release --no-restore; then
+                print_success "$key build verification successful"
+                
+                # Remove existing output directory
+                if [ -d "$output_path" ]; then
+                    print_info "Removing existing deployment for $key"
+                    rm -rf "$output_path"
+                fi
+                
+                # Publish the API
+                print_info "Publishing $key to $output_path"
+                mkdir -p "$output_path"
+                
+                if dotnet publish "$REPO_DIR/$project_path" -c Release -o "$output_path" --no-restore; then
+                    print_success "$key published successfully"
+                    
+                    # Set proper permissions for .NET API
+                    chown -R www-data:www-data "$output_path"
+                    chmod -R 755 "$output_path"
+                else
+                    print_error "Failed to publish $key"
+                    exit 1
+                fi
+            else
+                print_error "Failed to build $key"
+                exit 1
+            fi
+        done
+    fi
+    
+    # Deploy Node.js APIs
+    if [ ${#nodejs_apis[@]} -gt 0 ]; then
+        print_info "Building Node.js APIs..."
+        cd "$REPO_DIR"
+        
+        for idx in "${nodejs_apis[@]}"; do
+            key="${api_keys[$((idx-1))]}"
+            project_path="${Nodejs_API_PROJECTS[$key]}"
+            output_path="${API_OUTPUTS[$key]}"
+            project_dir="$REPO_DIR/${project_path%/src/index.ts}"
+            
+            print_info "Building $key..."
+            
+            if [ ! -d "$project_dir" ]; then
+                print_error "Project directory not found: $project_dir"
+                exit 1
+            fi
+            
+            cd "$project_dir"
+            
+            # Install dependencies
+            if [ -f "package.json" ]; then
+                print_info "Installing dependencies for $key..."
+                pnpm install
+            fi
+            
+            # Build the project
+            if pnpm run build; then
+                print_success "$key build successful"
+                
+                # Remove existing output directory
+                if [ -d "$output_path" ]; then
+                    print_info "Removing existing deployment for $key"
+                    rm -rf "$output_path"
+                fi
+                
+                # Deploy built files
+                print_info "Deploying $key to $output_path"
+                mkdir -p "$output_path"
+                
+                # Copy dist/build directory
+                if [ -d "dist" ]; then
+                    cp -r dist/* "$output_path/"
+                    cp package.json "$output_path/"
+                    cp package-lock.json "$output_path/" 2>/dev/null || true
+                    cp pnpm-lock.yaml "$output_path/" 2>/dev/null || true
+                    
+                    # Install production dependencies
+                    cd "$output_path"
+                    pnpm install --prod
+                    
+                    # Set proper permissions for Node.js API
+                    chown -R www-data:www-data "$output_path"
+                    chmod -R 755 "$output_path"
+                    
+                    # For TestRunner, ensure temp directory exists and has proper permissions
+                    if [ "$key" = "TestRunner" ]; then
+                        print_info "Setting up TestRunner temp directory..."
+                        TEMP_DIR="${TEMP_TESTS_DIR:-/var/tmp/testrunner-tests}"
+                        mkdir -p "$TEMP_DIR"
+                        chown www-data:www-data "$TEMP_DIR" 2>/dev/null || true
+                        chmod 1777 "$TEMP_DIR" 2>/dev/null || chmod 755 "$TEMP_DIR"
+                        print_success "TestRunner temp directory ready: $TEMP_DIR"
+                    fi
+                    
+                    print_success "$key deployed successfully"
+                else
+                    print_error "Build directory not found for $key"
+                    exit 1
+                fi
+            else
+                print_error "Failed to build $key"
+                exit 1
+            fi
+        done
+    fi
     
     # Restart services for deployed APIs
     print_header "Restarting API Services"
@@ -474,7 +631,8 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
     echo -e "${GREEN}Deployed APIs:${NC}"
     for idx in "${selected_apis[@]}"; do
         key="${api_keys[$((idx-1))]}"
-        echo -e "  ✓ ${key}"
+        api_type="${ALL_API_TYPES[$key]}"
+        echo -e "  ✓ ${key} [${api_type}]"
     done
 fi
 

@@ -1,7 +1,20 @@
 import type { PublicPortfolio, CreateProjectDto, PortfolioSettings, Project } from '../types/portfolio.types';
 
-// Remove /core suffix if present, as portfolio endpoints are at /api/portfolio
-const API_BASE_URL = (import.meta.env.VITE_CORE_API_URL || 'https://core.asafarim.be/api').replace(/\/core$/, '');
+// Determine API base URL based on environment
+const API_BASE_URL = (() => {
+  const envUrl = import.meta.env.VITE_CORE_API_URL;
+  if (envUrl) {
+    return envUrl.replace(/\/core$/, '');
+  }
+  
+  // Development fallback
+  if (typeof window !== 'undefined' && window.location.hostname.includes('asafarim.local')) {
+    return 'http://core.asafarim.local:5102/api';
+  }
+  
+  // Production fallback
+  return 'https://core.asafarim.be/api';
+})();
 
 class PortfolioService {
   private async fetchWithAuth<T>(url: string, options: RequestInit = {}): Promise<T> {

@@ -85,8 +85,8 @@
   --color-brand-600: #0284c7;
   --color-brand-900: #0b3b56;
   --color-brand-950: #033d5f;
-  --color-phosphor: #758f17;
   --color-brand: #3b82f6;
+  --color-phosphor: #758f17;
 
   /* Semantic colors (updated) */
 /* Success */
@@ -131,6 +131,19 @@
   --color-error-900: #7f1d1d;
   --color-error-950: #450a0a;
 
+  /* Info */
+  --color-info-0:   #eceff3;
+  --color-info-50:  #dbe2ea;
+  --color-info-100: #c9d5e1;
+  --color-info-200: #a9bed3;
+  --color-info-300: #89a6c5;
+  --color-info-400: #6a8fb7;
+  --color-info-500: #4a78a9;
+  --color-info-600: #38608c;
+  --color-info-700: #2c4a6f;
+  --color-info-800: #203452;
+  --color-info-900: #142035;
+  --color-info-950: #023361;
 
   /* Accents */
   --color-accent-0: #faf5ff;
