@@ -5,11 +5,12 @@ import axios from 'axios';
 // Use absolute URLs in production
 const baseURL = isProduction ?
   'https://testora.asafarim.be' :
-  'http://testora.asafarim.local:5106';
+  'http://localhost:5106';
 
 // SignalR WebSocket URL (wss for HTTPS, ws for HTTP)
 const signalRProtocol = isProduction ? 'wss' : 'ws';
-const signalRHost = isProduction ? 'testora.asafarim.be' : 'testora.asafarim.local:5106';
+// Do not use https for SignalR as it will not work with WebSocket URLs
+const signalRHost = isProduction ? 'testora.asafarim.be' : 'localhost:5106';
 export const SIGNALR_URL = `${signalRProtocol}://${signalRHost}/hubs/testrun`;
 
 export const API_BASE = baseURL;

@@ -127,11 +127,6 @@ public class TestCafeGeneratorService
     {
         var code = new StringBuilder();
 
-        // Add description as comment if provided
-        if (!string.IsNullOrEmpty(step.Description))
-        {
-            code.AppendLine($"// {EscapeString(step.Description)}");
-        }
 
         var action = step.Action?.ToLower() ?? "";
 
@@ -140,6 +135,8 @@ public class TestCafeGeneratorService
             case "click":
                 if (!string.IsNullOrEmpty(step.Selector))
                     code.Append($"await t.click(Selector('{EscapeString(step.Selector)}'));");
+                else
+                    code.Append("// Click action requires a selector");
                 break;
 
             case "type":
@@ -147,11 +144,15 @@ public class TestCafeGeneratorService
                     code.Append(
                         $"await t.typeText(Selector('{EscapeString(step.Selector)}'), '{EscapeString(step.Value)}', {{ replace: true }});"
                     );
+                else
+                    code.Append("// Type action requires both selector and value");
                 break;
 
             case "navigate":
                 if (!string.IsNullOrEmpty(step.Value))
                     code.Append($"await t.navigateTo('{EscapeString(step.Value)}');");
+                else
+                    code.Append("// Navigate action requires a URL");
                 break;
 
             case "wait":
@@ -162,6 +163,8 @@ public class TestCafeGeneratorService
             case "hover":
                 if (!string.IsNullOrEmpty(step.Selector))
                     code.Append($"await t.hover(Selector('{EscapeString(step.Selector)}'));");
+                else
+                    code.Append("// Hover action requires a selector");
                 break;
 
             case "expect":
@@ -215,11 +218,15 @@ public class TestCafeGeneratorService
                     code.Append(
                         $"await t.click(Selector('{EscapeString(step.Selector)}')).click(Selector('{EscapeString(step.Selector)} option').withText('{EscapeString(step.Value)}'));"
                     );
+                else
+                    code.Append("// Select action requires both selector and value");
                 break;
 
             case "presskey":
                 if (!string.IsNullOrEmpty(step.Value))
                     code.Append($"await t.pressKey('{EscapeString(step.Value)}');");
+                else
+                    code.Append("// PressKey action requires a key name");
                 break;
 
             case "screenshot":
@@ -235,8 +242,10 @@ public class TestCafeGeneratorService
         return code.ToString();
     }
 
-    private string EscapeString(string input)
+    private string EscapeString(string? input)
     {
+        if (string.IsNullOrEmpty(input))
+            return "";
         return input.Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "");
     }
 
