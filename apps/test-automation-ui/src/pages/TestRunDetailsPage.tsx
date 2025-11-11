@@ -358,7 +358,7 @@ export function TestRunDetailsPage() {
           </div>
         </div>
 
-        <div className="summary-card">
+        <div className={`summary-card ${testRun.status === 'running' ? 'status-running' : ''}`}>
           <div className="card-icon">🔄</div>
           <div className="card-content">
             <div className="card-label">Status</div>

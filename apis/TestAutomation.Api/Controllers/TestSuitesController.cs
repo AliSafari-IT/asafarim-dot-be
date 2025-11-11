@@ -175,7 +175,7 @@ public class TestSuitesController : ControllerBase
 
     // 🔄 Generate TestCafe file for a test suite
     [HttpPost("{id}/generate-testcafe")]
-    [Authorize(Policy = "TesterOnly")]
+    [AllowAnonymous] // Allow API key access from TestRunner
     public async Task<IActionResult> GenerateTestCafeFile(Guid id)
     {
         try
