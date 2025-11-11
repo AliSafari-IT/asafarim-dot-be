@@ -61,11 +61,14 @@ export interface TestRunStatus {
     skippedTests: number;
     currentTest?: string;
     progress: number;
-    error?: {
+    startTime?: Date;
+    endTime?: Date | null;
+    currentStep?: string | null;
+    errorMessage?: {
         message?: string;
         stack?: string;
         name?: string;
         code?: string | number;
         details?: any;
-    };
+    } | null;
 }
