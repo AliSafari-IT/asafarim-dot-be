@@ -12,6 +12,13 @@ interface TestCafeFileResponse {
     generatedAt?: string | Date | null;
 }
 
+// Shape of the API response for POST /api/test-suites/{id}/generate-testcafe
+interface TestCafeGenerationResponse {
+    message?: string;
+    generatedAt?: string | Date | null;
+    success?: boolean;
+}
+
 export class TestRunnerService {
     private testCafe: any;
     private runningRuns: Map<string, TestRunStatus> = new Map();
@@ -25,9 +32,9 @@ export class TestRunnerService {
         this.signalR = signalRService;
         this.apiUrl = process.env.API_URL || 'http://localhost:5106';
         this.apiKey = process.env.API_KEY || 'test-runner-api-key-2024';
-        
+
         logger.info('🔗 Connecting to TestAutomation API at:', this.apiUrl);
-        
+
         // Fire-and-forget cleanup on startup
         this.cleanupTempArtifacts().catch(err => {
             logger.warn('Temp cleanup on startup failed', { error: err?.message });
@@ -331,14 +338,14 @@ export class TestRunnerService {
         try {
             const { execSync } = require('child_process');
             const isWindows = process.platform === 'win32';
-            
+
             if (isWindows) {
                 // Kill browser processes on Windows
                 const browsers = [browser];
                 if (browser === 'chrome') {
                     browsers.push('chrome', 'chromium', 'msedge');
                 }
-                
+
                 for (const b of browsers) {
                     try {
                         execSync(`taskkill /IM ${b}.exe /F 2>nul`, { stdio: 'ignore' });
@@ -378,7 +385,7 @@ export class TestRunnerService {
         const isWin = process.platform === 'win32';
         const forceHeadless = process.env.FORCE_HEADLESS === 'true';
         const defaultBrowser = process.env.BROWSER || 'chrome:headless';
-        
+
         // In production or when FORCE_HEADLESS is set, only use headless browsers
         if (forceHeadless) {
             logger.info('🎭 Force headless mode enabled');
@@ -411,7 +418,7 @@ export class TestRunnerService {
             list.push('chrome:headless --no-sandbox --disable-dev-shm-usage');
             return Array.from(new Set(list));
         }
-        
+
         // Development mode: try both headless and headed browsers
         if (isWin) {
             // Prefer Edge first on Windows for reliability
@@ -478,7 +485,7 @@ test('${tc.name}', async t => {
             // Legacy endpoint - just return a runId
             const runId = nanoid();
             logger.info('🚀 Starting test run (legacy)', this.context(runId, { testSuiteId: requestOrId }));
-            
+
             this.runningRuns.set(runId, {
                 status: 'running',
                 runId,
@@ -493,14 +500,14 @@ test('${tc.name}', async t => {
                 skippedTests: 0,
                 endTime: null
             });
-            
+
             return runId;
         }
 
         // Full TestRunRequest - execute the tests
         const request = requestOrId;
         const runId = request.runId || nanoid();
-        
+
         logger.info('🚀 Starting test run', this.context(runId, {
             testSuitesCount: request.testSuites?.length || 0,
             testCasesCount: request.testCases?.length || 0,
@@ -529,7 +536,7 @@ test('${tc.name}', async t => {
                 error: error.message,
                 stack: error.stack
             }));
-            
+
             // Update status to failed
             const currentStatus = this.runningRuns.get(runId);
             if (currentStatus) {
@@ -545,57 +552,52 @@ test('${tc.name}', async t => {
 
     private async executeTestRun(request: TestRunRequest): Promise<void> {
         const runId = request.runId;
-        
+
         try {
             // Fetch test suite data from API if needed
             const testSuites = request.testSuites || [];
             const testCases = request.testCases || [];
-            
+
             if (testSuites.length === 0 && testCases.length === 0) {
                 throw new Error('No test suites or test cases provided');
             }
 
-            // For each test suite, generate and run TestCafe file
+            // For each test suite, regenerate and run TestCafe file
             for (const suite of testSuites) {
-                logger.info('📦 Processing test suite', this.context(runId, { 
-                    suiteId: suite.id, 
+                logger.info('📦 Processing test suite', this.context(runId, {
+                    suiteId: suite.id,
                     suiteName: suite.name,
                     testCasesCount: suite.testCases?.length || 0
                 }));
 
-                // Fetch the generated TestCafe file from the API
-                const response = await fetch(`${this.apiUrl}/api/test-suites/${suite.id}/testcafe-file`, {
-                    headers: {
-                        'X-API-Key': this.apiKey,
-                        'Content-Type': 'application/json'
-                    }
+                // Update progress: Starting regeneration
+                await this.sendSignalRUpdate(runId, {
+                    status: 'running',
+                    progress: 10,
+                    currentStep: `Regenerating test file for ${suite.name}...`,
+                    errorMessage: null
                 });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Failed to fetch TestCafe file for suite ${suite.id}: ${response.status} ${response.statusText} - ${errorText}`);
-                }
+                // Always regenerate TestCafe file to ensure latest test scripts are used
+                await this.regenerateTestSuite(suite.id, runId);
 
-                // Parse JSON response and extract fileContent
-                const jsonResponse = (await response.json()) as TestCafeFileResponse;
-                const fileContent = jsonResponse.fileContent;
-                
-                if (!fileContent) {
-                    throw new Error(`No fileContent in response for suite ${suite.id}`);
-                }
-                
-                logger.info('📄 Fetched TestCafe file', this.context(runId, { 
-                    suiteId: suite.id, 
-                    fileSize: fileContent.length,
-                    generatedAt: jsonResponse.generatedAt
-                }));
-                
+                // Update progress: Fetching generated file
+                await this.sendSignalRUpdate(runId, {
+                    status: 'running',
+                    progress: 20,
+                    currentStep: `Fetching generated test file for ${suite.name}...`,
+                    errorMessage: null
+                });
+
+                // Fetch the freshly generated TestCafe file
+                const fileContent = await this.fetchTestCafeFile(suite.id, runId);
+
                 // Run the generated TestCafe file
                 await this.runGeneratedTestCafeFile(suite.id, fileContent, request.browser, runId);
             }
 
             logger.info('✅ Test run completed successfully', this.context(runId));
-            
+
         } catch (error: any) {
             logger.error('❌ Test run failed', this.context(runId, {
                 error: error.message,
@@ -605,17 +607,144 @@ test('${tc.name}', async t => {
         }
     }
 
+    /**
+     * Regenerates TestCafe file for a test suite to ensure latest test scripts are used
+     */
+    private async regenerateTestSuite(suiteId: string, runId: string): Promise<void> {
+        const maxRetries = 3;
+        const baseDelay = 500; // milliseconds
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                logger.info('🔄 Regenerating TestCafe file', this.context(runId, {
+                    suiteId,
+                    attempt,
+                    maxRetries
+                }));
+
+                const response = await fetch(`${this.apiUrl}/api/test-suites/${suiteId}/generate-testcafe`, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Key': this.apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status} ${response.statusText}: ${errorText}`);
+                }
+
+                const result = (await response.json()) as TestCafeGenerationResponse;
+                logger.info('✅ TestCafe file regenerated successfully', this.context(runId, {
+                    suiteId,
+                    attempt,
+                    generatedAt: result.generatedAt || new Date().toISOString()
+                }));
+
+                return; // Success, exit retry loop
+
+            } catch (error: any) {
+                const isLastAttempt = attempt === maxRetries;
+
+                logger.warn(`⚠️ TestCafe regeneration attempt ${attempt}/${maxRetries} failed`, this.context(runId, {
+                    suiteId,
+                    attempt,
+                    error: error.message,
+                    willRetry: !isLastAttempt
+                }));
+
+                if (isLastAttempt) {
+                    throw new Error(`Failed to regenerate TestCafe file after ${maxRetries} attempts: ${error.message}`);
+                }
+
+                // Exponential backoff: 500ms, 1000ms, 1500ms
+                const delay = baseDelay * attempt;
+                logger.info(`⏳ Retrying in ${delay}ms...`, this.context(runId, { suiteId, attempt }));
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+    }
+
+    /**
+     * Fetches the generated TestCafe file content from the API
+     */
+    private async fetchTestCafeFile(suiteId: string, runId: string): Promise<string> {
+        const maxRetries = 3;
+        const baseDelay = 300; // milliseconds
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                logger.info('📄 Fetching TestCafe file', this.context(runId, {
+                    suiteId,
+                    attempt,
+                    maxRetries
+                }));
+
+                const response = await fetch(`${this.apiUrl}/api/test-suites/${suiteId}/testcafe-file`, {
+                    headers: {
+                        'X-API-Key': this.apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status} ${response.statusText}: ${errorText}`);
+                }
+
+                // Parse JSON response and extract fileContent
+                const jsonResponse = (await response.json()) as TestCafeFileResponse;
+                const fileContent = jsonResponse.fileContent;
+
+                if (!fileContent || typeof fileContent !== 'string') {
+                    throw new Error(`Invalid or empty fileContent in response`);
+                }
+
+                logger.info('✅ TestCafe file fetched successfully', this.context(runId, {
+                    suiteId,
+                    attempt,
+                    fileSize: fileContent.length,
+                    generatedAt: jsonResponse.generatedAt
+                }));
+
+                return fileContent;
+
+            } catch (error: any) {
+                const isLastAttempt = attempt === maxRetries;
+
+                logger.warn(`⚠️ TestCafe file fetch attempt ${attempt}/${maxRetries} failed`, this.context(runId, {
+                    suiteId,
+                    attempt,
+                    error: error.message,
+                    willRetry: !isLastAttempt
+                }));
+
+                if (isLastAttempt) {
+                    throw new Error(`Failed to fetch TestCafe file after ${maxRetries} attempts: ${error.message}`);
+                }
+
+                // Linear backoff: 300ms, 600ms, 900ms
+                const delay = baseDelay * attempt;
+                logger.info(`⏳ Retrying in ${delay}ms...`, this.context(runId, { suiteId, attempt }));
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+
+        throw new Error('Unreachable code'); // TypeScript satisfaction
+    }
+
     async runGeneratedTestCafeFile(testSuiteId: string, fileContent: string, browser = 'chrome', providedRunId?: string) {
         const runId = providedRunId || nanoid();
         logger.info('🚀 Starting TestCafe file execution', this.context(runId, { testSuiteId, browser }));
-        
+
         // Ensure temp directory exists
         await fs.mkdir(this.tempDir, { recursive: true });
         logger.info('📁 Temp directory ensured', { tempDir: this.tempDir });
-        
+
         const filePath = path.join(this.tempDir, `${runId}.test.js`);
         const reportPath = path.join(this.tempDir, `${runId}-report.json`);
-        
+
         logger.info('📝 Writing test file', { filePath });
         await fs.writeFile(filePath, fileContent, 'utf8');
         logger.info('✅ Test file written successfully', { filePath, size: fileContent.length });
@@ -641,7 +770,7 @@ test('${tc.name}', async t => {
 
         const browserCandidates = this.getBrowserCandidates(browser);
         logger.info('🌐 Browser candidates prepared', { candidates: browserCandidates, requested: browser });
-        
+
         let failedCount = 0;
         let succeeded = false;
         let lastRunError: Error | null = null;
@@ -650,23 +779,23 @@ test('${tc.name}', async t => {
         for (const browserConfig of browserCandidates) {
             attemptedBrowsers.push(browserConfig);
             logger.info(`🔄 Attempting browser: ${browserConfig}`, this.context(runId, { attempt: attemptedBrowsers.length }));
-            
+
             await this.sendSignalRUpdate(runId, {
                 status: 'running',
                 progress: 5 + (attemptedBrowsers.length * 5),
                 errorMessage: `Attempting browser: ${browserConfig}`
             });
-            
+
             try {
                 const runner = await this.getTestCafeRunner();
                 logger.info('🎯 TestCafe runner obtained, starting test execution', this.context(runId, { browserConfig }));
-                
+
                 await this.sendSignalRUpdate(runId, {
                     status: 'running',
                     progress: 15 + (attemptedBrowsers.length * 5),
                     errorMessage: `Starting tests with ${browserConfig}...`
                 });
-                
+
                 // Increase timeouts significantly for production headless mode
                 const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_HEADLESS === 'true';
                 const runPromise = runner.src([filePath]).browsers(browserConfig).reporter('json', reportPath).run({
@@ -679,11 +808,11 @@ test('${tc.name}', async t => {
                     quarantineMode: false,
                     stopOnFirstFail: false
                 });
-                
+
                 logger.info('⏳ Test execution started, waiting for completion...', this.context(runId, { browserConfig }));
                 failedCount = await runPromise;
                 succeeded = true;
-                
+
                 logger.info('✅ Test execution completed successfully', this.context(runId, { browserConfig, failedCount }));
                 break;
 
@@ -696,10 +825,10 @@ test('${tc.name}', async t => {
                     code: runError?.code,
                     type: runError?.constructor?.name
                 };
-                
+
                 logger.error(`❌ Browser ${browserConfig} failed to run tests`, this.context(runId, errorDetails));
                 logger.error(`Full error object:`, runError);
-                
+
                 await this.sendSignalRUpdate(runId, {
                     status: 'running',
                     progress: Math.max(10, 100 - (browserCandidates.length - attemptedBrowsers.length) * 10),
@@ -714,7 +843,7 @@ test('${tc.name}', async t => {
                 finalError: lastRunError.message,
                 stack: lastRunError.stack
             }));
-            
+
             // Send a generic test failure result since we couldn't run the tests
             // This ensures the failure is recorded in the database
             await this.sendTestResult(runId, {
@@ -724,7 +853,7 @@ test('${tc.name}', async t => {
                 errorMessage: lastRunError.message || 'Test preparation failed',
                 stackTrace: lastRunError.stack
             });
-            
+
             await this.sendSignalRUpdate(runId, {
                 status: 'failed',
                 progress: 100,
@@ -732,20 +861,20 @@ test('${tc.name}', async t => {
                 failedTests: 1,
                 totalTests: 1
             });
-            
+
             throw lastRunError;
         }
 
-// Parse JSON report and send results
+        // Parse JSON report and send results
         let reportData: any = null;
         let actualPassedTests = 0;
         let actualFailedTests = 0;
         let actualTotalTests = 0;
-        
+
         try {
             const reportContent = await fs.readFile(reportPath, 'utf8');
             reportData = JSON.parse(reportContent);
-            
+
             // Extract actual test results from report and send each test result
             if (reportData?.fixtures) {
                 for (const fixture of reportData.fixtures) {
@@ -753,13 +882,13 @@ test('${tc.name}', async t => {
                         for (const test of fixture.tests) {
                             actualTotalTests++;
                             const hasFailed = test.errs && test.errs.length > 0;
-                            
+
                             if (hasFailed) {
                                 actualFailedTests++;
                             } else {
                                 actualPassedTests++;
                             }
-                            
+
                             // Send individual test result to webhook
                             await this.sendTestResult(runId, {
                                 name: test.name,
@@ -772,8 +901,8 @@ test('${tc.name}', async t => {
                     }
                 }
             }
-            
-            logger.info('📊 Test report parsed successfully', this.context(runId, { 
+
+            logger.info('📊 Test report parsed successfully', this.context(runId, {
                 totalTests: actualTotalTests,
                 passedTests: actualPassedTests,
                 failedTests: actualFailedTests
@@ -795,7 +924,7 @@ test('${tc.name}', async t => {
         };
 
         await this.sendSignalRUpdate(runId, finalStatus);
-        this.runningRuns.set(runId, { ...status , ...finalStatus });
+        this.runningRuns.set(runId, { ...status, ...finalStatus });
 
         logger.info('🏁 TestCafe file execution completed', this.context(runId, finalStatus));
         return { runId, status: finalStatus.status, failedCount: actualFailedTests };
