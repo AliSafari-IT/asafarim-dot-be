@@ -90,8 +90,30 @@ export default function AddNewUser() {
       });
       
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || `Failed to create user: ${response.status} ${response.statusText}`);
+        const contentType = response.headers.get('content-type') || '';
+        let message = `Failed to create user: ${response.status} ${response.statusText}`;
+        try {
+          if (contentType.includes('application/json')) {
+            const data = await response.json();
+            if (data?.message) {
+              message = data.message;
+            } else if (data?.errors) {
+              // ASP.NET Core ValidationProblemDetails
+              const errors: string[] = [];
+              Object.keys(data.errors).forEach((key) => {
+                const arr = data.errors[key];
+                if (Array.isArray(arr)) errors.push(...arr);
+              });
+              if (errors.length) message = errors.join('\n');
+            }
+          } else {
+            const text = await response.text();
+            if (text) message = text;
+          }
+        } catch {
+          // ignore parse errors, keep default message
+        }
+        throw new Error(message);
       }
       
       toast.success('User created successfully', {
@@ -99,7 +121,7 @@ export default function AddNewUser() {
         durationMs: 5000
       });
       
-      navigate('/admin/users');
+      navigate('/admin-area/users');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An unknown error occurred';
       toast.error('Failed to create user', {
@@ -115,7 +137,7 @@ export default function AddNewUser() {
     <div className="admin-container">
       <div className="admin-header">
         <button 
-          onClick={() => navigate('/admin/users')} 
+          onClick={() => navigate('/admin-area/users')} 
           className="btn btn-ghost"
           disabled={loading}
         >
@@ -215,7 +237,7 @@ export default function AddNewUser() {
           <div className="form-actions">
             <button
               type="button"
-              onClick={() => navigate('/admin/users')}
+              onClick={() => navigate('/admin-area/users')}
               className="btn btn-secondary"
               disabled={loading}
             >
