@@ -6,15 +6,28 @@ import fs from 'fs/promises';
 import path from 'path';
 import { SignalRService } from './SignalRService';
 
+// Shape of the API response for GET /api/test-suites/{id}/testcafe-file
+interface TestCafeFileResponse {
+    fileContent: string;
+    generatedAt?: string | Date | null;
+}
+
 export class TestRunnerService {
     private testCafe: any;
     private runningRuns: Map<string, TestRunStatus> = new Map();
     private signalR: SignalRService;
     // Use project temp-tests directory to avoid permission issues
     private tempDir = process.env.TEMP_TESTS_DIR || path.join(process.cwd(), 'temp-tests');
+    private apiUrl: string;
+    private apiKey: string;
 
     constructor(signalRService: SignalRService) {
         this.signalR = signalRService;
+        this.apiUrl = process.env.API_URL || 'http://localhost:5106';
+        this.apiKey = process.env.API_KEY || 'test-runner-api-key-2024';
+        
+        logger.info('🔗 Connecting to TestAutomation API at:', this.apiUrl);
+        
         // Fire-and-forget cleanup on startup
         this.cleanupTempArtifacts().catch(err => {
             logger.warn('Temp cleanup on startup failed', { error: err?.message });
@@ -459,12 +472,42 @@ test('${tc.name}', async t => {
 
     // --- Test execution --------------------------------------------------------
 
-    async runTests(testSuiteId: string): Promise<string> {
-        const runId = nanoid();
-        logger.info('🚀 Starting test run', this.context(runId, { testSuiteId }));
+    async runTests(requestOrId: TestRunRequest | string): Promise<string> {
+        // Handle both string (testSuiteId) and full TestRunRequest
+        if (typeof requestOrId === 'string') {
+            // Legacy endpoint - just return a runId
+            const runId = nanoid();
+            logger.info('🚀 Starting test run (legacy)', this.context(runId, { testSuiteId: requestOrId }));
+            
+            this.runningRuns.set(runId, {
+                status: 'running',
+                runId,
+                startTime: new Date(),
+                totalTests: 0,
+                passedTests: 0,
+                failedTests: 0,
+                completedTests: 0,
+                currentStep: null,
+                errorMessage: null,
+                progress: 0,
+                skippedTests: 0,
+                endTime: null
+            });
+            
+            return runId;
+        }
+
+        // Full TestRunRequest - execute the tests
+        const request = requestOrId;
+        const runId = request.runId || nanoid();
         
-        // This is a simplified version - in real implementation you'd fetch test suite data
-        // For now, return the runId to satisfy the API
+        logger.info('🚀 Starting test run', this.context(runId, {
+            testSuitesCount: request.testSuites?.length || 0,
+            testCasesCount: request.testCases?.length || 0,
+            browser: request.browser
+        }));
+
+        // Initialize run status
         this.runningRuns.set(runId, {
             status: 'running',
             runId,
@@ -479,8 +522,87 @@ test('${tc.name}', async t => {
             skippedTests: 0,
             endTime: null
         });
-        
+
+        // Execute tests asynchronously
+        this.executeTestRun(request).catch((error) => {
+            logger.error('Test run execution failed', this.context(runId, {
+                error: error.message,
+                stack: error.stack
+            }));
+            
+            // Update status to failed
+            const currentStatus = this.runningRuns.get(runId);
+            if (currentStatus) {
+                currentStatus.status = 'failed';
+                currentStatus.errorMessage = { message: error.message, stack: error.stack };
+                currentStatus.endTime = new Date();
+                this.runningRuns.set(runId, currentStatus);
+            }
+        });
+
         return runId;
+    }
+
+    private async executeTestRun(request: TestRunRequest): Promise<void> {
+        const runId = request.runId;
+        
+        try {
+            // Fetch test suite data from API if needed
+            const testSuites = request.testSuites || [];
+            const testCases = request.testCases || [];
+            
+            if (testSuites.length === 0 && testCases.length === 0) {
+                throw new Error('No test suites or test cases provided');
+            }
+
+            // For each test suite, generate and run TestCafe file
+            for (const suite of testSuites) {
+                logger.info('📦 Processing test suite', this.context(runId, { 
+                    suiteId: suite.id, 
+                    suiteName: suite.name,
+                    testCasesCount: suite.testCases?.length || 0
+                }));
+
+                // Fetch the generated TestCafe file from the API
+                const response = await fetch(`${this.apiUrl}/api/test-suites/${suite.id}/testcafe-file`, {
+                    headers: {
+                        'X-API-Key': this.apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to fetch TestCafe file for suite ${suite.id}: ${response.status} ${response.statusText} - ${errorText}`);
+                }
+
+                // Parse JSON response and extract fileContent
+                const jsonResponse = (await response.json()) as TestCafeFileResponse;
+                const fileContent = jsonResponse.fileContent;
+                
+                if (!fileContent) {
+                    throw new Error(`No fileContent in response for suite ${suite.id}`);
+                }
+                
+                logger.info('📄 Fetched TestCafe file', this.context(runId, { 
+                    suiteId: suite.id, 
+                    fileSize: fileContent.length,
+                    generatedAt: jsonResponse.generatedAt
+                }));
+                
+                // Run the generated TestCafe file
+                await this.runGeneratedTestCafeFile(suite.id, fileContent, request.browser, runId);
+            }
+
+            logger.info('✅ Test run completed successfully', this.context(runId));
+            
+        } catch (error: any) {
+            logger.error('❌ Test run failed', this.context(runId, {
+                error: error.message,
+                stack: error.stack
+            }));
+            throw error;
+        }
     }
 
     async runGeneratedTestCafeFile(testSuiteId: string, fileContent: string, browser = 'chrome', providedRunId?: string) {
@@ -593,11 +715,22 @@ test('${tc.name}', async t => {
                 stack: lastRunError.stack
             }));
             
+            // Send a generic test failure result since we couldn't run the tests
+            // This ensures the failure is recorded in the database
+            await this.sendTestResult(runId, {
+                name: 'Test Preparation Failed',
+                status: 'failed',
+                durationMs: 0,
+                errorMessage: lastRunError.message || 'Test preparation failed',
+                stackTrace: lastRunError.stack
+            });
+            
             await this.sendSignalRUpdate(runId, {
                 status: 'failed',
                 progress: 100,
                 errorMessage: `All browsers failed. Last error: ${lastRunError.message}`,
-                failedTests: 1
+                failedTests: 1,
+                totalTests: 1
             });
             
             throw lastRunError;
