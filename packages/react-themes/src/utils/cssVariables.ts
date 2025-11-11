@@ -9,7 +9,7 @@ import type { Theme, CSSVariable } from '../types';
  */
 export function themeToCSSVariables(theme: Theme): CSSVariable[] {
   const variables: CSSVariable[] = [];
-  
+  if (!theme || !theme.colors) return [];
   // Add color variables
   Object.entries(theme.colors).forEach(([key, value]) => {
     variables.push({
