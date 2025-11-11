@@ -369,14 +369,33 @@ export class TestRunnerService {
         // In production or when FORCE_HEADLESS is set, only use headless browsers
         if (forceHeadless) {
             logger.info('🎭 Force headless mode enabled');
-            // Use environment variable browser or default to chrome:headless with --no-sandbox
+            // Use environment variable browser or default to chrome:headless with stability flags
             if (defaultBrowser.includes('chrome')) {
-                list.push('chrome:headless --no-sandbox --disable-dev-shm-usage');
+                // Add comprehensive flags for stability in production
+                const chromeFlags = [
+                    'chrome:headless',
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--disable-software-rasterizer',
+                    '--disable-extensions',
+                    '--disable-setuid-sandbox',
+                    '--single-process',
+                    '--disable-background-networking',
+                    '--disable-default-apps',
+                    '--disable-sync',
+                    '--metrics-recording-only',
+                    '--mute-audio',
+                    '--no-first-run',
+                    '--safebrowsing-disable-auto-update',
+                    '--disable-web-security'
+                ].join(' ');
+                list.push(chromeFlags);
             } else {
                 list.push(defaultBrowser);
             }
             // Fallback options for production
-            list.push('chrome:headless', 'firefox:headless');
+            list.push('chrome:headless --no-sandbox --disable-dev-shm-usage');
             return Array.from(new Set(list));
         }
         
@@ -526,12 +545,17 @@ test('${tc.name}', async t => {
                     errorMessage: `Starting tests with ${browserConfig}...`
                 });
                 
+                // Increase timeouts significantly for production headless mode
+                const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_HEADLESS === 'true';
                 const runPromise = runner.src([filePath]).browsers(browserConfig).reporter('json', reportPath).run({
-                    pageLoadTimeout: 30000,
-                    browserInitTimeout: 60000,
-                    selectorTimeout: 10000,
-                    assertionTimeout: 10000,
-                    speed: 1
+                    pageLoadTimeout: isProduction ? 120000 : 30000,      // 2 minutes in production
+                    browserInitTimeout: isProduction ? 180000 : 60000,   // 3 minutes in production
+                    selectorTimeout: isProduction ? 30000 : 10000,       // 30 seconds in production
+                    assertionTimeout: isProduction ? 30000 : 10000,      // 30 seconds in production
+                    speed: 1,
+                    skipJsErrors: true,                                   // Skip JS errors to prevent crashes
+                    quarantineMode: false,
+                    stopOnFirstFail: false
                 });
                 
                 logger.info('⏳ Test execution started, waiting for completion...', this.context(runId, { browserConfig }));

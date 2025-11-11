@@ -60,8 +60,11 @@ public class TestCafeGeneratorService
                     sb.AppendLine();
                 }
 
-                // Keep other setup code for beforeEach
-                setupScript = string.Join("\n", otherLines);
+                // Keep other setup code for beforeEach (filter out comments and empty lines)
+                var nonEmptyLines = otherLines
+                    .Where(l => !string.IsNullOrWhiteSpace(l) && !l.Trim().StartsWith("//"))
+                    .ToList();
+                setupScript = nonEmptyLines.Any() ? string.Join("\n", nonEmptyLines) : null;
             }
         }
 
@@ -69,7 +72,7 @@ public class TestCafeGeneratorService
         sb.AppendLine($"fixture('{EscapeString(testSuite.Name)}')");
         sb.AppendLine($"    .page('{EscapeString(testSuite.Fixture.PageUrl)}')");
 
-        // Add beforeEach only if there's non-selector setup code
+        // Add beforeEach only if there's non-selector, non-comment setup code
         if (!string.IsNullOrWhiteSpace(setupScript))
         {
             sb.AppendLine("    .beforeEach(async t => {");
