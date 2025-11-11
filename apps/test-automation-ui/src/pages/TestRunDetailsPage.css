@@ -13,7 +13,8 @@
 
 .back-button {
   padding: 0.5rem 1rem;
-  background: var(--color-surface);
+  background: var(--color-accent-0);
+  color: var(--color-accent-900);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -48,6 +49,42 @@
   align-items: center;
   gap: 1rem;
   transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Pulsing animation for running status */
+.summary-card.status-running {
+  animation: heartbeat 2s ease-in-out infinite;
+  border-color: var(--color-primary);
+}
+
+.summary-card.status-running .card-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb, 59, 130, 246), 0.4);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 8px rgba(var(--color-primary-rgb, 59, 130, 246), 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb, 59, 130, 246), 0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
 }
 
 .summary-card:hover {
