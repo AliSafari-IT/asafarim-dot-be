@@ -1,3 +1,4 @@
+// packages/react-themes/src/themes/defaultThemes.ts
 /**
  * Default light and dark theme presets
  */

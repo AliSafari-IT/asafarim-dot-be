@@ -1,3 +1,4 @@
+// packages/react-themes/src/components/ThemeProvider.tsx
 /**
  * ThemeProvider component for managing theme state
  */
@@ -34,13 +35,13 @@ const DEFAULT_CONFIG: Required<ThemeConfig> = {
 
 /**
  * ThemeProvider component
- * 
- * Wraps your application to provide theme management functionality
- * 
+ *
+ * Wraps your application to provide theme management functionality.
+ *
  * @example
  * ```tsx
  * import { ThemeProvider } from '@asafarim/react-themes';
- * 
+ *
  * function App() {
  *   return (
  *     <ThemeProvider config={{ defaultMode: 'dark' }}>
@@ -51,123 +52,127 @@ const DEFAULT_CONFIG: Required<ThemeConfig> = {
  * ```
  */
 export function ThemeProvider({ children, config = {} }: ThemeProviderProps) {
-  const mergedConfig = useMemo(
-    () => ({ ...DEFAULT_CONFIG, ...config }),
-    [config]
-  );
-  
+  // Merge config safely, ensuring default themes are retained
+  const mergedConfig = useMemo(() => ({
+    ...DEFAULT_CONFIG,
+    ...config,
+    themes: { ...defaultThemes, ...(config.themes ?? {}) },
+  }), [config]);
+
+  const {
+    storageKey,
+    defaultMode,
+    enableTransitions,
+    transitionDuration,
+    attribute,
+    onThemeChange,
+  } = mergedConfig;
+
+  // Detect and store system preference
   const [systemPreference, setSystemPreference] = useState<ResolvedTheme>(() =>
     getSystemPreference()
   );
-  
+
+  // Load initial mode from storage or config
   const [mode, setModeState] = useState<ThemeMode>(() => {
-    const stored = getStoredThemeMode(mergedConfig.storageKey);
-    return stored || mergedConfig.defaultMode;
+    const stored = getStoredThemeMode(storageKey);
+    return stored || defaultMode;
   });
-  
-  const [customThemes, setCustomThemes] = useState<Record<string, Theme>>(() => ({
-    ...defaultThemes,
-    ...mergedConfig.themes,
-  }));
-  
+
+  // Merge default + custom themes
+  const [customThemes, setCustomThemes] = useState<Record<string, Theme>>(
+    () => mergedConfig.themes
+  );
+
   const [currentThemeName, setCurrentThemeName] = useState<string | null>(null);
-  
   const isInitialMount = useRef(true);
-  
-  // Calculate resolved theme
+
+  // Compute resolved theme
   const resolvedTheme: ResolvedTheme = useMemo(() => {
-    if (mode === 'system') {
-      return systemPreference;
-    }
-    return mode;
+    return mode === 'system' ? systemPreference : mode;
   }, [mode, systemPreference]);
-  
-  // Get current theme object
+
+  // Determine active theme object
   const theme: Theme = useMemo(() => {
     if (currentThemeName && customThemes[currentThemeName]) {
       return customThemes[currentThemeName];
     }
     return customThemes[resolvedTheme] || defaultThemes[resolvedTheme];
   }, [resolvedTheme, currentThemeName, customThemes]);
-  
-  // Set theme mode
+
+  // Update mode
   const setMode = useCallback(
     (newMode: ThemeMode) => {
       setModeState(newMode);
-      setStoredThemeMode(mergedConfig.storageKey, newMode);
-      setCurrentThemeName(null); // Reset custom theme when mode changes
+      setStoredThemeMode(storageKey, newMode);
+      setCurrentThemeName(null); // reset custom theme when switching modes
     },
-    [mergedConfig.storageKey]
+    [storageKey]
   );
-  
-  // Toggle between light and dark
+
+  // Toggle between light/dark
   const toggleTheme = useCallback(() => {
     const newMode = resolvedTheme === 'light' ? 'dark' : 'light';
     setMode(newMode);
   }, [resolvedTheme, setMode]);
-  
-  // Register a custom theme
+
+  // Register a custom theme dynamically
   const registerTheme = useCallback((name: string, newTheme: Theme) => {
     setCustomThemes((prev) => ({
       ...prev,
       [name]: newTheme,
     }));
   }, []);
-  
-  // Get a theme by name
+
+  // Retrieve a theme by name
   const getTheme = useCallback(
-    (name: string): Theme | undefined => {
-      return customThemes[name];
+    (name: string): Theme | undefined => customThemes[name],
+    [customThemes]
+  );
+
+  // Retrieve all themes
+  const getAllThemes = useCallback(() => customThemes, [customThemes]);
+
+  // Apply (activate) a custom theme by name
+  const applyTheme = useCallback(
+    (name: string) => {
+      if (customThemes[name]) {
+        setCurrentThemeName(name);
+      } else {
+        console.warn(`Theme "${name}" not found`);
+      }
     },
     [customThemes]
   );
-  
-  // Get all themes
-  const getAllThemes = useCallback(() => {
-    return customThemes;
-  }, [customThemes]);
-  
-  // Apply a custom theme
-  const applyTheme = useCallback((name: string) => {
-    if (customThemes[name]) {
-      setCurrentThemeName(name);
-    } else {
-      console.warn(`Theme "${name}" not found`);
-    }
-  }, [customThemes]);
-  
+
   // Watch system preference changes
   useEffect(() => {
-    const unwatch = watchSystemPreference((preference) => {
-      setSystemPreference(preference);
-    });
-    
+    const unwatch = watchSystemPreference(setSystemPreference);
     return unwatch;
   }, []);
-  
+
   // Apply theme to DOM
   useEffect(() => {
-    // Skip transition on initial mount
+    if (typeof document === 'undefined') return; // SSR safety
+
+    // Smooth transitions
     if (isInitialMount.current) {
       isInitialMount.current = false;
-    } else if (mergedConfig.enableTransitions) {
-      applyTransitionEffect(mergedConfig.transitionDuration);
+    } else if (enableTransitions) {
+      applyTransitionEffect(transitionDuration);
     }
-    
-    // Set attribute on document element
-    document.documentElement.setAttribute(
-      mergedConfig.attribute,
-      resolvedTheme
-    );
-    
-    // Apply CSS variables
+
+    // Apply attribute and CSS vars
+    document.documentElement.setAttribute(attribute, resolvedTheme);
     const variables = themeToCSSVariables(theme);
-    applyCSSVariables(variables);
-    
-    // Call onChange callback
-    mergedConfig.onThemeChange(resolvedTheme);
-  }, [theme, resolvedTheme, mergedConfig]);
-  
+
+    // Batch DOM updates for smoother rendering
+    requestAnimationFrame(() => applyCSSVariables(variables));
+
+    // Notify consumer
+    onThemeChange(resolvedTheme);
+  }, [theme, resolvedTheme, enableTransitions, transitionDuration, attribute, onThemeChange]);
+
   const contextValue = useMemo(
     () => ({
       mode,
@@ -194,7 +199,7 @@ export function ThemeProvider({ children, config = {} }: ThemeProviderProps) {
       systemPreference,
     ]
   );
-  
+
   return (
     <ThemeContext.Provider value={contextValue}>
       {children}
