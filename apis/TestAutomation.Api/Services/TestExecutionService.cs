@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using TestAutomation.Api.Data;
@@ -56,255 +57,165 @@ public class TestExecutionService : ITestExecutionService
         _db.TestRuns.Add(run);
         await _db.SaveChangesAsync();
 
-        // Build payload for Node runner
-        var suites =
-            request.TestSuiteIds != null
-                ? (
-                    await _db
-                        .TestSuites.Where(s => request.TestSuiteIds.Contains(s.Id))
-                        .Include(s => s.TestCases)
-                        .ThenInclude(tc => tc.TestDataSets)
-                        .ToListAsync()
-                )
-                    .Select(s => new
-                    {
-                        id = s.Id,
-                        name = s.Name,
-                        fixtureId = s.FixtureId,
-                        pageUrl = _db
-                            .TestFixtures.Where(f => f.Id == s.FixtureId)
-                            .Select(f => f.PageUrl)
-                            .FirstOrDefault(),
-                        testCases = s
-                            .TestCases.Where(tc => tc.IsActive)
-                            .Select(tc =>
-                            {
-                                string? stepsJson = null;
-                                try
-                                {
-                                    if (tc.Steps != null && tc.Steps.RootElement.ValueKind != System.Text.Json.JsonValueKind.Null)
-                                    {
-                                        stepsJson = tc.Steps.RootElement.GetRawText();
-                                        if (!string.IsNullOrWhiteSpace(stepsJson))
-                                        {
-                                            _logger.LogInformation(
-                                                "Step data for test case {TestCaseId}: {StepData}",
-                                                tc.Id,
-                                                stepsJson.Substring(0, Math.Min(200, stepsJson.Length))
-                                            );
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogWarning(ex, "Failed to parse steps for test case {TestCaseId}", tc.Id);
-                                }
+        // Generate TestCafe files for each test suite
+        var testSuiteIds = request.TestSuiteIds ?? new List<Guid>();
+        var testCafeGenerator = new TestCafeGeneratorService(_db);
 
-                                object? steps = null;
-                                if (!string.IsNullOrWhiteSpace(stepsJson))
-                                {
-                                    try
-                                    {
-                                        steps = JsonSerializer.Deserialize<object>(stepsJson);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        _logger.LogWarning(ex, "Failed to deserialize steps JSON for test case {TestCaseId}", tc.Id);
-                                    }
-                                }
-
-                                return new
-                                {
-                                    id = tc.Id,
-                                    name = tc.Name,
-                                    testType = tc.TestType.ToString().ToLower(),
-                                    steps = steps,
-                                    scriptText = tc.ScriptText,
-                                    testDataSets = tc
-                                        .TestDataSets?.Where(d => d.IsActive)
-                                        .Select(d =>
-                                        {
-                                            try
-                                            {
-                                                return new
-                                                {
-                                                    id = d.Id,
-                                                    name = d.Name,
-                                                    data = d.Data != null && d.Data.RootElement.ValueKind != System.Text.Json.JsonValueKind.Null
-                                                        ? JsonSerializer.Deserialize<object>(d.Data.RootElement.GetRawText())
-                                                        : null,
-                                                };
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                _logger.LogWarning(ex, "Failed to parse test data set {DataSetId} for test case {TestCaseId}", d.Id, tc.Id);
-                                                return new { id = d.Id, name = d.Name, data = (object?)null };
-                                            }
-                                        }) ?? Enumerable.Empty<object>(),
-                                };
-                            }),
-                    })
-                    .Cast<object>()
-                    .ToList()
-                : new List<object>();
-
-        var testCasesDirect =
-            request.TestCaseIds != null
-                ? (
-                    await _db
-                        .TestCases.Where(tc => request.TestCaseIds.Contains(tc.Id))
-                        .Include(tc => tc.TestDataSets)
-                        .ToListAsync()
-                )
-                    .Select(tc =>
-                    {
-                        string? stepsJson = null;
-                        try
-                        {
-                            if (tc.Steps != null && tc.Steps.RootElement.ValueKind != System.Text.Json.JsonValueKind.Null)
-                            {
-                                stepsJson = tc.Steps.RootElement.GetRawText();
-                                if (!string.IsNullOrWhiteSpace(stepsJson))
-                                {
-                                    _logger.LogInformation(
-                                        "Step data for direct test case {TestCaseId}: {StepData}",
-                                        tc.Id,
-                                        stepsJson.Substring(0, Math.Min(200, stepsJson.Length))
-                                    );
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning(ex, "Failed to parse steps for direct test case {TestCaseId}", tc.Id);
-                        }
-
-                        object? steps = null;
-                        if (!string.IsNullOrWhiteSpace(stepsJson))
-                        {
-                            try
-                            {
-                                steps = JsonSerializer.Deserialize<object>(stepsJson);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogWarning(ex, "Failed to deserialize steps JSON for direct test case {TestCaseId}", tc.Id);
-                            }
-                        }
-
-                        return new
-                        {
-                            id = tc.Id,
-                            name = tc.Name,
-                            testType = tc.TestType.ToString().ToLower(),
-                            steps = steps,
-                            scriptText = tc.ScriptText,
-                            testDataSets = tc
-                                .TestDataSets?.Where(d => d.IsActive)
-                                .Select(d =>
-                                {
-                                    try
-                                    {
-                                        return new
-                                        {
-                                            id = d.Id,
-                                            name = d.Name,
-                                            data = d.Data != null && d.Data.RootElement.ValueKind != System.Text.Json.JsonValueKind.Null
-                                                ? JsonSerializer.Deserialize<object>(d.Data.RootElement.GetRawText())
-                                                : null,
-                                        };
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        _logger.LogWarning(ex, "Failed to parse test data set {DataSetId} for direct test case {TestCaseId}", d.Id, tc.Id);
-                                        return new { id = d.Id, name = d.Name, data = (object?)null };
-                                    }
-                                }) ?? Enumerable.Empty<object>(),
-                        };
-                    })
-                    .Cast<object>()
-                    .ToList()
-                : new List<object>();
-
-        var payload = new
-        {
-            runId = run.Id.ToString(),
-            runName = run.RunName,
-            functionalRequirementId = run.FunctionalRequirementId?.ToString(),
-            environment = run.Environment,
-            browser = run.Browser,
-            apiUrl = _config["ApiBaseUrl"] ?? "http://testora.asafarim.local:5106",
-            userId,
-            testSuites = suites,
-            testCases = testCasesDirect,
-        };
-
-        // Log the full payload for debugging
-        var payloadJson = System.Text.Json.JsonSerializer.Serialize(
-            payload,
-            new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
-        );
-        _logger.LogInformation("Sending test run payload to TestRunner: {Payload}", payloadJson);
-
-        // Send to Node runner (fire-and-forget - don't wait for tests to complete)
-        var client = _httpClientFactory.CreateClient("TestRunnerClient");
-        client.DefaultRequestHeaders.Add("x-api-key", _config["TestRunner:ApiKey"] ?? "");
-
-        // Start the test run asynchronously without waiting for it to complete
-        _ = Task.Run(async () =>
+        var generatedFiles = new List<(Guid suiteId, string fileContent)>();
+        foreach (var suiteId in testSuiteIds)
         {
             try
             {
-                _logger.LogInformation("🚀 Sending test run request to TestRunner at {BaseUrl}/run-tests", 
-                    _config["TestRunner:BaseUrl"] ?? "http://localhost:4000");
-                
-                var response = await client.PostAsJsonAsync("/run-tests", payload);
-                
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    _logger.LogError("❌ Failed to start Node runner: {Status} - {Error}", 
-                        response.StatusCode, errorContent);
-                    
-                    run.Status = TestRunStatus.Failed;
-                    run.CompletedAt = DateTime.UtcNow;
-                    await _db.SaveChangesAsync();
-                    
-                    // Send SignalR update about the failure
-                    await _hubContext.Clients.Group($"testrun-{run.Id}")
-                        .SendAsync("ReceiveTestUpdate", new
-                        {
-                            testRunId = run.Id.ToString(),
-                            status = "failed",
-                            message = $"Failed to start test runner: {response.StatusCode} - {errorContent}",
-                            timestamp = DateTime.UtcNow
-                        });
-                }
-                else
-                {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    _logger.LogInformation("✅ TestRunner accepted test run request: {Response}", responseContent);
-                }
+                _logger.LogInformation("Generating TestCafe file for suite {SuiteId}", suiteId);
+                var fileContent = await testCafeGenerator.GenerateTestCafeFileAsync(suiteId);
+                generatedFiles.Add((suiteId, fileContent));
+                _logger.LogInformation(
+                    "✅ Generated TestCafe file for suite {SuiteId}, size: {Size} bytes",
+                    suiteId,
+                    fileContent.Length
+                );
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Error sending test run request to TestRunner: {Message}", ex.Message);
-                run.Status = TestRunStatus.Failed;
-                run.CompletedAt = DateTime.UtcNow;
-                await _db.SaveChangesAsync();
-                
-                // Send SignalR update about the failure
-                await _hubContext.Clients.Group($"testrun-{run.Id}")
-                    .SendAsync("ReceiveTestUpdate", new
-                    {
-                        testRunId = run.Id.ToString(),
-                        status = "failed",
-                        message = $"Error connecting to TestRunner: {ex.Message}",
-                        error = new { message = ex.Message, stack = ex.StackTrace },
-                        timestamp = DateTime.UtcNow
-                    });
+                _logger.LogError(
+                    ex,
+                    "❌ Failed to generate TestCafe file for suite {SuiteId}",
+                    suiteId
+                );
+                throw;
             }
-        });
+        }
+
+        // If we have generated files, send them to the new endpoint
+        if (generatedFiles.Count > 0)
+        {
+            // Combine multiple suites into a single JS file so the runner executes all of them
+            string combinedContent;
+            if (generatedFiles.Count == 1)
+            {
+                combinedContent = generatedFiles[0].fileContent;
+            }
+            else
+            {
+                var sbCombined = new System.Text.StringBuilder();
+                sbCombined.AppendLine("import { Selector } from 'testcafe';");
+                sbCombined.AppendLine();
+
+                foreach (var gf in generatedFiles)
+                {
+                    var content = gf.fileContent ?? string.Empty;
+                    // Strip leading import lines to avoid duplicate imports in the middle of file
+                    content = Regex.Replace(
+                        content,
+                        "^\\s*import\\s+\\{[^}]*\\}\\s+from\\s+['\"`]testcafe['\"`];?\\s*\n",
+                        string.Empty,
+                        RegexOptions.Multiline
+                    );
+                    sbCombined.AppendLine(content.Trim());
+                    sbCombined.AppendLine();
+                }
+                combinedContent = sbCombined.ToString();
+            }
+
+            var payload = new
+            {
+                // Use run id as the identifier for the combined file to avoid clashes and represent multi-suite runs
+                testSuiteId = run.Id.ToString(),
+                fileContent = combinedContent,
+                browser = run.Browser ?? "chrome",
+                runId = run.Id.ToString(),
+            };
+
+            // Log the full payload for debugging
+            var payloadJson = System.Text.Json.JsonSerializer.Serialize(
+                payload,
+                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
+            );
+            _logger.LogInformation(
+                "Sending generated TestCafe file to TestRunner: {Payload}",
+                payloadJson
+            );
+
+            // Send to Node runner (fire-and-forget - don't wait for tests to complete)
+            var client = _httpClientFactory.CreateClient("TestRunnerClient");
+            client.DefaultRequestHeaders.Add("x-api-key", _config["TestRunner:ApiKey"] ?? "");
+
+            // Start the test run asynchronously without waiting for it to complete
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    _logger.LogInformation(
+                        "🚀 Sending generated TestCafe file to TestRunner at {BaseUrl}/run-generated-file",
+                        _config["TestRunner:BaseUrl"] ?? "http://localhost:4000"
+                    );
+
+                    var response = await client.PostAsJsonAsync("/run-generated-file", payload);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        _logger.LogError(
+                            "❌ Failed to start Node runner: {Status} - {Error}",
+                            response.StatusCode,
+                            errorContent
+                        );
+
+                        run.Status = TestRunStatus.Failed;
+                        run.CompletedAt = DateTime.UtcNow;
+                        await _db.SaveChangesAsync();
+
+                        // Send SignalR update about the failure
+                        await _hubContext
+                            .Clients.Group($"testrun-{run.Id}")
+                            .SendAsync(
+                                "ReceiveTestUpdate",
+                                new
+                                {
+                                    testRunId = run.Id.ToString(),
+                                    status = "failed",
+                                    message = $"Failed to start test runner: {response.StatusCode} - {errorContent}",
+                                    timestamp = DateTime.UtcNow,
+                                }
+                            );
+                    }
+                    else
+                    {
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        _logger.LogInformation(
+                            "✅ TestRunner accepted test run request: {Response}",
+                            responseContent
+                        );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "❌ Error sending test run request to TestRunner: {Message}",
+                        ex.Message
+                    );
+                    run.Status = TestRunStatus.Failed;
+                    run.CompletedAt = DateTime.UtcNow;
+                    await _db.SaveChangesAsync();
+
+                    // Send SignalR update about the failure
+                    await _hubContext
+                        .Clients.Group($"testrun-{run.Id}")
+                        .SendAsync(
+                            "ReceiveTestUpdate",
+                            new
+                            {
+                                testRunId = run.Id.ToString(),
+                                status = "failed",
+                                message = $"Error connecting to TestRunner: {ex.Message}",
+                                error = new { message = ex.Message, stack = ex.StackTrace },
+                                timestamp = DateTime.UtcNow,
+                            }
+                        );
+                }
+            });
+        }
 
         _logger.LogInformation(
             "Test run {RunId} started, tests are executing in background",
@@ -591,8 +502,9 @@ public class TestExecutionService : ITestExecutionService
         {
             if (testResult.TestCaseId.HasValue)
             {
-                var tc = await _db.TestCases.Include(tc => tc.TestSuite)
-                                            .FirstOrDefaultAsync(tc => tc.Id == testResult.TestCaseId.Value);
+                var tc = await _db
+                    .TestCases.Include(tc => tc.TestSuite)
+                    .FirstOrDefaultAsync(tc => tc.Id == testResult.TestCaseId.Value);
                 if (tc != null)
                 {
                     testResult.TestSuiteId ??= tc.TestSuiteId;

@@ -5,17 +5,12 @@ import { ColumnDefinition } from '../components/GenericTable';
 import { FormFieldDefinition } from '../components/GenericForm';
 import { TestCafeFileViewer } from '../components/TestCafeFileViewer';
 import { api } from '../config/api';
+import { useToast } from '@asafarim/toast';
+import { useNavigate } from 'react-router-dom';
+import { Play } from 'lucide-react';
+import {getFunctionalRequirementId, type TestSuite } from '../services/entitiesService';
 
-interface TestSuite {
-  id: string;
-  fixtureId: string;
-  name: string;
-  description?: string;
-  executionOrder: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 interface Fixture {
   id: string;
@@ -25,6 +20,8 @@ interface Fixture {
 export default function TestSuitesPage() {
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
   const [viewingTestCafe, setViewingTestCafe] = useState<{ id: string; name: string } | null>(null);
+  const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadFixtures();
@@ -36,6 +33,32 @@ export default function TestSuitesPage() {
       setFixtures(response.data);
     } catch (error) {
       console.error('Failed to load fixtures:', error);
+    }
+  };
+
+  const handleRunTestSuite = async (testSuite: TestSuite) => {
+    try {
+      toast.success(`Starting test run for "${testSuite.name}"...`);
+      const frId = await getFunctionalRequirementId(testSuite.fixtureId);
+      const response = await api.post('/api/test-execution/run', {
+        runName: `${testSuite.name} - ${new Date().toLocaleString()}`,
+        environment: 'Development',
+        browser: 'chrome',
+        testSuiteIds: [testSuite.id],
+        functionalRequirementId: frId,
+      });
+
+      const runId = response.data.id;
+      toast.success(`Test run started! Redirecting to results...`);
+      
+      // Navigate to the test run results page
+      setTimeout(() => {
+        navigate(`/test-runs/${runId}`);
+      }, 1000);
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || error.message || 'Failed to start test run';
+      toast.error(errorMsg);
+      console.error('Test run error:', error);
     }
   };
 
@@ -129,10 +152,12 @@ export default function TestSuitesPage() {
         customActions={(item) => (
           <button
             className="button button-primary"
-            onClick={() => setViewingTestCafe({ id: item.id, name: item.name })}
-            title="View/Generate TestCafe File"
+            onClick={() => handleRunTestSuite(item)}
+            title="Run Test Suite"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
-            📄 TestCafe
+            <Play size={16} />
+            Run Tests
           </button>
         )}
         emptyMessage="No test suites found"
