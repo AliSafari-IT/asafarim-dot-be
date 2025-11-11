@@ -363,6 +363,24 @@ export class TestRunnerService {
         const list: string[] = [];
         const req = (requested || '').trim();
         const isWin = process.platform === 'win32';
+        const forceHeadless = process.env.FORCE_HEADLESS === 'true';
+        const defaultBrowser = process.env.BROWSER || 'chrome:headless';
+        
+        // In production or when FORCE_HEADLESS is set, only use headless browsers
+        if (forceHeadless) {
+            logger.info('🎭 Force headless mode enabled');
+            // Use environment variable browser or default to chrome:headless with --no-sandbox
+            if (defaultBrowser.includes('chrome')) {
+                list.push('chrome:headless --no-sandbox --disable-dev-shm-usage');
+            } else {
+                list.push(defaultBrowser);
+            }
+            // Fallback options for production
+            list.push('chrome:headless', 'firefox:headless');
+            return Array.from(new Set(list));
+        }
+        
+        // Development mode: try both headless and headed browsers
         if (isWin) {
             // Prefer Edge first on Windows for reliability
             list.push('edge', 'edge:headless');
