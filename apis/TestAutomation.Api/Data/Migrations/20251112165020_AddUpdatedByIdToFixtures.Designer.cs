@@ -3,6 +3,7 @@ using System;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TestAutomation.Api.Data;
@@ -12,9 +13,11 @@ using TestAutomation.Api.Data;
 namespace TestAutomation.Api.Data.Migrations
 {
     [DbContext(typeof(TestAutomationDbContext))]
-    partial class TestAutomationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251112165020_AddUpdatedByIdToFixtures")]
+    partial class AddUpdatedByIdToFixtures
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -479,9 +482,6 @@ namespace TestAutomation.Api.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("Remark")
-                        .HasColumnType("text");
-
                     b.Property<string>("RequestHooks")
                         .HasColumnType("jsonb");
 
@@ -669,9 +669,6 @@ namespace TestAutomation.Api.Data.Migrations
 
                     b.Property<DateTime?>("GeneratedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("GeneratedFilePath")
-                        .HasColumnType("text");
 
                     b.Property<string>("GeneratedTestCafeFile")
                         .HasColumnType("text");

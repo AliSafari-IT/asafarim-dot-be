@@ -1,3 +1,5 @@
+// apis/TestAutomation.Api/Services/TestCafeGeneratorService.cs
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
@@ -16,21 +18,96 @@ public class TestCafeGeneratorService
         _db = db;
     }
 
-    public async Task<string> GenerateTestCafeFileAsync(Guid testSuiteId)
+    public async Task<(string filePath, string content)> GenerateTestCafeFileAsync(Guid testSuiteId)
     {
         var testSuite = await _db
             .TestSuites.Include(ts => ts.Fixture)
+            .ThenInclude(f => f.FunctionalRequirement)
             .Include(ts => ts.TestCases)
             .FirstOrDefaultAsync(ts => ts.Id == testSuiteId);
 
         if (testSuite == null)
             throw new InvalidOperationException($"Test suite {testSuiteId} not found");
 
+        Console.WriteLine(
+            $"[TestCafe Generator] Generating tests for fixture: \"{testSuite.Fixture.Name}\""
+        );
+
         var sb = new StringBuilder();
 
-        // Add imports
-        sb.AppendLine("import { Selector } from 'testcafe';");
-        sb.AppendLine();
+        // Split tests by type for clearer generation phases
+        var scriptTests = testSuite
+            .TestCases.Where(tc =>
+                tc.IsActive
+                && tc.TestType == TestType.Script
+                && !string.IsNullOrEmpty(tc.ScriptText)
+            )
+            .OrderBy(tc => tc.Name)
+            .ToList();
+        var stepTests = testSuite
+            .TestCases.Where(tc => tc.IsActive && tc.TestType == TestType.Steps)
+            .OrderBy(tc => tc.Name)
+            .ToList();
+
+        // Aggregate import lines and extract components from script tests
+        var importLines = new HashSet<string>(StringComparer.Ordinal);
+        var extractedSelectors = new Dictionary<string, string>(StringComparer.Ordinal); // Map variable name to full selector line
+        var extractedFunctions = new List<string>();
+        var cleanedTestBlocks = new List<string>();
+
+        foreach (var st in scriptTests)
+        {
+            var (imports, body) = ExtractImportsAndBody(st.ScriptText!);
+            foreach (var imp in imports)
+                importLines.Add(imp);
+
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                var normalized = UnescapeCommonEscapes(body);
+                var cleanedBody = RemoveTypeScriptAnnotations(normalized);
+
+                // Extract selectors and functions from script body
+                var (selectors, functions, testCode) = ExtractSelectorsAndFunctions(
+                    cleanedBody,
+                    st.Id
+                );
+                foreach (var sel in selectors)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        extractedSelectors[varName] = sel; // Deduplicate by variable name
+                }
+                extractedFunctions.AddRange(functions);
+                cleanedTestBlocks.Add(testCode.Trim());
+            }
+        }
+
+        // Collect required imports for steps-based tests
+        var requiredImports = new List<string>();
+        if (stepTests.Any())
+            requiredImports.Add("Selector");
+
+        if (
+            stepTests.Any()
+            && (
+                !string.IsNullOrEmpty(testSuite.Fixture.RequestHooks)
+                || stepTests.Any(tc => tc.RequestHooks != null)
+            )
+        )
+        {
+            requiredImports.AddRange(new[] { "RequestLogger", "RequestMock" });
+        }
+
+        // Merge imports intelligently to avoid duplicates
+        var finalImports = MergeImports(importLines.ToList(), requiredImports);
+
+        // Write all imports at the very top (deduplicated)
+        foreach (var line in finalImports)
+            sb.AppendLine(line);
+        if (finalImports.Count > 0)
+            sb.AppendLine();
+
+        Console.WriteLine($"  ✓ Merged {finalImports.Count} unique import statements");
 
         // Add setup script as fixture-level selectors if it contains selector definitions
         string? setupScript = null;
@@ -68,39 +145,248 @@ public class TestCafeGeneratorService
             }
         }
 
-        // Add fixture
-        sb.AppendLine($"fixture('{EscapeString(testSuite.Name)}')");
-        sb.AppendLine($"    .page('{EscapeString(testSuite.Fixture.PageUrl)}')");
-
-        // Add beforeEach only if there's non-selector, non-comment setup code
-        if (!string.IsNullOrWhiteSpace(setupScript))
+        // Add fixture only if we have steps-based tests to generate
+        if (stepTests.Any())
         {
-            sb.AppendLine("    .beforeEach(async t => {");
-            sb.AppendLine($"        {IndentCode(setupScript, 8)}");
-            sb.AppendLine("    })");
-        }
+            sb.AppendLine($"fixture('{EscapeString(testSuite.Name)}')");
+            sb.AppendLine($"    .page('{EscapeString(testSuite.Fixture.PageUrl)}')");
 
-        // Add teardown script if exists
-        if (testSuite.Fixture.TeardownScript != null)
-        {
-            var teardownScript = testSuite.Fixture.TeardownScript.RootElement.GetString();
-            if (!string.IsNullOrEmpty(teardownScript))
+            // Add HTTP authentication if configured
+            if (
+                !string.IsNullOrEmpty(testSuite.Fixture.HttpAuthUsername)
+                && !string.IsNullOrEmpty(testSuite.Fixture.HttpAuthPassword)
+            )
             {
-                sb.AppendLine("    .afterEach(async t => {");
-                sb.AppendLine($"        {IndentCode(teardownScript, 8)}");
+                sb.AppendLine("    .httpAuth({");
+                sb.AppendLine(
+                    $"        username: '{EscapeString(testSuite.Fixture.HttpAuthUsername)}',"
+                );
+                sb.AppendLine(
+                    $"        password: '{EscapeString(testSuite.Fixture.HttpAuthPassword)}'"
+                );
                 sb.AppendLine("    })");
             }
+
+            // Add client scripts if configured
+            if (!string.IsNullOrEmpty(testSuite.Fixture.ClientScripts))
+            {
+                try
+                {
+                    var clientScripts = JsonSerializer.Deserialize<List<string>>(
+                        testSuite.Fixture.ClientScripts
+                    );
+                    if (clientScripts != null && clientScripts.Any())
+                    {
+                        foreach (var script in clientScripts)
+                        {
+                            sb.AppendLine($"    .clientScripts('{EscapeString(script)}')");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(
+                        $"[TestCafe Generator] Error parsing client scripts: {ex.Message}"
+                    );
+                }
+            }
+
+            // Add request hooks if configured
+            if (!string.IsNullOrEmpty(testSuite.Fixture.RequestHooks))
+            {
+                try
+                {
+                    var requestHooks = JsonSerializer.Deserialize<List<string>>(
+                        testSuite.Fixture.RequestHooks
+                    );
+                    if (requestHooks != null && requestHooks.Any())
+                    {
+                        foreach (var hook in requestHooks)
+                        {
+                            sb.AppendLine($"    .requestHooks({hook})");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(
+                        $"[TestCafe Generator] Error parsing request hooks: {ex.Message}"
+                    );
+                }
+            }
+
+            // Add fixture-level before hook
+            if (!string.IsNullOrEmpty(testSuite.Fixture.BeforeHook))
+            {
+                sb.AppendLine("    .before(async ctx => {");
+                sb.AppendLine($"        {IndentCode(testSuite.Fixture.BeforeHook, 8)}");
+                sb.AppendLine("    })");
+            }
+
+            // Add fixture-level after hook
+            if (!string.IsNullOrEmpty(testSuite.Fixture.AfterHook))
+            {
+                sb.AppendLine("    .after(async ctx => {");
+                sb.AppendLine($"        {IndentCode(testSuite.Fixture.AfterHook, 8)}");
+                sb.AppendLine("    })");
+            }
+
+            // Add beforeEach hook (combines BeforeEachHook and SetupScript)
+            var beforeEachCode = new List<string>();
+            if (!string.IsNullOrEmpty(testSuite.Fixture.BeforeEachHook))
+            {
+                beforeEachCode.Add(testSuite.Fixture.BeforeEachHook);
+            }
+            if (!string.IsNullOrWhiteSpace(setupScript))
+            {
+                beforeEachCode.Add(setupScript);
+            }
+
+            if (beforeEachCode.Any())
+            {
+                sb.AppendLine("    .beforeEach(async t => {");
+                foreach (var code in beforeEachCode)
+                {
+                    sb.AppendLine($"        {IndentCode(code, 8)}");
+                }
+                sb.AppendLine("    })");
+            }
+
+            // Add afterEach hook (combines AfterEachHook and TeardownScript)
+            var afterEachCode = new List<string>();
+            if (!string.IsNullOrEmpty(testSuite.Fixture.AfterEachHook))
+            {
+                afterEachCode.Add(testSuite.Fixture.AfterEachHook);
+            }
+            if (testSuite.Fixture.TeardownScript != null)
+            {
+                var teardownScript = testSuite.Fixture.TeardownScript.RootElement.GetString();
+                if (!string.IsNullOrEmpty(teardownScript))
+                {
+                    afterEachCode.Add(teardownScript);
+                }
+            }
+
+            if (afterEachCode.Any())
+            {
+                sb.AppendLine("    .afterEach(async t => {");
+                foreach (var code in afterEachCode)
+                {
+                    sb.AppendLine($"        {IndentCode(code, 8)}");
+                }
+                sb.AppendLine("    })");
+            }
+
+            // Add metadata if configured
+            if (!string.IsNullOrEmpty(testSuite.Fixture.Metadata))
+            {
+                try
+                {
+                    var metadata = JsonSerializer.Deserialize<Dictionary<string, object>>(
+                        testSuite.Fixture.Metadata
+                    );
+                    if (metadata != null && metadata.Any())
+                    {
+                        sb.AppendLine("    .meta({");
+                        var metaItems = metadata.Select(kvp =>
+                            $"        {kvp.Key}: {JsonSerializer.Serialize(kvp.Value)}"
+                        );
+                        sb.AppendLine(string.Join(",\n", metaItems));
+                        sb.AppendLine("    })");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(
+                        $"[TestCafe Generator] Error parsing fixture metadata: {ex.Message}"
+                    );
+                }
+            }
+
+            sb.AppendLine(";");
+            sb.AppendLine();
         }
 
-        sb.AppendLine(";");
-        sb.AppendLine();
-
-        // Generate test cases
-        foreach (
-            var testCase in testSuite.TestCases.Where(tc => tc.IsActive).OrderBy(tc => tc.Name)
-        )
+        // Generate steps-based test cases (within the fixture)
+        foreach (var testCase in stepTests)
         {
-            sb.AppendLine($"test('{EscapeString(testCase.Name)}', async t => {{");
+            // Start test declaration
+            var testDeclaration = $"test";
+
+            // Add .skip() if configured
+            if (testCase.Skip)
+            {
+                testDeclaration += ".skip";
+            }
+
+            // Add .only() if configured
+            if (testCase.Only)
+            {
+                testDeclaration += ".only";
+            }
+
+            sb.Append($"{testDeclaration}('{EscapeString(testCase.Name)}'");
+
+            // Add test metadata if configured
+            if (testCase.Meta != null)
+            {
+                try
+                {
+                    var metaJson = testCase.Meta.RootElement.GetRawText();
+                    sb.Append($", {metaJson}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(
+                        $"[TestCafe Generator] Error parsing test metadata: {ex.Message}"
+                    );
+                }
+            }
+
+            sb.AppendLine(", async t => {");
+            // Inject TEST_CASE_ID for result mapping
+            sb.AppendLine($"    // TEST_CASE_ID: {testCase.Id}");
+
+            // Add test-level page navigation if configured
+            if (!string.IsNullOrEmpty(testCase.PageUrl))
+            {
+                sb.AppendLine($"    // Navigate to test-specific page");
+                sb.AppendLine($"    await t.navigateTo('{EscapeString(testCase.PageUrl)}');");
+                sb.AppendLine();
+            }
+
+            // Add test-level client scripts if configured
+            if (testCase.ClientScripts != null)
+            {
+                try
+                {
+                    var clientScriptsJson = testCase.ClientScripts.RootElement.GetRawText();
+                    var clientScripts = JsonSerializer.Deserialize<List<string>>(clientScriptsJson);
+                    if (clientScripts != null && clientScripts.Any())
+                    {
+                        sb.AppendLine($"    // Inject test-specific client scripts");
+                        foreach (var script in clientScripts)
+                        {
+                            sb.AppendLine($"    await t.eval(() => {{ {EscapeString(script)} }});");
+                        }
+                        sb.AppendLine();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(
+                        $"[TestCafe Generator] Error parsing test client scripts: {ex.Message}"
+                    );
+                }
+            }
+
+            // Add before test hook
+            if (!string.IsNullOrEmpty(testCase.BeforeTestHook))
+            {
+                sb.AppendLine($"    // Before test hook");
+                sb.AppendLine($"    {IndentCode(testCase.BeforeTestHook, 4)}");
+                sb.AppendLine();
+            }
 
             if (testCase.TestType == TestType.Steps && testCase.Steps != null)
             {
@@ -121,13 +407,36 @@ public class TestCafeGeneratorService
 
                     if (steps != null && steps.Count > 0)
                     {
-                        foreach (var step in steps)
+                        for (int i = 0; i < steps.Count; i++)
                         {
+                            var step = steps[i];
                             Console.WriteLine(
                                 $"[TestCafe Generator] Step - Action: '{step.Action}', Selector: '{step.Selector}', Value: '{step.Value}'"
                             );
-                            sb.AppendLine($"    // Step: {EscapeString(step.Description ?? "")}");
+
+                            // Add before each step hook
+                            if (!string.IsNullOrEmpty(testCase.BeforeEachStepHook))
+                            {
+                                sb.AppendLine($"    // Before step {i + 1} hook");
+                                sb.AppendLine($"    {IndentCode(testCase.BeforeEachStepHook, 4)}");
+                            }
+
+                            sb.AppendLine(
+                                $"    // Step {i + 1}: {EscapeString(step.Description ?? "")}"
+                            );
                             sb.AppendLine($"    {GenerateStepCode(step)}");
+
+                            // Add after each step hook
+                            if (!string.IsNullOrEmpty(testCase.AfterEachStepHook))
+                            {
+                                sb.AppendLine($"    // After step {i + 1} hook");
+                                sb.AppendLine($"    {IndentCode(testCase.AfterEachStepHook, 4)}");
+                            }
+
+                            if (i < steps.Count - 1)
+                            {
+                                sb.AppendLine();
+                            }
                         }
                     }
                     else
@@ -146,20 +455,137 @@ public class TestCafeGeneratorService
                     sb.AppendLine($"    // Error deserializing steps: {ex.Message}");
                 }
             }
-            else if (
-                testCase.TestType == TestType.Script
-                && !string.IsNullOrEmpty(testCase.ScriptText)
-            )
+            // Script-based tests are handled separately to allow custom imports/fixtures
+
+            // Add after test hook
+            if (!string.IsNullOrEmpty(testCase.AfterTestHook))
             {
-                // Generate script-based test
-                sb.AppendLine(IndentCode(testCase.ScriptText, 4));
+                sb.AppendLine();
+                sb.AppendLine($"    // After test hook");
+                sb.AppendLine($"    {IndentCode(testCase.AfterTestHook, 4)}");
             }
 
             sb.AppendLine("});");
             sb.AppendLine();
         }
 
-        return sb.ToString();
+        // Write extracted selectors first (deduplicated, before any fixture)
+        if (extractedSelectors.Any())
+        {
+            sb.AppendLine("// Shared Selectors");
+            foreach (var selector in extractedSelectors.Values.OrderBy(s => s))
+            {
+                // Selector may contain multiple lines (e.g., multi-line Selector declarations)
+                // Append it directly and ensure it ends with a newline
+                sb.Append(selector);
+                if (!selector.EndsWith("\n"))
+                {
+                    sb.AppendLine();
+                }
+            }
+            sb.AppendLine();
+            Console.WriteLine($"  ✓ Deduplicated {extractedSelectors.Count} selectors");
+        }
+
+        // Write extracted functions
+        if (extractedFunctions.Any())
+        {
+            sb.AppendLine("// Shared Functions");
+            foreach (var func in extractedFunctions)
+            {
+                // Function may contain multiple lines (e.g., multi-line ClientFunction declarations)
+                // Append it directly and ensure it ends with a newline
+                sb.Append(func);
+                if (!func.EndsWith("\n"))
+                {
+                    sb.AppendLine();
+                }
+            }
+            sb.AppendLine();
+        }
+
+        // Generate consolidated fixture for script-based tests if no step tests exist
+        if (scriptTests.Any() && !stepTests.Any())
+        {
+            // Write a single fixture for all script tests
+            sb.AppendLine($"fixture`{EscapeString(testSuite.Fixture.Name)}`");
+            sb.AppendLine($"    .page`{EscapeString(testSuite.Fixture.PageUrl)}`;");
+            sb.AppendLine();
+        }
+
+        // Write script-based test blocks (without duplicate fixtures/selectors)
+        if (cleanedTestBlocks.Any())
+        {
+            if (stepTests.Any())
+            {
+                sb.AppendLine("// ----- Script-based tests -----");
+            }
+            foreach (var block in cleanedTestBlocks)
+            {
+                sb.AppendLine(block);
+                sb.AppendLine();
+            }
+        }
+
+        var testContent = sb.ToString();
+
+        // Validate generated content for errors
+        var validationErrors = ValidateGeneratedContent(testContent);
+
+        // Generate file path following the structure: {functional-area}/{fixture-name}/{suite-name}_{timestamp}.test.js
+        // Note: Don't include "temp-tests" here as TestRunner already uses that as its base directory
+        var functionalAreaSlug = ToSlug(testSuite.Fixture.FunctionalRequirement?.Name ?? "default");
+        var fixtureSlug = "fixture-" + ToSlug(testSuite.Fixture.Name);
+        var suiteSlug = ToSlug(testSuite.Name);
+        var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+        var fileName = $"{suiteSlug}_{timestamp}.test.js";
+
+        // Build path relative to TestRunner/temp-tests directory
+        var relativePath = Path.Combine(functionalAreaSlug, fixtureSlug, fileName);
+
+        // Navigate to TestRunner/temp-tests directory (go up from TestAutomation.Api)
+        var currentDir = Directory.GetCurrentDirectory();
+        var testRunnerDir = Path.Combine(currentDir, "..", "TestRunner", "temp-tests");
+        var absolutePath = Path.Combine(testRunnerDir, relativePath);
+
+        // Normalize the path to resolve .. references
+        absolutePath = Path.GetFullPath(absolutePath);
+
+        // Create directory if it doesn't exist
+        var directory = Path.GetDirectoryName(absolutePath);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+            Console.WriteLine(
+                $"  ✓ Created directory: {Path.Combine(functionalAreaSlug, fixtureSlug)}"
+            );
+        }
+
+        // Update fixture remark if validation errors found
+        if (validationErrors.Any())
+        {
+            var errorMessage = string.Join(" | ", validationErrors);
+            testSuite.Fixture.Remark = $"Generated: {DateTime.UtcNow:O} - {errorMessage}";
+            _db.TestFixtures.Update(testSuite.Fixture);
+            await _db.SaveChangesAsync();
+            Console.WriteLine($"  ⚠️ Validation errors found: {errorMessage}");
+        }
+        else if (!string.IsNullOrEmpty(testSuite.Fixture.Remark))
+        {
+            // Clear remark if previously had errors and now fixed
+            testSuite.Fixture.Remark = null;
+            _db.TestFixtures.Update(testSuite.Fixture);
+            await _db.SaveChangesAsync();
+            Console.WriteLine($"  ✓ Previous errors cleared from fixture remark");
+        }
+
+        // Write the file
+        await File.WriteAllTextAsync(absolutePath, testContent);
+        Console.WriteLine(
+            $"  ✓ Generated: {fileName} ({scriptTests.Count + stepTests.Count} test cases)"
+        );
+
+        return (relativePath, testContent);
     }
 
     private string GenerateStepCode(TestStep step)
@@ -291,6 +717,381 @@ public class TestCafeGeneratorService
     {
         var indent = new string(' ', spaces);
         return string.Join("\n" + indent, code.Split('\n'));
+    }
+
+    private (List<string> imports, string body) ExtractImportsAndBody(string script)
+    {
+        // Normalize any JSON-escaped content first so line parsing works
+        var normalizedScript = UnescapeCommonEscapes(script);
+
+        var imports = new List<string>();
+        var bodyLines = new List<string>();
+        using var reader = new StringReader(normalizedScript);
+        string? line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            var trimmed = line.TrimStart();
+            if (trimmed.StartsWith("import "))
+            {
+                // Normalize whitespace
+                imports.Add(line.Trim());
+            }
+            else
+            {
+                bodyLines.Add(line);
+            }
+        }
+        return (imports.Distinct().ToList(), string.Join("\n", bodyLines));
+    }
+
+    private string UnescapeCommonEscapes(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        // Replace common JSON-style escapes with actual characters
+        var s = input.Replace("\\r\\n", "\n").Replace("\\n", "\n").Replace("\\t", "\t");
+
+        // Unescape common quotes/backticks if users pasted JSON-escaped content
+        s = s.Replace("\\\"", "\"").Replace("\\'", "'").Replace("\\`", "`");
+
+        return s;
+    }
+
+    private static string RemoveTypeScriptAnnotations(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        // Remove TypeScript type annotations from function parameters
+        // Pattern: (paramName: Type) => (paramName)
+        // Only match if the type starts with uppercase letter (Type, Array, etc.) or is a generic type
+        // This avoids matching object properties like { timeout: 5000 }
+        var result = System.Text.RegularExpressions.Regex.Replace(
+            input,
+            @"\b(\w+)\s*:\s*(?:[A-Z]\w*|[a-z]+<[^>]*>)(?:<[^>]*>)?(?:\[\])?\s*(?=\s*[,)])",
+            "$1",
+            System.Text.RegularExpressions.RegexOptions.Multiline
+        );
+
+        return result;
+    }
+
+    private static List<string> MergeImports(
+        List<string> existingImports,
+        List<string> requiredImports
+    )
+    {
+        var importMap = new Dictionary<string, HashSet<string>>();
+
+        // Parse existing imports
+        foreach (var import in existingImports)
+        {
+            var (module, imports) = ParseImportStatement(import);
+            if (!string.IsNullOrEmpty(module))
+            {
+                if (!importMap.ContainsKey(module))
+                    importMap[module] = new HashSet<string>();
+                foreach (var imp in imports)
+                    importMap[module].Add(imp);
+            }
+        }
+
+        // Add required imports to testcafe module
+        if (requiredImports.Any())
+        {
+            if (!importMap.ContainsKey("testcafe"))
+                importMap["testcafe"] = new HashSet<string>();
+            foreach (var req in requiredImports)
+                importMap["testcafe"].Add(req);
+        }
+
+        // Generate final import statements
+        var result = new List<string>();
+        foreach (var kvp in importMap.OrderBy(x => x.Key))
+        {
+            var imports = string.Join(", ", kvp.Value.OrderBy(x => x));
+            result.Add($"import {{ {imports} }} from '{kvp.Key}';");
+        }
+
+        return result;
+    }
+
+    private string ExtractVariableName(string selectorLine)
+    {
+        // Extract variable name from: const dashboard = Selector(...);\
+        var match = System.Text.RegularExpressions.Regex.Match(selectorLine, @"const\s+(\w+)\s*=");
+        return match.Success ? match.Groups[1].Value : string.Empty;
+    }
+
+    private List<string> ValidateGeneratedContent(string content)
+    {
+        var errors = new List<string>();
+        var lines = content.Split('\n');
+        var selectorVariables = new HashSet<string>();
+        var duplicateSelectors = new List<string>();
+        var lineNumber = 0;
+        var braceDepth = 0;
+        var testFunctionDepth = -1; // Track the depth at which test function started
+
+        foreach (var line in lines)
+        {
+            lineNumber++;
+            var trimmed = line.Trim();
+
+            // Check for test() or hook declarations BEFORE updating brace depth
+            if (
+                trimmed.StartsWith("test(")
+                || trimmed.StartsWith("test.skip(")
+                || trimmed.StartsWith("test.only(")
+                || trimmed.Contains(".beforeEach(")
+                || trimmed.Contains(".afterEach(")
+                || trimmed.Contains(".before(")
+                || trimmed.Contains(".after(")
+            )
+            {
+                testFunctionDepth = braceDepth;
+            }
+
+            // Track brace depth to know when we're inside functions
+            braceDepth += trimmed.Count(c => c == '{');
+            braceDepth -= trimmed.Count(c => c == '}');
+
+            // If we're back to the depth before the test function, we've exited it
+            if (testFunctionDepth >= 0 && braceDepth <= testFunctionDepth)
+            {
+                testFunctionDepth = -1;
+            }
+
+            // Check for Selector() declarations - track multi-line selectors
+            if (trimmed.StartsWith("const ") && trimmed.Contains("Selector("))
+            {
+                var varName = ExtractVariableName(trimmed);
+                if (!string.IsNullOrEmpty(varName))
+                {
+                    if (selectorVariables.Contains(varName))
+                    {
+                        duplicateSelectors.Add(varName);
+                    }
+                    selectorVariables.Add(varName);
+                }
+
+                // For multi-line selectors, we need to check if it ends with semicolon
+                // If current line doesn't end with semicolon, it's likely multi-line
+                // We'll validate the complete selector by checking if we can find the semicolon
+                // in subsequent lines (but we won't re-read, just skip detailed validation)
+                // The real validation is that the file should be syntactically correct JavaScript
+            }
+
+            // Check for await statements - only flag if we're NOT in a test/hook function
+            // We're in a test/hook if testFunctionDepth >= 0 and braceDepth > testFunctionDepth
+            if (
+                trimmed.StartsWith("await ")
+                && (testFunctionDepth < 0 || braceDepth <= testFunctionDepth)
+            )
+            {
+                errors.Add(
+                    $"Line {lineNumber}: await statement found outside function - must be inside test() or hook"
+                );
+            }
+        }
+
+        if (duplicateSelectors.Any())
+        {
+            errors.Add($"Duplicate selectors: {string.Join(", ", duplicateSelectors.Distinct())}");
+        }
+
+        // Check for syntax errors
+        if (content.Contains("// Error"))
+        {
+            errors.Add("Test file contains error comments");
+        }
+
+        // Note: We don't check for incomplete lines ending with '(' because
+        // multi-line selectors and function calls legitimately end with '('
+        // The JavaScript engine will catch actual syntax errors at runtime
+
+        return errors;
+    }
+
+    private static (string module, List<string> imports) ParseImportStatement(
+        string importStatement
+    )
+    {
+        // Parse: import { Selector, ClientFunction } from 'testcafe';
+        var singleQuotePattern = @"import\s*\{\s*([^}]+)\s*\}\s*from\s*'([^']+)'\s*;?";
+        var doubleQuotePattern = @"import\s*\{\s*([^}]+)\s*\}\s*from\s*""([^""]+)""\s*;?";
+
+        var match = System.Text.RegularExpressions.Regex.Match(importStatement, singleQuotePattern);
+        if (!match.Success)
+        {
+            match = System.Text.RegularExpressions.Regex.Match(importStatement, doubleQuotePattern);
+        }
+
+        if (match.Success)
+        {
+            var module = match.Groups[2].Value;
+            var imports = match
+                .Groups[1]
+                .Value.Split(',')
+                .Select(s => s.Trim())
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToList();
+            return (module, imports);
+        }
+
+        return (string.Empty, new List<string>());
+    }
+
+    private (
+        List<string> selectors,
+        List<string> functions,
+        string testCode
+    ) ExtractSelectorsAndFunctions(string scriptBody, Guid testCaseId)
+    {
+        var selectors = new List<string>();
+        var functions = new List<string>();
+        var remainingLines = new List<string>();
+
+        using var reader = new StringReader(scriptBody);
+        string? line;
+        var braceDepth = 0;
+        var inTest = false;
+        var testCaseIdInjected = false;
+
+        while ((line = reader.ReadLine()) != null)
+        {
+            var trimmed = line.TrimStart();
+
+            // Skip fixture declarations as they'll be consolidated
+            if (
+                trimmed.StartsWith("fixture`")
+                || trimmed.StartsWith("fixture(")
+                || trimmed.StartsWith(".page")
+            )
+            {
+                continue;
+            }
+
+            // Track if we're inside a test block
+            if (
+                trimmed.StartsWith("test(")
+                || trimmed.StartsWith("test.skip(")
+                || trimmed.StartsWith("test.only(")
+            )
+            {
+                inTest = true;
+                braceDepth = 0; // Reset brace depth when entering test
+                testCaseIdInjected = false; // Reset injection flag for new test
+            }
+
+            // Track brace depth to know when test ends
+            if (inTest)
+            {
+                var previousDepth = braceDepth;
+                braceDepth += trimmed.Count(c => c == '{');
+                braceDepth -= trimmed.Count(c => c == '}');
+
+                // Add the line to remaining lines (keep everything inside test)
+                remainingLines.Add(line);
+
+                // Inject TEST_CASE_ID comment right after test opening brace
+                // Check if we just entered the test body (depth went from 0 to 1+)
+                if (!testCaseIdInjected && previousDepth == 0 && braceDepth > 0)
+                {
+                    var indent = new string(' ', line.Length - line.TrimStart().Length + 4);
+                    remainingLines.Add($"{indent}// TEST_CASE_ID: {testCaseId}");
+                    testCaseIdInjected = true;
+                }
+
+                // If we're back to depth 0 and we see });, the test has ended
+                if (braceDepth == 0 && trimmed == "});")
+                {
+                    inTest = false;
+                }
+            }
+            else
+            {
+                // Only extract selectors/functions that are OUTSIDE test blocks
+
+                // Extract multi-line selector declarations
+                if (trimmed.StartsWith("const ") && trimmed.Contains("Selector("))
+                {
+                    var selectorLines = new List<string> { line };
+
+                    // Check if the selector is complete (ends with semicolon)
+                    if (!trimmed.TrimEnd().EndsWith(";"))
+                    {
+                        // Read continuation lines until we find the semicolon
+                        string? nextLine;
+                        while ((nextLine = reader.ReadLine()) != null)
+                        {
+                            selectorLines.Add(nextLine);
+                            if (nextLine.TrimEnd().EndsWith(";"))
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    // Join all lines into a single selector declaration
+                    var fullSelector = string.Join("\n", selectorLines);
+                    selectors.Add(fullSelector);
+                    continue;
+                }
+
+                // Extract multi-line ClientFunction declarations
+                if (trimmed.StartsWith("const ") && trimmed.Contains("ClientFunction("))
+                {
+                    var functionLines = new List<string> { line };
+
+                    // Check if the function is complete (ends with semicolon)
+                    if (!trimmed.TrimEnd().EndsWith(";"))
+                    {
+                        // Read continuation lines until we find the semicolon
+                        string? nextLine;
+                        while ((nextLine = reader.ReadLine()) != null)
+                        {
+                            functionLines.Add(nextLine);
+                            if (nextLine.TrimEnd().EndsWith(";"))
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    // Join all lines into a single function declaration
+                    var fullFunction = string.Join("\n", functionLines);
+                    functions.Add(fullFunction);
+                    continue;
+                }
+            }
+        }
+
+        return (selectors, functions, string.Join("\n", remainingLines));
+    }
+
+    private static string ToSlug(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return "unnamed";
+
+        // Convert to lowercase
+        var slug = input.ToLowerInvariant();
+
+        // Replace spaces and underscores with hyphens
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[\s_]+", "-");
+
+        // Remove special characters except hyphens
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\-]", "");
+
+        // Remove duplicate hyphens
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"-+", "-");
+
+        // Trim hyphens from start and end
+        slug = slug.Trim('-');
+
+        return string.IsNullOrEmpty(slug) ? "unnamed" : slug;
     }
 }
 

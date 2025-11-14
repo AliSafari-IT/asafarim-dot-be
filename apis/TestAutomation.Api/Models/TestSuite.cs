@@ -9,6 +9,7 @@ public class TestSuite
     public int ExecutionOrder { get; set; } = 0;
     public bool IsActive { get; set; } = true;
     public string? GeneratedTestCafeFile { get; set; }
+    public string? GeneratedFilePath { get; set; } // Relative path to the generated test file
     public DateTime? GeneratedAt { get; set; }
     public Guid? CreatedById { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

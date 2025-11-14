@@ -7,6 +7,8 @@ export interface TestSuite {
   description?: string;
   executionOrder: number;
   isActive: boolean;
+  generatedTestCafeFile?: string;
+  generatedFilePath?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -10,7 +10,11 @@ public class IdentityApiClient : IIdentityApiClient
     private readonly IConfiguration _configuration;
     private readonly ILogger<IdentityApiClient> _logger;
 
-    public IdentityApiClient(HttpClient httpClient, IConfiguration configuration, ILogger<IdentityApiClient> logger)
+    public IdentityApiClient(
+        HttpClient httpClient,
+        IConfiguration configuration,
+        ILogger<IdentityApiClient> logger
+    )
     {
         _httpClient = httpClient;
         _configuration = configuration;
@@ -24,16 +28,19 @@ public class IdentityApiClient : IIdentityApiClient
     {
         try
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                token
+            );
             var response = await _httpClient.GetAsync("/api/account/info");
 
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<UserInfo>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                return JsonSerializer.Deserialize<UserInfo>(
+                    json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
             }
 
             _logger.LogWarning($"Failed to get user info: {response.StatusCode}");
@@ -50,7 +57,10 @@ public class IdentityApiClient : IIdentityApiClient
     {
         try
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                token
+            );
             var response = await _httpClient.GetAsync("/api/account/validate");
             return response.IsSuccessStatusCode;
         }
@@ -69,10 +79,10 @@ public class IdentityApiClient : IIdentityApiClient
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<string>>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }) ?? new List<string>();
+                return JsonSerializer.Deserialize<List<string>>(
+                        json,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    ) ?? new List<string>();
             }
 
             return new List<string>();

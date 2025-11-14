@@ -50,9 +50,28 @@ public class FixturesController : ControllerBase
             Name = dto.Name,
             Description = dto.Description,
             PageUrl = dto.PageUrl,
+            
+            // Fixture Hooks
+            BeforeHook = dto.BeforeHook,
+            AfterHook = dto.AfterHook,
+            BeforeEachHook = dto.BeforeEachHook,
+            AfterEachHook = dto.AfterEachHook,
+            
+            // Authentication
+            HttpAuthUsername = dto.HttpAuthUsername,
+            HttpAuthPassword = dto.HttpAuthPassword,
+            
+            // Scripts and Hooks
+            ClientScripts = dto.ClientScripts,
+            RequestHooks = dto.RequestHooks,
+            Metadata = dto.Metadata,
+            SetupScript = dto.SetupScript,
+            TeardownScript = dto.TeardownScript,
+            
+            // Audit fields
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-            CreatedById = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            CreatedById = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
         };
 
         _db.TestFixtures.Add(fixture);
@@ -67,12 +86,33 @@ public class FixturesController : ControllerBase
         var entity = await _db.TestFixtures.FindAsync(id);
         if (entity == null)
             return NotFound();
+            
+        // Basic properties
         entity.Name = model.Name;
         entity.Description = model.Description;
         entity.PageUrl = model.PageUrl;
+        
+        // Fixture Hooks
+        entity.BeforeHook = model.BeforeHook;
+        entity.AfterHook = model.AfterHook;
+        entity.BeforeEachHook = model.BeforeEachHook;
+        entity.AfterEachHook = model.AfterEachHook;
+        
+        // Authentication
+        entity.HttpAuthUsername = model.HttpAuthUsername;
+        entity.HttpAuthPassword = model.HttpAuthPassword;
+        
+        // Scripts and Hooks
+        entity.ClientScripts = model.ClientScripts;
+        entity.RequestHooks = model.RequestHooks;
+        entity.Metadata = model.Metadata;
         entity.SetupScript = model.SetupScript;
         entity.TeardownScript = model.TeardownScript;
+        
+        // Audit fields
         entity.UpdatedAt = DateTime.UtcNow;
+        entity.UpdatedById = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        
         await _db.SaveChangesAsync();
         return Ok(entity);
     }

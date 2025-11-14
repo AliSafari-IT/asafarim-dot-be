@@ -47,7 +47,7 @@
   display: block;
   margin-bottom: var(--space-2);
   color: var(--color-foreground);
-  font-size: var(--font-size-2);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-medium);
 }
 

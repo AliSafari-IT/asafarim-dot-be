@@ -61,17 +61,40 @@ public class TestExecutionService : ITestExecutionService
         var testSuiteIds = request.TestSuiteIds ?? new List<Guid>();
         var testCafeGenerator = new TestCafeGeneratorService(_db);
 
-        var generatedFiles = new List<(Guid suiteId, string fileContent)>();
+        _logger.LogInformation("🔄 Regenerating TestCafe files for all test suites in this run...");
+
+        var generatedFiles = new List<(Guid suiteId, string filePath, string fileContent)>();
         foreach (var suiteId in testSuiteIds)
         {
             try
             {
                 _logger.LogInformation("Generating TestCafe file for suite {SuiteId}", suiteId);
-                var fileContent = await testCafeGenerator.GenerateTestCafeFileAsync(suiteId);
-                generatedFiles.Add((suiteId, fileContent));
+                var (filePath, fileContent) = await testCafeGenerator.GenerateTestCafeFileAsync(
+                    suiteId
+                );
+                generatedFiles.Add((suiteId, filePath, fileContent));
+
+                // Update the test suite with the new file path and content
+                var testSuite = await _db.TestSuites.FindAsync(suiteId);
+                if (testSuite != null)
+                {
+                    testSuite.GeneratedTestCafeFile = fileContent;
+                    testSuite.GeneratedFilePath = filePath;
+                    testSuite.GeneratedAt = DateTime.UtcNow;
+                    testSuite.UpdatedAt = DateTime.UtcNow;
+                    _db.TestSuites.Update(testSuite);
+                    await _db.SaveChangesAsync();
+
+                    _logger.LogInformation(
+                        "💾 Updated database with new GeneratedFilePath: {FilePath}",
+                        filePath
+                    );
+                }
+
                 _logger.LogInformation(
-                    "✅ Generated TestCafe file for suite {SuiteId}, size: {Size} bytes",
+                    "✅ Generated TestCafe file for suite {SuiteId} at {FilePath}, size: {Size} bytes",
                     suiteId,
+                    filePath,
                     fileContent.Length
                 );
             }
@@ -86,14 +109,51 @@ public class TestExecutionService : ITestExecutionService
             }
         }
 
+        // After regeneration, check if any test suites still have validation errors
+        var suitesWithErrors = new List<(Guid suiteId, string suiteName, string errors)>();
+        foreach (var suiteId in testSuiteIds)
+        {
+            var suite = await _db
+                .TestSuites.Include(ts => ts.Fixture)
+                .FirstOrDefaultAsync(ts => ts.Id == suiteId);
+
+            if (suite != null && !string.IsNullOrEmpty(suite.Fixture.Remark))
+            {
+                suitesWithErrors.Add((suiteId, suite.Name, suite.Fixture.Remark));
+                _logger.LogWarning(
+                    "⚠️ Test suite {SuiteName} has validation warnings: {Errors}",
+                    suite.Name,
+                    suite.Fixture.Remark
+                );
+            }
+        }
+
+        // Log validation errors but don't abort - let tests run anyway
+        if (suitesWithErrors.Any())
+        {
+            _logger.LogWarning(
+                "⚠️ {Count} test suite(s) have validation warnings - proceeding anyway",
+                suitesWithErrors.Count
+            );
+        }
+        else
+        {
+            _logger.LogInformation(
+                "✅ All test suites regenerated successfully with no validation errors"
+            );
+        }
+
         // If we have generated files, send them to the new endpoint
         if (generatedFiles.Count > 0)
         {
             // Combine multiple suites into a single JS file so the runner executes all of them
             string combinedContent;
+            string? generatedFilePath = null;
+
             if (generatedFiles.Count == 1)
             {
                 combinedContent = generatedFiles[0].fileContent;
+                generatedFilePath = generatedFiles[0].filePath;
             }
             else
             {
@@ -124,6 +184,7 @@ public class TestExecutionService : ITestExecutionService
                 fileContent = combinedContent,
                 browser = run.Browser ?? "chrome",
                 runId = run.Id.ToString(),
+                filePath = generatedFilePath,
             };
 
             // Log the full payload for debugging

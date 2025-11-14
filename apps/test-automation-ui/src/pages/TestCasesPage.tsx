@@ -1,10 +1,12 @@
 // apps/test-automation-ui/src/pages/TestCasesPage.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { GenericCrudPage } from './GenericCrudPage';
 import { ColumnDefinition } from '../components/GenericTable';
 import { FormFieldDefinition } from '../components/GenericForm';
 import { api } from '../config/api';
-
+import StepsEditor from './StepsEditor';
+import { Badge, CheckCircleIcon, FolderDot, StepBackIcon, TestTubeDiagonal, XCircleIcon } from 'lucide-react';
+import { DiScriptcs } from 'react-icons/di';
 
 interface TestCase {
   id: string;
@@ -12,16 +14,32 @@ interface TestCase {
   name: string;
   description?: string;
   testType: 'Steps' | 'Script';
+  testTypeName: string;
   steps?: TestStep[];
   scriptText?: string;
   timeoutMs: number;
   retryCount: number;
   isActive: boolean;
+  skip: boolean;
+  skipReason?: string;
+  only: boolean;
+  meta?: any;
+  pageUrl?: string;
+  requestHooks?: string;
+  clientScripts?: string;
+  screenshotOnFail: boolean;
+  videoOnFail: boolean;
+  beforeTestHook?: string;
+  afterTestHook?: string;
+  beforeEachStepHook?: string;
+  afterEachStepHook?: string;
   createdAt: string;
   updatedAt: string;
+  createdById?: string;
+  updatedById?: string;
 }
 
-interface TestStep {
+export interface TestStep {
   action: string;
   selector?: string;
   value?: string;
@@ -36,7 +54,7 @@ interface TestSuite {
   description?: string;
 }
 
-export default function TestCasesPageRefactored() {
+export default function TestCasesPage() {
   const [suites, setSuites] = useState<TestSuite[]>([]);
   const [currentSteps, setCurrentSteps] = useState<TestStep[]>([]);
 
@@ -57,218 +75,91 @@ export default function TestCasesPageRefactored() {
     return suites.find((s) => s.id === suiteId)?.name || 'Unknown';
   };
 
-  // Custom component for steps management
-  const StepsEditor = ({ steps, onChange }: { 
-    steps: TestStep[], 
-    onChange: (steps: TestStep[]) => void 
-  }) => {
-    const [localSteps, setLocalSteps] = useState<TestStep[]>(steps);
-
-    const addStep = () => {
-      const newSteps = [...localSteps, { action: 'click', selector: '', value: '', description: '' }];
-      setLocalSteps(newSteps);
-      onChange(newSteps);
-    };
-
-    const updateStep = (index: number, field: keyof TestStep, value: string) => {
-      const updatedSteps = [...localSteps];
-      updatedSteps[index] = { ...updatedSteps[index], [field]: value };
-      setLocalSteps(updatedSteps);
-      onChange(updatedSteps);
-    };
-
-    const removeStep = (index: number) => {
-      const updatedSteps = localSteps.filter((_, i) => i !== index);
-      setLocalSteps(updatedSteps);
-      onChange(updatedSteps);
-    };
-
-    const actionOptions = [
-      { value: 'click', label: 'Click' },
-      { value: 'type', label: 'Type Text' },
-      { value: 'navigate', label: 'Navigate' },
-      { value: 'wait', label: 'Wait' },
-      { value: 'hover', label: 'Hover' },
-      { value: 'expect', label: 'Expect/Assert' },
-      { value: 'select', label: 'Select Option' },
-      { value: 'presskey', label: 'Press Key' },
-      { value: 'screenshot', label: 'Take Screenshot' },
-    ];
-
-    const assertionOptions = [
-      { value: 'exists', label: 'Exists' },
-      { value: 'visible', label: 'Visible' },
-      { value: 'contains', label: 'Contains Text' },
-      { value: 'eql', label: 'Equals' },
-      { value: 'count', label: 'Count' },
-    ];
-
-    return (
-      <div className="steps-editor">
-        <div className="steps-list">
-          {localSteps.map((step, index) => (
-            <div key={index} className="step-item" style={{ marginBottom: '1rem', padding: '1rem', border: '1px solid var(--color-border)', borderRadius: '4px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem' }}>Action *</label>
-                  <select
-                    value={step.action}
-                    onChange={(e) => updateStep(index, 'action', e.target.value)}
-                    className="form-control"
-                  >
-                    {actionOptions.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem' }}>Description</label>
-                  <input
-                    type="text"
-                    value={step.description || ''}
-                    onChange={(e) => updateStep(index, 'description', e.target.value)}
-                    placeholder="e.g., Click login button"
-                    className="form-control"
-                  />
-                </div>
-              </div>
-              
-              {(step.action !== 'wait' && step.action !== 'navigate' && step.action !== 'screenshot' && step.action !== 'presskey') && (
-                <div style={{ marginBottom: '0.5rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem' }}>Selector {step.action !== 'navigate' && '*'}</label>
-                  <input
-                    type="text"
-                    value={step.selector || ''}
-                    onChange={(e) => updateStep(index, 'selector', e.target.value)}
-                    placeholder="e.g., #loginButton, .submit-btn"
-                    className="form-control"
-                  />
-                </div>
-              )}
-              
-              {(step.action === 'type' || step.action === 'navigate' || step.action === 'wait' || step.action === 'select' || step.action === 'presskey' || step.action === 'screenshot') && (
-                <div style={{ marginBottom: '0.5rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem' }}>
-                    {step.action === 'type' && 'Text to Type *'}
-                    {step.action === 'navigate' && 'URL *'}
-                    {step.action === 'wait' && 'Milliseconds'}
-                    {step.action === 'select' && 'Option Text *'}
-                    {step.action === 'presskey' && 'Key *'}
-                    {step.action === 'screenshot' && 'Screenshot Name'}
-                  </label>
-                  <input
-                    type="text"
-                    value={step.value || ''}
-                    onChange={(e) => updateStep(index, 'value', e.target.value)}
-                    placeholder={
-                      step.action === 'type' ? 'e.g., username@example.com' :
-                      step.action === 'navigate' ? 'e.g., https://example.com' :
-                      step.action === 'wait' ? 'e.g., 1000' :
-                      step.action === 'select' ? 'e.g., Option 1' :
-                      step.action === 'presskey' ? 'e.g., enter, tab, esc' :
-                      'e.g., login-page'
-                    }
-                    className="form-control"
-                  />
-                </div>
-              )}
-              
-              {step.action === 'expect' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem' }}>Assertion Type</label>
-                    <select
-                      value={step.assertionType || 'exists'}
-                      onChange={(e) => updateStep(index, 'assertionType', e.target.value)}
-                      className="form-control"
-                    >
-                      {assertionOptions.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem' }}>Expected Value</label>
-                    <input
-                      type="text"
-                      value={step.assertionValue || ''}
-                      onChange={(e) => updateStep(index, 'assertionValue', e.target.value)}
-                      placeholder="Expected text or count"
-                      className="form-control"
-                    />
-                  </div>
-                </div>
-              )}
-              
-              <button
-                type="button"
-                onClick={() => removeStep(index)}
-                className="button button-danger"
-                style={{ marginTop: '0.5rem' }}
-              >
-                🗑️ Remove Step
-              </button>
-            </div>
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={addStep}
-          className="button button-primary"
-        >
-          ➕ Add Step
-        </button>
-      </div>
-    );
-  };
-
   // Define table columns
-  const columns: ColumnDefinition<TestCase>[] = [
+  const columns: ColumnDefinition<TestCase>[] = useMemo(() => [
     {
       header: 'Name',
       field: 'name',
+      width: '20%'
     },
     {
       header: 'Test Suite',
       render: (item) => getSuiteName(item.testSuiteId),
+      width: '15%'
     },
     {
       header: 'Type',
       field: 'testType',
       align: 'center',
-    },
-    {
-      header: 'Active',
-      align: 'center',
+      width: '10%',
       render: (item) => (
-        <span className={`status-badge ${item.isActive ? 'active' : 'inactive'}`}>
-          {item.isActive ? '✓' : '✗'}
+        <span className={"test-type-label" + (item.testType === 'Steps' ? ' steps' : ' script')} data-testid="test-case-type">
+          {item.testType}
         </span>
       ),
     },
-  ];
+    {
+      header: 'Status',
+      align: 'center',
+      width: '10%',
+      render: (item) => (
+        <span className={`status-badge ${item.isActive ? 'active' : 'inactive'}`}
+        data-testid="test-case-status"
+        title={item.isActive ? 'Active' : 'Inactive'}
+        >
+          {item.isActive ? <CheckCircleIcon /> : <XCircleIcon />}
+        </span>
+      ),
+    },
+    {
+      header: 'Skipped',
+      align: 'center',
+      width: '10%',
+      render: (item) => item.skip ? 'Yes' : 'No'
+    },
+    {
+      header: 'Timeout',
+      field: 'timeoutMs',
+      align: 'center',
+      width: '10%',
+      render: (item) => `${item.timeoutMs}ms`
+    }
+  ], [suites]);
 
   // Define form fields
-  const formFields: FormFieldDefinition<TestCase>[] = [
+  const formFields: FormFieldDefinition<TestCase>[] = useMemo(() => [
+    // Basic Information
     {
       name: 'testSuiteId',
       label: 'Test Suite',
       type: 'select',
       required: true,
       options: suites.map((s) => ({ value: s.id, label: s.name })),
+      group: 'Basic Information'
     },
     {
       name: 'name',
       label: 'Name',
       type: 'text',
       required: true,
+      group: 'Basic Information'
     },
     {
       name: 'description',
       label: 'Description',
       type: 'textarea',
       rows: 2,
+      group: 'Basic Information'
     },
+    {
+      name: 'pageUrl',
+      label: 'Page URL',
+      type: 'text',
+      placeholder: 'https://example.com',
+      group: 'Basic Information'
+    },
+    
+    // Test Configuration
     {
       name: 'testType',
       label: 'Test Type',
@@ -278,7 +169,64 @@ export default function TestCasesPageRefactored() {
         { value: 'Steps', label: 'Steps' },
         { value: 'Script', label: 'Script' },
       ],
+      group: 'Test Configuration'
     },
+    {
+      name: 'timeoutMs',
+      label: 'Timeout (ms)',
+      type: 'number',
+      required: true,
+      min: 1000,
+      group: 'Test Configuration'
+    },
+    {
+      name: 'retryCount',
+      label: 'Retry Count',
+      type: 'number',
+      required: true,
+      min: 0,
+      max: 5,
+      group: 'Test Configuration'
+    },
+    {
+      name: 'isActive',
+      label: 'Active',
+      type: 'checkbox',
+      group: 'Test Configuration'
+    },
+    {
+      name: 'skip',
+      label: 'Skip Test',
+      type: 'checkbox',
+      group: 'Test Configuration'
+    },
+    {
+      name: 'skipReason',
+      label: 'Skip Reason',
+      type: 'text',
+      condition: (data) => data.skip,
+      group: 'Test Configuration'
+    },
+    {
+      name: 'only',
+      label: 'Run Only This Test',
+      type: 'checkbox',
+      group: 'Test Configuration'
+    },
+    {
+      name: 'screenshotOnFail',
+      label: 'Screenshot on Fail',
+      type: 'checkbox',
+      group: 'Test Configuration'
+    },
+    {
+      name: 'videoOnFail',
+      label: 'Record Video on Fail',
+      type: 'checkbox',
+      group: 'Test Configuration'
+    },
+    
+    // Test Content
     {
       name: 'steps',
       label: 'Test Steps',
@@ -290,6 +238,7 @@ export default function TestCasesPageRefactored() {
         />
       ),
       condition: (formData) => formData.testType === 'Steps',
+      group: 'Test Content'
     },
     {
       name: 'scriptText',
@@ -298,28 +247,69 @@ export default function TestCasesPageRefactored() {
       rows: 6,
       placeholder: 'Enter your test script here...',
       condition: (formData) => formData.testType === 'Script',
+      group: 'Test Content'
+    },
+    
+    // Hooks
+    {
+      name: 'beforeTestHook',
+      label: 'Before Test Hook',
+      type: 'textarea',
+      rows: 3,
+      placeholder: 'Code to run before the test starts',
+      group: 'Test Hooks'
     },
     {
-      name: 'timeoutMs',
-      label: 'Timeout (ms)',
-      type: 'number',
-      required: true,
-      min: 1000,
+      name: 'afterTestHook',
+      label: 'After Test Hook',
+      type: 'textarea',
+      rows: 3,
+      placeholder: 'Code to run after the test completes',
+      group: 'Test Hooks'
     },
     {
-      name: 'retryCount',
-      label: 'Retry Count',
-      type: 'number',
-      required: true,
-      min: 0,
-      max: 5,
+      name: 'beforeEachStepHook',
+      label: 'Before Each Step Hook',
+      type: 'textarea',
+      rows: 3,
+      placeholder: 'Code to run before each step in the test',
+      group: 'Test Hooks'
     },
     {
-      name: 'isActive',
-      label: 'Active',
-      type: 'checkbox',
+      name: 'afterEachStepHook',
+      label: 'After Each Step Hook',
+      type: 'textarea',
+      rows: 3,
+      placeholder: 'Code to run after each step in the test',
+      group: 'Test Hooks'
     },
-  ];
+    
+    // Advanced Configuration
+    {
+      name: 'meta',
+      label: 'Metadata (JSON)',
+      type: 'textarea',
+      rows: 3,
+      placeholder: 'Test metadata (JSON format)',
+      group: 'Advanced Configuration'
+    },
+    {
+      name: 'requestHooks',
+      label: 'Request Hooks (JSON)',
+      type: 'textarea',
+      rows: 3,
+      placeholder: 'Request hooks for this test (JSON array)',
+      group: 'Advanced Configuration'
+    },
+    {
+      name: 'clientScripts',
+      label: 'Client Scripts (JSON)',
+      type: 'textarea',
+      rows: 3,
+      placeholder: 'Client scripts for this test (JSON array)',
+      group: 'Advanced Configuration'
+    }
+  ], [suites]);
 
   // Prepare data before sending to API
   const preparePayload = (formData: TestCase) => {
@@ -328,6 +318,17 @@ export default function TestCasesPageRefactored() {
       // Ensure we only send steps or scriptText based on testType
       steps: formData.testType === 'Steps' ? formData.steps : null,
       scriptText: formData.testType === 'Script' ? formData.scriptText : null,
+      // Ensure empty strings are converted to null
+      description: formData.description || null,
+      pageUrl: formData.pageUrl || null,
+      skipReason: formData.skip ? formData.skipReason : null,
+      beforeTestHook: formData.beforeTestHook || null,
+      afterTestHook: formData.afterTestHook || null,
+      beforeEachStepHook: formData.beforeEachStepHook || null,
+      afterEachStepHook: formData.afterEachStepHook || null,
+      meta: formData.meta ? JSON.parse(formData.meta) : null,
+      requestHooks: formData.requestHooks ? JSON.parse(formData.requestHooks) : null,
+      clientScripts: formData.clientScripts ? JSON.parse(formData.clientScripts) : null,
     };
   };
 
@@ -342,6 +343,11 @@ export default function TestCasesPageRefactored() {
       // Ensure we have empty arrays/strings for the form
       steps: item.steps || [],
       scriptText: item.scriptText || '',
+      testTypeName: item.testType === 'Script' ? 'Script' : 'Steps',
+      // Convert JSON objects to strings for textareas
+      meta: item.meta ? JSON.stringify(item.meta, null, 2) : '',
+      requestHooks: item.requestHooks ? JSON.stringify(item.requestHooks, null, 2) : '',
+      clientScripts: item.clientScripts ? JSON.stringify(item.clientScripts, null, 2) : '',
     };
   };
 
@@ -358,13 +364,29 @@ export default function TestCasesPageRefactored() {
         name: '',
         description: '',
         testType: 'Steps',
+        testTypeName: 'Steps',
         steps: [],
         scriptText: '',
         timeoutMs: 30000,
         retryCount: 0,
         isActive: true,
+        skip: false,
+        skipReason: '',
+        only: false,
+        pageUrl: '',
+        screenshotOnFail: true,
+        videoOnFail: false,
+        beforeTestHook: '',
+        afterTestHook: '',
+        beforeEachStepHook: '',
+        afterEachStepHook: '',
+        meta: '{}',
+        requestHooks: '[]',
+        clientScripts: '[]',
         createdAt: '',
         updatedAt: '',
+        createdById: '',
+        updatedById: '',
       })}
       preparePayload={preparePayload}
       onItemLoaded={onItemLoaded}

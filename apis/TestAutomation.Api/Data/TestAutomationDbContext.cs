@@ -1,3 +1,4 @@
+// apis/TestAutomation.Api/Data/TestAutomationDbContext.cs
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using TestAutomation.Api.Models;
@@ -44,6 +45,10 @@ public class TestAutomationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
             entity.Property(e => e.PageUrl).HasMaxLength(500);
+            entity.Property(e => e.HttpAuthUsername).HasMaxLength(255);
+            entity.Property(e => e.HttpAuthPassword).HasMaxLength(255);
+            entity.Property(e => e.Remark).HasColumnType("text");
+
 
             // Configure JSON columns
             entity
@@ -62,6 +67,32 @@ public class TestAutomationDbContext : DbContext
                     v => v == null ? null : JsonDocument.Parse(v, default)
                 );
 
+            // For ClientScripts
+            entity
+                .Property(e => e.ClientScripts)
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => v, // Already a string in the model
+                    v => v // Already a string from the database
+                );
+
+            // For RequestHooks
+            entity
+                .Property(e => e.RequestHooks)
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => v,  // Store the string as-is
+                    v => v   // Return the string as-is
+                );
+
+            // For Metadata
+            entity
+                .Property(e => e.Metadata)
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => v,  // Store the string as-is
+                    v => v   // Return the string as-is
+                );
             entity
                 .HasOne(e => e.FunctionalRequirement)
                 .WithMany(fr => fr.TestFixtures)
@@ -94,6 +125,8 @@ public class TestAutomationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
             entity.Property(e => e.TestType).HasConversion<string>().HasMaxLength(50);
+            entity.Property(e => e.PageUrl).HasMaxLength(500);
+            entity.Property(e => e.SkipReason).HasMaxLength(500);
 
             // Configure JSON columns
             entity
@@ -102,6 +135,30 @@ public class TestAutomationDbContext : DbContext
                 .HasConversion(
                     v => v == null ? null : v.RootElement.GetRawText(),
                     v => v == null ? null : JsonDocument.Parse(v, default)
+                );
+
+            entity
+                .Property(e => e.Meta)
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => v == null ? null : v.RootElement.GetRawText(),
+                    v => v == null ? null : JsonDocument.Parse(v, default)
+                );
+
+            entity
+                .Property(e => e.RequestHooks)
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => v == null ? null : v.RootElement.GetRawText(),
+                    v => v == null ? null : JsonDocument.Parse(v, default)
+                );
+
+            entity
+                .Property(e => e.ClientScripts)
+                .HasColumnType("jsonb")
+                .HasConversion(
+                    v => v,  // Store the string as-is
+                    v => v   // Return the string as-is
                 );
 
             entity

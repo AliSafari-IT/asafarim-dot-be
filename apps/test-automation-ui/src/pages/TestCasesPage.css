@@ -47,14 +47,14 @@
   display: block;
   margin-bottom: var(--space-2);
   color: var(--color-foreground);
-  font-size: var(--font-size-2);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-medium);
 }
 
 .test-case-form-control {
   width: 100%;
   padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-2);
+  font-size: var(--font-size-2xl);
   color: var(--color-foreground);
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
@@ -101,6 +101,21 @@ textarea.test-case-form-control {
 .step-number {
   font-weight: var(--font-weight-semibold);
   color: var(--color-foreground);
+}
+
+.test-type-label {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.test-type-label.steps {
+  background-color: var(--color-primary-300) !important;
+}
+
+.test-type-label.script {
+  background-color: var(--color-info-300) !important;
 }
 
 /* Tabs */

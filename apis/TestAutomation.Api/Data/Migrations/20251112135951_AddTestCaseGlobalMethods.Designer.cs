@@ -3,6 +3,7 @@ using System;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TestAutomation.Api.Data;
@@ -12,9 +13,11 @@ using TestAutomation.Api.Data;
 namespace TestAutomation.Api.Data.Migrations
 {
     [DbContext(typeof(TestAutomationDbContext))]
-    partial class TestAutomationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251112135951_AddTestCaseGlobalMethods")]
+    partial class AddTestCaseGlobalMethods
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -279,7 +282,7 @@ namespace TestAutomation.Api.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Meta")
+                    b.Property<JsonDocument>("Meta")
                         .HasColumnType("jsonb");
 
                     b.Property<string>("Name")
@@ -291,10 +294,9 @@ namespace TestAutomation.Api.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("PageUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("text");
 
-                    b.Property<string>("RequestHooks")
+                    b.Property<JsonDocument>("RequestHooks")
                         .HasColumnType("jsonb");
 
                     b.Property<int>("RetryCount")
@@ -310,8 +312,7 @@ namespace TestAutomation.Api.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("SkipReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Steps")
                         .HasColumnType("jsonb");
@@ -445,7 +446,7 @@ namespace TestAutomation.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ClientScripts")
-                        .HasColumnType("jsonb");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -460,15 +461,13 @@ namespace TestAutomation.Api.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("HttpAuthPassword")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("HttpAuthUsername")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Metadata")
-                        .HasColumnType("jsonb");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -479,11 +478,8 @@ namespace TestAutomation.Api.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("Remark")
-                        .HasColumnType("text");
-
                     b.Property<string>("RequestHooks")
-                        .HasColumnType("jsonb");
+                        .HasColumnType("text");
 
                     b.Property<string>("SetupScript")
                         .HasColumnType("jsonb");
@@ -493,9 +489,6 @@ namespace TestAutomation.Api.Data.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("UpdatedById")
-                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -669,9 +662,6 @@ namespace TestAutomation.Api.Data.Migrations
 
                     b.Property<DateTime?>("GeneratedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("GeneratedFilePath")
-                        .HasColumnType("text");
 
                     b.Property<string>("GeneratedTestCafeFile")
                         .HasColumnType("text");
