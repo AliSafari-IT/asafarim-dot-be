@@ -327,6 +327,7 @@ public class TestSuitesController : ControllerBase
                     fileContent = testSuite.GeneratedTestCafeFile,
                     browser = browser ?? "chrome",
                     runId = run.Id.ToString(),
+                    filePath = testSuite.GeneratedFilePath,
                 };
 
                 _logger.LogInformation(
