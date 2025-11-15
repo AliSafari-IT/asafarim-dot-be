@@ -1093,7 +1093,7 @@ public class TestCafeGeneratorService
 
     /// <summary>
     /// Ensures that the generated TestCafe file has all required imports from 'testcafe'
-    /// based on the APIs that are actually used in the content (Selector, ClientFunction, Role, etc.).
+    /// based on the APIs that are actually used in the content (Selector, ClientFunction, Role, t, etc.).
     /// Existing named imports from 'testcafe' are normalized into a single statement and merged
     /// with any newly detected usages.
     /// </summary>
@@ -1143,6 +1143,20 @@ public class TestCafeGeneratorService
             )
         )
             usedApis.Add("RequestMock");
+
+        // Detect usage of the TestCafe test controller `t`.
+        // We look for common patterns where `t` appears as an identifier followed by a dot or is awaited.
+        // This avoids adding `t` just because it appears as part of another identifier.
+        if (
+            System.Text.RegularExpressions.Regex.IsMatch(
+                content,
+                @"\bawait\s+t\b|\bt\." ,
+                System.Text.RegularExpressions.RegexOptions.Multiline
+            )
+        )
+        {
+            usedApis.Add("t");
+        }
 
         // If no known APIs are used, we don't need to touch imports
         if (!usedApis.Any())
