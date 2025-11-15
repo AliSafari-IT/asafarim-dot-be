@@ -82,8 +82,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Configure Database
+var testAutomationConnection =
+    builder.Configuration.GetConnectionString("TestAutomationConnection")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<TestAutomationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(testAutomationConnection)
 );
 
 // Configure to use existing Identity.Api for authentication
