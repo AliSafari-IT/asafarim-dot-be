@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Terminal } from "lucide-react";
 import "./ExecutionLogs.css";
 
@@ -8,12 +8,6 @@ interface ExecutionLogsProps {
 }
 
 const ExecutionLogs: React.FC<ExecutionLogsProps> = ({ logs, isRunning }) => {
-  const logsEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [logs]);
-
   return (
     <div className="execution-logs">
       <div className="execution-logs__content">
@@ -38,7 +32,6 @@ const ExecutionLogs: React.FC<ExecutionLogsProps> = ({ logs, isRunning }) => {
               </div>
             ))
           )}
-          <div ref={logsEndRef} />
         </div>
       </div>
     </div>

@@ -35,6 +35,7 @@ public class CreateTestCaseDto
     // Test Content
     public JsonDocument? Steps { get; set; }
     public string? ScriptText { get; set; }
+    public string? GherkinSyntax { get; set; }
     public int TimeoutMs { get; set; } = 30000;
     public int RetryCount { get; set; } = 0;
     public bool IsActive { get; set; } = true;

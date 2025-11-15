@@ -77,6 +77,7 @@ public class TestCasesController : ControllerBase
             // Test Content
             Steps = model.Steps,
             ScriptText = model.ScriptText,
+            GherkinSyntax = model.GherkinSyntax,
             TimeoutMs = model.TimeoutMs,
             RetryCount = model.RetryCount,
             IsActive = model.IsActive,
@@ -130,6 +131,7 @@ public class TestCasesController : ControllerBase
         // Test Content
         entity.Steps = model.Steps;
         entity.ScriptText = model.ScriptText;
+        entity.GherkinSyntax = model.GherkinSyntax;
         entity.TimeoutMs = model.TimeoutMs;
         entity.RetryCount = model.RetryCount;
         entity.IsActive = model.IsActive;

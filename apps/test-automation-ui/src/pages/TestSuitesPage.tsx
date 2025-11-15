@@ -205,7 +205,8 @@ export default function TestSuitesPage() {
       name: "generatedTestCafeFile",
       label: "Generated TestSuite",
       type: "textarea",
-      rows: 10
+      rows: 10,
+      readonly: true
     }
   ];
 

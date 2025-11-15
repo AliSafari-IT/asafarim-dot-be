@@ -73,8 +73,10 @@ export function GenericCrudPage<T>({
       setCreating(false);
       setFormData(getInitialFormData());
       loadItems();
+      toast.success("Item created successfully.");
     } catch (error: any) {
       console.error("Failed to create:", error);
+      toast.error("Failed to create item. Please check your input.");
       if (error.response?.data) {
         console.error("Error details:", error.response.data);
         alert(`Failed to create: ${JSON.stringify(error.response.data)}`);
@@ -94,8 +96,11 @@ export function GenericCrudPage<T>({
       setEditing(null);
       setFormData(getInitialFormData());
       loadItems();
+
+      toast.success("Item updated successfully.");
     } catch (error: any) {
       console.error("Failed to update:", error);
+      toast.error("Failed to update item. Please check your input.");
       if (error.response?.data) {
         console.error("Error details:", error.response.data);
         alert(`Failed to update: ${JSON.stringify(error.response.data)}`);
@@ -115,9 +120,10 @@ export function GenericCrudPage<T>({
       const itemId = getItemId(item);
       await api.delete(`${apiEndpoint}/${itemId}`);
       loadItems();
+      toast.success("Item deleted successfully.");
     } catch (error) {
       console.error("Failed to delete:", error);
-      alert("Failed to delete item.");
+      toast.error("Failed to delete item.");
     }
   };
 

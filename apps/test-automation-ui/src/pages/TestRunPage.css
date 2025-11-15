@@ -16,7 +16,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin: 0 2rem;
+  margin: 0 0 1.5rem 0;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -99,12 +99,13 @@
 }
 
 .test-run-main {
-  grid-column: span 2;
+  grid-column: span 1;
+  max-width: 100%;
 }
 
 .test-run-progress-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-top: 2rem;
 }

@@ -529,6 +529,9 @@ public class TestCafeGeneratorService
 
         var testContent = sb.ToString();
 
+        // Ensure all required TestCafe imports are present based on actual usage
+        testContent = EnsureTestCafeImports(testContent);
+
         // Validate generated content for errors
         var validationErrors = ValidateGeneratedContent(testContent);
 
@@ -1069,6 +1072,115 @@ public class TestCafeGeneratorService
         }
 
         return (selectors, functions, string.Join("\n", remainingLines));
+    }
+
+    /// <summary>
+    /// Ensures that the generated TestCafe file has all required imports from 'testcafe'
+    /// based on the APIs that are actually used in the content (Selector, ClientFunction, Role, etc.).
+    /// Existing named imports from 'testcafe' are normalized into a single statement and merged
+    /// with any newly detected usages.
+    /// </summary>
+    private static string EnsureTestCafeImports(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+            return content;
+
+        // Detect used TestCafe APIs in the generated content
+        var usedApis = new HashSet<string>(StringComparer.Ordinal);
+
+        if (content.Contains("Selector("))
+            usedApis.Add("Selector");
+
+        if (
+            System.Text.RegularExpressions.Regex.IsMatch(
+                content,
+                @"\bClientFunction\s*\(",
+                System.Text.RegularExpressions.RegexOptions.Multiline
+            )
+        )
+            usedApis.Add("ClientFunction");
+
+        if (
+            System.Text.RegularExpressions.Regex.IsMatch(
+                content,
+                @"\bRole\.",
+                System.Text.RegularExpressions.RegexOptions.Multiline
+            )
+        )
+            usedApis.Add("Role");
+
+        if (
+            System.Text.RegularExpressions.Regex.IsMatch(
+                content,
+                @"\bRequestLogger\b",
+                System.Text.RegularExpressions.RegexOptions.Multiline
+            )
+        )
+            usedApis.Add("RequestLogger");
+
+        if (
+            System.Text.RegularExpressions.Regex.IsMatch(
+                content,
+                @"\bRequestMock\b",
+                System.Text.RegularExpressions.RegexOptions.Multiline
+            )
+        )
+            usedApis.Add("RequestMock");
+
+        // If no known APIs are used, we don't need to touch imports
+        if (!usedApis.Any())
+            return content;
+
+        var lines = content.Split('\n');
+        var outputLines = new List<string>();
+
+        // Collect existing named imports from 'testcafe'
+        var existingApis = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var line in lines)
+        {
+            var trimmed = line.Trim();
+
+            // Match: import { A, B } from 'testcafe'; or "testcafe"
+            var match = System.Text.RegularExpressions.Regex.Match(
+                trimmed,
+                "^import\\s*\\{([^}]+)\\}\\s*from\\s*['\\\"]testcafe['\\\"]\\s*;?\\s*$"
+            );
+
+            if (match.Success)
+            {
+                var imports = match
+                    .Groups[1]
+                    .Value.Split(',')
+                    .Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrEmpty(x));
+
+                foreach (var imp in imports)
+                    existingApis.Add(imp);
+
+                // Do not add this line to outputLines; we'll re-emit a normalized import later
+                continue;
+            }
+
+            // Keep all non-testcafe import lines and code as-is
+            outputLines.Add(line);
+        }
+
+        // Merge existing + used APIs
+        foreach (var api in usedApis)
+            existingApis.Add(api);
+
+        if (!existingApis.Any())
+            return string.Join("\n", outputLines);
+
+        var allApis = existingApis.OrderBy(x => x).ToList();
+        var testCafeImportLine = $"import {{ {string.Join(", ", allApis)} }} from 'testcafe';";
+
+        // Prepend the normalized testcafe import line at the very top
+        var finalLines = new List<string> { testCafeImportLine };
+        finalLines.AddRange(outputLines);
+
+        return string.Join("\n", finalLines);
     }
 
     private static string ToSlug(string input)

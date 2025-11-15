@@ -98,8 +98,8 @@ export function GenericForm<T>({
       className: "form-control",
       value: value as string | number | string[] | undefined,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = field.type === 'number' 
-          ? Number(e.target.value) 
+        const newValue = field.type === "number"
+          ? Number(e.target.value)
           : e.target.value;
         handleFieldChange(field.name, newValue);
       },
@@ -107,8 +107,9 @@ export function GenericForm<T>({
       placeholder: field.placeholder,
       min: field.min,
       max: field.max,
-      'data-testid': `input-${String(field.name)}`
-    };
+      readOnly: field.readonly,
+      "data-testid": `input-${String(field.name)}`
+    } as React.InputHTMLAttributes<HTMLInputElement>;
 
     switch (field.type) {
       case "text":
@@ -134,6 +135,7 @@ export function GenericForm<T>({
             required={field.required}
             placeholder={field.placeholder}
             rows={field.rows || 3}
+            readOnly={field.readonly}
             data-testid={`textarea-${String(field.name)}`}
           />
         );

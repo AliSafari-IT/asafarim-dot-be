@@ -32,6 +32,7 @@ public class TestCase
 
     public JsonDocument? Steps { get; set; } // For step-based tests
     public string? ScriptText { get; set; } // For raw TestCafe scripts
+    public string? GherkinSyntax { get; set; }
     public int TimeoutMs { get; set; } = 30000;
     public int RetryCount { get; set; } = 0;
     public bool IsActive { get; set; } = true;

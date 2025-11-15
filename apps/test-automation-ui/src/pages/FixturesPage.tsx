@@ -253,9 +253,9 @@ export default function FixturesPage() {
         httpAuthPassword: "",
         
         // Scripts and Hooks
-        clientScripts: "",
-        requestHooks: "",
-        metadata: "",
+        clientScripts: "[]",
+        requestHooks: "[]",
+        metadata: "{}",
         
         setupScript: "",
         teardownScript: "",

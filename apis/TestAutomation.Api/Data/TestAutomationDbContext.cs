@@ -49,7 +49,6 @@ public class TestAutomationDbContext : DbContext
             entity.Property(e => e.HttpAuthPassword).HasMaxLength(255);
             entity.Property(e => e.Remark).HasColumnType("text");
 
-
             // Configure JSON columns
             entity
                 .Property(e => e.SetupScript)
@@ -81,8 +80,8 @@ public class TestAutomationDbContext : DbContext
                 .Property(e => e.RequestHooks)
                 .HasColumnType("jsonb")
                 .HasConversion(
-                    v => v,  // Store the string as-is
-                    v => v   // Return the string as-is
+                    v => v, // Store the string as-is
+                    v => v // Return the string as-is
                 );
 
             // For Metadata
@@ -90,8 +89,8 @@ public class TestAutomationDbContext : DbContext
                 .Property(e => e.Metadata)
                 .HasColumnType("jsonb")
                 .HasConversion(
-                    v => v,  // Store the string as-is
-                    v => v   // Return the string as-is
+                    v => v, // Store the string as-is
+                    v => v // Return the string as-is
                 );
             entity
                 .HasOne(e => e.FunctionalRequirement)
@@ -157,8 +156,8 @@ public class TestAutomationDbContext : DbContext
                 .Property(e => e.ClientScripts)
                 .HasColumnType("jsonb")
                 .HasConversion(
-                    v => v,  // Store the string as-is
-                    v => v   // Return the string as-is
+                    v => v, // Store the string as-is
+                    v => v // Return the string as-is
                 );
 
             entity
