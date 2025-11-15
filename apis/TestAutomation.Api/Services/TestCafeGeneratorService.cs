@@ -546,9 +546,26 @@ public class TestCafeGeneratorService
         // Build path relative to TestRunner/temp-tests directory
         var relativePath = Path.Combine(functionalAreaSlug, fixtureSlug, fileName);
 
-        // Navigate to TestRunner/temp-tests directory (go up from TestAutomation.Api)
-        var currentDir = Directory.GetCurrentDirectory();
-        var testRunnerDir = Path.Combine(currentDir, "..", "TestRunner", "temp-tests");
+        // Determine temp directory based on environment
+        // Production: Use /var/tmp/testrunner-tests (same as Node TestRunner service)
+        // Development: Use relative path ../TestRunner/temp-tests
+        string testRunnerDir;
+        var tempTestsDir = Environment.GetEnvironmentVariable("TEMP_TESTS_DIR");
+        
+        if (!string.IsNullOrEmpty(tempTestsDir))
+        {
+            // Production: Use environment variable (e.g., /var/tmp/testrunner-tests)
+            testRunnerDir = tempTestsDir;
+            Console.WriteLine($"[TestCafe Generator] Using TEMP_TESTS_DIR from environment: {testRunnerDir}");
+        }
+        else
+        {
+            // Development: Use relative path from current directory
+            var currentDir = Directory.GetCurrentDirectory();
+            testRunnerDir = Path.Combine(currentDir, "..", "TestRunner", "temp-tests");
+            Console.WriteLine($"[TestCafe Generator] Using relative path for dev: {testRunnerDir}");
+        }
+
         var absolutePath = Path.Combine(testRunnerDir, relativePath);
 
         // Normalize the path to resolve .. references
