@@ -109,27 +109,36 @@ public class TestCafeGeneratorService
 
         Console.WriteLine($"  ✓ Merged {finalImports.Count} unique import statements");
 
-        // Process setup script: extract functions and selectors to top-level
-        string? setupScript = null;
+        // Process setup script and hooks to extract functions and selectors
+        var setupScript = string.Empty;
+        var beforeEachHookCode = string.Empty;
         var setupFunctions = new List<string>();
         var setupSelectors = new List<string>();
         
+        // Extract from SetupScript
         if (testSuite.Fixture.SetupScript != null)
         {
             var rawSetupScript = testSuite.Fixture.SetupScript.RootElement.GetString();
             if (!string.IsNullOrEmpty(rawSetupScript))
             {
-                Console.WriteLine($"[TestCafe Generator] Processing setup script ({rawSetupScript.Length} chars)");
+                Console.WriteLine($"[TestCafe Generator] Processing SetupScript ({rawSetupScript.Length} chars)");
                 var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(rawSetupScript);
                 setupFunctions.AddRange(extractedFuncs);
                 setupSelectors.AddRange(extractedSels);
                 setupScript = remainingCode;
-                Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors");
-                if (!string.IsNullOrEmpty(remainingCode))
-                {
-                    Console.WriteLine($"  ✓ Remaining code for beforeEach: {remainingCode.Length} chars");
-                }
+                Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from SetupScript");
             }
+        }
+        
+        // Extract from BeforeEachHook
+        if (!string.IsNullOrEmpty(testSuite.Fixture.BeforeEachHook))
+        {
+            Console.WriteLine($"[TestCafe Generator] Processing BeforeEachHook ({testSuite.Fixture.BeforeEachHook.Length} chars)");
+            var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.BeforeEachHook);
+            setupFunctions.AddRange(extractedFuncs);
+            setupSelectors.AddRange(extractedSels);
+            beforeEachHookCode = remainingCode;
+            Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from BeforeEachHook");
         }
 
         // Write setup selectors (from SetupScript) at top level
@@ -241,11 +250,11 @@ public class TestCafeGeneratorService
                 sb.AppendLine("    })");
             }
 
-            // Add beforeEach hook (combines BeforeEachHook and SetupScript)
+            // Add beforeEach hook (combines extracted beforeEachHookCode and setupScript)
             var beforeEachCode = new List<string>();
-            if (!string.IsNullOrEmpty(testSuite.Fixture.BeforeEachHook))
+            if (!string.IsNullOrEmpty(beforeEachHookCode))
             {
-                beforeEachCode.Add(testSuite.Fixture.BeforeEachHook);
+                beforeEachCode.Add(beforeEachHookCode);
             }
             if (!string.IsNullOrWhiteSpace(setupScript))
             {
