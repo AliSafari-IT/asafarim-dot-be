@@ -119,10 +119,16 @@ public class TestCafeGeneratorService
             var rawSetupScript = testSuite.Fixture.SetupScript.RootElement.GetString();
             if (!string.IsNullOrEmpty(rawSetupScript))
             {
+                Console.WriteLine($"[TestCafe Generator] Processing setup script ({rawSetupScript.Length} chars)");
                 var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(rawSetupScript);
                 setupFunctions.AddRange(extractedFuncs);
                 setupSelectors.AddRange(extractedSels);
                 setupScript = remainingCode;
+                Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors");
+                if (!string.IsNullOrEmpty(remainingCode))
+                {
+                    Console.WriteLine($"  ✓ Remaining code for beforeEach: {remainingCode.Length} chars");
+                }
             }
         }
 
@@ -841,7 +847,12 @@ public class TestCafeGeneratorService
         var selectors = new List<string>();
         var remainingLines = new List<string>();
         
-        var lines = setupScript.Split('\n');
+        // Normalize escaped content (in case it's stored as JSON string)
+        var normalized = UnescapeCommonEscapes(setupScript);
+        var lines = normalized.Split('\n');
+        
+        Console.WriteLine($"[ExtractFunctionsAndSelectors] Processing {lines.Length} lines");
+        
         var inFunction = false;
         var functionLines = new List<string>();
         var braceCount = 0;
@@ -854,6 +865,7 @@ public class TestCafeGeneratorService
             // Detect function declaration (with or without export)
             if (!inFunction && (trimmed.StartsWith("export async function") || trimmed.StartsWith("async function") || trimmed.StartsWith("function")))
             {
+                Console.WriteLine($"[ExtractFunctionsAndSelectors] Found function at line {i}: {trimmed.Substring(0, Math.Min(50, trimmed.Length))}...");
                 inFunction = true;
                 braceCount = 0;
                 functionLines.Clear();
@@ -862,6 +874,7 @@ public class TestCafeGeneratorService
                 functionLines.Add(cleanedLine);
                 braceCount += line.Count(c => c == '{');
                 braceCount -= line.Count(c => c == '}');
+                Console.WriteLine($"[ExtractFunctionsAndSelectors] Initial brace count: {braceCount}");
                 continue;
             }
             
