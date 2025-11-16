@@ -1129,11 +1129,12 @@ public class TestCafeGeneratorService
     {
         var errors = new List<string>();
         var lines = content.Split('\n');
-        var selectorVariables = new HashSet<string>();
+        var globalSelectorVariables = new HashSet<string>();
         var duplicateSelectors = new List<string>();
         var lineNumber = 0;
         var braceDepth = 0;
         var functionDepthStack = new Stack<int>(); // Track all function depths (tests, hooks, and helper functions)
+        var selectorScopeStack = new Stack<HashSet<string>>(); // Track selector names per function scope
 
         foreach (var line in lines)
         {
@@ -1155,6 +1156,7 @@ public class TestCafeGeneratorService
             )
             {
                 functionDepthStack.Push(braceDepth);
+                selectorScopeStack.Push(new HashSet<string>());
             }
 
             // Track brace depth to know when we're inside functions
@@ -1165,6 +1167,7 @@ public class TestCafeGeneratorService
             while (functionDepthStack.Count > 0 && braceDepth <= functionDepthStack.Peek())
             {
                 functionDepthStack.Pop();
+                selectorScopeStack.Pop();
             }
 
             // Check for Selector() declarations - track multi-line selectors
@@ -1173,11 +1176,19 @@ public class TestCafeGeneratorService
                 var varName = ExtractVariableName(trimmed);
                 if (!string.IsNullOrEmpty(varName))
                 {
-                    if (selectorVariables.Contains(varName))
+                    var currentScopeSelectors =
+                        selectorScopeStack.Count > 0
+                            ? selectorScopeStack.Peek()
+                            : globalSelectorVariables;
+
+                    if (currentScopeSelectors.Contains(varName))
                     {
                         duplicateSelectors.Add(varName);
                     }
-                    selectorVariables.Add(varName);
+                    else
+                    {
+                        currentScopeSelectors.Add(varName);
+                    }
                 }
 
                 // For multi-line selectors, we need to check if it ends with semicolon
