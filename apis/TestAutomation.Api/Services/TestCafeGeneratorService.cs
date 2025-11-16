@@ -1052,14 +1052,15 @@ public class TestCafeGeneratorService
         var duplicateSelectors = new List<string>();
         var lineNumber = 0;
         var braceDepth = 0;
-        var testFunctionDepth = -1; // Track the depth at which test function started
+        var functionDepthStack = new Stack<int>(); // Track all function depths (tests, hooks, and helper functions)
 
         foreach (var line in lines)
         {
             lineNumber++;
             var trimmed = line.Trim();
 
-            // Check for test() or hook declarations BEFORE updating brace depth
+            // Check for ANY function declaration BEFORE updating brace depth
+            // This includes test(), hooks, and helper functions like async function login()
             if (
                 trimmed.StartsWith("test(")
                 || trimmed.StartsWith("test.skip(")
@@ -1068,19 +1069,21 @@ public class TestCafeGeneratorService
                 || trimmed.Contains(".afterEach(")
                 || trimmed.Contains(".before(")
                 || trimmed.Contains(".after(")
+                || trimmed.StartsWith("async function ")
+                || trimmed.StartsWith("function ")
             )
             {
-                testFunctionDepth = braceDepth;
+                functionDepthStack.Push(braceDepth);
             }
 
             // Track brace depth to know when we're inside functions
             braceDepth += trimmed.Count(c => c == '{');
             braceDepth -= trimmed.Count(c => c == '}');
 
-            // If we're back to the depth before the test function, we've exited it
-            if (testFunctionDepth >= 0 && braceDepth <= testFunctionDepth)
+            // Pop function depths when we exit functions
+            while (functionDepthStack.Count > 0 && braceDepth <= functionDepthStack.Peek())
             {
-                testFunctionDepth = -1;
+                functionDepthStack.Pop();
             }
 
             // Check for Selector() declarations - track multi-line selectors
@@ -1103,12 +1106,9 @@ public class TestCafeGeneratorService
                 // The real validation is that the file should be syntactically correct JavaScript
             }
 
-            // Check for await statements - only flag if we're NOT in a test/hook function
-            // We're in a test/hook if testFunctionDepth >= 0 and braceDepth > testFunctionDepth
-            if (
-                trimmed.StartsWith("await ")
-                && (testFunctionDepth < 0 || braceDepth <= testFunctionDepth)
-            )
+            // Check for await statements - only flag if we're NOT inside ANY function
+            // We're inside a function if functionDepthStack has any entries
+            if (trimmed.StartsWith("await ") && functionDepthStack.Count == 0)
             {
                 errors.Add(
                     $"Line {lineNumber}: await statement found outside function - must be inside test() or hook"
