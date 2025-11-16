@@ -91,7 +91,7 @@ export function GenericForm<T>({
     if (autoFocusFieldName && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [autoFocusFieldName]);
+  }, [autoFocusFieldName, formData[autoFocusFieldName as keyof T]]);
 
   const renderField = (field: FormFieldDefinition<T>) => {
     const value = formData[field.name];
