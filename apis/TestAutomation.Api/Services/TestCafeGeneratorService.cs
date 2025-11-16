@@ -109,40 +109,43 @@ public class TestCafeGeneratorService
 
         Console.WriteLine($"  ✓ Merged {finalImports.Count} unique import statements");
 
-        // Add setup script as fixture-level selectors if it contains selector definitions
+        // Process setup script: extract functions and selectors to top-level
         string? setupScript = null;
+        var setupFunctions = new List<string>();
+        var setupSelectors = new List<string>();
+        
         if (testSuite.Fixture.SetupScript != null)
         {
-            setupScript = testSuite.Fixture.SetupScript.RootElement.GetString();
-            if (!string.IsNullOrEmpty(setupScript))
+            var rawSetupScript = testSuite.Fixture.SetupScript.RootElement.GetString();
+            if (!string.IsNullOrEmpty(rawSetupScript))
             {
-                // Extract selector definitions (lines starting with "const" and containing "Selector")
-                var lines = setupScript.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                var selectorLines = lines
-                    .Where(l => l.Trim().StartsWith("const") && l.Contains("Selector"))
-                    .ToList();
-                var otherLines = lines
-                    .Where(l => !l.Trim().StartsWith("const") || !l.Contains("Selector"))
-                    .ToList();
-
-                // Add selectors at fixture level
-                if (selectorLines.Any())
-                {
-                    sb.AppendLine();
-                    sb.AppendLine("// Common Selectors");
-                    foreach (var line in selectorLines)
-                    {
-                        sb.AppendLine(line.Trim());
-                    }
-                    sb.AppendLine();
-                }
-
-                // Keep other setup code for beforeEach (filter out comments and empty lines)
-                var nonEmptyLines = otherLines
-                    .Where(l => !string.IsNullOrWhiteSpace(l) && !l.Trim().StartsWith("//"))
-                    .ToList();
-                setupScript = nonEmptyLines.Any() ? string.Join("\n", nonEmptyLines) : null;
+                var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(rawSetupScript);
+                setupFunctions.AddRange(extractedFuncs);
+                setupSelectors.AddRange(extractedSels);
+                setupScript = remainingCode;
             }
+        }
+
+        // Write setup selectors (from SetupScript) at top level
+        if (setupSelectors.Any())
+        {
+            sb.AppendLine("// Setup Selectors");
+            foreach (var selector in setupSelectors)
+            {
+                sb.AppendLine(selector);
+            }
+            sb.AppendLine();
+        }
+
+        // Write setup functions (from SetupScript) at top level
+        if (setupFunctions.Any())
+        {
+            sb.AppendLine("// Setup Functions");
+            foreach (var func in setupFunctions)
+            {
+                sb.AppendLine(func);
+            }
+            sb.AppendLine();
         }
 
         // Generate fixture declaration from Fixture entity (for all test types)
@@ -830,6 +833,90 @@ public class TestCafeGeneratorService
         // Extract variable name from: const dashboard = Selector(...);\
         var match = System.Text.RegularExpressions.Regex.Match(selectorLine, @"const\s+(\w+)\s*=");
         return match.Success ? match.Groups[1].Value : string.Empty;
+    }
+
+    private (List<string> functions, List<string> selectors, string remainingCode) ExtractFunctionsAndSelectorsFromSetup(string setupScript)
+    {
+        var functions = new List<string>();
+        var selectors = new List<string>();
+        var remainingLines = new List<string>();
+        
+        var lines = setupScript.Split('\n');
+        var inFunction = false;
+        var functionLines = new List<string>();
+        var braceCount = 0;
+        
+        for (int i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i];
+            var trimmed = line.Trim();
+            
+            // Detect function declaration (with or without export)
+            if (!inFunction && (trimmed.StartsWith("export async function") || trimmed.StartsWith("async function") || trimmed.StartsWith("function")))
+            {
+                inFunction = true;
+                braceCount = 0;
+                functionLines.Clear();
+                // Remove 'export ' keyword if present
+                var cleanedLine = trimmed.StartsWith("export ") ? trimmed.Substring(7) : trimmed;
+                functionLines.Add(cleanedLine);
+                braceCount += line.Count(c => c == '{');
+                braceCount -= line.Count(c => c == '}');
+                continue;
+            }
+            
+            if (inFunction)
+            {
+                functionLines.Add(line.TrimStart());
+                braceCount += line.Count(c => c == '{');
+                braceCount -= line.Count(c => c == '}');
+                
+                if (braceCount == 0)
+                {
+                    // Function complete - extract selectors from within it
+                    var funcSelectors = new List<string>();
+                    var funcBodyLines = new List<string>();
+                    
+                    foreach (var funcLine in functionLines)
+                    {
+                        var funcTrimmed = funcLine.Trim();
+                        if (funcTrimmed.StartsWith("const ") && funcTrimmed.Contains("Selector("))
+                        {
+                            // Extract selector to top-level
+                            funcSelectors.Add(funcTrimmed);
+                        }
+                        else
+                        {
+                            funcBodyLines.Add(funcLine);
+                        }
+                    }
+                    
+                    // Add extracted selectors to the list
+                    selectors.AddRange(funcSelectors);
+                    
+                    // Rebuild function without internal selectors
+                    functions.Add(string.Join("\n", funcBodyLines));
+                    
+                    inFunction = false;
+                    functionLines.Clear();
+                }
+                continue;
+            }
+            
+            // Not in a function - check if it's a top-level selector or other code
+            if (trimmed.StartsWith("const ") && trimmed.Contains("Selector("))
+            {
+                selectors.Add(trimmed);
+            }
+            else if (!string.IsNullOrWhiteSpace(trimmed) && !trimmed.StartsWith("//"))
+            {
+                // Keep other code (like function calls) for beforeEach
+                remainingLines.Add(trimmed);
+            }
+        }
+        
+        var remainingCode = remainingLines.Any() ? string.Join("\n", remainingLines) : null;
+        return (functions, selectors, remainingCode);
     }
 
     private List<string> ValidateGeneratedContent(string content)
