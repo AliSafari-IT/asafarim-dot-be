@@ -1,17 +1,11 @@
 /* App.css */
 :root {
   --sidebar-width: 240px;
-  --navbar-height: 0;
+  --navbar-height: var(--height-navbar);
   --primary-color: #4f46e5;
   --bg-color: #f9fafb;
   --text-color: #111827;
   --border-color: #e5e7eb;
-}
-
-@media (max-width: 1580px) {
-  :root {
-    --navbar-height: 60px;
-  }
 }
 
 * {

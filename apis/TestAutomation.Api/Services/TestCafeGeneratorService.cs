@@ -145,8 +145,9 @@ public class TestCafeGeneratorService
             }
         }
 
-        // Add fixture only if we have steps-based tests to generate
-        if (stepTests.Any())
+        // Generate fixture declaration from Fixture entity (for all test types)
+        // This ensures HTTP auth, hooks, and setup/teardown are always included
+        if (scriptTests.Any() || stepTests.Any())
         {
             sb.AppendLine($"fixture('{EscapeString(testSuite.Name)}')");
             sb.AppendLine($"    .page('{EscapeString(testSuite.Fixture.PageUrl)}')");
@@ -307,7 +308,7 @@ public class TestCafeGeneratorService
             sb.AppendLine();
         }
 
-        // Generate steps-based test cases (within the fixture)
+        // Generate steps-based test cases
         foreach (var testCase in stepTests)
         {
             // Start test declaration
@@ -469,14 +470,12 @@ public class TestCafeGeneratorService
             sb.AppendLine();
         }
 
-        // Write extracted selectors first (deduplicated, before any fixture)
+        // Write extracted selectors (deduplicated, after fixture but before tests)
         if (extractedSelectors.Any())
         {
             sb.AppendLine("// Shared Selectors");
             foreach (var selector in extractedSelectors.Values.OrderBy(s => s))
             {
-                // Selector may contain multiple lines (e.g., multi-line Selector declarations)
-                // Append it directly and ensure it ends with a newline
                 sb.Append(selector);
                 if (!selector.EndsWith("\n"))
                 {
@@ -493,8 +492,6 @@ public class TestCafeGeneratorService
             sb.AppendLine("// Shared Functions");
             foreach (var func in extractedFunctions)
             {
-                // Function may contain multiple lines (e.g., multi-line ClientFunction declarations)
-                // Append it directly and ensure it ends with a newline
                 sb.Append(func);
                 if (!func.EndsWith("\n"))
                 {
@@ -504,21 +501,12 @@ public class TestCafeGeneratorService
             sb.AppendLine();
         }
 
-        // Generate consolidated fixture for script-based tests if no step tests exist
-        if (scriptTests.Any() && !stepTests.Any())
-        {
-            // Write a single fixture for all script tests
-            sb.AppendLine($"fixture`{EscapeString(testSuite.Fixture.Name)}`");
-            sb.AppendLine($"    .page`{EscapeString(testSuite.Fixture.PageUrl)}`;");
-            sb.AppendLine();
-        }
-
-        // Write script-based test blocks (without duplicate fixtures/selectors)
+        // Write script-based test blocks (fixture declarations are stripped during extraction)
         if (cleanedTestBlocks.Any())
         {
             if (stepTests.Any())
             {
-                sb.AppendLine("// ----- Script-based tests -----");
+                sb.AppendLine("// Script-based tests");
             }
             foreach (var block in cleanedTestBlocks)
             {

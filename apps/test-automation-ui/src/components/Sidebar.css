@@ -1,6 +1,6 @@
 /* Sidebar Styles */
 .sidebar-test-automation {
-  position: fixed;
+  position: sticky;
   top: var(--navbar-height);
   left: 0;
   bottom: 0;
