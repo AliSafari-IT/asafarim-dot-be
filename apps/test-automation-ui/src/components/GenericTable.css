@@ -2,7 +2,7 @@
 
 /* Page Container */
 .page-container {
-  max-width: var(--width-2xl);
+  width: 100%;
   margin: 0 auto;
   padding: var(--space-4);
 }
@@ -205,11 +205,78 @@ textarea.form-control {
   background-color: var(--color-error-hover);
 }
 
+.button-ghost {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid transparent;
+  padding: var(--space-1) var(--space-2);
+  gap: var(--space-1);
+}
+
+.button-ghost:hover:not(:disabled) {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-200);
+}
+
 /* Actions */
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-2);
+  align-items: center;
+}
+
+/* Expandable Rows */
+.expanded-row {
+  background-color: var(--color-neutral-50);
+}
+
+.expanded-cell {
+  padding: var(--space-4) !important;
+  border-top: 1px solid var(--color-border);
+}
+
+.expanded-content {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.expanded-content h5 {
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nested-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.nested-table th,
+.nested-table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nested-table th {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground-muted);
+  background-color: var(--color-neutral-50);
+}
+
+.nested-table tbody tr:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.nested-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 /* Status Badge */

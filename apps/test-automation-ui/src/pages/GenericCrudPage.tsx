@@ -23,6 +23,8 @@ interface GenericCrudPageProps<T> {
   createButtonLabel?: string;
   editFormTitle?: string;
   createFormTitle?: string;
+  renderExpandedRow?: (item: T) => React.ReactNode;
+  expandLabel?: string;
 }
 
 export function GenericCrudPage<T>({
@@ -42,6 +44,8 @@ export function GenericCrudPage<T>({
   createButtonLabel = "+ New Item",
   editFormTitle = "Edit Item",
   createFormTitle = "Create Item",
+  renderExpandedRow,
+  expandLabel,
 }: GenericCrudPageProps<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -190,6 +194,8 @@ export function GenericCrudPage<T>({
         emptyMessage={emptyMessage}
         className={tableClassName}
         getItemId={getItemId}
+        renderExpandedRow={renderExpandedRow}
+        expandLabel={expandLabel}
       />
     </div>
   );

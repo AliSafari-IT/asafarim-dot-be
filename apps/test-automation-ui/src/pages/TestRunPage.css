@@ -101,6 +101,7 @@
 .test-run-main {
   grid-column: span 1;
   max-width: 100%;
+  min-width: 0; /* allow content (logs) to shrink instead of forcing grid overflow */
 }
 
 .test-run-progress-grid {
