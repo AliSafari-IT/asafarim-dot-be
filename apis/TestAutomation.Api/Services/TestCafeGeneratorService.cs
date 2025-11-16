@@ -929,6 +929,16 @@ public class TestCafeGeneratorService
         }
         
         var remainingCode = remainingLines.Any() ? string.Join("\n", remainingLines) : null;
+        
+        Console.WriteLine($"[ExtractFunctionsAndSelectors] Extraction complete:");
+        Console.WriteLine($"  - Functions extracted: {functions.Count}");
+        Console.WriteLine($"  - Selectors extracted: {selectors.Count}");
+        Console.WriteLine($"  - Remaining code lines: {remainingLines.Count}");
+        if (functions.Count > 0)
+        {
+            Console.WriteLine($"  - First function preview: {functions[0].Substring(0, Math.Min(100, functions[0].Length))}...");
+        }
+        
         return (functions, selectors, remainingCode);
     }
 
