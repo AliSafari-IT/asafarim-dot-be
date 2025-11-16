@@ -41,8 +41,18 @@ interface FunctionalRequirement {
   name: string;
 }
 
+interface RelatedTestSuite {
+  id: string;
+  name: string;
+  description?: string;
+  executionOrder: number;
+  isActive: boolean;
+}
+
 export default function FixturesPage() {
   const [frs, setFrs] = useState<FunctionalRequirement[]>([]);
+  const [testSuitesCache, setTestSuitesCache] =
+    useState<Record<string, RelatedTestSuite[]>>({});
 
   useEffect(() => {
     loadFRs();
@@ -59,6 +69,97 @@ export default function FixturesPage() {
 
   const getFRName = (frId: string) => {
     return frs.find((fr) => fr.id === frId)?.name || "Unknown";
+  };
+
+  const renderExpandedRow = (fixture: Fixture) => {
+    const suites = testSuitesCache[fixture.id] || [];
+    const hasCache = fixture.id in testSuitesCache;
+
+    if (!hasCache) {
+      api
+        .get(`/api/test-suites?fixtureId=${fixture.id}`)
+        .then((response) => {
+          setTestSuitesCache((prev) => ({
+            ...prev,
+            [fixture.id]: response.data || [],
+          }));
+        })
+        .catch((error) => {
+          console.error("Failed to fetch test suites:", error);
+          setTestSuitesCache((prev) => ({
+            ...prev,
+            [fixture.id]: [],
+          }));
+        });
+    }
+
+    if (!hasCache) {
+      return (
+        <div className="expanded-content">
+          <h5>Related Test Suites</h5>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "1rem",
+              color: "var(--color-foreground-muted)",
+            }}
+          >
+            Loading test suites...
+          </div>
+        </div>
+      );
+    }
+
+    if (!suites.length) {
+      return (
+        <div className="expanded-content">
+          <h5>Related Test Suites</h5>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "1rem",
+              color: "var(--color-foreground-muted)",
+            }}
+          >
+            No test suites found for this fixture.
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="expanded-content">
+        <h5>Related Test Suites ({suites.length})</h5>
+        <table className="nested-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Execution Order</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {suites.map((suite) => (
+              <tr key={suite.id}>
+                <td>{suite.name}</td>
+                <td>{suite.description || "-"}</td>
+                <td>{suite.executionOrder}</td>
+                <td>
+                  <span
+                    className={`status-badge ${
+                      suite.isActive ? "active" : "inactive"
+                    }`}
+                  >
+                    {suite.isActive ? "Active" : "Inactive"}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   // Define table columns
@@ -271,6 +372,8 @@ export default function FixturesPage() {
       createButtonLabel="+ New Fixture"
       editFormTitle="Edit Fixture"
       createFormTitle="Create Fixture"
+      renderExpandedRow={renderExpandedRow}
+      expandLabel="View Test Suites"
     />
   );
 }

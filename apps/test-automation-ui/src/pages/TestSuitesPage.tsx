@@ -20,11 +20,22 @@ interface Fixture {
   remark?: string;
 }
 
+interface RelatedTestCase {
+  id: string;
+  name: string;
+  description?: string;
+  testType?: string;
+  executionOrder?: number;
+  isActive: boolean;
+}
+
 export default function TestSuitesPage() {
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
   const [fixtureRemarks, setFixtureRemarks] = useState<Record<string, string>>(
     {}
   );
+  const [testCasesCache, setTestCasesCache] =
+    useState<Record<string, RelatedTestCase[]>>({});
   const [viewingTestCafe, setViewingTestCafe] = useState<{
     id: string;
     name: string;
@@ -107,6 +118,103 @@ export default function TestSuitesPage() {
 
   const getFixtureName = (fixtureId: string) => {
     return fixtures.find((f) => f.id === fixtureId)?.name || "Unknown";
+  };
+
+  const renderExpandedRow = (testSuite: TestSuite) => {
+    const suiteCases = testCasesCache[testSuite.id] || [];
+    const hasCache = testSuite.id in testCasesCache;
+
+    if (!hasCache) {
+      api
+        .get(`/api/test-cases?testSuiteId=${testSuite.id}`)
+        .then((response) => {
+          setTestCasesCache((prev) => ({
+            ...prev,
+            [testSuite.id]: response.data || [],
+          }));
+        })
+        .catch((error) => {
+          console.error("Failed to fetch test cases:", error);
+          setTestCasesCache((prev) => ({
+            ...prev,
+            [testSuite.id]: [],
+          }));
+        });
+    }
+
+    if (!hasCache) {
+      return (
+        <div className="expanded-content">
+          <h5>Related Test Cases</h5>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "1rem",
+              color: "var(--color-foreground-muted)",
+            }}
+          >
+            Loading test cases...
+          </div>
+        </div>
+      );
+    }
+
+    if (!suiteCases.length) {
+      return (
+        <div className="expanded-content">
+          <h5>Related Test Cases</h5>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "1rem",
+              color: "var(--color-foreground-muted)",
+            }}
+          >
+            No test cases found for this suite.
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="expanded-content">
+        <h5>Related Test Cases ({suiteCases.length})</h5>
+        <table className="nested-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Type</th>
+              <th>Execution Order</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {suiteCases.map((testCase) => (
+              <tr key={testCase.id}>
+                <td>{testCase.name}</td>
+                <td>{testCase.description || "-"}</td>
+                <td>{testCase.testType || "-"}</td>
+                <td>{
+                  typeof testCase.executionOrder === "number"
+                    ? testCase.executionOrder
+                    : "-"
+                }</td>
+                <td>
+                  <span
+                    className={`status-badge ${
+                      testCase.isActive ? "active" : "inactive"
+                    }`}
+                  >
+                    {testCase.isActive ? "Active" : "Inactive"}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   // Define table columns
@@ -227,9 +335,10 @@ export default function TestSuitesPage() {
           isActive: true,
           createdAt: "",
           updatedAt: "",
-        })}
-        customActions={(item) => (
-          <>
+        })
+      }
+      customActions={(item) => (
+        <>
           <button
             className="button button-primary"
             onClick={() => handleRunTestSuite(item)}
@@ -248,6 +357,8 @@ export default function TestSuitesPage() {
         createButtonLabel="+ New Test Suite"
         editFormTitle="Edit Test Suite"
         createFormTitle="Create Test Suite"
+        renderExpandedRow={renderExpandedRow}
+        expandLabel="View Test Cases"
       />
 
       {viewingTestCafe && (
