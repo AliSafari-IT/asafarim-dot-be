@@ -109,9 +109,13 @@ public class TestCafeGeneratorService
 
         Console.WriteLine($"  ✓ Merged {finalImports.Count} unique import statements");
 
-        // Process setup script and hooks to extract functions and selectors
+        // Process ALL hooks and scripts to extract functions and selectors
         var setupScript = string.Empty;
+        var beforeHookCode = string.Empty;
+        var afterHookCode = string.Empty;
         var beforeEachHookCode = string.Empty;
+        var afterEachHookCode = string.Empty;
+        var extractedTeardownScript = string.Empty;
         var setupFunctions = new List<string>();
         var setupSelectors = new List<string>();
         
@@ -130,6 +134,43 @@ public class TestCafeGeneratorService
             }
         }
         
+        // Extract from TeardownScript
+        if (testSuite.Fixture.TeardownScript != null)
+        {
+            var rawTeardownScript = testSuite.Fixture.TeardownScript.RootElement.GetString();
+            if (!string.IsNullOrEmpty(rawTeardownScript))
+            {
+                Console.WriteLine($"[TestCafe Generator] Processing TeardownScript ({rawTeardownScript.Length} chars)");
+                var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(rawTeardownScript);
+                setupFunctions.AddRange(extractedFuncs);
+                setupSelectors.AddRange(extractedSels);
+                extractedTeardownScript = remainingCode;
+                Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from TeardownScript");
+            }
+        }
+        
+        // Extract from BeforeHook
+        if (!string.IsNullOrEmpty(testSuite.Fixture.BeforeHook))
+        {
+            Console.WriteLine($"[TestCafe Generator] Processing BeforeHook ({testSuite.Fixture.BeforeHook.Length} chars)");
+            var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.BeforeHook);
+            setupFunctions.AddRange(extractedFuncs);
+            setupSelectors.AddRange(extractedSels);
+            beforeHookCode = remainingCode;
+            Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from BeforeHook");
+        }
+        
+        // Extract from AfterHook
+        if (!string.IsNullOrEmpty(testSuite.Fixture.AfterHook))
+        {
+            Console.WriteLine($"[TestCafe Generator] Processing AfterHook ({testSuite.Fixture.AfterHook.Length} chars)");
+            var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.AfterHook);
+            setupFunctions.AddRange(extractedFuncs);
+            setupSelectors.AddRange(extractedSels);
+            afterHookCode = remainingCode;
+            Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from AfterHook");
+        }
+        
         // Extract from BeforeEachHook
         if (!string.IsNullOrEmpty(testSuite.Fixture.BeforeEachHook))
         {
@@ -140,8 +181,64 @@ public class TestCafeGeneratorService
             beforeEachHookCode = remainingCode;
             Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from BeforeEachHook");
         }
+        
+        // Extract from AfterEachHook
+        if (!string.IsNullOrEmpty(testSuite.Fixture.AfterEachHook))
+        {
+            Console.WriteLine($"[TestCafe Generator] Processing AfterEachHook ({testSuite.Fixture.AfterEachHook.Length} chars)");
+            var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.AfterEachHook);
+            setupFunctions.AddRange(extractedFuncs);
+            setupSelectors.AddRange(extractedSels);
+            afterEachHookCode = remainingCode;
+            Console.WriteLine($"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from AfterEachHook");
+        }
 
-        // Write setup selectors (from SetupScript) at top level
+        // Extract from all test case hooks
+        var testCaseHookExtractions = new Dictionary<Guid, Dictionary<string, string>>();
+        foreach (var testCase in stepTests.Concat(scriptTests))
+        {
+            var extractions = new Dictionary<string, string>();
+            
+            // Extract from BeforeTestHook
+            if (!string.IsNullOrEmpty(testCase.BeforeTestHook))
+            {
+                var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(testCase.BeforeTestHook);
+                setupFunctions.AddRange(extractedFuncs);
+                setupSelectors.AddRange(extractedSels);
+                extractions["BeforeTestHook"] = remainingCode ?? string.Empty;
+            }
+            
+            // Extract from AfterTestHook
+            if (!string.IsNullOrEmpty(testCase.AfterTestHook))
+            {
+                var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(testCase.AfterTestHook);
+                setupFunctions.AddRange(extractedFuncs);
+                setupSelectors.AddRange(extractedSels);
+                extractions["AfterTestHook"] = remainingCode ?? string.Empty;
+            }
+            
+            // Extract from BeforeEachStepHook
+            if (!string.IsNullOrEmpty(testCase.BeforeEachStepHook))
+            {
+                var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(testCase.BeforeEachStepHook);
+                setupFunctions.AddRange(extractedFuncs);
+                setupSelectors.AddRange(extractedSels);
+                extractions["BeforeEachStepHook"] = remainingCode ?? string.Empty;
+            }
+            
+            // Extract from AfterEachStepHook
+            if (!string.IsNullOrEmpty(testCase.AfterEachStepHook))
+            {
+                var (extractedFuncs, extractedSels, remainingCode) = ExtractFunctionsAndSelectorsFromSetup(testCase.AfterEachStepHook);
+                setupFunctions.AddRange(extractedFuncs);
+                setupSelectors.AddRange(extractedSels);
+                extractions["AfterEachStepHook"] = remainingCode ?? string.Empty;
+            }
+            
+            testCaseHookExtractions[testCase.Id] = extractions;
+        }
+
+        // Write setup selectors (from all sources) at top level
         if (setupSelectors.Any())
         {
             sb.AppendLine("// Setup Selectors");
@@ -152,7 +249,7 @@ public class TestCafeGeneratorService
             sb.AppendLine();
         }
 
-        // Write setup functions (from SetupScript) at top level
+        // Write setup functions (from all sources) at top level
         if (setupFunctions.Any())
         {
             sb.AppendLine("// Setup Functions");
@@ -235,18 +332,18 @@ public class TestCafeGeneratorService
             }
 
             // Add fixture-level before hook
-            if (!string.IsNullOrEmpty(testSuite.Fixture.BeforeHook))
+            if (!string.IsNullOrEmpty(beforeHookCode))
             {
                 sb.AppendLine("    .before(async ctx => {");
-                sb.AppendLine($"        {IndentCode(testSuite.Fixture.BeforeHook, 8)}");
+                sb.AppendLine($"        {IndentCode(beforeHookCode, 8)}");
                 sb.AppendLine("    })");
             }
 
             // Add fixture-level after hook
-            if (!string.IsNullOrEmpty(testSuite.Fixture.AfterHook))
+            if (!string.IsNullOrEmpty(afterHookCode))
             {
                 sb.AppendLine("    .after(async ctx => {");
-                sb.AppendLine($"        {IndentCode(testSuite.Fixture.AfterHook, 8)}");
+                sb.AppendLine($"        {IndentCode(afterHookCode, 8)}");
                 sb.AppendLine("    })");
             }
 
@@ -271,19 +368,15 @@ public class TestCafeGeneratorService
                 sb.AppendLine("    })");
             }
 
-            // Add afterEach hook (combines AfterEachHook and TeardownScript)
+            // Add afterEach hook (combines extracted afterEachHookCode and teardownScript)
             var afterEachCode = new List<string>();
-            if (!string.IsNullOrEmpty(testSuite.Fixture.AfterEachHook))
+            if (!string.IsNullOrEmpty(afterEachHookCode))
             {
-                afterEachCode.Add(testSuite.Fixture.AfterEachHook);
+                afterEachCode.Add(afterEachHookCode);
             }
-            if (testSuite.Fixture.TeardownScript != null)
+            if (!string.IsNullOrEmpty(extractedTeardownScript))
             {
-                var teardownScript = testSuite.Fixture.TeardownScript.RootElement.GetString();
-                if (!string.IsNullOrEmpty(teardownScript))
-                {
-                    afterEachCode.Add(teardownScript);
-                }
+                afterEachCode.Add(extractedTeardownScript);
             }
 
             if (afterEachCode.Any())
@@ -400,10 +493,10 @@ public class TestCafeGeneratorService
             }
 
             // Add before test hook
-            if (!string.IsNullOrEmpty(testCase.BeforeTestHook))
+            if (testCaseHookExtractions.TryGetValue(testCase.Id, out var extractions) && extractions.TryGetValue("BeforeTestHook", out var beforeTestCode) && !string.IsNullOrEmpty(beforeTestCode))
             {
                 sb.AppendLine($"    // Before test hook");
-                sb.AppendLine($"    {IndentCode(testCase.BeforeTestHook, 4)}");
+                sb.AppendLine($"    {IndentCode(beforeTestCode, 4)}");
                 sb.AppendLine();
             }
 
@@ -434,10 +527,10 @@ public class TestCafeGeneratorService
                             );
 
                             // Add before each step hook
-                            if (!string.IsNullOrEmpty(testCase.BeforeEachStepHook))
+                            if (testCaseHookExtractions.TryGetValue(testCase.Id, out var stepExtractions) && stepExtractions.TryGetValue("BeforeEachStepHook", out var beforeEachStepCode) && !string.IsNullOrEmpty(beforeEachStepCode))
                             {
                                 sb.AppendLine($"    // Before step {i + 1} hook");
-                                sb.AppendLine($"    {IndentCode(testCase.BeforeEachStepHook, 4)}");
+                                sb.AppendLine($"    {IndentCode(beforeEachStepCode, 4)}");
                             }
 
                             sb.AppendLine(
@@ -446,10 +539,10 @@ public class TestCafeGeneratorService
                             sb.AppendLine($"    {GenerateStepCode(step)}");
 
                             // Add after each step hook
-                            if (!string.IsNullOrEmpty(testCase.AfterEachStepHook))
+                            if (testCaseHookExtractions.TryGetValue(testCase.Id, out var stepExtractionsAfter) && stepExtractionsAfter.TryGetValue("AfterEachStepHook", out var afterEachStepCode) && !string.IsNullOrEmpty(afterEachStepCode))
                             {
                                 sb.AppendLine($"    // After step {i + 1} hook");
-                                sb.AppendLine($"    {IndentCode(testCase.AfterEachStepHook, 4)}");
+                                sb.AppendLine($"    {IndentCode(afterEachStepCode, 4)}");
                             }
 
                             if (i < steps.Count - 1)
@@ -477,11 +570,11 @@ public class TestCafeGeneratorService
             // Script-based tests are handled separately to allow custom imports/fixtures
 
             // Add after test hook
-            if (!string.IsNullOrEmpty(testCase.AfterTestHook))
+            if (testCaseHookExtractions.TryGetValue(testCase.Id, out var afterExtractions) && afterExtractions.TryGetValue("AfterTestHook", out var afterTestCode) && !string.IsNullOrEmpty(afterTestCode))
             {
                 sb.AppendLine();
                 sb.AppendLine($"    // After test hook");
-                sb.AppendLine($"    {IndentCode(testCase.AfterTestHook, 4)}");
+                sb.AppendLine($"    {IndentCode(afterTestCode, 4)}");
             }
 
             sb.AppendLine("});");
