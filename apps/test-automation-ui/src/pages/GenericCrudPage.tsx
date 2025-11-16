@@ -167,6 +167,7 @@ export function GenericCrudPage<T>({
 
       {(creating || editing) && (
         <GenericForm
+          key={editing ? getItemId(editing) : "create"}
           fields={formFields}
           formData={formData}
           onChange={setFormData}
@@ -175,6 +176,7 @@ export function GenericCrudPage<T>({
           title={editing ? editFormTitle : createFormTitle}
           submitLabel={editing ? "Update" : "Create"}
           className={formClassName}
+          autoFocusFieldName={autoFocusFieldName as keyof T}
         />
       )}
 
