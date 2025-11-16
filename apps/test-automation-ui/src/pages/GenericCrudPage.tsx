@@ -16,7 +16,7 @@ interface GenericCrudPageProps<T> {
   preparePayload?: (formData: T) => any;
   onItemLoaded?: (item: T) => T;
   customActions?: (item: T) => React.ReactNode;
-
+  autoFocusFieldName?: string;
   tableClassName?: string;
   formClassName?: string;
   emptyMessage?: string;
@@ -35,6 +35,7 @@ export function GenericCrudPage<T>({
   preparePayload,
   onItemLoaded,
   customActions,
+  autoFocusFieldName,
   tableClassName = "generic-table",
   formClassName = "generic-form",
   emptyMessage = "No items found",

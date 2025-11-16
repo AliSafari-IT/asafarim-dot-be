@@ -1,5 +1,5 @@
 // apps/test-automation-ui/src/components/GenericForm.tsx
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 
 const FormGroup = styled.div`
@@ -68,6 +68,7 @@ interface GenericFormProps<T> {
   submitLabel?: string;
   cancelLabel?: string;
   className?: string;
+  autoFocusFieldName?: keyof T;
 }
 
 export function GenericForm<T>({
@@ -79,11 +80,18 @@ export function GenericForm<T>({
   title,
   submitLabel = "Submit",
   cancelLabel = "Cancel",
-  className = ""
+  className = "",
+  autoFocusFieldName,
 }: GenericFormProps<T>) {
   const handleFieldChange = (name: keyof T, value: any) => {
     onChange({ ...formData, [name]: value });
   };
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (autoFocusFieldName && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocusFieldName]);
 
   const renderField = (field: FormFieldDefinition<T>) => {
     const value = formData[field.name];
@@ -92,15 +100,14 @@ export function GenericForm<T>({
         handleFieldChange(field.name, newValue)
       );
     }
-    
+
     // Common input props
     const commonInputProps = {
       className: "form-control",
       value: value as string | number | string[] | undefined,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = field.type === "number"
-          ? Number(e.target.value)
-          : e.target.value;
+        const newValue =
+          field.type === "number" ? Number(e.target.value) : e.target.value;
         handleFieldChange(field.name, newValue);
       },
       required: field.required,
@@ -108,7 +115,7 @@ export function GenericForm<T>({
       min: field.min,
       max: field.max,
       readOnly: field.readonly,
-      "data-testid": `input-${String(field.name)}`
+      "data-testid": `input-${String(field.name)}`,
     } as React.InputHTMLAttributes<HTMLInputElement>;
 
     switch (field.type) {
@@ -123,13 +130,21 @@ export function GenericForm<T>({
       case "time":
       case "color":
       case "range":
-        return <input type={field.type} {...commonInputProps} />;
+        return (
+          <input
+            type={field.type}
+            {...commonInputProps}
+            ref={field.name === autoFocusFieldName ? inputRef : undefined}
+          />
+        );
 
       case "textarea":
       case "json":
         return (
           <textarea
-            className={`form-control ${field.type === "json" ? "json-editor" : ""}`}
+            className={`form-control ${
+              field.type === "json" ? "json-editor" : ""
+            }`}
             value={(value as string) || ""}
             onChange={(e) => handleFieldChange(field.name, e.target.value)}
             required={field.required}
@@ -160,7 +175,10 @@ export function GenericForm<T>({
 
       case "checkbox":
         return (
-          <label className="checkbox-container" data-testid={`checkbox-${String(field.name)}`}>
+          <label
+            className="checkbox-container"
+            data-testid={`checkbox-${String(field.name)}`}
+          >
             <input
               type="checkbox"
               className="checkbox-input"
@@ -212,7 +230,7 @@ export function GenericForm<T>({
   const groupedFields = fields
     .filter((field) => !field.condition || field.condition(formData))
     .reduce((groups, field) => {
-      const groupName = field.group || 'Other';
+      const groupName = field.group || "Other";
       if (!groups[groupName]) {
         groups[groupName] = [];
       }
@@ -221,14 +239,29 @@ export function GenericForm<T>({
     }, {} as Record<string, FormFieldDefinition<T>[]>);
 
   return (
-    <form onSubmit={onSubmit} className={className} data-testid={"generic-form"}>
+    <form
+      onSubmit={onSubmit}
+      className={className}
+      data-testid={"generic-form"}
+    >
       <h4 data-testid={"generic-form-title"}>{title}</h4>
-      
+
       {Object.entries(groupedFields).map(([groupName, groupFields]) => (
-        <FormGroup key={groupName} data-testid={`form-group-${groupName.toLowerCase().replace(/\s+/g, '-')}`}>
-          {groupName !== 'Other' && <FormGroupHeader>{groupName}</FormGroupHeader>}
+        <FormGroup
+          key={groupName}
+          data-testid={`form-group-${groupName
+            .toLowerCase()
+            .replace(/\s+/g, "-")}`}
+        >
+          {groupName !== "Other" && (
+            <FormGroupHeader>{groupName}</FormGroupHeader>
+          )}
           {groupFields.map((field) => (
-            <div key={String(field.name)} className="form-field" data-testid={`form-field-${String(field.name)}`}>
+            <div
+              key={String(field.name)}
+              className="form-field"
+              data-testid={`form-field-${String(field.name)}`}
+            >
               {field.type !== "checkbox" && !field.render && (
                 <label className="form-label">
                   {field.label} {field.required && "*"}
@@ -239,9 +272,13 @@ export function GenericForm<T>({
           ))}
         </FormGroup>
       ))}
-      
+
       <div className="form-actions" data-testid={"generic-form-actions"}>
-        <button type="submit" className="button button-primary" data-testid={"generic-form-submit"}>
+        <button
+          type="submit"
+          className="button button-primary"
+          data-testid={"generic-form-submit"}
+        >
           {submitLabel}
         </button>
         <button

@@ -390,6 +390,7 @@ export default function TestCasesPage() {
       })}
       preparePayload={preparePayload}
       onItemLoaded={onItemLoaded}
+      autoFocusFieldName="name"
       emptyMessage="No test cases found"
       createButtonLabel="+ New Test Case"
       editFormTitle="Edit Test Case"
