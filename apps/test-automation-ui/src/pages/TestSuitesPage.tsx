@@ -1,4 +1,4 @@
-// TestSuitesPageRefactored.tsx - Refactored version using GenericCrudPage
+// TestSuitesPage.tsx - Refactored version using GenericCrudPage
 import { useEffect, useState } from "react";
 import { GenericCrudPage } from "./GenericCrudPage";
 import { ColumnDefinition } from "../components/GenericTable";
@@ -13,6 +13,7 @@ import {
   type TestSuite,
 } from "../services/entitiesService";
 import { ButtonComponent } from "@asafarim/shared-ui-react";
+import { useAuth } from "@asafarim/shared-ui-react";
 
 interface Fixture {
   id: string;
@@ -42,6 +43,7 @@ export default function TestSuitesPage() {
   } | null>(null);
   const toast = useToast();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     loadFixtures();
@@ -222,9 +224,21 @@ export default function TestSuitesPage() {
     {
       header: "Name",
       field: "name",
+      sortable: true,
+      width: "15%",
+    },
+        {
+      header: "Description",
+      field: "description",
+      render: (item) => item.description || "-",
+      width: "50%",
+      sortable: false,
     },
     {
       header: "Fixture",
+      field: "fixtureId",
+      sortable: true,
+      sortAccessor: (item) => getFixtureName(item?.fixtureId ?? ""),
       render: (item) => {
         const hasIssues = fixtureRemarks[item.fixtureId];
         return (
@@ -241,15 +255,14 @@ export default function TestSuitesPage() {
           </div>
         );
       },
+      width: "15%",
     },
-    {
-      header: "Description",
-      field: "description",
-    },
+
     {
       header: "Execution Order",
       align: "center",
       field: "executionOrder",
+      width: "7.5%",
     },
     {
       header: "Active",
@@ -265,6 +278,7 @@ export default function TestSuitesPage() {
           {item.isActive ? "✓" : "✗"}
         </span>
       ),
+      width: "7.5%",
     }
   ];
 
@@ -337,16 +351,18 @@ export default function TestSuitesPage() {
           updatedAt: "",
         })
       }
-      customActions={(item) => (
+      customActions={(item) => ( 
         <>
           <button
             className="button button-primary"
             onClick={() => handleRunTestSuite(item)}
-            title="Run Test Suite"
+            title={isAuthenticated ? "Run Test Suite" : "You must be authenticated to run test suites."}
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            disabled={!isAuthenticated}
+            data-testid="run-test-suite-button"
           >
             <Play size={16} />
-            TestSuite
+            Tests
           </button>
           <ButtonComponent variant="ghost" onClick={() => setViewingTestCafe({id: item.id, name: item.name})}>
             <EyeIcon size={20} />

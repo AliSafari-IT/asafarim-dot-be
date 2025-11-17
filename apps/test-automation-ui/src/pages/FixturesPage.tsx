@@ -167,22 +167,27 @@ export default function FixturesPage() {
     {
       header: "Name",
       field: "name",
-      width: "20%"
+      width: "20%",
+      sortable: true,
     },
     {
       header: "Description",
       field: "description",
-      width: "25%"
+      width: "25%",
+      sortable: false,
     },
     {
       header: "Functional Requirement",
+      field: "functionalRequirementId",
       render: (item) => getFRName(item.functionalRequirementId) || "Unknown",
-      width: "15%"
+      width: "15%",
+      sortable: true,
     },
     {
       header: "Page URL",
       field: "pageUrl",
-      width: "20%"
+      width: "20%",
+      sortable: false,
     },
     {
       header: "Hooks",

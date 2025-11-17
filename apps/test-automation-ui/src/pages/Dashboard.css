@@ -1,7 +1,7 @@
 /* Dashboard Container */
 .dashboard {
-  max-width: var(--width-2xl);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: var(--space-4);
 }
 

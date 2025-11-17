@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../config/api';
 import { isProduction } from '@asafarim/shared-ui-react';
 import './TestCafeFileViewer.css';
+import { useAuth } from '@asafarim/shared-ui-react';
 
 const API_BASE = isProduction ? 'https://testora.asafarim.be' : 'http://testora.asafarim.local:5106';
 
@@ -18,6 +19,7 @@ export function TestCafeFileViewer({ testSuiteId, testSuiteName, onClose }: Test
   const [error, setError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const loadTestCafeFile = async () => {
     try {
@@ -141,7 +143,7 @@ export function TestCafeFileViewer({ testSuiteId, testSuiteName, onClose }: Test
               <button 
                 className="button button-primary" 
                 onClick={runTest}
-                disabled={running}
+                disabled={!isAuthenticated || running}
               >
                 {running ? 'Running...' : '▶️ Run Test'}
               </button>

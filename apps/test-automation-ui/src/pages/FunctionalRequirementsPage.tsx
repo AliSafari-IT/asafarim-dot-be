@@ -41,6 +41,7 @@ export default function FunctionalRequirementsPage() {
     {
       header: 'Name',
       field: 'name',
+      sortable: true,
     },
     {
       header: 'Description',
@@ -50,6 +51,7 @@ export default function FunctionalRequirementsPage() {
       header: 'Project',
       field: 'projectName',
       render: (item) => item.projectName || '-',
+      sortable: false,
     },
     {
       header: 'Status',
@@ -187,7 +189,7 @@ export default function FunctionalRequirementsPage() {
       editFormTitle="Edit Requirement"
       createFormTitle="Create Requirement"
       renderExpandedRow={renderExpandedRow}
-      expandLabel="View Fixtures"
+      expandLabel="View Fixtures"      
     />
   );
 }

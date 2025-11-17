@@ -80,12 +80,16 @@ export default function TestCasesPage() {
     {
       header: 'Name',
       field: 'name',
-      width: '20%'
+      width: '20%',
+      sortable: true,
     },
     {
       header: 'Test Suite',
-      render: (item) => getSuiteName(item.testSuiteId),
-      width: '15%'
+      field: 'testSuiteId',
+      sortAccessor: (item) => getSuiteName(item?.testSuiteId ?? ""),
+      render: (item) => getSuiteName(item.testSuiteId) || 'Unknown',
+      width: '15%',
+      sortable: true,
     },
     {
       header: 'Type',
@@ -97,6 +101,7 @@ export default function TestCasesPage() {
           {item.testType}
         </span>
       ),
+      sortable: true,
     },
     {
       header: 'Status',
@@ -110,12 +115,14 @@ export default function TestCasesPage() {
           {item.isActive ? <CheckCircleIcon /> : <XCircleIcon />}
         </span>
       ),
+      sortable: true,
     },
     {
       header: 'Skipped',
       align: 'center',
       width: '10%',
-      render: (item) => item.skip ? 'Yes' : 'No'
+      render: (item) => item.skip ? 'Yes' : 'No',
+      sortable: true,
     },
     {
       header: 'Timeout',

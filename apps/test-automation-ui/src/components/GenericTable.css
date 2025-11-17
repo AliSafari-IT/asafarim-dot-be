@@ -124,7 +124,6 @@ textarea.form-control {
 }
 
 .generic-table {
-  min-width: 800px;
   width: 100%;
   border-collapse: collapse;
   background-color: var(--color-surface);
@@ -147,6 +146,22 @@ textarea.form-control {
   font-size: var(--font-size-xs);
   letter-spacing: 0.05em;
   background-color: var(--color-surface);
+}
+
+.generic-table th:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Sort Icon */
+.sort-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-base);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  min-width: 1rem;
+  transition: transform 0.2s ease-in-out;
 }
 
 .generic-table tbody tr:hover {
@@ -410,22 +425,13 @@ textarea.form-control {
   
   .generic-table {
     font-size: var(--font-size-xs);
-    min-width: 600px;
   }
   
   .generic-table th,
   .generic-table td {
     padding: var(--space-2);
-    white-space: nowrap;
-  }
-  
-  .generic-table th:first-child,
-  .generic-table td:first-child {
-    position: sticky;
-    left: 0;
-    background: var(--color-surface);
-    z-index: 1;
-    min-width: 120px;
+    white-space: normal;
+    word-break: break-word;
   }
   
   .actions {
@@ -451,40 +457,38 @@ textarea.form-control {
   }
 }
 
-/* Responsive Breakpoints */
-/* 2XL (1200px and up) - Default styles are for 2XL */
-
-/* XL (1024px - 1199px) */
 @media (max-width: 1199px) {
-  .page-container {
-    max-width: var(--width-xl);
-  }
-  
-  .generic-table {
-    min-width: 1000px;
+  .generic-table th,
+  .generic-table td {
+    padding: var(--space-1) var(--space-2);
+    white-space: normal;
+    word-break: break-word;
   }
 }
 
-/* LG (768px - 1023px) */
 @media (max-width: 1023px) {
   .page-container {
-    max-width: var(--width-lg);
+    /* Use full available width inside main content; avoid centering with
+       a fixed max-width so we don't waste space next to the sidebar. */
     padding: var(--space-3);
   }
-  
-  .generic-table {
-    min-width: 800px;
+
+  /* Medium screens (tablets / small laptops): allow table to be denser and
+     wrap content so it adapts better between 768px and 1023px. */
+  .generic-table th,
+  .generic-table td {
+    padding: var(--space-1) var(--space-2);
+    white-space: normal;
+    word-break: break-word;
   }
-  
+
   .json-preview {
     max-width: 180px;
   }
 }
 
-/* MD (640px - 767px) */
 @media (max-width: 767px) {
   .page-container {
-    max-width: var(--width-md);
     padding: var(--space-2);
   }
   
@@ -500,7 +504,6 @@ textarea.form-control {
   }
   
   .generic-table {
-    min-width: 600px;
     font-size: var(--font-size-sm);
   }
   
@@ -514,15 +517,12 @@ textarea.form-control {
   }
 }
 
-/* SM (480px - 639px) */
 @media (max-width: 639px) {
   .page-container {
-    max-width: var(--width-sm);
     padding: var(--space-2);
   }
   
   .generic-table {
-    min-width: 100%;
     font-size: var(--font-size-xs);
   }
   
@@ -545,7 +545,6 @@ textarea.form-control {
 /* XS (320px - 479px) */
 @media (max-width: 479px) {
   .page-container {
-    max-width: var(--width-xs);
     padding: var(--space-1);
   }
   
@@ -555,13 +554,23 @@ textarea.form-control {
   
   .generic-table {
     font-size: var(--font-size-2xs);
+    /* On very small screens, keep a reasonable min-width and rely on
+       horizontal scrolling instead of squeezing columns too much. */
+    min-width: 560px;
   }
   
   .form-control,
   textarea.form-control {
     font-size: 16px; /* Prevent zoom on mobile */
   }
-  
+
+  .generic-table th,
+  .generic-table td {
+    /* Keep each header/cell on a single line so text doesn't stack
+       vertically in narrow columns; scrolling is done via table-container. */
+    white-space: nowrap;
+  }
+
   .status-badge {
     padding: 0.125rem 0.25rem;
     font-size: 0.625rem;
@@ -570,10 +579,6 @@ textarea.form-control {
 
 /* 2XS (up to 319px) */
 @media (max-width: 319px) {
-  .page-container {
-    max-width: var(--width-2xs);
-  }
-  
   .page-title {
     font-size: var(--font-size-lg);
   }

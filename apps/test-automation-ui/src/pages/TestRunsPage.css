@@ -2,15 +2,15 @@
 
 
 .test-runs-container {
-  max-width: var(--width-2xl);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: var(--space-4);
   min-height: 100vh;
 }
 
 .test-runs-content {
-  max-width: var(--width-2xl);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 0 1rem;
 }
 

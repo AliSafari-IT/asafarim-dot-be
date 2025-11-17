@@ -196,6 +196,8 @@ export function GenericCrudPage<T>({
         getItemId={getItemId}
         renderExpandedRow={renderExpandedRow}
         expandLabel={expandLabel}
+        showActions={isAuthenticated}
+        key={title}
       />
     </div>
   );

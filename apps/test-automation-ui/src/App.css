@@ -39,7 +39,7 @@ body {
 
 .content-wrapper {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  /* margin-left: var(--sidebar-width); */
   transition: margin 0.3s ease;
   max-width: 100%;
   overflow-x: hidden;

@@ -1,11 +1,10 @@
 /* Functional Requirements Page Styling with Shared Tokens */
 .fr-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: var(--space-4);
 }
 
-/* Header */
 .fr-header {
   display: flex;
   justify-content: space-between;
