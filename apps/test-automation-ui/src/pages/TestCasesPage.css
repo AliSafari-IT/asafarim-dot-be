@@ -103,19 +103,12 @@ textarea.test-case-form-control {
   color: var(--color-foreground);
 }
 
-.test-type-label {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-}
-
 .test-type-label.steps {
-  background-color: var(--color-primary-300) !important;
+  color: var(--color-warning-500) !important;
 }
 
 .test-type-label.script {
-  background-color: var(--color-info-300) !important;
+  color: var(--color-accent-500) !important;
 }
 
 /* Tabs */
@@ -191,7 +184,15 @@ textarea.test-case-form-control {
 
 .status-inactive {
   background-color: var(--color-error-100);
-  color: var(--color-error-800);
+  color: var(--color-error-600);
+}
+
+.test-cases-status-passed {
+  color: var(--color-success-500);
+}
+
+.test-cases-status-failed {
+  color: var(--color-error-500);
 }
 
 /* Empty State */

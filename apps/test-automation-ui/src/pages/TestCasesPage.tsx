@@ -5,8 +5,9 @@ import { ColumnDefinition } from '../components/GenericTable';
 import { FormFieldDefinition } from '../components/GenericForm';
 import { api } from '../config/api';
 import StepsEditor from './StepsEditor';
-import { Badge, CheckCircleIcon, FolderDot, StepBackIcon, TestTubeDiagonal, XCircleIcon } from 'lucide-react';
-import { DiScriptcs } from 'react-icons/di';
+import { CheckCircleIcon, XCircleIcon } from 'lucide-react';
+import { truncateAtWord } from '@asafarim/helpers';
+import "./TestCasesPage.css";
 
 interface TestCase {
   id: string;
@@ -37,6 +38,7 @@ interface TestCase {
   updatedAt: string;
   createdById?: string;
   updatedById?: string;
+  passed: boolean;
 }
 
 export interface TestStep {
@@ -80,15 +82,24 @@ export default function TestCasesPage() {
     {
       header: 'Name',
       field: 'name',
-      width: '20%',
+      width: '30%',
+      inListView: true,
       sortable: true,
+    },
+        {
+      header: "Description",
+      field: "description",
+      render: (item) => truncateAtWord(item.description, 105),
+      width: "25%",
+      sortable: false,
     },
     {
       header: 'Test Suite',
       field: 'testSuiteId',
       sortAccessor: (item) => getSuiteName(item?.testSuiteId ?? ""),
       render: (item) => getSuiteName(item.testSuiteId) || 'Unknown',
-      width: '15%',
+      width: '30%',
+      inListView: true,
       sortable: true,
     },
     {
@@ -101,6 +112,21 @@ export default function TestCasesPage() {
           {item.testType}
         </span>
       ),
+      sortable: true,
+    },
+    {
+      header: 'Passed',
+      field: 'passed',
+      sortAccessor: (item) => item.passed,
+ render: (item) => (
+        <span className={`status-badge ${item.passed ? 'test-cases-status-passed' : 'test-cases-status-failed'}`}
+        data-testid="test-case-status"
+        title={item.passed ? 'Passed' : 'Failed'}
+        >
+          {item.passed ? <CheckCircleIcon /> : <XCircleIcon />}
+        </span>
+      ),      width: '15%',
+      inListView: true,
       sortable: true,
     },
     {
@@ -394,6 +420,7 @@ export default function TestCasesPage() {
         updatedAt: '',
         createdById: '',
         updatedById: '',
+        passed: false,
       })}
       preparePayload={preparePayload}
       onItemLoaded={onItemLoaded}

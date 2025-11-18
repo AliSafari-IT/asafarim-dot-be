@@ -11,6 +11,7 @@ export interface TestSuite {
   generatedFilePath?: string;
   createdAt: string;
   updatedAt: string;
+  passed?: boolean;
 }
 
 export interface TestRun {
@@ -46,6 +47,7 @@ export interface TestCase {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  passed?: boolean;
 }
 
 export interface TestRunResultAttachment {

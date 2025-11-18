@@ -14,6 +14,7 @@
     "@asafarim/react-themes": "workspace:*",
     "@asafarim/shared-i18n": "workspace:*",
     "@asafarim/shared-ui-react": "workspace:*",
+    "@asafarim/helpers": "workspace:*",
     "@asafarim/toast": "1.2.0",
     "@emotion/styled": "^11.14.1",
     "@microsoft/signalr": "^8.0.7",

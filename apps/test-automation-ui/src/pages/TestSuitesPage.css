@@ -196,11 +196,19 @@
 }
 
 .test-suites-status-active {
-  color: var(--color-success);
+  color: var(--color-success) !important;
 }
 
 .test-suites-status-inactive {
-  color: var(--color-error);
+  color: var(--color-error-500) !important;
+}
+
+.test-suites-status-passed {
+  color: var(--color-success) !important;
+}
+
+.test-suites-status-failed {
+  color: var(--color-error-500) !important;
 }
 
 /* Responsive */

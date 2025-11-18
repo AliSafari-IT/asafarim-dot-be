@@ -11,12 +11,13 @@ type SortableValue = string | number | boolean | Date | null | undefined;
 export interface ColumnDefinition<T> {
   header: string;
   field?: keyof T;
-  render?: (item: T) => React.ReactNode;
+  render?: (item: T, key?: keyof T) => React.ReactNode;
   align?: 'left' | 'center' | 'right';
   width?: string;
   dataTestId?: string;
   sortable?: boolean;
   sortField?: keyof T;
+  inListView?: boolean;
   sortAccessor?: (item: T) => SortableValue;
 }
 

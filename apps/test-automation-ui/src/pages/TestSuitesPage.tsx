@@ -7,13 +7,15 @@ import { TestCafeFileViewer } from "../components/TestCafeFileViewer";
 import { api } from "../config/api";
 import { useToast } from "@asafarim/toast";
 import { useNavigate } from "react-router-dom";
-import { EyeIcon, Play, View, ViewIcon } from "lucide-react";
+import { EyeIcon, Play } from "lucide-react";
 import {
   getFunctionalRequirementId,
   type TestSuite,
 } from "../services/entitiesService";
-import { ButtonComponent } from "@asafarim/shared-ui-react";
+import { ButtonComponent, isProduction } from "@asafarim/shared-ui-react";
 import { useAuth } from "@asafarim/shared-ui-react";
+import { truncateAtWord } from "@asafarim/helpers";
+import "./TestSuitesPage.css";
 
 interface Fixture {
   id: string;
@@ -35,8 +37,9 @@ export default function TestSuitesPage() {
   const [fixtureRemarks, setFixtureRemarks] = useState<Record<string, string>>(
     {}
   );
-  const [testCasesCache, setTestCasesCache] =
-    useState<Record<string, RelatedTestCase[]>>({});
+  const [testCasesCache, setTestCasesCache] = useState<
+    Record<string, RelatedTestCase[]>
+  >({});
   const [viewingTestCafe, setViewingTestCafe] = useState<{
     id: string;
     name: string;
@@ -95,7 +98,7 @@ export default function TestSuitesPage() {
       const frId = await getFunctionalRequirementId(testSuite.fixtureId);
       const response = await api.post("/api/test-execution/run", {
         runName: `${testSuite.name} - ${new Date().toLocaleString()}`,
-        environment: "Development",
+        environment: isProduction ? "Production" : "Development",
         browser: "chrome",
         testSuiteIds: [testSuite.id],
         functionalRequirementId: frId,
@@ -197,11 +200,11 @@ export default function TestSuitesPage() {
                 <td>{testCase.name}</td>
                 <td>{testCase.description || "-"}</td>
                 <td>{testCase.testType || "-"}</td>
-                <td>{
-                  typeof testCase.executionOrder === "number"
+                <td>
+                  {typeof testCase.executionOrder === "number"
                     ? testCase.executionOrder
-                    : "-"
-                }</td>
+                    : "-"}
+                </td>
                 <td>
                   <span
                     className={`status-badge ${
@@ -225,14 +228,16 @@ export default function TestSuitesPage() {
       header: "Name",
       field: "name",
       sortable: true,
-      width: "15%",
+      width: "25%",
+      inListView: true,
     },
-        {
+    {
       header: "Description",
       field: "description",
-      render: (item) => item.description || "-",
+      render: (item) => truncateAtWord(item.description, 105),
       width: "50%",
       sortable: false,
+      inListView: false,
     },
     {
       header: "Fixture",
@@ -255,9 +260,9 @@ export default function TestSuitesPage() {
           </div>
         );
       },
-      width: "15%",
+      width: "20%",
+      inListView: true,
     },
-
     {
       header: "Execution Order",
       align: "center",
@@ -279,6 +284,32 @@ export default function TestSuitesPage() {
         </span>
       ),
       width: "7.5%",
+    },
+    {
+      header: "Passed",
+      align: "center",
+      inListView: true,
+      render: (item) => (
+        <span
+          className={`test-suites-status ${
+            item.passed
+              ? "test-suites-status-passed"
+              : "test-suites-status-failed"
+          }`}
+        >
+          {item.passed ? "✓" : "✗"}
+        </span>
+      ),
+      width: "10%",
+    },
+    {
+      header: "Updated At",
+      field: "updatedAt",
+      sortable: true,
+      render: (item) =>
+        item.updatedAt && new Date(item.updatedAt).toLocaleString(),
+      inListView: true,
+      width: "20%",
     }
   ];
 
@@ -318,18 +349,17 @@ export default function TestSuitesPage() {
     },
     {
       name: "generatedFilePath",
-      label : "TestSuite file path",
+      label: "TestSuite file path",
       type: "text",
-      readonly: true
-
+      readonly: true,
     },
     {
       name: "generatedTestCafeFile",
       label: "Generated TestSuite",
       type: "textarea",
       rows: 10,
-      readonly: true
-    }
+      readonly: true,
+    },
   ];
 
   return (
@@ -349,23 +379,31 @@ export default function TestSuitesPage() {
           isActive: true,
           createdAt: "",
           updatedAt: "",
-        })
-      }
-      customActions={(item) => ( 
-        <>
-          <button
-            className="button button-primary"
-            onClick={() => handleRunTestSuite(item)}
-            title={isAuthenticated ? "Run Test Suite" : "You must be authenticated to run test suites."}
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            disabled={!isAuthenticated}
-            data-testid="run-test-suite-button"
-          >
-            <Play size={16} />
-            Tests
-          </button>
-          <ButtonComponent variant="ghost" onClick={() => setViewingTestCafe({id: item.id, name: item.name})}>
-            <EyeIcon size={20} />
+        })}
+        customActions={(item) => (
+          <>
+            <button
+              className="button button-primary"
+              onClick={() => handleRunTestSuite(item)}
+              title={
+                isAuthenticated
+                  ? "Run Test Suite"
+                  : "You must be authenticated to run test suites."
+              }
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+              disabled={!isAuthenticated}
+              data-testid="run-test-suite-button"
+            >
+              <Play size={16} />
+              Tests
+            </button>
+            <ButtonComponent
+              variant="ghost"
+              onClick={() =>
+                setViewingTestCafe({ id: item.id, name: item.name })
+              }
+            >
+              <EyeIcon size={20} />
             </ButtonComponent>
           </>
         )}

@@ -4,8 +4,11 @@ import React from "react";
 import { api } from "../config/api";
 import { GenericTable, ColumnDefinition } from "../components/GenericTable";
 import { GenericForm, FormFieldDefinition } from "../components/GenericForm";
+import { GenericListView, ListViewColumn } from "../components/GenericListView";
 import { useAuth } from "@asafarim/shared-ui-react";
 import { useToast } from "@asafarim/toast";
+import { List, Grid3x3 } from "lucide-react";
+import { TbGrid4X4 } from "react-icons/tb";
 
 interface GenericCrudPageProps<T> {
   title: string;
@@ -53,6 +56,7 @@ export function GenericCrudPage<T>({
   const [editing, setEditing] = useState<T | null>(null);
   const [creating, setCreating] = useState(false);
   const [formData, setFormData] = useState<T>(getInitialFormData());
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { isAuthenticated, loading: authLoading } = useAuth();
   const toast = useToast();
 
@@ -153,6 +157,24 @@ export function GenericCrudPage<T>({
           {title}
         </h3>
         <div className="page-actions">
+          <div className="view-toggle-buttons">
+            <button
+              className={`view-toggle-button ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              title="Grid view"
+              aria-label="Switch to grid view"
+            >
+              <TbGrid4X4 size={18} />
+            </button>
+            <button
+              className={`view-toggle-button ${viewMode === 'list' ? 'active' : ''}`}
+              onClick={() => setViewMode('list')}
+              title="List view"
+              aria-label="Switch to list view"
+            >
+              <List size={18} />
+            </button>
+          </div>
           <button
             className="button button-primary"
             onClick={() => {
@@ -185,21 +207,41 @@ export function GenericCrudPage<T>({
         />
       )}
 
-      <GenericTable
-        data={items}
-        columns={columns}
-        onEdit={startEdit}
-        onDelete={handleDelete}
-        customActions={customActions}
-        loading={loading}
-        emptyMessage={emptyMessage}
-        className={tableClassName}
-        getItemId={getItemId}
-        renderExpandedRow={renderExpandedRow}
-        expandLabel={expandLabel}
-        showActions={isAuthenticated}
-        key={title}
-      />
+      {viewMode === 'grid' ? (
+        <GenericTable
+          data={items}
+          columns={columns}
+          onEdit={startEdit}
+          onDelete={handleDelete}
+          customActions={customActions}
+          loading={loading}
+          emptyMessage={emptyMessage}
+          className={tableClassName}
+          getItemId={getItemId}
+          renderExpandedRow={renderExpandedRow}
+          expandLabel={expandLabel}
+          showActions={isAuthenticated}
+          key={title}
+        />
+      ) : (
+        <GenericListView
+          items={items}
+          columns={columns.map((col, idx) => ({
+            key: col.field ? String(col.field) : `col-${idx}`,
+            header: col.header,
+            render: col.render,
+            inListView: col.inListView,
+            width: col.width,
+            align: col.align,
+            sortable: col.sortable,
+            sortAccessor: col.sortAccessor,
+          }))}
+          isAuthenticated={isAuthenticated}
+          onView={startEdit}
+          loading={loading}
+          emptyMessage={emptyMessage}
+        />
+      )}
     </div>
   );
 }
