@@ -678,48 +678,29 @@ td[data-label="Actions"]::before {
   }
 }
 
-/* Desktop First */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-thead {
-  background: #f5f5f5;
-}
-
-th,
-td {
-  padding: 12px;
-  border-bottom: 1px solid #e5e5e5;
-  vertical-align: middle;
-}
-
 /* --- Responsive Table Layout (All Widths) --- */
 @media (max-width: 9999px) {
-  .generic-table,
-  thead,
-  tbody,
-  th,
-  tr {
+  .generic-table thead,
+  .generic-table tbody,
+  .generic-table th,
+  .generic-table tr {
     display: block;
   }
 
-  thead {
-    /* Hide table headers */
+  .generic-table thead {
     height: 0;
     overflow: hidden;
     visibility: hidden;
   }
 
-  tr {
+  .generic-table tr {
     margin-bottom: 14px;
     border-radius: 8px;
     padding: 10px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 
-  td {
+  .generic-table td {
     display: flex;
     justify-content: space-between;
     padding: 10px 16px;
@@ -728,12 +709,12 @@ td {
     position: relative;
   }
 
-  td:last-child {
+  .generic-table td:last-child {
     border-bottom: none;
   }
 
   /* Add data-label heading on left */
-  td::before {
+  .generic-table td::before {
     content: attr(data-label);
     font-weight: 600;
     text-transform: none;
@@ -744,13 +725,13 @@ td {
   }
 
   /* Cell value on the right */
-  td > * {
+  .generic-table td > * {
     flex: 1;
     text-align: right;
   }
 
   /* Actions row */
-  td[data-label="Actions"] {
+  .generic-table td[data-label="Actions"] {
     display: block !important;
     padding: 12px 16px !important;
     width: 100% !important;
@@ -760,11 +741,11 @@ td {
     background-color: rgba(0, 0, 0, 0.02) !important;
   }
 
-  td[data-label="Actions"]::before {
+  .generic-table td[data-label="Actions"]::before {
     display: none !important;
   }
 
-  td[data-label="Actions"] .actions {
+  .generic-table td[data-label="Actions"] .actions {
     display: flex;
     flex-direction: row;
     gap: var(--space-2);
@@ -773,7 +754,7 @@ td {
     flex-wrap: wrap;
   }
 
-  td[data-label="Actions"] .actions .button {
+  .generic-table td[data-label="Actions"] .actions .button {
     justify-content: center;
     padding: var(--space-2) var(--space-3);
     flex: 0 1 auto;
