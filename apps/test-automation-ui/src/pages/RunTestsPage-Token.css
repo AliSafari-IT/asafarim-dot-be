@@ -1,7 +1,6 @@
 /* RunTestsPage - 100% Token-Based */
 .run-tests-page-token {
   width: 100%;
-  max-width: var(--container-max-width);
   margin: 0;
   padding: var(--container-padding);
   min-height: 100vh;

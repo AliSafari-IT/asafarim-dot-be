@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, Play, Eye, Trash2, CheckCircle, XCircle, Clock, Circle } from 'lucide-react';
-import './TestSuiteCard.css';
+import React, { useState } from "react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Play,
+  Eye,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Circle,
+} from "lucide-react";
+import "./TestSuiteCard.css";
 
 export interface TestCase {
   id: string;
   name: string;
-  status: 'passed' | 'failed' | 'running' | 'pending';
+  status: "passed" | "failed" | "running" | "pending";
   duration?: number;
   lastRun?: string;
 }
@@ -48,38 +58,61 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
-  const getStatusBadge = (status: TestCase['status']) => {
+  const getStatusBadge = (status: TestCase["status"]) => {
     const badges = {
-      passed: { icon: <CheckCircle size={14} />, label: 'Passed', className: 'badge-passed' },
-      failed: { icon: <XCircle size={14} />, label: 'Failed', className: 'badge-failed' },
-      running: { icon: <Clock size={14} />, label: 'Running', className: 'badge-running' },
-      pending: { icon: <Circle size={14} />, label: 'Pending', className: 'badge-pending' },
+      passed: {
+        icon: <CheckCircle size={14} />,
+        label: "Passed",
+        className: "badge-passed",
+      },
+      failed: {
+        icon: <XCircle size={14} />,
+        label: "Failed",
+        className: "badge-failed",
+      },
+      running: {
+        icon: <Clock size={14} />,
+        label: "Running",
+        className: "badge-running",
+      },
+      pending: {
+        icon: <Circle size={14} />,
+        label: "Pending",
+        className: "badge-pending",
+      },
     };
     return badges[status];
   };
 
-  const getOverallStatus = (): TestCase['status'] => {
-    if (suite.runningTests > 0) return 'running';
-    if (suite.failedTests > 0) return 'failed';
+  const getOverallStatus = (): TestCase["status"] => {
+    if (suite.runningTests > 0) return "running";
+    if (suite.failedTests > 0) return "failed";
     // Check if all tests have completed (passed + failed + skipped = total)
-    const totalCompleted = suite.passedTests + suite.failedTests + suite.pendingTests;
+    const totalCompleted =
+      suite.passedTests + suite.failedTests + suite.pendingTests;
     if (totalCompleted === suite.totalTests && suite.totalTests > 0) {
       // All tests completed - show passed if no failures
-      return suite.failedTests === 0 ? 'passed' : 'failed';
+      return suite.failedTests === 0 ? "passed" : "failed";
     }
-    return 'pending';
+    return "pending";
   };
 
   const overallStatus = getOverallStatus();
   const statusBadge = getStatusBadge(overallStatus);
 
   return (
-    <div className={`test-suite-card ${isSelected ? 'selected' : ''}`} data-testid={`suite-card-${suite.id}`}>
+    <div
+      className={`test-suite-card ${isSelected ? "selected" : ""}`}
+      data-testid={`suite-card-${suite.id}`}
+    >
       {/* Card Header */}
       <div className="suite-card-header">
         <div className="suite-header-left">
           {onToggleSelection && (
-            <label className="suite-checkbox" onClick={(e) => e.stopPropagation()}>
+            <label
+              className="suite-checkbox"
+              onClick={(e) => e.stopPropagation()}
+            >
               <input
                 type="checkbox"
                 checked={isSelected}
@@ -91,14 +124,22 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
           <button
             className="expand-button"
             onClick={() => setIsExpanded(!isExpanded)}
-            aria-label={isExpanded ? 'Collapse test cases' : 'Expand test cases'}
+            aria-label={
+              isExpanded ? "Collapse test cases" : "Expand test cases"
+            }
             data-testid={`expand-suite-${suite.id}`}
           >
-            {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+            {isExpanded ? (
+              <ChevronDown size={20} />
+            ) : (
+              <ChevronRight size={20} />
+            )}
           </button>
           <div className="suite-info">
             <h3 className="suite-name">{suite.name}</h3>
-            {suite.description && <p className="suite-description">{suite.description}</p>}
+            {suite.description && (
+              <p className="suite-description">{suite.description}</p>
+            )}
             {suite.fixture && (
               <span className="suite-fixture">
                 <span className="fixture-label">Fixture:</span> {suite.fixture}
@@ -148,7 +189,7 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
           className="button button-primary"
           onClick={() => onRunSuite(suite.id)}
           disabled={!isAuthenticated}
-          title={isAuthenticated ? 'Run test suite' : 'Authentication required'}
+          title={isAuthenticated ? "Run test suite" : "Authentication required"}
           data-testid={`run-suite-${suite.id}`}
         >
           <Play size={16} />
@@ -166,7 +207,9 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
           className="button button-danger"
           onClick={() => onDelete(suite.id)}
           disabled={!isAuthenticated}
-          title={isAuthenticated ? 'Delete test suite' : 'Authentication required'}
+          title={
+            isAuthenticated ? "Delete test suite" : "Authentication required"
+          }
           data-testid={`delete-suite-${suite.id}`}
         >
           <Trash2 size={16} />
@@ -175,7 +218,10 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
 
       {/* Expandable Test Cases */}
       {isExpanded && (
-        <div className="test-cases-container" data-testid={`test-cases-${suite.id}`}>
+        <div
+          className="test-cases-container"
+          data-testid={`test-cases-${suite.id}`}
+        >
           <div className="test-cases-header">
             <h4>Test Cases ({suite.testCases.length})</h4>
           </div>
@@ -197,15 +243,20 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
                       <span className="test-case-name">{testCase.name}</span>
                       {testCase.lastRun && (
                         <span className="test-case-meta">
-                          Last run: {new Date(testCase.lastRun).toLocaleString()}
+                          Last run:{" "}
+                          {new Date(testCase.lastRun).toLocaleString()}
                         </span>
                       )}
                     </div>
                     <div className="test-case-right">
                       {testCase.duration && (
-                        <span className="test-case-duration">{testCase.duration}ms</span>
+                        <span className="test-case-duration">
+                          {testCase.duration}ms
+                        </span>
                       )}
-                      <div className={`status-badge status-badge-sm ${caseBadge.className}`}>
+                      <div
+                        className={`status-badge status-badge-sm ${caseBadge.className}`}
+                      >
                         {caseBadge.icon}
                         <span>{caseBadge.label}</span>
                       </div>

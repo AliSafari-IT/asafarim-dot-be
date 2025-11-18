@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TestSuitesGridToken } from '../components/TestSuitesGrid-Token';
-import { TestSuite } from '../components/TestSuiteCard-Token';
+import { TestCase, TestSuite } from '../components/TestSuiteCard-Token';
 import { useAuth } from '@asafarim/shared-ui-react';
 import { useToast } from '@asafarim/toast';
 import { Play } from 'lucide-react';
@@ -14,12 +14,25 @@ interface ApiTestSuite {
   fixtureId?: string;
   executionOrder?: number;
   isActive?: boolean;
+  passed?: boolean | null; // Last run result
+  updatedAt: any;
 }
 
 interface ApiTestCase {
   id: string;
   name: string;
   testSuiteId: string;
+  passed?: boolean | null; // Last run result
+  updatedAt: any;
+}
+
+interface TestResult {
+  id: string;
+  testCaseId: string;
+  testSuiteId: string;
+  testCaseName?: string;
+  status: "Passed" | "Failed" | "Skipped" | "Error";
+  updatedAt?: any; // Last run timestamp
 }
 
 interface ApiFixture {
@@ -28,8 +41,11 @@ interface ApiFixture {
 }
 
 export const RunTestsPageToken: React.FC = () => {
-  const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
+const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSuites, setSelectedSuites] = useState<string[]>([]);
+  const [runningTestIds, setRunningTestIds] = useState<Set<string>>(new Set());
+  const [lastRunId, setLastRunId] = useState<string | null>(null);
   const { isAuthenticated } = useAuth();
   const toast = useToast();
 
@@ -37,101 +53,279 @@ export const RunTestsPageToken: React.FC = () => {
     loadTestSuites();
   }, []);
 
+  // Auto-refresh test results every 2 seconds if any tests are running
+  useEffect(() => {
+    if (runningTestIds.size === 0) return;
+
+    const interval = setInterval(() => {
+      refreshTestResults();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [runningTestIds]);
+
   const loadTestSuites = async () => {
     try {
       setLoading(true);
-      
-      const [suitesResponse, testCasesResponse, fixturesResponse] = await Promise.all([
-        api.get('/api/test-suites'),
-        api.get('/api/test-cases'),
-        api.get('/api/fixtures'),
-      ]);
+
+      // Fetch test suites, test cases, and fixtures in parallel
+      const [suitesResponse, testCasesResponse, fixturesResponse] =
+        await Promise.all([
+          api.get("/api/test-suites"),
+          api.get("/api/test-cases"),
+          api.get("/api/fixtures"),
+        ]);
 
       const apiSuites: ApiTestSuite[] = suitesResponse.data || [];
       const apiTestCases: ApiTestCase[] = testCasesResponse.data || [];
       const apiFixtures: ApiFixture[] = fixturesResponse.data || [];
 
-      const fixtureMap = new Map(apiFixtures.map(f => [f.id, f.name]));
+      // Create fixture lookup map
+      const fixtureMap = new Map(apiFixtures.map((f) => [f.id, f.name]));
 
-      const transformedSuites: TestSuite[] = apiSuites.map(suite => {
-        const suiteCases = apiTestCases.filter(tc => tc.testSuiteId === suite.id);
-        
+      // Transform API data to component format
+      const transformedSuites: TestSuite[] = apiSuites.map((suite) => {
+        const suiteCases = apiTestCases.filter(
+          (tc) => tc.testSuiteId === suite.id
+        );
+
+        // Calculate stats from Passed property
+        const passedTests = suiteCases.filter((tc) => tc.passed === true).length;
+        const failedTests = suiteCases.filter((tc) => tc.passed === false).length;
+        const pendingTests = suiteCases.filter((tc) => tc.passed === null || tc.passed === undefined).length;
+
         return {
           id: suite.id,
           name: suite.name,
           description: suite.description,
-          fixture: suite.fixtureId ? fixtureMap.get(suite.fixtureId) : undefined,
-          testCases: suiteCases.map(tc => ({
-            id: tc.id,
-            name: tc.name,
-            status: 'pending' as const,
-          })),
+          fixture: suite.fixtureId
+            ? fixtureMap.get(suite.fixtureId)
+            : undefined,
+          testCases: suiteCases.map((tc) => {
+            // Map Passed property to status
+            let status: TestCase['status'] = 'pending';
+            if (tc.passed === true) status = 'passed';
+            else if (tc.passed === false) status = 'failed';
+
+            
+            return {
+              id: tc.id,
+              name: tc.name,
+              status,
+              updatedAt: tc.updatedAt,
+            };
+          }),
           totalTests: suiteCases.length,
-          passedTests: 0,
-          failedTests: 0,
+          passedTests,
+          failedTests,
           runningTests: 0,
-          pendingTests: suiteCases.length,
+          pendingTests,
           executionOrder: suite.executionOrder,
           isActive: suite.isActive,
+          updatedAt: suite.updatedAt,
         };
       });
 
       setTestSuites(transformedSuites);
     } catch (error) {
-      console.error('Failed to load test suites:', error);
-      toast.error('Failed to load test suites');
+      console.error("Failed to load test suites:", error);
+      toast.error("Failed to load test suites");
     } finally {
       setLoading(false);
     }
   };
 
+  const refreshTestResults = async () => {
+    try {
+      // Reload test suites and test cases to get updated Passed properties
+      const [suitesResponse, testCasesResponse, fixturesResponse] =
+        await Promise.all([
+          api.get("/api/test-suites"),
+          api.get("/api/test-cases"),
+          api.get("/api/fixtures"),
+        ]);
+
+      const apiSuites: ApiTestSuite[] = suitesResponse.data || [];
+      const apiTestCases: ApiTestCase[] = testCasesResponse.data || [];
+      const apiFixtures: ApiFixture[] = fixturesResponse.data || [];
+
+      const fixtureMap = new Map(apiFixtures.map((f) => [f.id, f.name]));
+
+      // Transform API data with updated Passed properties
+      const transformedSuites: TestSuite[] = apiSuites.map((suite) => {
+        const suiteCases = apiTestCases.filter(
+          (tc) => tc.testSuiteId === suite.id
+        );
+
+        // Calculate stats from Passed property
+        const passedTests = suiteCases.filter((tc) => tc.passed === true).length;
+        const failedTests = suiteCases.filter((tc) => tc.passed === false).length;
+        const pendingTests = suiteCases.filter((tc) => tc.passed === null || tc.passed === undefined).length;
+
+        return {
+          id: suite.id,
+          name: suite.name,
+          description: suite.description,
+          fixture: suite.fixtureId
+            ? fixtureMap.get(suite.fixtureId)
+            : undefined,
+          testCases: suiteCases.map((tc) => {
+            // Map Passed property to status
+            let status: TestCase['status'] = 'pending';
+            if (tc.passed === true) status = 'passed';
+            else if (tc.passed === false) status = 'failed';
+            
+            return {
+              id: tc.id,
+              name: tc.name,
+              status,
+              updatedAt: tc.updatedAt,
+            };
+          }),
+          totalTests: suiteCases.length,
+          passedTests,
+          failedTests,
+          runningTests: 0,
+          pendingTests,
+          executionOrder: suite.executionOrder,
+          isActive: suite.isActive,
+          updatedAt: suite.updatedAt,
+        };
+      });
+
+      setTestSuites(transformedSuites);
+
+      // Check if all running tests are done
+      const allDone = Array.from(runningTestIds).every((suiteId) => {
+        const suite = transformedSuites.find((s) => s.id === suiteId);
+        return suite && suite.runningTests === 0 && suite.pendingTests === 0;
+      });
+
+      if (allDone && runningTestIds.size > 0) {
+        setRunningTestIds(new Set());
+      }
+    } catch (error) {
+      console.error("Failed to refresh test results:", error);
+    }
+  };
+
   const handleRunSuite = async (suiteId: string) => {
     if (!isAuthenticated) {
-      toast.error('You must be authenticated to run test suites');
+      toast.error("You must be authenticated to run test suites");
       return;
     }
+
     try {
       toast.info(`Starting test suite...`);
-      
-      const response = await api.post('/api/test-execution/run', {
+
+      // Start test execution using the same API as TestRunPage
+      const response = await api.post("/api/test-execution/run", {
         runName: `Test Suite Run - ${new Date().toLocaleString()}`,
-        environment: 'Development',
-        browser: 'chrome',
+        environment: "Development",
+        browser: "chrome",
         testSuiteIds: [suiteId],
       });
 
       const runId = response.data.id;
-      
+
+      // Store run ID and add to running tests set for auto-refresh
+      setLastRunId(runId);
+      setRunningTestIds((prev) => new Set([...prev, suiteId]));
+
+      // Update suite status to running
       setTestSuites((prev) =>
         prev.map((suite) =>
-          suite.id === suiteId ? { ...suite, runningTests: suite.totalTests, passedTests: 0, failedTests: 0, pendingTests: 0 } : suite
+          suite.id === suiteId
+            ? {
+                ...suite,
+                runningTests: suite.totalTests,
+                passedTests: 0,
+                failedTests: 0,
+                pendingTests: 0,
+              }
+            : suite
         )
       );
+
       toast.success(`Test suite started (Run ID: ${runId})`);
     } catch (error: any) {
-      console.error('Failed to run test suite:', error);
-      const errorMsg = error.response?.data?.message || error.message || 'Failed to start test suite';
+      console.error("Failed to run test suite:", error);
+      const errorMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to start test suite";
       toast.error(errorMsg);
     }
   };
 
   const handleViewLogs = (suiteId: string) => {
-    window.location.href = '/test-runs';
+    // Navigate to test runs page to view logs
+    window.location.href = "/test-runs";
   };
 
   const handleDelete = async (suiteId: string) => {
     if (!isAuthenticated) {
-      toast.error('You must be authenticated to delete test suites');
+      toast.error("You must be authenticated to delete test suites");
       return;
     }
-    if (!window.confirm('Are you sure you want to delete this test suite?')) return;
+
+    if (!window.confirm("Are you sure you want to delete this test suite?")) {
+      return;
+    }
+
     try {
       await api.delete(`/api/test-suites/${suiteId}`);
       setTestSuites((prev) => prev.filter((suite) => suite.id !== suiteId));
-      toast.success('Test suite deleted successfully');
+      toast.success("Test suite deleted successfully");
     } catch (error: any) {
-      console.error('Failed to delete test suite:', error);
-      const errorMsg = error.response?.data?.message || error.message || 'Failed to delete test suite';
+      console.error("Failed to delete test suite:", error);
+      const errorMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to delete test suite";
+      toast.error(errorMsg);
+    }
+  };
+
+  const handleRunSelected = async () => {
+    if (selectedSuites.length === 0) {
+      toast.warning("Please select at least one test suite");
+      return;
+    }
+
+    if (!isAuthenticated) {
+      toast.error("You must be authenticated to run test suites");
+      return;
+    }
+
+    try {
+      toast.info(`Starting ${selectedSuites.length} test suite(s)...`);
+
+      const response = await api.post("/api/test-execution/run", {
+        runName: `Bulk Run - ${new Date().toLocaleString()}`,
+        environment: "Development",
+        browser: "chrome",
+        testSuiteIds: selectedSuites,
+      });
+
+      const runId = response.data.id;
+
+      // Store run ID and add all selected suites to running set
+      setLastRunId(runId);
+      setRunningTestIds((prev) => new Set([...prev, ...selectedSuites]));
+
+      toast.success(`Test run started (Run ID: ${runId})`);
+
+      // Wait a moment for results to start coming in, then navigate
+      setTimeout(() => {
+        window.location.href = "/test-runs";
+      }, 2000);
+    } catch (error: any) {
+      console.error("Failed to start test run:", error);
+      const errorMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to start test run";
       toast.error(errorMsg);
     }
   };
@@ -161,17 +355,23 @@ export const RunTestsPageToken: React.FC = () => {
             title={!isAuthenticated ? 'Authentication required' : 'Run all test suites'}
           >
             <Play size={20} />
-            <span>Run All</span>
+            <span>Start Run All</span>
           </button>
         </div>
       </div>
-      <TestSuitesGridToken
-        suites={testSuites}
-        onRunSuite={handleRunSuite}
-        onViewLogs={handleViewLogs}
-        onDelete={handleDelete}
-        isAuthenticated={isAuthenticated}
-      />
+      <div className="run-tests-page-token__content">
+        <TestSuitesGridToken
+          suites={testSuites}
+          onRunSuite={handleRunSuite}
+          onViewLogs={handleViewLogs}
+          onDelete={handleDelete}
+          isAuthenticated={isAuthenticated}
+          selectedSuites={selectedSuites}
+          onSelectionChange={setSelectedSuites}
+          showFilter={true}
+          showSort={true}
+        />
+      </div>
     </div>
   );
 };
