@@ -1,9 +1,7 @@
 // App.tsx
-import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 //import { isProduction, useAuth, ThemeProvider } from '@asafarim/shared-ui-react';
 import Dashboard from "./pages/Dashboard";
-import TestRunPage from "./pages/TestRunPage";
 import { TestRunsPage } from "./pages/TestRunsPage";
 import { TestRunDetailsPage } from "./pages/TestRunDetailsPage";
 import FunctionalRequirementsPage from "./pages/FunctionalRequirementsPage";
