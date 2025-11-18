@@ -1,3 +1,4 @@
+// apps/test-automation-ui/src/components/GenericTable.tsx
 import React, { useState, useMemo } from 'react';
 import './GenericTable.css';
 import { useAuth } from '@asafarim/shared-ui-react';
@@ -172,7 +173,7 @@ export function GenericTable<T>({
 
   return (
     <div className="table-container" data-testid="table-container">
-      <table className={className} data-testid="generic-table">
+      <table id="generic-table" className={className + ' generic-table'} data-testid="generic-table">
         <thead>
           <tr data-testid="table-header-row">
             {columns.map((column, index) => {
@@ -221,12 +222,13 @@ export function GenericTable<T>({
                         textAlign: column.align || 'left',
                       }}
                       data-testid={`table-cell-${itemId}-${index}`}
+                      data-label={column.header}
                     >
                       {renderCell(item, column)}
                     </td>
                   ))}
                   {showActions && onEdit && onDelete && (
-                    <td style={{ textAlign: 'right' }} data-testid={`table-actions-${itemId}`}>
+                    <td style={{ textAlign: 'right' }} data-testid={`table-actions-${itemId}`} data-label="Actions">
                       <div className="actions">
                         {renderExpandedRow && (
                           <button
@@ -264,7 +266,7 @@ export function GenericTable<T>({
                   )}
                   {
                     !showActions && (
-                      <td style={{ textAlign: 'right' }} data-testid={`table-actions-${itemId}`}>
+                      <td style={{ textAlign: 'right' }} data-testid={`table-actions-${itemId}`} data-label="Actions">
                         <div className="actions">
                           {renderExpandedRow && (
                             <button

@@ -90,6 +90,7 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
 
   /* Additional semantic colors for backward compatibility */
   --color-primary-dark: var(--color-primary-700);

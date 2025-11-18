@@ -1,3 +1,4 @@
+// apps/test-automation-ui/src/pages/GenericCrudPage.tsx - Refactored version using GenericTable and GenericForm
 import { useEffect, useState } from "react";
 import React from "react";
 import { api } from "../config/api";
