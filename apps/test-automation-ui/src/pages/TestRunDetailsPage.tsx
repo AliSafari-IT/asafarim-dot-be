@@ -44,6 +44,7 @@ export function TestRunDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [executionLogs, setExecutionLogs] = useState<string[]>([]);
 
   // Fetch test run details and results
   useEffect(() => {
@@ -164,6 +165,17 @@ export function TestRunDetailsPage() {
           setTestRun((prev) =>
             prev ? { ...prev, status: data.status } : null
           );
+        });
+
+        newConnection.on("ExecutionLog", (log: string) => {
+          console.log("📝 Execution log:", log);
+          setExecutionLogs((prev) => [...prev, log]);
+        });
+
+        newConnection.on("TestUpdate", (msg: any) => {
+          const logMessage = msg.message || JSON.stringify(msg);
+          console.log("📝 Test update:", logMessage);
+          setExecutionLogs((prev) => [...prev, logMessage]);
         });
 
         setConnection(newConnection);
@@ -447,11 +459,36 @@ export function TestRunDetailsPage() {
         </div>
       </div>
 
+      {/* Execution Logs - Show while running or if no results yet */}
+      {(testRun?.status === "Running" || (filteredResults.length === 0 && executionLogs.length > 0)) && (
+        <div className="execution-logs-section" data-testid="execution-logs-section">
+          <h2>Execution Logs</h2>
+          <div className="execution-logs-container">
+            {executionLogs.length === 0 ? (
+              <div className="empty-state">Waiting for test execution...</div>
+            ) : (
+              <div className="execution-logs-terminal">
+                {executionLogs.map((log, index) => (
+                  <div key={index} className="execution-log-line">
+                    <span className="log-timestamp">[{new Date().toLocaleTimeString()}]</span>
+                    <span className="log-message">{log}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Results Table */}
       <div className="results-section" data-testid="results-section">
         <h2>Test Results</h2>
         {filteredResults.length === 0 ? (
-          <div className="empty-state">No test results found</div>
+          <div className="empty-state">
+            {testRun?.status === "Running" 
+              ? "Tests are running... Check execution logs above for progress" 
+              : "No test results found"}
+          </div>
         ) : (
           <table className="results-table" data-testid="results-table">
             <thead>

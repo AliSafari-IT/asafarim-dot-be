@@ -47,28 +47,40 @@ public class TestRunsController : ControllerBase
     {
         var runs = await _db
             .TestRuns.Include(r => r.FunctionalRequirement)
+            .Include(r => r.TestResults)
             .OrderByDescending(r => r.StartedAt)
-            .Select(r => new
-            {
-                id = r.Id,
-                runName = r.RunName,
-                functionalRequirement = r.FunctionalRequirement != null
-                    ? r.FunctionalRequirement.Name
-                    : null,
-                environment = r.Environment,
-                browser = r.Browser,
-                status = r.Status.ToString(),
-                startedAt = r.StartedAt,
-                completedAt = r.CompletedAt,
-                totalTests = r.TotalTests,
-                passedTests = r.PassedTests,
-                failedTests = r.FailedTests,
-                skippedTests = r.SkippedTests,
-                successRate = r.TotalTests > 0 ? (double)r.PassedTests / r.TotalTests * 100 : 0,
-            })
             .ToListAsync();
 
-        return Ok(runs);
+        var result = runs.Select(r =>
+            {
+                var totalTests = r.TestResults.Count;
+                var passedTests = r.TestResults.Count(tr => tr.Status == TestStatus.Passed);
+                var failedTests = r.TestResults.Count(tr => tr.Status == TestStatus.Failed);
+                var skippedTests = r.TestResults.Count(tr => tr.Status == TestStatus.Skipped);
+                var successRate = totalTests > 0 ? (double)passedTests / totalTests * 100 : 0;
+
+                return new
+                {
+                    id = r.Id,
+                    runName = r.RunName,
+                    functionalRequirement = r.FunctionalRequirement != null
+                        ? r.FunctionalRequirement.Name
+                        : null,
+                    environment = r.Environment,
+                    browser = r.Browser,
+                    status = r.Status.ToString(),
+                    startedAt = r.StartedAt,
+                    completedAt = r.CompletedAt,
+                    totalTests,
+                    passedTests,
+                    failedTests,
+                    skippedTests,
+                    successRate,
+                };
+            })
+            .ToList();
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -81,6 +93,15 @@ public class TestRunsController : ControllerBase
 
         if (run == null)
             return NotFound();
+
+        // Calculate stats from actual test results to handle bulk runs correctly
+        var testResults = await _db.TestResults.Where(r => r.TestRunId == id).ToListAsync();
+
+        var totalTests = testResults.Count;
+        var passedTests = testResults.Count(r => r.Status == TestStatus.Passed);
+        var failedTests = testResults.Count(r => r.Status == TestStatus.Failed);
+        var skippedTests = testResults.Count(r => r.Status == TestStatus.Skipped);
+        var successRate = totalTests > 0 ? (double)passedTests / totalTests * 100 : 0;
 
         return Ok(
             new
@@ -96,13 +117,11 @@ public class TestRunsController : ControllerBase
                 completedAt = run.CompletedAt,
                 executedById = run.ExecutedById,
                 triggerType = run.TriggerType.ToString(),
-                totalTests = run.TotalTests,
-                passedTests = run.PassedTests,
-                failedTests = run.FailedTests,
-                skippedTests = run.SkippedTests,
-                successRate = run.TotalTests > 0
-                    ? (double)run.PassedTests / run.TotalTests * 100
-                    : 0,
+                totalTests = totalTests,
+                passedTests = passedTests,
+                failedTests = failedTests,
+                skippedTests = skippedTests,
+                successRate = successRate,
             }
         );
     }

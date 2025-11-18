@@ -293,6 +293,10 @@ namespace TestAutomation.Api.Data.Migrations
                     b.Property<bool>("Only")
                         .HasColumnType("boolean");
 
+                    b.Property<bool?>("Passed")
+                        .HasColumnType("boolean")
+                        .HasComment("null = never run, true = passed, false = failed");
+
                     b.Property<string>("PageUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -686,6 +690,10 @@ namespace TestAutomation.Api.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<bool?>("Passed")
+                        .HasColumnType("boolean")
+                        .HasComment("null = never run, true = all passed, false = any failed");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

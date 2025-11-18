@@ -17,6 +17,7 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import "./App.css";
 import HomePage from "./pages/HomePage";
+import { RunTestsPage } from './pages/RunTestsPage';
 
 function App() {
   const location = useLocation();
@@ -34,7 +35,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/test-runs" element={<TestRunsPage />} />
             <Route path="/test-runs/:id" element={<TestRunDetailsPage />} />
-            <Route path="/run" element={<TestRunPage />} />
+            <Route path="/run" element={<RunTestsPage />} />
+
             <Route
               path="/functional-requirements"
               element={<FunctionalRequirementsPage />}

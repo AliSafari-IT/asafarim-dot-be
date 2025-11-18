@@ -2,7 +2,7 @@
 
 ## Overview
 
-Testora UI is a modern, interactive test automation dashboard built with React, TypeScript, and TailwindCSS. It provides a comprehensive view of test automation metrics, recent runs, and analytics for TestCafe E2E testing.
+Testora UI is a modern, interactive test automation dashboard built with React and TypeScript. It provides a comprehensive view of test automation metrics, recent runs, and analytics for TestCafe E2E testing, including live execution logs and persisted test statuses.
 
 ## Features
 
@@ -14,13 +14,18 @@ Testora UI is a modern, interactive test automation dashboard built with React, 
 - ♿ **Accessibility** — WCAG compliant with proper contrast and keyboard navigation  
 - 🎨 **Modern UI** — Inspired by Datadog, Linear, and Grafana  
 - 🔄 **Real-time Updates** — Automatic data refresh and hot reload  
+- ✅ **Persisted Test Status** — Nullable `Passed` status stored on test suites and test cases to reflect the last run result  
+- 🔁 **Auto-Refreshing Runs** — `/run` page automatically polls the API while runs are active and updates suite/test case statuses  
+- 📜 **Execution Logs View** — `/test-runs/:id` details page shows real-time execution logs from the runner via SignalR  
+- 🧩 **Suite & Case-Level Status** — Aggregated status for suites plus per-test-case badges based on the latest run  
 
 ## Tech Stack
 
 - Framework: React 18 with TypeScript  
-- Styling: TailwindCSS with custom CSS  
+- Styling: CSS modules / page-level CSS using shared design tokens from `@asafarim/shared-tokens`  
 - State Management: React Hooks  
-- API Integration: Axios  
+- API Integration: Axios (`api.ts` wrapper + auth interceptors)  
+- Real-time: SignalR (test run hub)  
 - Build Tool: Vite  
 - Package Manager: pnpm  
 
@@ -28,7 +33,7 @@ Testora UI is a modern, interactive test automation dashboard built with React, 
 
 - Node.js 18+  
 - pnpm 8+  
-- TestAutomation.Api running on port 5200  
+- TestAutomation.Api running on port 5106  
 - Identity.Api running on port 5101  
 
 ## Installation
@@ -294,7 +299,9 @@ Frontend can:
 
 ---
 
-## 🚧 Frontend Implementation Needed
+## 🚧 Frontend Design Notes / Roadmap
+
+> Note: Most of the core frontend functionality is now implemented. This section serves as design notes and reference code for future enhancements.
 
 ### Priority 1: Test Run Details Page
 
@@ -634,9 +641,9 @@ curl -X POST http://localhost:5200/api/test-runs/{runId}/stop \
 
 ---
 
-**Status**: Backend 100% Complete ✅ | Frontend 40% Complete 🚧
+**Status**: Backend 100% Complete ✅ | Frontend ~75% Complete 🚧
 
-**Last Updated**: November 6, 2025
+**Last Updated**: November 18, 2025
 
 ### Environment Variables
 

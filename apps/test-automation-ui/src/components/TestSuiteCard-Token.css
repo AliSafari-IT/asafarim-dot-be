@@ -1,0 +1,380 @@
+/* TestSuiteCard - 100% Token-Based Styling */
+.suite-card-token {
+  background: var(--color-surface);
+  border: var(--global-border-width-sm) solid var(--color-neutral-200);
+  border-radius: var(--global-border-radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--global-shadow-sm);
+  transition: all var(--global-transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.suite-card-token:hover {
+  box-shadow: var(--global-shadow-md);
+  border-color: var(--color-primary-300);
+  transform: translateY(calc(var(--space-1) * -1));
+}
+
+.suite-card-token__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.suite-card-token__header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.suite-card-token__expand-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-foreground);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--global-border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--global-transition-fast);
+  flex-shrink: 0;
+}
+
+.suite-card-token__expand-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-primary);
+}
+
+.suite-card-token__expand-btn:focus-visible {
+  outline: var(--global-border-width-md) solid var(--color-primary);
+  outline-offset: var(--space-1);
+}
+
+.suite-card-token__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.suite-card-token__name {
+  font-size: var(--global-quaternary-title-size);
+  font-weight: var(--global-font-weight-bold);
+  color: var(--color-foreground);
+  margin: 0;
+  line-height: var(--line-height-tight);
+  font-family: var(--font-family-heading);
+}
+
+.suite-card-token__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: var(--line-height-normal);
+  font-family: var(--font-family-base);
+}
+
+.suite-card-token__fixture {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-base);
+}
+
+.suite-card-token__fixture-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+}
+
+.suite-card-token__header-right {
+  flex-shrink: 0;
+}
+
+.suite-card-token__status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  font-family: var(--font-family-base);
+}
+
+.suite-card-token__status-badge--sm {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-xs);
+}
+
+.suite-card-token__status-badge.badge-passed {
+  background: var(--color-success-100);
+  color: var(--color-success-800);
+}
+
+.suite-card-token__status-badge.badge-failed {
+  background: var(--color-error-100);
+  color: var(--color-error-800);
+}
+
+.suite-card-token__status-badge.badge-running {
+  background: var(--color-warning-100);
+  color: var(--color-warning-800);
+  animation: pulse-running 2s ease-in-out infinite;
+}
+
+@keyframes pulse-running {
+  0%, 100% { box-shadow: 0 0 0 0 var(--color-warning-300); }
+  50% { box-shadow: 0 0 0 var(--space-2) var(--color-warning-100); }
+}
+
+.suite-card-token__status-badge.badge-pending {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}
+
+.suite-card-token__stats {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-background);
+  border-radius: var(--global-border-radius-md);
+  border: var(--global-border-width-sm) solid var(--color-neutral-200);
+}
+
+.suite-card-token__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.suite-card-token__stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--global-font-weight-bold);
+  line-height: 1;
+  font-family: var(--font-family-heading);
+}
+
+.suite-card-token__stat-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  font-family: var(--font-family-base);
+}
+
+.suite-card-token__stat--total .suite-card-token__stat-value { color: var(--color-primary); }
+.suite-card-token__stat--passed .suite-card-token__stat-value { color: var(--color-success-700); }
+.suite-card-token__stat--failed .suite-card-token__stat-value { color: var(--color-error-700); }
+.suite-card-token__stat--running .suite-card-token__stat-value { color: var(--color-warning-700); }
+.suite-card-token__stat--pending .suite-card-token__stat-value { color: var(--color-neutral-600); }
+
+.suite-card-token__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.suite-card-token__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--global-border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  cursor: pointer;
+  transition: all var(--global-transition-fast);
+  border: var(--global-border-width-sm) solid transparent;
+  white-space: nowrap;
+  font-family: var(--font-family-base);
+}
+
+.suite-card-token__btn:focus-visible {
+  outline: var(--global-border-width-md) solid var(--color-primary);
+  outline-offset: var(--space-1);
+}
+
+.suite-card-token__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.suite-card-token__btn--primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+.suite-card-token__btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  transform: translateY(calc(var(--space-1) * -0.5));
+  box-shadow: var(--global-shadow-sm);
+}
+
+.suite-card-token__btn--secondary {
+  background: transparent;
+  color: var(--color-foreground);
+  border-color: var(--color-neutral-300);
+}
+
+.suite-card-token__btn--secondary:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary);
+}
+
+.suite-card-token__btn--danger {
+  background: transparent;
+  color: var(--color-error-700);
+  border-color: var(--color-neutral-300);
+  padding: var(--space-3);
+}
+
+.suite-card-token__btn--danger:hover:not(:disabled) {
+  background: var(--color-error-100);
+  border-color: var(--color-error-300);
+  color: var(--color-error-800);
+}
+
+.suite-card-token__test-cases {
+  border-top: var(--global-border-width-sm) solid var(--color-neutral-200);
+  padding-top: var(--space-5);
+  animation: slideDown var(--global-transition-fast);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(calc(var(--space-2) * -1)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.suite-card-token__test-cases-header {
+  margin-bottom: var(--space-4);
+}
+
+.suite-card-token__test-cases-header h4 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+  margin: 0;
+  font-family: var(--font-family-heading);
+}
+
+.suite-card-token__test-cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.suite-card-token__test-case {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--global-border-width-sm) solid var(--color-neutral-200);
+  border-radius: var(--global-border-radius-md);
+  transition: all var(--global-transition-fast);
+}
+
+.suite-card-token__test-case--even {
+  background: var(--color-background);
+}
+
+.suite-card-token__test-case--odd {
+  background: var(--color-neutral-50);
+}
+
+.suite-card-token__test-case:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-200);
+}
+
+.suite-card-token__test-case-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.suite-card-token__test-case-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family-base);
+}
+
+.suite-card-token__test-case-meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-base);
+}
+
+.suite-card-token__test-case-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.suite-card-token__test-case-duration {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+.suite-card-token__empty-state {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-background);
+  border-radius: var(--global-border-radius-md);
+  border: var(--global-border-width-sm) dashed var(--color-neutral-300);
+}
+
+.suite-card-token__empty-state p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-base);
+}
+
+@media (max-width: 768px) {
+  .suite-card-token { padding: var(--space-4); }
+  .suite-card-token__header { flex-direction: column; gap: var(--space-3); }
+  .suite-card-token__header-right { width: 100%; }
+  .suite-card-token__status-badge { width: 100%; justify-content: center; }
+  .suite-card-token__stats { gap: var(--space-2); padding: var(--space-3); }
+  .suite-card-token__stat-value { font-size: var(--font-size-xl); }
+  .suite-card-token__actions { flex-direction: column; }
+  .suite-card-token__btn { width: 100%; }
+  .suite-card-token__test-case { flex-direction: column; align-items: flex-start; }
+  .suite-card-token__test-case-right { width: 100%; justify-content: space-between; }
+}
+
+@media (max-width: 480px) {
+  .suite-card-token__stats { flex-wrap: wrap; }
+  .suite-card-token__stat { min-width: calc(50% - var(--space-2)); }
+  .suite-card-token__name { font-size: var(--font-size-lg); }
+  .suite-card-token__test-case-name { white-space: normal; word-break: break-word; }
+}

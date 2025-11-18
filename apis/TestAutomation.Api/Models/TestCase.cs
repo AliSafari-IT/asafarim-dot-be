@@ -41,6 +41,9 @@ public class TestCase
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+    // Last run result
+    public bool? Passed { get; set; } // null = never run, true = passed, false = failed
+
     // Navigation properties
     public virtual TestSuite TestSuite { get; set; } = null!;
     public virtual ICollection<TestDataSet> TestDataSets { get; set; } = new List<TestDataSet>();

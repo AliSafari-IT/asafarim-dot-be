@@ -579,6 +579,36 @@ public class TestExecutionService : ITestExecutionService
 
         testRun.TotalTests = testRun.PassedTests + testRun.FailedTests + testRun.SkippedTests;
 
+        // Update TestCase Passed status
+        if (testResult.TestCaseId.HasValue)
+        {
+            var testCase = await _db.TestCases.FindAsync(testResult.TestCaseId.Value);
+            if (testCase != null)
+            {
+                testCase.Passed = testResult.Status == TestStatus.Passed;
+                testCase.UpdatedAt = DateTime.UtcNow;
+                _db.TestCases.Update(testCase);
+            }
+        }
+
+        // Update TestSuite Passed status (true only if all tests passed)
+        if (testResult.TestSuiteId.HasValue)
+        {
+            var testSuite = await _db.TestSuites.FindAsync(testResult.TestSuiteId.Value);
+            if (testSuite != null)
+            {
+                // Check if any test in this suite has failed
+                var suiteResults = await _db
+                    .TestResults.Where(r => r.TestSuiteId == testResult.TestSuiteId.Value)
+                    .ToListAsync();
+
+                var hasFailed = suiteResults.Any(r => r.Status == TestStatus.Failed);
+                testSuite.Passed = !hasFailed && suiteResults.Count > 0;
+                testSuite.UpdatedAt = DateTime.UtcNow;
+                _db.TestSuites.Update(testSuite);
+            }
+        }
+
         // Save changes
         await _db.SaveChangesAsync();
 
