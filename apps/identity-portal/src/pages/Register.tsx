@@ -16,9 +16,11 @@ export const Register = () => {
   }, [isAuthenticated, navigate, loading]);
 
   return (
-    <AuthLayout>
-      <RegisterHero />
-    </AuthLayout>
+    <div data-testid="register-page">
+      <AuthLayout>
+        <RegisterHero />
+      </AuthLayout>
+    </div>
   );
 };
 

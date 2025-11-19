@@ -29,6 +29,9 @@ interface GenericCrudPageProps<T> {
   createFormTitle?: string;
   renderExpandedRow?: (item: T) => React.ReactNode;
   expandLabel?: string;
+  editSuiteId?: string | null;
+  focusField?: string | null;
+  onEditComplete?: () => void;
 }
 
 export function GenericCrudPage<T>({
@@ -50,6 +53,9 @@ export function GenericCrudPage<T>({
   createFormTitle = "Create Item",
   renderExpandedRow,
   expandLabel,
+  editSuiteId,
+  focusField,
+  onEditComplete,
 }: GenericCrudPageProps<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +69,16 @@ export function GenericCrudPage<T>({
   useEffect(() => {
     loadItems();
   }, []);
+
+  // Handle edit mode from query parameters
+  useEffect(() => {
+    if (editSuiteId && items.length > 0) {
+      const itemToEdit = items.find((item) => getItemId(item) === editSuiteId);
+      if (itemToEdit) {
+        startEdit(itemToEdit);
+      }
+    }
+  }, [editSuiteId, items]);
 
   const loadItems = async () => {
     try {
@@ -108,6 +124,11 @@ export function GenericCrudPage<T>({
       loadItems();
 
       toast.success("Item updated successfully.");
+      
+      // Call onEditComplete callback if provided
+      if (onEditComplete) {
+        onEditComplete();
+      }
     } catch (error: any) {
       console.error("Failed to update:", error);
       toast.error("Failed to update item. Please check your input.");
@@ -148,6 +169,11 @@ export function GenericCrudPage<T>({
     setEditing(null);
     setCreating(false);
     setFormData(getInitialFormData());
+    
+    // Call onEditComplete callback if provided
+    if (onEditComplete) {
+      onEditComplete();
+    }
   };
 
   return (
@@ -203,7 +229,7 @@ export function GenericCrudPage<T>({
           title={editing ? editFormTitle : createFormTitle}
           submitLabel={editing ? "Update" : "Create"}
           className={formClassName}
-          autoFocusFieldName={autoFocusFieldName as keyof T}
+          autoFocusFieldName={(focusField || autoFocusFieldName) as keyof T}
         />
       )}
 

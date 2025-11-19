@@ -216,11 +216,15 @@ const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
     }
 
     try {
+      // Find the suite name from testSuites array
+      const suite = testSuites.find((s) => s.id === suiteId);
+      const suiteName = suite?.name || "Test Suite";
+
       toast.info(`Starting test suite...`);
 
       // Start test execution using the same API as TestRunPage
       const response = await api.post("/api/test-execution/run", {
-        runName: `Test Suite Run - ${new Date().toLocaleString()}`,
+        runName: `${suiteName} - ${new Date().toLocaleString()}`,
         environment: "Development",
         browser: "chrome",
         testSuiteIds: [suiteId],
@@ -258,9 +262,67 @@ const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
     }
   };
 
-  const handleViewLogs = (suiteId: string) => {
-    // Navigate to test runs page to view logs
-    window.location.href = "/test-runs";
+  const onViewLastResults = async (suiteId: string) => {
+    try {
+      console.log(`🔍 Looking for test runs for suite: ${suiteId}`);
+      
+      // Fetch all test runs
+      const response = await api.get("/api/test-runs");
+      const allRuns = response.data || [];
+      console.log(`📊 Found ${allRuns.length} total test runs`);
+      
+      // For each run, check if it contains results for this suite
+      const suiteRuns = [];
+      for (const run of allRuns) {
+        try {
+          // Fetch test results for this run
+          const resultsResponse = await api.get(`/api/test-runs/${run.id}/results`);
+          const results = resultsResponse.data || [];
+          console.log(`  Run ${run.id}: ${results.length} results`);
+          
+          // Check if any result belongs to this suite
+          const matchingResults = results.filter((result: any) => {
+            console.log(`    Result testSuiteId: ${result.testSuiteId}, looking for: ${suiteId}, match: ${result.testSuiteId === suiteId}`);
+            return result.testSuiteId === suiteId;
+          });
+          
+          if (matchingResults.length > 0) {
+            console.log(`  ✅ Found ${matchingResults.length} matching results in run ${run.id}`);
+            suiteRuns.push(run);
+          }
+        } catch (error) {
+          // Skip runs where we can't fetch results
+          console.debug(`Could not fetch results for run ${run.id}:`, error);
+        }
+      }
+      
+      console.log(`🎯 Found ${suiteRuns.length} runs for this suite`);
+      
+      // Sort by date (newest first)
+      suiteRuns.sort((a: any, b: any) => {
+        const dateA = new Date(a.completedAt || a.startedAt || 0).getTime();
+        const dateB = new Date(b.completedAt || b.startedAt || 0).getTime();
+        return dateB - dateA;
+      });
+      
+      if (suiteRuns.length === 0) {
+        toast.warning("No test runs found for this suite");
+        return;
+      }
+      
+      // Navigate to the latest run
+      const latestRun = suiteRuns[0];
+      console.log(`🚀 Navigating to run: ${latestRun.id}`);
+      window.location.href = `/test-runs/${latestRun.id}`;
+    } catch (error: any) {
+      console.error("Failed to fetch test runs:", error);
+      toast.error("Failed to fetch test runs. Please try again.");
+    }
+  };
+
+  const handleEdit = (suiteId: string) => {
+    // Navigate to test suites page with edit mode and suite ID
+    window.location.href = `http://testora.asafarim.local:5180/test-suites?edit=${suiteId}&focus=name`;
   };
 
   const handleDelete = async (suiteId: string) => {
@@ -363,8 +425,9 @@ const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
         <TestSuitesGridToken
           suites={testSuites}
           onRunSuite={handleRunSuite}
-          onViewLogs={handleViewLogs}
+          onViewLastResults={onViewLastResults}
           onDelete={handleDelete}
+          onEdit={handleEdit}
           isAuthenticated={isAuthenticated}
           selectedSuites={selectedSuites}
           onSelectionChange={setSelectedSuites}

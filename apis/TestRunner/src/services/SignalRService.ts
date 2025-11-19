@@ -126,6 +126,15 @@ export class SignalRService {
     }
 
     /**
+     * Send a test result added notification
+     */
+    async sendTestResultAdded(runId: string, result: any) {
+        await this.ensureConnected();
+        await this.hubConnection!.invoke('SendTestResultAdded', runId, result);
+        logger.debug(`📋 Sent test result added for runId ${runId}`);
+    }
+
+    /**
      * Subscribe to test updates (real-time result streaming)
      */
     onTestUpdate(callback: (update: TestUpdateMessage) => void) {

@@ -151,7 +151,7 @@ export default function RoleCrudOperations() {
   };
 
   return (
-    <div className="admin-container">
+    <div data-testid="role-crud-operations-page" className="admin-container">
       <div className="admin-header">
         <h1>Role Management</h1>
         <p className="admin-subtitle">Manage user roles and permissions</p>

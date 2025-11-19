@@ -61,6 +61,11 @@ public class TestRunHub : Hub
     {
         await Clients.Group($"testrun-{testRunId}").SendAsync("TestRunUpdated", update);
     }
+
+    public async Task SendTestResultAdded(string testRunId, object result)
+    {
+        await Clients.Group($"testrun-{testRunId}").SendAsync("TestResultAdded", result);
+    }
 }
 
 public class TestUpdateMessage

@@ -22,3 +22,33 @@ export function isDevelopmentEnv(): boolean {
 export function isTestEnv(): boolean {
   return getNodeEnv() === "test";
 }
+
+/** True when running in staging environment. */
+export function isStagingEnv(): boolean {
+  return getNodeEnv() === "staging";
+}
+
+/** True when running in local environment. */
+export function isLocalEnv(): boolean {
+  return getNodeEnv() === "local";
+}
+
+/** True when running in unknown environment. */
+export function isUnknownEnv(): boolean {
+  return getNodeEnv() === "unknown";
+}
+
+// User login password credentials
+export function getUserLoginPasswordCredentials(): {
+  username: string;
+  password: string;
+} {
+  if (typeof process === "undefined" || !process.env) {
+    return { username: "", password: "" };
+  }
+
+  return {
+    username: process.env.USERNAME ?? "",
+    password: process.env.PASSWORD ?? "",
+  };
+}

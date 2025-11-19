@@ -6,7 +6,7 @@ import { FormFieldDefinition } from "../components/GenericForm";
 import { TestCafeFileViewer } from "../components/TestCafeFileViewer";
 import { api } from "../config/api";
 import { useToast } from "@asafarim/toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { EyeIcon, Play } from "lucide-react";
 import {
   getFunctionalRequirementId,
@@ -44,13 +44,25 @@ export default function TestSuitesPage() {
     id: string;
     name: string;
   } | null>(null);
+  const [editSuiteId, setEditSuiteId] = useState<string | null>(null);
+  const [focusField, setFocusField] = useState<string | null>(null);
   const toast = useToast();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     loadFixtures();
-  }, []);
+    // Check for edit query parameter
+    const editId = searchParams.get('edit');
+    const focus = searchParams.get('focus');
+    if (editId) {
+      setEditSuiteId(editId);
+      if (focus) {
+        setFocusField(focus);
+      }
+    }
+  }, [searchParams]);
 
   const loadFixtures = async () => {
     try {
@@ -413,6 +425,14 @@ export default function TestSuitesPage() {
         createFormTitle="Create Test Suite"
         renderExpandedRow={renderExpandedRow}
         expandLabel="View Test Cases"
+        editSuiteId={editSuiteId}
+        focusField={focusField}
+        onEditComplete={() => {
+          setEditSuiteId(null);
+          setFocusField(null);
+          // Clear the query parameters
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }}
       />
 
       {viewingTestCafe && (

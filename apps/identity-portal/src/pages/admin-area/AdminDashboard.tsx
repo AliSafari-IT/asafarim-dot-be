@@ -19,8 +19,9 @@ export default function AdminDashboard() {
   };
 
   return (
-    <AuthLayout title="Admin Dashboard">
-      <div className="identity-portal-admin-dashboard">
+    <div data-testid="admin-dashboard-page">
+      <AuthLayout title="Admin Dashboard">
+        <div className="identity-portal-admin-dashboard">
         <header className="dashboard-header">
           <h1>Admin Dashboard</h1>
           <p>Manage Identity Portal entities</p>
@@ -41,7 +42,8 @@ export default function AdminDashboard() {
             </div>
           ))}
         </section>
-      </div>
-    </AuthLayout>
+        </div>
+      </AuthLayout>
+    </div>
   );
 }

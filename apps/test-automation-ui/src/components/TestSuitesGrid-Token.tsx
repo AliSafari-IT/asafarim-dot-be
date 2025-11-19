@@ -6,8 +6,9 @@ import "./TestSuitesGrid-Token.css";
 interface TestSuitesGridProps {
   suites: TestSuite[];
   onRunSuite: (suiteId: string) => void;
-  onViewLogs: (suiteId: string) => void;
+  onViewLastResults: (suiteId: string) => void;
   onDelete: (suiteId: string) => void;
+  onEdit?: (suiteId: string) => void;
   isAuthenticated?: boolean;
   showFilter?: boolean;
   showSort?: boolean;
@@ -26,8 +27,9 @@ type SortOrder = "asc" | "desc";
 export const TestSuitesGridToken: React.FC<TestSuitesGridProps> = ({
   suites,
   onRunSuite,
-  onViewLogs,
+  onViewLastResults,
   onDelete,
+  onEdit,
   isAuthenticated = true,
   showFilter = true,
   showSort = true,
@@ -234,8 +236,9 @@ export const TestSuitesGridToken: React.FC<TestSuitesGridProps> = ({
               key={suite.id}
               suite={suite}
               onRunSuite={onRunSuite}
-              onViewLogs={onViewLogs}
+              onViewLastResults={onViewLastResults}
               onDelete={onDelete}
+              onEdit={onEdit}
               isAuthenticated={isAuthenticated}
               isSelected={selectedSuites.includes(suite.id)}
               onToggleSelection={

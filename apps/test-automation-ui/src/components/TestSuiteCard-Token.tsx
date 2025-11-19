@@ -5,6 +5,7 @@ import {
   Play,
   Eye,
   Trash2,
+  Edit,
   CheckCircle,
   XCircle,
   Clock,
@@ -39,8 +40,9 @@ export interface TestSuite {
 interface TestSuiteCardProps {
   suite: TestSuite;
   onRunSuite: (suiteId: string) => void;
-  onViewLogs: (suiteId: string) => void;
+  onViewLastResults: (suiteId: string) => void;
   onDelete: (suiteId: string) => void;
+  onEdit?: (suiteId: string) => void;
   isAuthenticated?: boolean;
   isExpanded?: boolean;
   isSelected?: boolean;
@@ -50,8 +52,9 @@ interface TestSuiteCardProps {
 export const TestSuiteCardToken: React.FC<TestSuiteCardProps> = ({
   suite,
   onRunSuite,
-  onViewLogs,
+  onViewLastResults,
   onDelete,
+  onEdit,
   isAuthenticated = true,
   isExpanded: initialExpanded = false,
   isSelected = false,
@@ -219,12 +222,25 @@ export const TestSuiteCardToken: React.FC<TestSuiteCardProps> = ({
         </button>
         <button
           className="suite-card-token__btn suite-card-token__btn--secondary"
-          onClick={() => onViewLogs(suite.id)}
+          onClick={() => onViewLastResults(suite.id)}
           data-testid={`view-logs-${suite.id}`}
         >
           <Eye size={16} />
-          <span>View Logs</span>
+          <span>View Results</span>
         </button>
+        {onEdit && (
+          <button
+            className="suite-card-token__btn suite-card-token__btn--secondary"
+            onClick={() => onEdit(suite.id)}
+            disabled={!isAuthenticated}
+            title={
+              isAuthenticated ? "Edit test suite" : "Authentication required"
+            }
+            data-testid={`edit-suite-${suite.id}`}
+          >
+            <Edit size={16} />
+          </button>
+        )}
         <button
           className="suite-card-token__btn suite-card-token__btn--danger"
           onClick={() => onDelete(suite.id)}

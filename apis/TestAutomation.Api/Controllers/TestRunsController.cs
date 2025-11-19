@@ -285,6 +285,7 @@ public class TestRunsController : ControllerBase
                 testRunId = r.TestRunId,
                 testCaseId = r.TestCaseId,
                 testCaseName = r.TestCase?.Name,
+                testSuiteId = r.TestSuiteId,
                 status = r.Status.ToString(),
                 durationMs = r.DurationMs,
                 errorMessage = r.ErrorMessage,
@@ -368,6 +369,66 @@ public class TestRunsController : ControllerBase
                 "text/html",
                 $"test-report-{run.RunName}-{DateTime.UtcNow:yyyyMMdd-HHmmss}.html"
             );
+        }
+
+        return BadRequest("Invalid format. Use 'json' or 'html'");
+    }
+
+    [HttpGet("{id}/report/{format}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CopyReport(Guid id, string format)
+    {
+        // return report for a given testrun in json or html as plain text
+        var run = await _db
+            .TestRuns.Include(r => r.FunctionalRequirement)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (run == null)
+            return NotFound();
+
+        var results = await _db
+            .TestResults.Include(r => r.TestCase)
+            .Where(r => r.TestRunId == id)
+            .ToListAsync();
+
+        if (format.ToLower() == "json")
+        {
+            // Create a DTO to avoid circular references
+            var reportDto = new
+            {
+                id = run.Id,
+                runName = run.RunName,
+                status = run.Status.ToString(),
+                environment = run.Environment,
+                browser = run.Browser,
+                startedAt = run.StartedAt,
+                completedAt = run.CompletedAt,
+                totalTests = results.Count,
+                passedTests = results.Count(r => r.Status == TestStatus.Passed),
+                failedTests = results.Count(r => r.Status == TestStatus.Failed),
+                skippedTests = results.Count(r => r.Status == TestStatus.Skipped),
+                results = results.Select(r => new
+                {
+                    id = r.Id,
+                    testCaseName = r.TestCase?.Name,
+                    status = r.Status.ToString(),
+                    durationMs = r.DurationMs,
+                    errorMessage = r.ErrorMessage,
+                    stackTrace = r.StackTrace,
+                    runAt = r.RunAt,
+                }),
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(
+                reportDto,
+                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
+            );
+            return Content(json, "application/json");
+        }
+        else if (format.ToLower() == "html")
+        {
+            var html = GenerateHtmlReport(run, results);
+            return Content(html, "text/html");
         }
 
         return BadRequest("Invalid format. Use 'json' or 'html'");

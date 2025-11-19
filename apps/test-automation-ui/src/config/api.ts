@@ -50,3 +50,10 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Get test run report (html or json) as text
+export const getTestRunReport = (id: string, format: 'html' | 'json') => {
+  return api.get(`/api/test-runs/${id}/report/${format}`, {
+    responseType: 'text'
+  });
+};
