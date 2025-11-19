@@ -120,11 +120,23 @@ public class TestCafeGeneratorService
         // Add raw shared imports content if provided
         if (!string.IsNullOrEmpty(testSuite.Fixture.SharedImportsContent))
         {
-            sb.AppendLine(testSuite.Fixture.SharedImportsContent);
-            sb.AppendLine();
-            Console.WriteLine(
-                $"  ✓ Added {testSuite.Fixture.SharedImportsContent.Length} chars of shared imports content"
-            );
+            // Filter out require('dotenv').config() since environment variables are already loaded
+            // by the TestRunner service and test files use ES module syntax
+            var sharedImportsContent = testSuite.Fixture.SharedImportsContent;
+            var lines = sharedImportsContent.Split('\n')
+                .Where(line => !line.Trim().StartsWith("require('dotenv')") && 
+                               !line.Trim().StartsWith("require(\"dotenv\")"))
+                .ToList();
+            
+            var filteredContent = string.Join('\n', lines).Trim();
+            if (!string.IsNullOrEmpty(filteredContent))
+            {
+                sb.AppendLine(filteredContent);
+                sb.AppendLine();
+                Console.WriteLine(
+                    $"  ✓ Added {filteredContent.Length} chars of shared imports content (filtered dotenv)"
+                );
+            }
         }
 
         Console.WriteLine($"  ✓ Merged {finalImports.Count} unique import statements");
