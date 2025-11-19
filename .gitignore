@@ -149,3 +149,5 @@ apps/test-automation-ui/STATUS_DISPLAY_FIX.md
 apps/test-automation-ui/TEST_CASE_STATUS_FIX.md
 apps/test-automation-ui/src/components/TEST_SUITES_COMPONENTS_README.md
 apps/test-automation-ui/TOKEN_BASED_README.md
+SHARED_IMPORTS_QUICK_START.md
+SHARED_IMPORTS_IMPLEMENTATION.md

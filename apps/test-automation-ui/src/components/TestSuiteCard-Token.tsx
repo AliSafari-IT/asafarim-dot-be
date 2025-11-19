@@ -12,6 +12,7 @@ import {
   Circle,
 } from "lucide-react";
 import "./TestSuiteCard-Token.css";
+import { truncateAtWord } from "@asafarim/helpers";
 
 export interface TestCase {
   id: string;
@@ -144,7 +145,7 @@ export const TestSuiteCardToken: React.FC<TestSuiteCardProps> = ({
             <h3 className="suite-card-token__name">{suite.name}</h3>
             {suite.description && (
               <div className="suite-card-token__description">
-                {suite.description}
+                {truncateAtWord(suite.description, 75)}
               </div>
             )}
             {suite.fixture && (

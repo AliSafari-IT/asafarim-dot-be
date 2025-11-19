@@ -13,6 +13,10 @@ interface Fixture {
   functionalRequirementId: string;
   pageUrl: string;
 
+  // Shared Imports
+  sharedImportsPath?: string;
+  sharedImportsContent?: string;
+
   // Fixture Hooks
   beforeHook?: string;
   afterHook?: string;
@@ -246,6 +250,23 @@ export default function FixturesPage() {
         group: "Basic Information",
       },
 
+      // Shared Imports
+      {
+        name: "sharedImportsPath",
+        label: "Shared Imports Path",
+        type: "text",
+        placeholder: "e.g., ../../shared/test-utils",
+        group: "Shared Imports",
+      },
+      {
+        name: "sharedImportsContent",
+        label: "Shared Imports Content",
+        type: "textarea",
+        rows: 4,
+        placeholder: "e.g., export const BASE_URL = 'https://example.com'; export const loginAsAdmin = async () => { ... };",
+        group: "Shared Imports",
+      },
+
       // Fixture Hooks
       {
         name: "beforeHook",
@@ -356,6 +377,10 @@ export default function FixturesPage() {
         description: "",
         functionalRequirementId: "",
         pageUrl: "",
+
+        // Shared Imports
+        sharedImportsPath: "",
+        sharedImportsContent: "",
 
         // Fixture Hooks
         beforeHook: "",

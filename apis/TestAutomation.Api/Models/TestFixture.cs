@@ -10,6 +10,10 @@ public class TestFixture
     public string? Description { get; set; }
     public string? PageUrl { get; set; }
 
+    // SharedImportsPath && SharedImportsContent
+    public string? SharedImportsPath { get; set; } // Relative path to shared constants/functions for example: import { BASE_URL, loginAsAdmin, resetDb } from '../../shared/test-utils';
+    public string? SharedImportsContent { get; set; } // Raw TypeScript code to inject: SharedImportsContent is used to inject shared constants/functions into the test file.
+
     // Fixture Hooks
     public string? BeforeHook { get; set; } // Runs before the first test in the fixture
     public string? AfterHook { get; set; } // Runs after the last test in the fixture

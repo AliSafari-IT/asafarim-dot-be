@@ -495,6 +495,14 @@ namespace TestAutomation.Api.Data.Migrations
                     b.Property<string>("SetupScript")
                         .HasColumnType("jsonb");
 
+                    b.Property<string>("SharedImportsContent")
+                        .HasColumnType("text")
+                        .HasComment("Raw TypeScript code to inject: SharedImportsContent is used to inject shared constants/functions into the test file.");
+
+                    b.Property<string>("SharedImportsPath")
+                        .HasColumnType("text")
+                        .HasComment("Relative path to shared constants/functions for example: import { BASE_URL, loginAsAdmin, resetDb } from '../../shared/test-utils';");
+
                     b.Property<string>("TeardownScript")
                         .HasColumnType("jsonb");
 

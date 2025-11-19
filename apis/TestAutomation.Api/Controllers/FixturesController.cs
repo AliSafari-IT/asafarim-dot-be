@@ -51,6 +51,10 @@ public class FixturesController : ControllerBase
             Description = dto.Description,
             PageUrl = dto.PageUrl,
             
+            // Shared Imports
+            SharedImportsPath = dto.SharedImportsPath,
+            SharedImportsContent = dto.SharedImportsContent,
+            
             // Fixture Hooks
             BeforeHook = dto.BeforeHook,
             AfterHook = dto.AfterHook,
@@ -91,6 +95,10 @@ public class FixturesController : ControllerBase
         entity.Name = model.Name;
         entity.Description = model.Description;
         entity.PageUrl = model.PageUrl;
+        
+        // Shared Imports
+        entity.SharedImportsPath = model.SharedImportsPath;
+        entity.SharedImportsContent = model.SharedImportsContent;
         
         // Fixture Hooks
         entity.BeforeHook = model.BeforeHook;

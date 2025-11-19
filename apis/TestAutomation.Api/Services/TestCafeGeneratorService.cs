@@ -107,6 +107,26 @@ public class TestCafeGeneratorService
         if (finalImports.Count > 0)
             sb.AppendLine();
 
+        // Add shared imports if configured
+        if (!string.IsNullOrEmpty(testSuite.Fixture.SharedImportsPath))
+        {
+            sb.AppendLine($"import {{ ... }} from '{testSuite.Fixture.SharedImportsPath}';");
+            sb.AppendLine();
+            Console.WriteLine(
+                $"  ✓ Added shared imports from: {testSuite.Fixture.SharedImportsPath}"
+            );
+        }
+
+        // Add raw shared imports content if provided
+        if (!string.IsNullOrEmpty(testSuite.Fixture.SharedImportsContent))
+        {
+            sb.AppendLine(testSuite.Fixture.SharedImportsContent);
+            sb.AppendLine();
+            Console.WriteLine(
+                $"  ✓ Added {testSuite.Fixture.SharedImportsContent.Length} chars of shared imports content"
+            );
+        }
+
         Console.WriteLine($"  ✓ Merged {finalImports.Count} unique import statements");
 
         // Process ALL hooks and scripts to extract functions and selectors
