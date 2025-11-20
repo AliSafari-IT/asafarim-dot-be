@@ -562,6 +562,9 @@ test('${tc.name}', async t => {
         const runId = request.runId;
 
         try {
+            // Send initial log
+            await this.signalR.sendExecutionLog(runId, '🚀 Starting test execution...');
+            
             // Fetch test suite data from API if needed
             const testSuites = request.testSuites || [];
             const testCases = request.testCases || [];
@@ -569,6 +572,8 @@ test('${tc.name}', async t => {
             if (testSuites.length === 0 && testCases.length === 0) {
                 throw new Error('No test suites or test cases provided');
             }
+
+            await this.signalR.sendExecutionLog(runId, `📦 Preparing ${testSuites.length} test suite(s)...`);
 
             // Collect all test files from all suites
             const testFiles: Array<{ suiteId: string; fileContent: string; filePath: string }> = [];
@@ -593,9 +598,11 @@ test('${tc.name}', async t => {
                     currentStep: `Regenerating test file for ${suite.name}... (${i + 1}/${testSuites.length})`,
                     errorMessage: null
                 });
+                await this.signalR.sendExecutionLog(runId, `🔄 Regenerating test file for "${suite.name}"...`);
 
                 // Always regenerate TestCafe file to ensure latest test scripts are used
                 await this.regenerateTestSuite(suite.id, runId);
+                await this.signalR.sendExecutionLog(runId, `✅ Test file regenerated for "${suite.name}"`);
 
                 // Update progress: Fetching generated file
                 await this.sendSignalRUpdate(runId, {
@@ -604,9 +611,11 @@ test('${tc.name}', async t => {
                     currentStep: `Fetching generated test file for ${suite.name}... (${i + 1}/${testSuites.length})`,
                     errorMessage: null
                 });
+                await this.signalR.sendExecutionLog(runId, `📄 Loading test file for "${suite.name}"...`);
 
                 // Fetch the freshly generated TestCafe file
                 const { fileContent, filePath } = await this.fetchTestCafeFile(suite.id, runId);
+                await this.signalR.sendExecutionLog(runId, `✅ Test file loaded (${(fileContent.length / 1024).toFixed(1)} KB)`);
 
                 if (!filePath) {
                     throw new Error(`No file path returned for test suite ${suite.id}`);
@@ -622,16 +631,19 @@ test('${tc.name}', async t => {
                 currentStep: `Running ${testFiles.length} test suite(s)...`,
                 errorMessage: null
             });
+            await this.signalR.sendExecutionLog(runId, `🎬 Launching browser and executing ${testFiles.length} test suite(s)...`);
 
             await this.runMultipleTestCafeFiles(testFiles, request.browser, runId);
 
             logger.info('✅ Test run completed successfully', this.context(runId));
+            await this.signalR.sendExecutionLog(runId, '🎉 Test execution completed!');
 
         } catch (error: any) {
             logger.error('❌ Test run failed', this.context(runId, {
                 error: error.message,
                 stack: error.stack
             }));
+            await this.signalR.sendExecutionLog(runId, `❌ Test execution failed: ${error.message}`);
             throw error;
         }
     }
@@ -907,6 +919,7 @@ test('${tc.name}', async t => {
                 progress: 45 + (attemptedBrowsers.length * 5),
                 errorMessage: `Attempting browser: ${browserConfig}`
             });
+            await this.signalR.sendExecutionLog(runId, `🌐 Attempting to launch browser: ${browserConfig}`);
 
             try {
                 const runner = await this.getTestCafeRunner();
@@ -931,6 +944,8 @@ test('${tc.name}', async t => {
                     progress: 50,
                     errorMessage: `Starting tests with ${browserConfig}...`
                 });
+                await this.signalR.sendExecutionLog(runId, `✅ Browser launched: ${browserConfig}`);
+                await this.signalR.sendExecutionLog(runId, `⏳ Executing ${testCafeFilePaths.length} test file(s)...`);
 
                 // Run all test files together
                 const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_HEADLESS === 'true';
@@ -954,6 +969,7 @@ test('${tc.name}', async t => {
                 succeeded = true;
 
                 logger.info('✅ Test execution completed successfully', this.context(runId, { browserConfig, failedCount }));
+                await this.signalR.sendExecutionLog(runId, `✅ Browser tests completed (${failedCount} failed)`);
                 break;
 
             } catch (runError: any) {
@@ -974,6 +990,7 @@ test('${tc.name}', async t => {
                     progress: Math.max(50, 100 - (browserCandidates.length - attemptedBrowsers.length) * 10),
                     errorMessage: `Browser ${browserConfig} failed: ${runError?.message || String(runError)}`
                 });
+                await this.signalR.sendExecutionLog(runId, `❌ Browser ${browserConfig} failed: ${runError?.message || String(runError)}`);
             }
         }
 

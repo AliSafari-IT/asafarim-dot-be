@@ -135,6 +135,15 @@ export class SignalRService {
     }
 
     /**
+     * Send an execution log message
+     */
+    async sendExecutionLog(runId: string, logMessage: string) {
+        await this.ensureConnected();
+        await this.hubConnection!.invoke('SendExecutionLog', runId, logMessage);
+        logger.debug(`📝 Sent execution log for runId ${runId}: ${logMessage}`);
+    }
+
+    /**
      * Subscribe to test updates (real-time result streaming)
      */
     onTestUpdate(callback: (update: TestUpdateMessage) => void) {

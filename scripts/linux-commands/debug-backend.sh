@@ -6,6 +6,8 @@ sudo journalctl -u nodejs-testora.service -f
 # .NET backend
 sudo journalctl -u dotnet-testora.service -f
 
+# Check if All TESTORA environment variables now loaded correctly:
+sudo cat /proc/$(pgrep -f "node.*testrunner/index.js")/environ | tr '\0' '\n' | grep -E "TESTORA__" | sort
 
 # kill running testcafe instances
 pkill -f testcafe
