@@ -413,8 +413,15 @@ const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
         <div className="run-tests-page-token__header-actions">
           <button
             className="run-tests-page-token__btn-primary"
-            disabled={!isAuthenticated}
-            title={!isAuthenticated ? 'Authentication required' : 'Run all test suites'}
+            onClick={handleRunSelected}
+            disabled={!isAuthenticated || selectedSuites.length === 0}
+            title={
+              !isAuthenticated
+                ? 'Authentication required'
+                : selectedSuites.length === 0
+                ? 'Select test suites to run'
+                : 'Run selected test suites'
+            }
           >
             <Play size={20} />
             <span>Start Run All</span>
