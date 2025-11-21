@@ -1,9 +1,20 @@
-import { useState } from 'react';
-import './dashboard.css';
-import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
-import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab, PUBLICATIONS_URL, RESUME_URL, TASKS_URL, SMARTOPS_URL, TESTORA_URL } from '../utils/appUrls';
-import ChangePasswordModal from './ChangePasswordModal';
-import useAuth from '../hooks/useAuth';
+import { useState } from "react";
+import "./dashboard.css";
+import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import {
+  BLOG_URL,
+  WEB_URL,
+  AI_URL,
+  CORE_URL,
+  openInNewTab,
+  PUBLICATIONS_URL,
+  RESUME_URL,
+  TASKS_URL,
+  SMARTOPS_URL,
+  TESTORA_URL,
+} from "../utils/appUrls";
+import ChangePasswordModal from "./ChangePasswordModal";
+import useAuth from "../hooks/useAuth";
 import { useTranslation } from "@asafarim/shared-i18n";
 
 export const Dashboard = () => {
@@ -11,7 +22,7 @@ export const Dashboard = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const { t } = useTranslation("identityPortal");
 
-  const roles = (user?.roles || ['Viewer']).join(', ');
+  const roles = (user?.roles || ["Viewer"]).join(", ");
 
   return (
     <div className="dash">
@@ -25,14 +36,24 @@ export const Dashboard = () => {
       <main className="dash-main">
         <section className="dash-grid">
           <article className="card">
-            <h2 className="card-title">{t("dashboard.user-management.title")}</h2>
+            <h2 className="card-title">
+              {t("dashboard.user-management.title")}
+            </h2>
             <div className="field">
               <label>{t("dashboard.user-management.email")}</label>
-              <input className="field-input" value={user?.email || ''} readOnly />
+              <input
+                className="field-input"
+                value={user?.email || ""}
+                readOnly
+              />
             </div>
             <div className="field">
               <label>{t("dashboard.user-management.username")}</label>
-              <input className="field-input" value={user?.userName || ''} readOnly />
+              <input
+                className="field-input"
+                value={user?.userName || ""}
+                readOnly
+              />
             </div>
           </article>
 
@@ -49,7 +70,13 @@ export const Dashboard = () => {
           <h2 className="card-title">{t("dashboard.actions.title")}</h2>
           <div className="actions-row">
             <Button
-              onClick={() => (window.location.href = (user?.roles || []).some((r: string) => /^(admin|superadmin)$/i.test(r)) ? '/admin/user-profile' : '/me')}
+              onClick={() =>
+                (window.location.href = (user?.roles || []).some((r: string) =>
+                  /^(admin|superadmin)$/i.test(r)
+                )
+                  ? "/admin/user-profile/"
+                  : "/me")
+              }
               variant="success"
             >
               {t("dashboard.actions.editProfile")}
@@ -62,8 +89,13 @@ export const Dashboard = () => {
               {t("dashboard.actions.changePassword")}
             </Button>
 
-            {(user?.roles || []).some((r: string) => /^(admin|superadmin)$/i.test(r)) && (
-              <Button onClick={() => (window.location.href = '/admin/users')} variant="info">
+            {(user?.roles || []).some((r: string) =>
+              /^(admin|superadmin)$/i.test(r)
+            ) && (
+              <Button
+                onClick={() => (window.location.href = "/admin-area/users")}
+                variant="info"
+              >
                 {t("dashboard.actions.manageUsers")}
               </Button>
             )}
@@ -81,7 +113,10 @@ export const Dashboard = () => {
               Core portal
             </Button>
             {/** my publications */}
-            <Button onClick={() => openInNewTab(PUBLICATIONS_URL)} variant="info">
+            <Button
+              onClick={() => openInNewTab(PUBLICATIONS_URL)}
+              variant="info"
+            >
               My publications
             </Button>
             {/** resume */}
@@ -101,11 +136,11 @@ export const Dashboard = () => {
           </div>
         </section>
       </main>
-      
+
       {/* Password Change Modal */}
-      <ChangePasswordModal 
-        isOpen={isPasswordModalOpen} 
-        onClose={() => setIsPasswordModalOpen(false)} 
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
       />
     </div>
   );
