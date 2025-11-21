@@ -3,6 +3,7 @@ import { CentralNavbar, isProduction, useAuth } from "@asafarim/shared-ui-react"
 import type { NavLinkItem } from "@asafarim/shared-ui-react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./Navbar.css";
+import { useTranslation } from "@asafarim/shared-i18n";
 
 // Define your navigation links with optional icons and accessibility labels
 const navLinks: NavLinkItem[] = [
@@ -80,7 +81,7 @@ const useMobileMenu = () => {
 export default function Navbar() {
   // Use Identity API directly for authentication (not proxied)
   const authApiBase = isProduction ? 'https://identity.asafarim.be/auth' : 'http://identity.asafarim.local:5101/auth';
-
+  const { t } = useTranslation("identityPortal");
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth({
     authApiBase,
     meEndpoint: '/me',
@@ -126,10 +127,10 @@ export default function Navbar() {
           onSignIn: signIn,
           onSignOut: signOut,
           labels: {
-            notSignedIn: "Not signed in!",
-            signIn: "Sign In",
-            signOut: "Sign Out",
-            welcome: (email?: string) => `Welcome, ${email || "User"}!`,
+            notSignedIn: t("navbar.auth.notSignedIn"),
+            signIn: t("navbar.auth.signIn"),
+            signOut: t("navbar.auth.signOut"),
+            welcome: (userName?: string) => t("navbar.auth.welcome", { userName }), 
           },
         }}
         renderLink={renderLink}

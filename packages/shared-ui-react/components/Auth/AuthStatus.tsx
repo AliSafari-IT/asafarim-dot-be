@@ -6,7 +6,7 @@ import "./AuthStatus.css";
 
 export interface AuthStatusProps {
   isAuthenticated: boolean;
-  user?: { email?: string } | null;
+  user?: { email?: string; userName?: string } | null;
   loading?: boolean;
   onSignIn?: (redirectUrl?: string) => void;
   onSignOut?: () => void;
@@ -15,7 +15,7 @@ export interface AuthStatusProps {
   labels?: {
     notSignedIn?: string;
     signIn?: string;
-    welcome?: (email?: string) => string;
+    welcome?: (userName?: string, email?: string) => string;
     signOut?: string;
   };
 }
@@ -43,7 +43,9 @@ export default function AuthStatus(props: AuthStatusProps) {
     signIn: labels?.signIn ?? "Sign In",
     signOut: labels?.signOut ?? "Sign Out",
     welcome:
-      labels?.welcome ?? ((email?: string) => `Welcome ${email ?? "User"}!`),
+      labels?.welcome ??
+      ((userName?: string, email?: string) =>
+        `Welcome ${userName ?? email ?? "User"}!`),
   };
 
   if (loading)
@@ -66,7 +68,7 @@ export default function AuthStatus(props: AuthStatusProps) {
     );
   }
 
-  const welcomeText = t.welcome(user?.email);
+  const welcomeText = t.welcome(user?.userName, user?.email);
   return (
     <div className={className + " align-middle"} style={style}>
       <div className="auth-status-indicator auth-status-authenticated">
