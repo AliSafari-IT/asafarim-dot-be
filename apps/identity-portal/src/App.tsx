@@ -32,12 +32,12 @@ function App() {
   return (
     <ThemeProvider>
       <PrelaunchNoticeBanner />
-      <ToastProvider>
+      <ToastProvider position="top-right">
         <NotificationProvider>
           <Router>
             <NotificationContainer />
-            <Toaster />
             <Navbar />
+            <Toaster i18nIsDynamicList={true}/>
             <Routes>
               {/* Public routes (accessible when not logged in) */}
               <Route

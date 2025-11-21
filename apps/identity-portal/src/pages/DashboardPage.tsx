@@ -5,11 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import AuthLayout from "../components/AuthLayout";
 import { Dashboard } from "../components/Dashboard";
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from "@asafarim/shared-i18n";
 
 export default function DashboardPage() {
   const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const hasCheckedAuth = useRef(false);
+  const { t } = useTranslation("identityPortal");
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function DashboardPage() {
     return (
       <div className="auth-loading">
         <div className="spinner"></div>
-        <p>Loading...</p>
+        <p>{t("toast.loading")}</p>
       </div>
     );
   }

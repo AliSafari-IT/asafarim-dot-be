@@ -12,8 +12,6 @@ import { NotFound } from "@asafarim/shared-ui-react";
 import Root from "./theme/Root";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
-// Initialize i18n before rendering
-initI18n();
 import WhatIsBuilding from "./pages/WhatIsBuilding";
 import Portfolio from "./pages/Portfolio";
 import Resume from "./pages/portfolio/resume/Resume";
@@ -62,6 +60,9 @@ import ExperienceForm from "./pages/admin/resume/ExperienceForm";
 import ExperiencesManagement from "./pages/admin/resume/ExperiencesManagement";
 import SocialLinksManagement from "./pages/admin/resume/SocialLinksManagement";
 import SocialLinkForm from "./pages/admin/resume/SocialLinkForm";
+
+// Initialize i18n before rendering
+initI18n();
 
 const router = createBrowserRouter([
   {

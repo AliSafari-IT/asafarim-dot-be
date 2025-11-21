@@ -11,7 +11,7 @@ initI18n();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider config={{defaultMode: 'light', storageKey: 'asafarim-theme'}}>
+    <ThemeProvider config={{defaultMode: 'dark', storageKey: 'asafarim-theme'}}>
       <Root>
         <App />
       </Root>
