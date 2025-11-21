@@ -4,7 +4,7 @@ import { coreApi } from '../config/api';
 const API_URL = coreApi('JobApplications');
 
 export const fetchJobApplications = async (): Promise<JobApplication[]> => {
-  const response = await fetch(API_URL);
+  const response = await fetch(API_URL, { credentials: 'include' });
   if (!response.ok) {
     throw new Error('Failed to fetch job applications');
   }
@@ -33,6 +33,7 @@ export const createJobApplication = async (jobApplication: Omit<JobApplication, 
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(formattedApplication),
     });
     
@@ -63,6 +64,7 @@ export const updateJobApplication = async (jobApplication: JobApplication): Prom
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(formattedApplication),
     });
     
@@ -81,6 +83,7 @@ export const deleteJobApplication = async (id: string): Promise<void> => {
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: 'DELETE',
+      credentials: 'include',
     });
     
     if (!response.ok) {

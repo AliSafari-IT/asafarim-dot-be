@@ -1,7 +1,7 @@
 /* Test Cases Page Styling with Shared Tokens */
 .test-cases-container {
-  max-width: var(--width-2xl);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: var(--space-4);
 }
 
@@ -47,14 +47,14 @@
   display: block;
   margin-bottom: var(--space-2);
   color: var(--color-foreground);
-  font-size: var(--font-size-2);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-medium);
 }
 
 .test-case-form-control {
   width: 100%;
   padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-2);
+  font-size: var(--font-size-2xl);
   color: var(--color-foreground);
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
@@ -101,6 +101,14 @@ textarea.test-case-form-control {
 .step-number {
   font-weight: var(--font-weight-semibold);
   color: var(--color-foreground);
+}
+
+.test-type-label.steps {
+  color: var(--color-warning-500) !important;
+}
+
+.test-type-label.script {
+  color: var(--color-accent-500) !important;
 }
 
 /* Tabs */
@@ -176,7 +184,15 @@ textarea.test-case-form-control {
 
 .status-inactive {
   background-color: var(--color-error-100);
-  color: var(--color-error-800);
+  color: var(--color-error-600);
+}
+
+.test-cases-status-passed {
+  color: var(--color-success-500);
+}
+
+.test-cases-status-failed {
+  color: var(--color-error-500);
 }
 
 /* Empty State */

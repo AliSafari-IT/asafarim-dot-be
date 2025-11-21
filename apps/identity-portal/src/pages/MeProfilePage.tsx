@@ -3,9 +3,11 @@ import MeProfile from '../components/MeProfile';
 
 export default function MeProfilePage() {
   return (
-    <AuthLayout>
-      <MeProfile />
-    </AuthLayout>
+    <div data-testid="me-profile-page">
+      <AuthLayout>
+        <MeProfile />
+      </AuthLayout>
+    </div>
   );
 }
 

@@ -178,6 +178,14 @@
     "intro": "Verken mijn aanbevolen applicaties en lopende projecten.",
     "visitButton": "App Bezoeken",
     "projects": {
+      "testora-ui": {
+        "title": "Testora UI",
+        "description": "Testora user interface is gemaakt met React en TypeScript, en het is deel van het Testora project. Het biedt een dashboard voor het monitoren en beheren van testuitvoeringen. De backend is gemaakt met ASP.NET Core en Entity Framework, PostgreSQL database."
+      },
+      "testora-testrunner": {
+        "title": "Testora e2e TestRunner",
+        "description": "TestRunner is een Node.js-applicatie die een TestCafe engine biedt voor het uitvoeren van test suites. Het is gemaakt met Node.js en TypeScript, en het is deel van het Testora project. Via SignalR, kan het test suites in real-time uitvoeren."
+      },
       "taskManagement": {
         "title": "Taakbeheer",
         "description": "Een productiviteitsapp voor het beheren van persoonlijke en teamtaken met authenticatie en dashboards."

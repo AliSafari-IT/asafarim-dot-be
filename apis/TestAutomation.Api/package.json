@@ -1,6 +1,6 @@
 {
   "name": "@asafarim/testora-api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "start": "dotnet run --project TestAutomation.Api.csproj",
     "build": "dotnet build TestAutomation.Api.csproj",
     "preapi": "kill-port 5106",
-    "api": "dotnet watch run --project TestAutomation.Api.csproj"
+    "api": "concurrently \"dotnet watch run --project TestAutomation.Api.csproj\"  \"cd ../TestRunner && pnpm api\""
   },
   "devDependencies": {
     "kill-port": "^2.0.1"

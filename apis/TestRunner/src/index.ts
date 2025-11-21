@@ -140,14 +140,14 @@ app.post('/cancel/:runId', validateApiKey, async (req, res) => {
 // Run generated TestCafe file
 app.post('/run-generated-file', validateApiKey, async (req, res) => {
     try {
-        const { testSuiteId, fileContent, browser, runId } = req.body;
+        const { testSuiteId, fileContent, browser, runId, filePath } = req.body;
 
         if (!testSuiteId || !fileContent) {
             return res.status(400).json({ error: 'testSuiteId and fileContent are required' });
         }
 
-        logger.info('Running generated TestCafe file', { testSuiteId, browser, runId });
-        const result = await testRunner.runGeneratedTestCafeFile(testSuiteId, fileContent, browser, runId);
+        logger.info('Running generated TestCafe file', { testSuiteId, browser, runId, filePath });
+        const result = await testRunner.runGeneratedTestCafeFile(testSuiteId, fileContent, browser, runId, filePath);
         res.json(result);
     } catch (error: any) {
         logger.error('Error running generated TestCafe file', {

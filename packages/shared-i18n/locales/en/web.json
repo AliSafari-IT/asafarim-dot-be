@@ -178,9 +178,17 @@
     "intro": "Explore my featured applications and ongoing projects.",
     "visitButton": "Visit App",
     "projects": {
+      "testora-ui": {
+        "title": "Testora UI",
+        "description": "Testora user interface is built with React and TypeScript, and it is part of the Testora project. It provides a dashboard for monitoring and managing test runs. The backend is built using ASP.NET Core and Entity Framework, PostgreSQL database."
+      },
+      "testora-testrunner": {
+        "title": "Testora e2e TestRunner",
+        "description": "TestRunner is a Node.js application that provides a TestCafe engine for running test suites. It is built using Node.js and TypeScript, and it is part of the Testora project. Via SignalR, it can be used to run test suites in real-time."
+      },
       "taskManagement": {
         "title": "Task Management",
-        "description": "A productivity app to manage personal and team tasks with authentication and dashboards."
+        "description": "Task Management is a productivity app to manage personal and team tasks with authentication and dashboards. It is built using React and TypeScript, and it is part of the Task Management project."
       },
       "smartops": {
         "title": "SmartOps",

@@ -137,3 +137,18 @@ launchSettings*.json
 deploy-production.sh
 
 
+apps/test-automation-ui/API_INTEGRATION_SUMMARY.md
+apps/test-automation-ui/AUTO_REFRESH_FEATURE.md
+BULK_RUN_STATS_FIX.md
+EXECUTION_LOGS_DISPLAY.md
+FRONTEND_PASSED_PROPERTY_UPDATE.md
+apps/test-automation-ui/INTEGRATION_GUIDE.md
+PASSED_STATUS_PROPERTY.md
+apps/test-automation-ui/SELECTION_FEATURE.md
+apps/test-automation-ui/STATUS_DISPLAY_FIX.md
+apps/test-automation-ui/TEST_CASE_STATUS_FIX.md
+apps/test-automation-ui/src/components/TEST_SUITES_COMPONENTS_README.md
+apps/test-automation-ui/TOKEN_BASED_README.md
+SHARED_IMPORTS_QUICK_START.md
+SHARED_IMPORTS_IMPLEMENTATION.md
+SCREENSHOT_IN_TEST_DETAILS.md

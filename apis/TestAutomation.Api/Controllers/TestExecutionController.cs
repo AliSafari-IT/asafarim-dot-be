@@ -40,10 +40,12 @@ public class TestExecutionController : ControllerBase
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-            _logger.LogInformation("Starting test run - RunName: {RunName}, TestSuiteIds: {TestSuiteIds}, TestCaseIds: {TestCaseIds}",
-                request.RunName, 
+            _logger.LogInformation(
+                "Starting test run - RunName: {RunName}, TestSuiteIds: {TestSuiteIds}, TestCaseIds: {TestCaseIds}",
+                request.RunName,
                 request.TestSuiteIds != null ? string.Join(", ", request.TestSuiteIds) : "none",
-                request.TestCaseIds != null ? string.Join(", ", request.TestCaseIds) : "none");
+                request.TestCaseIds != null ? string.Join(", ", request.TestCaseIds) : "none"
+            );
 
             var run = await _testExecutionService.StartTestRunAsync(request, userId);
 
@@ -58,11 +60,15 @@ public class TestExecutionController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "❌ Error starting test run: {Message}", ex.Message);
-            return StatusCode(500, new { 
-                message = "Failed to start test run", 
-                error = ex.Message,
-                details = ex.StackTrace
-            });
+            return StatusCode(
+                500,
+                new
+                {
+                    message = "Failed to start test run",
+                    error = ex.Message,
+                    details = ex.StackTrace,
+                }
+            );
         }
     }
 

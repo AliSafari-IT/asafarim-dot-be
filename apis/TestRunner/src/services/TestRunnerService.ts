@@ -9,6 +9,7 @@ import { SignalRService } from './SignalRService';
 // Shape of the API response for GET /api/test-suites/{id}/testcafe-file
 interface TestCafeFileResponse {
     fileContent: string;
+    filePath?: string; // Relative path to the generated test file
     generatedAt?: string | Date | null;
 }
 
@@ -142,6 +143,7 @@ export class TestRunnerService {
                 logger.info(`📊 Sending test result to ${apiUrl}/api/runner-webhook/result (attempt ${attempt}/${retries})`, {
                     runId,
                     testName: result.testCaseName || result.name,
+                    testCaseId: result.testCaseId,
                     status: result.status
                 });
 
@@ -153,6 +155,7 @@ export class TestRunnerService {
                     },
                     body: JSON.stringify({
                         runId: runId,
+                        testCaseId: result.testCaseId,
                         testCaseName: result.testCaseName || result.name,
                         status: result.status,
                         durationMs: result.durationMs,
@@ -385,6 +388,7 @@ export class TestRunnerService {
         const isWin = process.platform === 'win32';
         const forceHeadless = process.env.FORCE_HEADLESS === 'true';
         const defaultBrowser = process.env.BROWSER || 'chrome:headless';
+        const edgePath = process.env.EDGE_PATH;
 
         // In production or when FORCE_HEADLESS is set, only use headless browsers
         if (forceHeadless) {
@@ -411,6 +415,10 @@ export class TestRunnerService {
                     '--disable-web-security'
                 ].join(' ');
                 list.push(chromeFlags);
+            } else if (defaultBrowser.includes('edge')) {
+                // Use Edge headless
+                logger.info(`🎯 Using Edge headless mode`);
+                list.push('edge:headless');
             } else {
                 list.push(defaultBrowser);
             }
@@ -421,17 +429,17 @@ export class TestRunnerService {
 
         // Development mode: try both headless and headed browsers
         if (isWin) {
-            // Prefer Edge first on Windows for reliability
-            list.push('edge', 'edge:headless');
+            // Prefer Edge first on Windows for reliability (no explicit path needed if in PATH)
+            list.push('edge:headless', 'edge');
             if (req) list.push(req);
             if (req && !req.includes(':')) list.push(`${req}:headless`);
-            list.push('chrome', 'chrome:headless');
+            list.push('chrome:headless', 'chrome');
             // Optionally try Firefox too
-            list.push('firefox', 'firefox:headless');
+            list.push('firefox:headless', 'firefox');
         } else {
             if (req) list.push(req);
             if (req && !req.includes(':')) list.push(`${req}:headless`);
-            list.push('chrome', 'chrome:headless', 'firefox', 'firefox:headless');
+            list.push('chrome:headless', 'chrome', 'firefox:headless', 'firefox');
         }
         // De-duplicate while preserving order
         return Array.from(new Set(list));
@@ -554,6 +562,9 @@ test('${tc.name}', async t => {
         const runId = request.runId;
 
         try {
+            // Send initial log
+            await this.signalR.sendExecutionLog(runId, '🚀 Starting test execution...');
+            
             // Fetch test suite data from API if needed
             const testSuites = request.testSuites || [];
             const testCases = request.testCases || [];
@@ -562,47 +573,77 @@ test('${tc.name}', async t => {
                 throw new Error('No test suites or test cases provided');
             }
 
-            // For each test suite, regenerate and run TestCafe file
-            for (const suite of testSuites) {
+            await this.signalR.sendExecutionLog(runId, `📦 Preparing ${testSuites.length} test suite(s)...`);
+
+            // Collect all test files from all suites
+            const testFiles: Array<{ suiteId: string; fileContent: string; filePath: string }> = [];
+
+            // For each test suite, regenerate and fetch TestCafe file
+            for (let i = 0; i < testSuites.length; i++) {
+                const suite = testSuites[i];
+                const progress = Math.floor((i / testSuites.length) * 30); // 0-30% for preparation
+
                 logger.info('📦 Processing test suite', this.context(runId, {
                     suiteId: suite.id,
                     suiteName: suite.name,
-                    testCasesCount: suite.testCases?.length || 0
+                    testCasesCount: suite.testCases?.length || 0,
+                    suiteIndex: i + 1,
+                    totalSuites: testSuites.length
                 }));
 
                 // Update progress: Starting regeneration
                 await this.sendSignalRUpdate(runId, {
                     status: 'running',
-                    progress: 10,
-                    currentStep: `Regenerating test file for ${suite.name}...`,
+                    progress: progress + 5,
+                    currentStep: `Regenerating test file for ${suite.name}... (${i + 1}/${testSuites.length})`,
                     errorMessage: null
                 });
+                await this.signalR.sendExecutionLog(runId, `🔄 Regenerating test file for "${suite.name}"...`);
 
                 // Always regenerate TestCafe file to ensure latest test scripts are used
                 await this.regenerateTestSuite(suite.id, runId);
+                await this.signalR.sendExecutionLog(runId, `✅ Test file regenerated for "${suite.name}"`);
 
                 // Update progress: Fetching generated file
                 await this.sendSignalRUpdate(runId, {
                     status: 'running',
-                    progress: 20,
-                    currentStep: `Fetching generated test file for ${suite.name}...`,
+                    progress: progress + 10,
+                    currentStep: `Fetching generated test file for ${suite.name}... (${i + 1}/${testSuites.length})`,
                     errorMessage: null
                 });
+                await this.signalR.sendExecutionLog(runId, `📄 Loading test file for "${suite.name}"...`);
 
                 // Fetch the freshly generated TestCafe file
-                const fileContent = await this.fetchTestCafeFile(suite.id, runId);
+                const { fileContent, filePath } = await this.fetchTestCafeFile(suite.id, runId);
+                await this.signalR.sendExecutionLog(runId, `✅ Test file loaded (${(fileContent.length / 1024).toFixed(1)} KB)`);
 
-                // Run the generated TestCafe file
-                await this.runGeneratedTestCafeFile(suite.id, fileContent, request.browser, runId);
+                if (!filePath) {
+                    throw new Error(`No file path returned for test suite ${suite.id}`);
+                }
+
+                testFiles.push({ suiteId: suite.id, fileContent, filePath });
             }
 
+            // Now run all test files together in a single TestCafe execution
+            await this.sendSignalRUpdate(runId, {
+                status: 'running',
+                progress: 35,
+                currentStep: `Running ${testFiles.length} test suite(s)...`,
+                errorMessage: null
+            });
+            await this.signalR.sendExecutionLog(runId, `🎬 Launching browser and executing ${testFiles.length} test suite(s)...`);
+
+            await this.runMultipleTestCafeFiles(testFiles, request.browser, runId);
+
             logger.info('✅ Test run completed successfully', this.context(runId));
+            await this.signalR.sendExecutionLog(runId, '🎉 Test execution completed!');
 
         } catch (error: any) {
             logger.error('❌ Test run failed', this.context(runId, {
                 error: error.message,
                 stack: error.stack
             }));
+            await this.signalR.sendExecutionLog(runId, `❌ Test execution failed: ${error.message}`);
             throw error;
         }
     }
@@ -667,9 +708,9 @@ test('${tc.name}', async t => {
     }
 
     /**
-     * Fetches the generated TestCafe file content from the API
+     * Fetches the generated TestCafe file content and path from the API
      */
-    private async fetchTestCafeFile(suiteId: string, runId: string): Promise<string> {
+    private async fetchTestCafeFile(suiteId: string, runId: string): Promise<{ fileContent: string; filePath?: string }> {
         const maxRetries = 3;
         const baseDelay = 300; // milliseconds
 
@@ -693,9 +734,10 @@ test('${tc.name}', async t => {
                     throw new Error(`HTTP ${response.status} ${response.statusText}: ${errorText}`);
                 }
 
-                // Parse JSON response and extract fileContent
+                // Parse JSON response and extract fileContent and filePath
                 const jsonResponse = (await response.json()) as TestCafeFileResponse;
                 const fileContent = jsonResponse.fileContent;
+                const filePath = jsonResponse.filePath;
 
                 if (!fileContent || typeof fileContent !== 'string') {
                     throw new Error(`Invalid or empty fileContent in response`);
@@ -705,10 +747,11 @@ test('${tc.name}', async t => {
                     suiteId,
                     attempt,
                     fileSize: fileContent.length,
+                    filePath,
                     generatedAt: jsonResponse.generatedAt
                 }));
 
-                return fileContent;
+                return { fileContent, filePath };
 
             } catch (error: any) {
                 const isLastAttempt = attempt === maxRetries;
@@ -731,22 +774,398 @@ test('${tc.name}', async t => {
             }
         }
 
-        throw new Error('Unreachable code'); // TypeScript satisfaction
+        // This should never be reached due to throw on last attempt, but TypeScript requires it
+        throw new Error(`Failed to fetch TestCafe file after ${maxRetries} attempts`);
     }
 
-    async runGeneratedTestCafeFile(testSuiteId: string, fileContent: string, browser = 'chrome', providedRunId?: string) {
-        const runId = providedRunId || nanoid();
-        logger.info('🚀 Starting TestCafe file execution', this.context(runId, { testSuiteId, browser }));
+    /**
+     * Extracts TEST_CASE_ID from generated test file content
+     * Uses robust regex to handle multi-line test declarations and special characters
+     */
+    private extractTestCaseIdMapping(fileContent: string, runId: string): Record<string, string> {
+        const testCaseMap: Record<string, string> = {};
 
-        // Ensure temp directory exists
-        await fs.mkdir(this.tempDir, { recursive: true });
+        try {
+            // Robust regex pattern that handles:
+            // - test.skip() and test.only() modifiers
+            // - Multi-line test declarations
+            // - Special characters and nested quotes in test names
+            // - TEST_CASE_ID comment right after opening brace
+            // Match single-quoted, double-quoted, or backtick-quoted strings separately
+            const patterns = [
+                /test(?:\.skip|\.only)?\s*\(\s*'([^']*)'[^{]*\{[^}]*?\/\/\s*TEST_CASE_ID:\s*([a-f0-9\-]+)/gs,  // single quotes
+                /test(?:\.skip|\.only)?\s*\(\s*"([^"]*)"[^{]*\{[^}]*?\/\/\s*TEST_CASE_ID:\s*([a-f0-9\-]+)/gs,  // double quotes
+                /test(?:\.skip|\.only)?\s*\(\s*`([^`]*)`[^{]*\{[^}]*?\/\/\s*TEST_CASE_ID:\s*([a-f0-9\-]+)/gs   // backticks
+            ];
+
+            for (const pattern of patterns) {
+                let match;
+                while ((match = pattern.exec(fileContent)) !== null) {
+                    const testName = match[1];
+                    const testCaseId = match[2];
+                    testCaseMap[testName] = testCaseId;
+                    logger.info(`✅ Extracted TEST_CASE_ID mapping: "${testName}" → ${testCaseId}`, this.context(runId));
+                }
+            }
+
+            logger.info('📋 Test case ID extraction complete', this.context(runId, {
+                count: Object.keys(testCaseMap).length,
+                mapping: testCaseMap
+            }));
+        } catch (err: any) {
+            logger.warn('⚠️ Failed to extract test case IDs from file content', this.context(runId, {
+                error: err.message
+            }));
+        }
+
+        return testCaseMap;
+    }
+
+    /**
+     * Run multiple TestCafe files in a single execution
+     */
+    private async runMultipleTestCafeFiles(
+        testFiles: Array<{ suiteId: string; fileContent: string; filePath: string }>,
+        browser: string,
+        runId: string
+    ): Promise<void> {
+        logger.info('🚀 Starting TestCafe execution for multiple suites', this.context(runId, {
+            suiteCount: testFiles.length,
+            suites: testFiles.map(f => f.suiteId)
+        }));
+
+        // Prepare all test files and collect their paths
+        const filePaths: string[] = [];
+        const testCaseMap: { [testName: string]: string } = {};
+
+        for (const testFile of testFiles) {
+            // Extract TEST_CASE_ID mappings from all files
+            const suiteTestCaseMap = this.extractTestCaseIdMapping(testFile.fileContent, runId);
+            Object.assign(testCaseMap, suiteTestCaseMap);
+
+            // Construct file path
+            const normalizedTempDir = path.normalize(this.tempDir);
+            const normalizedFilePath = path.normalize(testFile.filePath);
+
+            let filePath: string;
+            if (normalizedFilePath.startsWith(normalizedTempDir)) {
+                filePath = normalizedFilePath;
+            } else {
+                filePath = path.join(this.tempDir, testFile.filePath);
+            }
+
+            // Write test file
+            logger.info('📝 Writing test file', { filePath, suiteId: testFile.suiteId });
+            try {
+                await fs.mkdir(path.dirname(filePath), { recursive: true });
+                await fs.writeFile(filePath, testFile.fileContent, 'utf8');
+                logger.info('✅ Test file written successfully', { filePath, size: testFile.fileContent.length });
+                filePaths.push(filePath);
+            } catch (error: any) {
+                logger.error('Failed to write test file', {
+                    error: error.message,
+                    stack: error.stack,
+                    filePath,
+                    suiteId: testFile.suiteId
+                });
+                throw new Error(`Failed to write test file for suite ${testFile.suiteId}: ${error.message}`);
+            }
+        }
+
+        // Create a single report path for all tests under a dedicated 'runs' folder
+        const reportDir = path.join(this.tempDir, 'runs');
+        await fs.mkdir(reportDir, { recursive: true });
+        const reportPath = path.join(reportDir, `${runId}.report.json`);
+
+        logger.info('📁 All test files prepared', {
+            fileCount: filePaths.length,
+            reportPath,
+            testCaseCount: Object.keys(testCaseMap).length
+        });
+
+        // Initialize run status
+        const status: TestRunStatus = {
+            status: 'running',
+            runId,
+            startTime: new Date(),
+            totalTests: 0,
+            passedTests: 0,
+            failedTests: 0,
+            completedTests: 0,
+            currentStep: null,
+            errorMessage: null,
+            progress: 40,
+            skippedTests: 0,
+            endTime: null
+        };
+        this.runningRuns.set(runId, status);
+
+        await this.ensureSignalR(runId);
+
+        const browserCandidates = this.getBrowserCandidates(browser);
+        logger.info('🌐 Browser candidates prepared', { candidates: browserCandidates, requested: browser });
+
+        let failedCount = 0;
+        let succeeded = false;
+        let lastRunError: Error | null = null;
+        let attemptedBrowsers: string[] = [];
+
+        for (const browserConfig of browserCandidates) {
+            attemptedBrowsers.push(browserConfig);
+            logger.info(`🔄 Attempting browser: ${browserConfig}`, this.context(runId, { attempt: attemptedBrowsers.length }));
+
+            await this.sendSignalRUpdate(runId, {
+                status: 'running',
+                progress: 45 + (attemptedBrowsers.length * 5),
+                errorMessage: `Attempting browser: ${browserConfig}`
+            });
+            await this.signalR.sendExecutionLog(runId, `🌐 Attempting to launch browser: ${browserConfig}`);
+
+            try {
+                const runner = await this.getTestCafeRunner();
+                logger.info('🎯 TestCafe runner obtained, starting test execution', this.context(runId, { browserConfig, fileCount: filePaths.length }));
+
+                // Convert all file paths to TestCafe-compatible format
+                const testCafeFilePaths = filePaths.map(fp => {
+                    const absolutePath = path.resolve(fp);
+                    return absolutePath.replace(/\\/g, '/');
+                });
+
+                const absoluteReportPath = path.resolve(reportPath);
+                const testCafeReportPath = absoluteReportPath.replace(/\\/g, '/');
+
+                logger.info('📂 TestCafe file paths:', {
+                    testFiles: testCafeFilePaths,
+                    reportPath: testCafeReportPath
+                });
+
+                await this.sendSignalRUpdate(runId, {
+                    status: 'running',
+                    progress: 50,
+                    errorMessage: `Starting tests with ${browserConfig}...`
+                });
+                await this.signalR.sendExecutionLog(runId, `✅ Browser launched: ${browserConfig}`);
+                await this.signalR.sendExecutionLog(runId, `⏳ Executing ${testCafeFilePaths.length} test file(s)...`);
+
+                // Run all test files together
+                const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_HEADLESS === 'true';
+                const runPromise = runner
+                    .src(testCafeFilePaths)  // Pass all test files at once
+                    .browsers(browserConfig)
+                    .reporter('json', testCafeReportPath)
+                    .run({
+                        pageLoadTimeout: isProduction ? 120000 : 60000,
+                        browserInitTimeout: isProduction ? 300000 : 180000,
+                        selectorTimeout: isProduction ? 30000 : 15000,
+                        assertionTimeout: isProduction ? 30000 : 15000,
+                        speed: 1,
+                        skipJsErrors: true,
+                        quarantineMode: false,
+                        stopOnFirstFail: false
+                    });
+
+                logger.info('⏳ Test execution started, waiting for completion...', this.context(runId, { browserConfig }));
+                failedCount = await runPromise;
+                succeeded = true;
+
+                logger.info('✅ Test execution completed successfully', this.context(runId, { browserConfig, failedCount }));
+                await this.signalR.sendExecutionLog(runId, `✅ Browser tests completed (${failedCount} failed)`);
+                break;
+
+            } catch (runError: any) {
+                lastRunError = runError;
+                const errorDetails = {
+                    browser: browserConfig,
+                    error: runError?.message || String(runError),
+                    stack: runError?.stack,
+                    code: runError?.code,
+                    type: runError?.constructor?.name
+                };
+
+                logger.error(`❌ Browser ${browserConfig} failed to run tests`, this.context(runId, errorDetails));
+                logger.error(`Full error object:`, runError);
+
+                await this.sendSignalRUpdate(runId, {
+                    status: 'running',
+                    progress: Math.max(50, 100 - (browserCandidates.length - attemptedBrowsers.length) * 10),
+                    errorMessage: `Browser ${browserConfig} failed: ${runError?.message || String(runError)}`
+                });
+                await this.signalR.sendExecutionLog(runId, `❌ Browser ${browserConfig} failed: ${runError?.message || String(runError)}`);
+            }
+        }
+
+        if (!succeeded && lastRunError) {
+            logger.error('🚨 All browser attempts failed, final error', this.context(runId, {
+                attemptedBrowsers,
+                finalError: lastRunError.message,
+                stack: lastRunError.stack
+            }));
+
+            await this.sendTestResult(runId, {
+                name: 'Test Preparation Failed',
+                status: 'failed',
+                durationMs: 0,
+                errorMessage: lastRunError.message || 'Test preparation failed',
+                stackTrace: lastRunError.stack
+            });
+
+            await this.sendSignalRUpdate(runId, {
+                status: 'failed',
+                progress: 100,
+                errorMessage: `All browsers failed. Last error: ${lastRunError.message}`,
+                failedTests: 1,
+                totalTests: 1
+            });
+
+            throw lastRunError;
+        }
+
+        // Parse JSON report and send results
+        await this.parseAndSendTestResults(runId, reportPath, testCaseMap);
+    }
+
+    /**
+     * Parse TestCafe JSON report and send individual test results
+     */
+    private async parseAndSendTestResults(
+        runId: string,
+        reportPath: string,
+        testCaseMap: { [testName: string]: string }
+    ): Promise<void> {
+        let reportData: any = null;
+        let actualPassedTests = 0;
+        let actualFailedTests = 0;
+        let actualTotalTests = 0;
+
+        try {
+            const reportContent = await fs.readFile(reportPath, 'utf8');
+            reportData = JSON.parse(reportContent);
+
+            // Extract actual test results from report and send each test result
+            if (reportData?.fixtures) {
+                for (const fixture of reportData.fixtures) {
+                    if (fixture.tests) {
+                        for (const test of fixture.tests) {
+                            actualTotalTests++;
+                            const hasFailed = test.errs && test.errs.length > 0;
+
+                            if (hasFailed) {
+                                actualFailedTests++;
+                            } else {
+                                actualPassedTests++;
+                            }
+
+                            // Send individual test result to webhook
+                            const testCaseId = testCaseMap[test.name];
+                            if (!testCaseId) {
+                                logger.warn(`⚠️ Test case ID not found for test: "${test.name}"`, this.context(runId, {
+                                    availableTests: Object.keys(testCaseMap)
+                                }));
+                            }
+
+                            await this.sendTestResult(runId, {
+                                name: test.name,
+                                testCaseId: testCaseId,
+                                status: hasFailed ? 'failed' : 'passed',
+                                durationMs: test.durationMs || 0,
+                                errorMessage: hasFailed ? (test.errs[0]?.errMsg || test.errs[0] || 'Test failed') : undefined,
+                                stackTrace: hasFailed ? (test.errs[0]?.stack || test.errs[0]) : undefined
+                            });
+                        }
+                    }
+                }
+            }
+
+            logger.info('📊 Test report parsed successfully', this.context(runId, {
+                totalTests: actualTotalTests,
+                passedTests: actualPassedTests,
+                failedTests: actualFailedTests
+            }));
+
+            // Send final status update
+            await this.sendSignalRUpdate(runId, {
+                status: actualFailedTests > 0 ? 'failed' : 'completed',
+                progress: 100,
+                totalTests: actualTotalTests,
+                passedTests: actualPassedTests,
+                failedTests: actualFailedTests,
+                completedTests: actualTotalTests,
+                errorMessage: null
+            });
+
+        } catch (error: any) {
+            logger.error('❌ Failed to parse test report', this.context(runId, {
+                error: error.message,
+                stack: error.stack,
+                reportPath
+            }));
+
+            await this.sendSignalRUpdate(runId, {
+                status: 'failed',
+                progress: 100,
+                errorMessage: `Failed to parse test report: ${error.message}`
+            });
+
+            throw error;
+        }
+    }
+
+    /**
+     * @deprecated Use runMultipleTestCafeFiles instead
+     */
+    async runGeneratedTestCafeFile(suiteId: string, fileContent: string, browser: string, runId: string, generatedFilePath?: string): Promise<{ runId: string; status: TestRunStatus['status']; failedCount: number }> {
+        logger.info('🚀 Starting TestCafe execution', this.context(runId, { suiteId, generatedFilePath }));
+
+        // Extract TEST_CASE_ID from generated file content
+        const testCaseMap = this.extractTestCaseIdMapping(fileContent, runId);
         logger.info('📁 Temp directory ensured', { tempDir: this.tempDir });
 
-        const filePath = path.join(this.tempDir, `${runId}.test.js`);
-        const reportPath = path.join(this.tempDir, `${runId}-report.json`);
+        // Use the generated file path if provided, otherwise create a temporary one
+        let filePath: string;
+        let reportPath: string;
 
+        if (generatedFilePath) {
+            // Check if the path already includes the temp directory
+            const normalizedTempDir = path.normalize(this.tempDir);
+            const normalizedFilePath = path.normalize(generatedFilePath);
+
+            if (normalizedFilePath.startsWith(normalizedTempDir)) {
+                // If the path already includes the temp dir, use it as is
+                filePath = normalizedFilePath;
+            } else {
+                // Otherwise, join them
+                filePath = path.join(this.tempDir, generatedFilePath);
+            }
+
+            // Create report path with .report.json suffix, next to the test file
+            const fileNameWithoutExt = path.basename(generatedFilePath, '.test.js');
+            const dirName = path.dirname(filePath);
+            reportPath = path.join(dirName, `${fileNameWithoutExt}.report.json`);
+        } else {
+            // We should always receive a generatedFilePath from the API layer.
+            // Throwing here prevents creating unexpected root-level temp files.
+            throw new Error('runGeneratedTestCafeFile called without generatedFilePath. Backend must supply filePath to avoid root-level temp files.');
+        }
+        logger.info('File path construction', {
+            tempDir: this.tempDir,
+            generatedFilePath,
+            finalPath: filePath,
+            reportPath
+        });
         logger.info('📝 Writing test file', { filePath });
-        await fs.writeFile(filePath, fileContent, 'utf8');
+        try {
+            await fs.mkdir(path.dirname(filePath), { recursive: true });
+            await fs.writeFile(filePath, fileContent, 'utf8');
+            logger.info('Test file written successfully', { filePath });
+        } catch (error: any) {
+            logger.error('Failed to write test file', {
+                error: error.message,
+                stack: error.stack,
+                filePath,
+                tempDir: this.tempDir
+            });
+            throw new Error(`Failed to write test file: ${error.message}`);
+        }
         logger.info('✅ Test file written successfully', { filePath, size: fileContent.length });
 
         // Initialize run status
@@ -790,6 +1209,21 @@ test('${tc.name}', async t => {
                 const runner = await this.getTestCafeRunner();
                 logger.info('🎯 TestCafe runner obtained, starting test execution', this.context(runId, { browserConfig }));
 
+                // Log the exact file path being used
+                const absoluteFilePath = path.resolve(filePath);
+                const absoluteReportPath = path.resolve(reportPath);
+
+                // Convert Windows backslashes to forward slashes for TestCafe compatibility
+                const testCafeFilePath = absoluteFilePath.replace(/\\/g, '/');
+                const testCafeReportPath = absoluteReportPath.replace(/\\/g, '/');
+
+                logger.info('📂 TestCafe file path details:', {
+                    originalPath: filePath,
+                    absolutePath: absoluteFilePath,
+                    testCafePath: testCafeFilePath,
+                    fileExists: require('fs').existsSync(absoluteFilePath)
+                });
+
                 await this.sendSignalRUpdate(runId, {
                     status: 'running',
                     progress: 15 + (attemptedBrowsers.length * 5),
@@ -798,11 +1232,11 @@ test('${tc.name}', async t => {
 
                 // Increase timeouts significantly for production headless mode
                 const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_HEADLESS === 'true';
-                const runPromise = runner.src([filePath]).browsers(browserConfig).reporter('json', reportPath).run({
-                    pageLoadTimeout: isProduction ? 120000 : 30000,      // 2 minutes in production
-                    browserInitTimeout: isProduction ? 180000 : 60000,   // 3 minutes in production
-                    selectorTimeout: isProduction ? 30000 : 10000,       // 30 seconds in production
-                    assertionTimeout: isProduction ? 30000 : 10000,      // 30 seconds in production
+                const runPromise = runner.src([testCafeFilePath]).browsers(browserConfig).reporter('json', testCafeReportPath).run({
+                    pageLoadTimeout: isProduction ? 120000 : 60000,      // 2 minutes in production, 1 minute in dev
+                    browserInitTimeout: isProduction ? 300000 : 180000,  // 5 minutes in production, 3 minutes in dev (increased)
+                    selectorTimeout: isProduction ? 30000 : 15000,       // 30 seconds in production, 15 seconds in dev
+                    assertionTimeout: isProduction ? 30000 : 15000,      // 30 seconds in production, 15 seconds in dev
                     speed: 1,
                     skipJsErrors: true,                                   // Skip JS errors to prevent crashes
                     quarantineMode: false,
@@ -890,8 +1324,16 @@ test('${tc.name}', async t => {
                             }
 
                             // Send individual test result to webhook
+                            const testCaseId = testCaseMap[test.name];
+                            if (!testCaseId) {
+                                logger.warn(`⚠️ Test case ID not found for test: "${test.name}"`, this.context(runId, {
+                                    availableTests: Object.keys(testCaseMap)
+                                }));
+                            }
+
                             await this.sendTestResult(runId, {
                                 name: test.name,
+                                testCaseId: testCaseId,
                                 status: hasFailed ? 'failed' : 'passed',
                                 durationMs: test.durationMs || 0,
                                 errorMessage: hasFailed ? (test.errs[0]?.errMsg || test.errs[0] || 'Test failed') : undefined,
@@ -929,6 +1371,7 @@ test('${tc.name}', async t => {
         logger.info('🏁 TestCafe file execution completed', this.context(runId, finalStatus));
         return { runId, status: finalStatus.status, failedCount: actualFailedTests };
     }
+
 
     // --- Run control ----------------------------------------------------------
 

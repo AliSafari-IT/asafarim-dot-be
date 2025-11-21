@@ -1,0 +1,200 @@
+/* Generic List View Component */
+
+.list-view-container {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Header */
+.list-view-header {
+  display: grid;
+  gap: 0;
+  background-color: var(--color-neutral-200);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0;
+}
+
+.list-view-header-cell {
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent-800);
+  text-transform: uppercase;
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.05em;
+  border-right: 1px solid var(--color-border);
+}
+
+.list-view-header-cell:last-child {
+  border-right: none;
+}
+
+.list-view-header-cell.list-view-actions {
+  flex: 0 0 80px;
+  text-align: center;
+}
+
+/* Body */
+.list-view-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Row */
+.list-view-row {
+  display: grid;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s ease-in-out;
+  position: relative;
+}
+
+.list-view-row:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.list-view-row:last-child {
+  border-bottom: none;
+}
+
+/* Cell */
+.list-view-cell {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground);
+  border-right: 1px solid var(--color-border);
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+}
+
+.list-view-cell:last-child {
+  border-right: none;
+}
+
+/* First Cell with Hover Button */
+.list-view-cell--first {
+  position: relative;
+}
+
+.list-view-cell-content {
+  flex: 1;
+}
+
+.list-view-hover-button {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list-view-row:hover .list-view-hover-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.list-view-cell.list-view-actions {
+  flex: 0 0 80px;
+  justify-content: center;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* View Button */
+.list-view-view-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  opacity: 0;
+}
+
+.list-view-row:hover .list-view-view-button {
+  opacity: 1;
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-200);
+}
+
+.list-view-view-button:hover {
+  background-color: var(--color-primary-100);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-700);
+}
+
+/* Loading State */
+.list-view-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  color: var(--color-foreground-muted);
+  font-size: var(--font-size-lg);
+}
+
+.list-view-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State */
+.list-view-error {
+  padding: var(--space-6);
+  background-color: rgba(var(--color-error-rgb), 0.05);
+  border: 1px solid var(--color-error-200);
+  border-radius: var(--radius-md);
+  color: var(--color-error);
+  text-align: center;
+}
+
+/* Empty State */
+.list-view-empty {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--color-foreground-muted);
+  font-size: var(--font-size-lg);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .list-view-header-cell,
+  .list-view-cell {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+  }
+
+  .list-view-header-cell.list-view-actions,
+  .list-view-cell.list-view-actions {
+    flex: 0 0 auto;
+  }
+}
