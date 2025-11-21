@@ -16,7 +16,9 @@
   "types": "index.ts",
   "scripts": {
     "build": "tsc -b",
-    "dev": "tsc -w"
+    "dev": "tsc -w",
+    "start": "pnpm run build",
+    "prepublishOnly": "tsc -b"
   },
   "exports": {
     ".": "./index.ts",

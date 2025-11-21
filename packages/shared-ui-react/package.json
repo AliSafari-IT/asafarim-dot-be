@@ -19,6 +19,7 @@
   "scripts": {
     "build": "tsc -b",
     "dev": "tsc -w",
+    "start": "pnpm run build",
     "prepublishOnly": "tsc -b"
   },
   "exports": {

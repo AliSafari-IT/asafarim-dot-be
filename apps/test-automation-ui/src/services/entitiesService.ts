@@ -7,8 +7,11 @@ export interface TestSuite {
   description?: string;
   executionOrder: number;
   isActive: boolean;
+  generatedTestCafeFile?: string;
+  generatedFilePath?: string;
   createdAt: string;
   updatedAt: string;
+  passed?: boolean;
 }
 
 export interface TestRun {
@@ -44,6 +47,7 @@ export interface TestCase {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  passed?: boolean;
 }
 
 export interface TestRunResultAttachment {

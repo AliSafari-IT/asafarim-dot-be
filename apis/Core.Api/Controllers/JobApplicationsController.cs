@@ -2,6 +2,7 @@ using Core.Api.Data;
 using Core.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Core.Api.Controllers;
 
@@ -98,6 +99,7 @@ public class JobApplicationsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<JobApplicationDto>> Create(JobApplicationDto dto)
     {
         try
@@ -150,6 +152,7 @@ public class JobApplicationsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> Update(Guid id, JobApplicationDto dto)
     {
         if (id != dto.Id)
@@ -198,6 +201,7 @@ public class JobApplicationsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
         var application = await _context.JobApplications.FindAsync(id);

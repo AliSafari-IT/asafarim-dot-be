@@ -4,6 +4,7 @@ import { GenericCrudPage } from './GenericCrudPage';
 import { ColumnDefinition } from '../components/GenericTable';
 import { FormFieldDefinition } from '../components/GenericForm';
 import { api } from '../config/api';
+import { truncateAtWord } from '@asafarim/helpers';
 
 interface TestDataSet {
   id: string;
@@ -52,8 +53,11 @@ export default function TestDataSetsPage() {
       render: (item) => getTestCaseName(item.testCaseId),
     },
     {
-      header: 'Description',
-      field: 'description',
+      header: "Description",
+      field: "description",
+      render: (item) => truncateAtWord(item.description, 105),
+      width: "25%",
+      sortable: false,
     },
     {
       header: 'Active',

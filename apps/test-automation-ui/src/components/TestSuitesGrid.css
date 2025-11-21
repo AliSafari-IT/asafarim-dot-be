@@ -1,0 +1,296 @@
+/* Test Suites Grid Component - Using Design Tokens */
+
+.test-suites-grid-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Grid Controls */
+.grid-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.selection-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.checkbox-label span {
+  white-space: nowrap;
+}
+
+.filter-container {
+  width: 100%;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 24px);
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Sort Controls */
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.sort-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  white-space: nowrap;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sort-button:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary);
+}
+
+.sort-button.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-neutral-950);
+}
+
+.sort-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Results Info */
+.results-info {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-primary-100);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-md);
+}
+
+.results-info p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-primary-800);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Grid Layout */
+.test-suites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
+  gap: var(--space-4);
+  width: 100%;
+}
+
+/* Empty State */
+.empty-grid-state {
+  padding: var(--space-8);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-content {
+  text-align: center;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.empty-content h3 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+  margin: 0;
+}
+
+.empty-content p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.empty-content .button {
+  align-self: center;
+}
+
+/* Responsive Design */
+@media (min-width: 1024px) {
+  .grid-controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .filter-container {
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .sort-container {
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 1280px) {
+  .test-suites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  }
+}
+
+@media (min-width: 1536px) {
+  .test-suites-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .test-suites-grid-container {
+    gap: var(--space-3);
+  }
+
+  .grid-controls {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .sort-container {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .sort-buttons {
+    width: 100%;
+  }
+
+  .sort-button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .test-suites-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .empty-grid-state {
+    padding: var(--space-6);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-controls {
+    padding: var(--space-2);
+  }
+
+  .sort-buttons {
+    flex-direction: column;
+  }
+
+  .sort-button {
+    width: 100%;
+  }
+
+  .empty-grid-state {
+    padding: var(--space-4);
+  }
+
+  .empty-content h3 {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .search-input,
+  .sort-button,
+  .test-suite-card {
+    transition: none;
+  }
+}

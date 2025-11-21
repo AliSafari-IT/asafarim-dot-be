@@ -5,6 +5,9 @@ import { API_BASE } from "../config/api";
 import "./TestRunDetailsPage.css";
 import React from "react";
 import { ButtonComponent } from "@asafarim/shared-ui-react";
+import { Copy } from "lucide-react";
+import { useToast } from "@asafarim/toast";
+import { fetchTestRunReport } from "../hooks/useTestrunReport";
 
 interface TestRun {
   id: string;
@@ -29,6 +32,7 @@ interface TestResult {
   durationMs: number;
   errorMessage?: string;
   stackTrace?: string;
+  screenshotPath?: string;
   runAt: string;
 }
 
@@ -44,6 +48,8 @@ export function TestRunDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [executionLogs, setExecutionLogs] = useState<string[]>([]);
+  const toast = useToast();
 
   // Fetch test run details and results
   useEffect(() => {
@@ -166,6 +172,17 @@ export function TestRunDetailsPage() {
           );
         });
 
+        newConnection.on("ExecutionLog", (log: string) => {
+          console.log("📝 Execution log:", log);
+          setExecutionLogs((prev) => [...prev, log]);
+        });
+
+        newConnection.on("TestUpdate", (msg: any) => {
+          const logMessage = msg.message || JSON.stringify(msg);
+          console.log("📝 Test update:", logMessage);
+          setExecutionLogs((prev) => [...prev, logMessage]);
+        });
+
         setConnection(newConnection);
       } catch (err) {
         console.error("❌ Failed to connect to SignalR:", err);
@@ -184,6 +201,42 @@ export function TestRunDetailsPage() {
       `${API_BASE}/api/test-runs/${id}/download?format=${format}`,
       "_blank"
     );
+  };
+
+  const copyReport = async (format: "html" | "json") => {
+    try {
+      console.log(`📋 Fetching ${format} report for run ${id}`);
+      const report = await fetchTestRunReport(id!, format);
+      console.log(`📋 Report fetched, length: ${report.length}`);
+
+      if (!report || report.length === 0) {
+        toast.error("Report is empty");
+        return;
+      }
+
+      // Try using Clipboard API first (modern browsers)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(report);
+        console.log(`✅ Report copied to clipboard`);
+        toast.info(`Report in ${format} is copied to clipboard.`);
+      } else {
+        // Fallback: create a temporary textarea and copy using execCommand
+        const textarea = document.createElement("textarea");
+        textarea.value = report;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        console.log(`✅ Report copied to clipboard (fallback method)`);
+        toast.info(`Report in ${format} is copied to clipboard.`);
+      }
+    } catch (error: any) {
+      console.error("❌ Failed to copy report:", error);
+      console.error("Error details:", error.response?.data || error.message);
+      toast.error(`Failed to copy report: ${error.message}`);
+    }
   };
 
   const rerunFailed = async () => {
@@ -358,7 +411,11 @@ export function TestRunDetailsPage() {
           </div>
         </div>
 
-        <div className={`summary-card ${testRun.status === 'running' ? 'status-running' : ''}`}>
+        <div
+          className={`summary-card ${
+            testRun.status === "running" ? "status-running" : ""
+          }`}
+        >
           <div className="card-icon">🔄</div>
           <div className="card-content">
             <div className="card-label">Status</div>
@@ -424,6 +481,14 @@ export function TestRunDetailsPage() {
           >
             📋 Download JSON
           </ButtonComponent>
+          <ButtonComponent
+            variant="ghost"
+            title={"Copy results in json"}
+            onClick={() => copyReport("json")}
+            data-testid="copy-json"
+          >
+            <Copy />
+          </ButtonComponent>
 
           {testRun.failedTests > 0 && testRun.status !== "Running" && (
             <ButtonComponent
@@ -447,11 +512,42 @@ export function TestRunDetailsPage() {
         </div>
       </div>
 
+      {/* Execution Logs - Show while running or if no results yet */}
+      {(testRun?.status === "Running" ||
+        (filteredResults.length === 0 && executionLogs.length > 0)) && (
+        <div
+          className="execution-logs-section"
+          data-testid="execution-logs-section"
+        >
+          <h2>Execution Logs</h2>
+          <div className="execution-logs-container">
+            {executionLogs.length === 0 ? (
+              <div className="empty-state">Waiting for test execution...</div>
+            ) : (
+              <div className="execution-logs-terminal">
+                {executionLogs.map((log, index) => (
+                  <div key={index} className="execution-log-line">
+                    <span className="log-timestamp">
+                      [{new Date().toLocaleTimeString()}]
+                    </span>
+                    <span className="log-message">{log}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Results Table */}
       <div className="results-section" data-testid="results-section">
         <h2>Test Results</h2>
         {filteredResults.length === 0 ? (
-          <div className="empty-state">No test results found</div>
+          <div className="empty-state">
+            {testRun?.status === "Running"
+              ? "Tests are running... Check execution logs above for progress"
+              : "No test results found"}
+          </div>
         ) : (
           <table className="results-table" data-testid="results-table">
             <thead>
@@ -514,6 +610,22 @@ export function TestRunDetailsPage() {
                             >
                               <strong>Stack Trace:</strong>
                               <pre>{result.stackTrace}</pre>
+                            </div>
+                          )}
+                          {result.screenshotPath && (
+                            <div
+                              className="screenshot-section"
+                              data-testid={`screenshot-section-${result.id}`}
+                            >
+                              <strong>Screenshot:</strong>
+                              <div className="screenshot-container">
+                                <img
+                                  src={result.screenshotPath}
+                                  alt="Test failure screenshot"
+                                  className="screenshot-image"
+                                  data-testid={`screenshot-image-${result.id}`}
+                                />
+                              </div>
                             </div>
                           )}
                         </div>

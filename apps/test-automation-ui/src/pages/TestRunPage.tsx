@@ -18,6 +18,20 @@ interface TestSuite {
   description: string;
   status: "idle" | "running" | "completed" | "failed";
   testCases: number;
+  fixtureId: string;
+}
+
+interface FunctionalRequirement {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+interface FixtureSummary {
+  id: string;
+  name: string;
+  description?: string;
+  functionalRequirementId: string;
 }
 
 interface TestRun {
@@ -33,14 +47,12 @@ interface TestRun {
 
 export default function TestRunPage() {
   const { isAuthenticated, loading, token } = useAuth();
-  const [allSuites, setAllSuites] = useState<TestSuite[]>([]); // Store all suites
-  const [suites, setSuites] = useState<TestSuite[]>([]); // Filtered suites to display
+  const [suites, setSuites] = useState<TestSuite[]>([]);
   const [selectedSuiteIds, setSelectedSuiteIds] = useState<string[]>([]);
-  const [selectedFunctionalRequirementId, setSelectedFunctionalRequirementId] =
-    useState<string>("");
-  const [functionalRequirements, setFunctionalRequirements] = useState<any[]>(
-    []
-  );
+  const [functionalRequirements, setFunctionalRequirements] = useState<
+    FunctionalRequirement[]
+  >([]);
+  const [fixtures, setFixtures] = useState<FixtureSummary[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [runId, setRunId] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
@@ -57,14 +69,21 @@ export default function TestRunPage() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  // Fetch test suites, functional requirements, and run history on page load
+  useEffect(() => {
+    // Force scroll to top after initial render
+    const id = window.setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, []);
+
   useEffect(() => {
     const fetchSuites = async () => {
       try {
         const response = await api.get("/api/test-suites");
         const suitesData = response.data || [];
-        setAllSuites(suitesData);
-        setSuites(suitesData); // Initially show all suites
+        setSuites(suitesData);
       } catch (error) {
         toast.error("Failed to fetch test suites");
         console.error(error);
@@ -80,36 +99,21 @@ export default function TestRunPage() {
       }
     };
 
+    const fetchFixtures = async () => {
+      try {
+        const response = await api.get("/api/fixtures");
+        setFixtures(response.data || []);
+      } catch (error) {
+        console.error("Failed to fetch fixtures:", error);
+      }
+    };
+
     fetchSuites();
     fetchFunctionalRequirements();
+    fetchFixtures();
     fetchRunHistory();
   }, []);
 
-  // Filter test suites when functional requirement changes
-  useEffect(() => {
-    if (!selectedFunctionalRequirementId) {
-      // No FR selected, show all suites
-      setSuites(allSuites);
-      setSelectedSuiteIds([]); // Clear selection when filter changes
-    } else {
-      // FR selected, fetch filtered suites
-      const fetchFilteredSuites = async () => {
-        try {
-          const response = await api.get(
-            `/api/test-suites?functionalRequirementId=${selectedFunctionalRequirementId}`
-          );
-          setSuites(response.data || []);
-          setSelectedSuiteIds([]); // Clear selection when filter changes
-        } catch (error) {
-          console.error("Failed to fetch filtered test suites:", error);
-          toast.error("Failed to filter test suites");
-        }
-      };
-      fetchFilteredSuites();
-    }
-  }, [selectedFunctionalRequirementId, allSuites]);
-
-  // Setup SignalR connection
   useEffect(() => {
     if (!token) return;
 
@@ -130,7 +134,7 @@ export default function TestRunPage() {
     });
 
     hubConnection.on("TestRunCompleted", (result: any) => {
-      console.log("✅ TestRunCompleted event received:", result);
+      console.log("TestRunCompleted event received:", result);
       setIsRunning(false);
       setProgress({
         totalTests: result.totalTests || 0,
@@ -141,28 +145,8 @@ export default function TestRunPage() {
       toast.success("Test run completed!");
       setLogs((prev) => [
         ...prev,
-        `✓ Test run completed: ${result.passedTests} passed, ${result.failedTests} failed`,
+        `Test run completed: ${result.passedTests} passed, ${result.failedTests} failed`,
       ]);
-      // Fetch updated run history
-      fetchRunHistory();
-    });
-
-    // Fallback for lowercase event name (SignalR case sensitivity)
-    hubConnection.on("testruncompleted", (result: any) => {
-      console.log("✅ testruncompleted event received:", result);
-      setIsRunning(false);
-      setProgress({
-        totalTests: result.totalTests || 0,
-        completedTests: result.totalTests || 0,
-        passedTests: result.passedTests || 0,
-        failedTests: result.failedTests || 0,
-      });
-      toast.success("Test run completed!");
-      setLogs((prev) => [
-        ...prev,
-        `✓ Test run completed: ${result.passedTests} passed, ${result.failedTests} failed`,
-      ]);
-      // Fetch updated run history
       fetchRunHistory();
     });
 
@@ -170,7 +154,7 @@ export default function TestRunPage() {
       .start()
       .then(() => {
         console.log("SignalR Connected");
-        setLogs((prev) => [...prev, "✓ Connected to test server"]);
+        setLogs((prev) => [...prev, "Connected to test server"]);
       })
       .catch((err) => {
         console.error("SignalR Connection Error:", err);
@@ -191,6 +175,24 @@ export default function TestRunPage() {
     } catch (error) {
       console.error("Failed to fetch run history:", error);
     }
+  };
+
+  const getRunFunctionalRequirementId = () => {
+    if (selectedSuiteIds.length === 0) return null;
+
+    const selectedSuitesDetails = suites.filter((s) =>
+      selectedSuiteIds.includes(s.id)
+    );
+    if (selectedSuitesDetails.length === 0) return null;
+
+    const fixtureIds = new Set(selectedSuitesDetails.map((s) => s.fixtureId));
+    const frIds = new Set(
+      fixtures
+        .filter((f) => fixtureIds.has(f.id))
+        .map((f) => f.functionalRequirementId)
+    );
+
+    return frIds.size === 1 ? Array.from(frIds)[0] : null;
   };
 
   const handleSuiteSelection = (suiteIdOrMsg: string) => {
@@ -227,17 +229,19 @@ export default function TestRunPage() {
         failedTests: 0,
       });
 
+      const functionalRequirementIdForRun = getRunFunctionalRequirementId();
+
       const response = await api.post("/api/test-execution/run", {
         runName: `Manual Run - ${new Date().toLocaleString()}`,
         environment: "Development",
         browser: "chrome",
         testSuiteIds: selectedSuiteIds,
-        functionalRequirementId: selectedFunctionalRequirementId || null,
+        functionalRequirementId: functionalRequirementIdForRun,
       });
 
       const newRunId = response.data.id;
       setRunId(newRunId);
-      setLogs((prev) => [...prev, `✓ Test run started with ID: ${newRunId}`]);
+      setLogs((prev) => [...prev, `Test run started with ID: ${newRunId}`]);
 
       if (connection) {
         await connection.invoke("JoinTestRun", newRunId);
@@ -250,7 +254,7 @@ export default function TestRunPage() {
         "Failed to start test run";
       toast.error(errorMsg);
       console.error("Test run error:", error);
-      setLogs((prev) => [...prev, `✗ Error: ${errorMsg}`]);
+      setLogs((prev) => [...prev, `Error: ${errorMsg}`]);
     }
   };
 
@@ -259,7 +263,7 @@ export default function TestRunPage() {
     try {
       await api.post(`/api/test-execution/cancel/${runId}`);
       setIsRunning(false);
-      setLogs((prev) => [...prev, "✓ Test run cancelled"]);
+      setLogs((prev) => [...prev, "Test run cancelled"]);
       toast.success("Test run cancelled");
     } catch (error) {
       toast.error("Failed to cancel test run");
@@ -301,58 +305,17 @@ export default function TestRunPage() {
 
         {/* Main Content */}
         <div className="test-run-grid">
-          {/* Test Suite Selector */}
+          {/* Test Suites & Functional Requirement filter */}
           <div className="test-run-sidebar">
-            {/* Functional Requirement Selector */}
-            <div
-              style={{
-                marginBottom: "1.5rem",
-                padding: "1rem",
-                background: "var(--color-surface)",
-                borderRadius: "8px",
-                border: "1px solid var(--color-border)",
-              }}
-            >
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "0.5rem",
-                  fontWeight: 500,
-                  color: "var(--color-text-primary)",
-                }}
-              >
-                Functional Requirement (Optional)
-              </label>
-              <select
-                value={selectedFunctionalRequirementId}
-                onChange={(e) =>
-                  setSelectedFunctionalRequirementId(e.target.value)
-                }
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  borderRadius: "4px",
-                  border: "1px solid var(--color-border)",
-                  background: "var(--color-background)",
-                  color: "var(--color-text-primary)",
-                }}
-              >
-                <option value="">-- Select Functional Requirement --</option>
-                {functionalRequirements.map((fr) => (
-                  <option key={fr.id} value={fr.id}>
-                    {fr.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <TestSuiteSelector
               suites={suites}
               selectedSuites={selectedSuiteIds}
-              onSelect={handleSuiteSelection}
+              onToggleSuite={handleSuiteSelection}
+              onSetSelectedSuites={setSelectedSuiteIds}
+              functionalRequirements={functionalRequirements}
+              fixtures={fixtures}
             />
           </div>
-
           {/* Execution Logs */}
           <div className="test-run-main">
             <ExecutionLogs logs={logs} isRunning={isRunning} />

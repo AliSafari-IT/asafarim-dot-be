@@ -1,3 +1,4 @@
+// apis/TestAutomation.Api/Services/TestExecutionService.cs
 using System.Linq;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -61,17 +62,40 @@ public class TestExecutionService : ITestExecutionService
         var testSuiteIds = request.TestSuiteIds ?? new List<Guid>();
         var testCafeGenerator = new TestCafeGeneratorService(_db);
 
-        var generatedFiles = new List<(Guid suiteId, string fileContent)>();
+        _logger.LogInformation("🔄 Regenerating TestCafe files for all test suites in this run...");
+
+        var generatedFiles = new List<(Guid suiteId, string filePath, string fileContent)>();
         foreach (var suiteId in testSuiteIds)
         {
             try
             {
                 _logger.LogInformation("Generating TestCafe file for suite {SuiteId}", suiteId);
-                var fileContent = await testCafeGenerator.GenerateTestCafeFileAsync(suiteId);
-                generatedFiles.Add((suiteId, fileContent));
+                var (filePath, fileContent) = await testCafeGenerator.GenerateTestCafeFileAsync(
+                    suiteId
+                );
+                generatedFiles.Add((suiteId, filePath, fileContent));
+
+                // Update the test suite with the new file path and content
+                var testSuite = await _db.TestSuites.FindAsync(suiteId);
+                if (testSuite != null)
+                {
+                    testSuite.GeneratedTestCafeFile = fileContent;
+                    testSuite.GeneratedFilePath = filePath;
+                    testSuite.GeneratedAt = DateTime.UtcNow;
+                    testSuite.UpdatedAt = DateTime.UtcNow;
+                    _db.TestSuites.Update(testSuite);
+                    await _db.SaveChangesAsync();
+
+                    _logger.LogInformation(
+                        "💾 Updated database with new GeneratedFilePath: {FilePath}",
+                        filePath
+                    );
+                }
+
                 _logger.LogInformation(
-                    "✅ Generated TestCafe file for suite {SuiteId}, size: {Size} bytes",
+                    "✅ Generated TestCafe file for suite {SuiteId} at {FilePath}, size: {Size} bytes",
                     suiteId,
+                    filePath,
                     fileContent.Length
                 );
             }
@@ -86,81 +110,116 @@ public class TestExecutionService : ITestExecutionService
             }
         }
 
-        // If we have generated files, send them to the new endpoint
+        // After regeneration, check if any test suites still have validation errors
+        var suitesWithErrors = new List<(Guid suiteId, string suiteName, string errors)>();
+        foreach (var suiteId in testSuiteIds)
+        {
+            var suite = await _db
+                .TestSuites.Include(ts => ts.Fixture)
+                .FirstOrDefaultAsync(ts => ts.Id == suiteId);
+
+            if (suite != null && !string.IsNullOrEmpty(suite.Fixture.Remark))
+            {
+                suitesWithErrors.Add((suiteId, suite.Name, suite.Fixture.Remark));
+                _logger.LogWarning(
+                    "⚠️ Test suite {SuiteName} has validation warnings: {Errors}",
+                    suite.Name,
+                    suite.Fixture.Remark
+                );
+            }
+        }
+
+        // Log validation errors but don't abort - let tests run anyway
+        if (suitesWithErrors.Any())
+        {
+            _logger.LogWarning(
+                "⚠️ {Count} test suite(s) have validation warnings - proceeding anyway",
+                suitesWithErrors.Count
+            );
+        }
+        else
+        {
+            _logger.LogInformation(
+                "✅ All test suites regenerated successfully with no validation errors"
+            );
+        }
+
+        // If we have generated files, send each of them to the TestRunner separately.
+        // The runner will execute every suite file from its own GeneratedFilePath and
+        // write a .report.json file next to each .test.js file.
         if (generatedFiles.Count > 0)
         {
-            // Combine multiple suites into a single JS file so the runner executes all of them
-            string combinedContent;
-            if (generatedFiles.Count == 1)
+            // Fire-and-forget background task that runs suites serially
+            _ = Task.Run(async () =>
             {
-                combinedContent = generatedFiles[0].fileContent;
-            }
-            else
-            {
-                var sbCombined = new System.Text.StringBuilder();
-                sbCombined.AppendLine("import { Selector } from 'testcafe';");
-                sbCombined.AppendLine();
+                var client = _httpClientFactory.CreateClient("TestRunnerClient");
+                client.DefaultRequestHeaders.Add("x-api-key", _config["TestRunner:ApiKey"] ?? "");
+
+                var baseUrl = _config["TestRunner:BaseUrl"] ?? "http://localhost:4000";
 
                 foreach (var gf in generatedFiles)
                 {
-                    var content = gf.fileContent ?? string.Empty;
-                    // Strip leading import lines to avoid duplicate imports in the middle of file
-                    content = Regex.Replace(
-                        content,
-                        "^\\s*import\\s+\\{[^}]*\\}\\s+from\\s+['\"`]testcafe['\"`];?\\s*\n",
-                        string.Empty,
-                        RegexOptions.Multiline
-                    );
-                    sbCombined.AppendLine(content.Trim());
-                    sbCombined.AppendLine();
-                }
-                combinedContent = sbCombined.ToString();
-            }
-
-            var payload = new
-            {
-                // Use run id as the identifier for the combined file to avoid clashes and represent multi-suite runs
-                testSuiteId = run.Id.ToString(),
-                fileContent = combinedContent,
-                browser = run.Browser ?? "chrome",
-                runId = run.Id.ToString(),
-            };
-
-            // Log the full payload for debugging
-            var payloadJson = System.Text.Json.JsonSerializer.Serialize(
-                payload,
-                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
-            );
-            _logger.LogInformation(
-                "Sending generated TestCafe file to TestRunner: {Payload}",
-                payloadJson
-            );
-
-            // Send to Node runner (fire-and-forget - don't wait for tests to complete)
-            var client = _httpClientFactory.CreateClient("TestRunnerClient");
-            client.DefaultRequestHeaders.Add("x-api-key", _config["TestRunner:ApiKey"] ?? "");
-
-            // Start the test run asynchronously without waiting for it to complete
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    _logger.LogInformation(
-                        "🚀 Sending generated TestCafe file to TestRunner at {BaseUrl}/run-generated-file",
-                        _config["TestRunner:BaseUrl"] ?? "http://localhost:4000"
-                    );
-
-                    var response = await client.PostAsJsonAsync("/run-generated-file", payload);
-
-                    if (!response.IsSuccessStatusCode)
+                    try
                     {
-                        var errorContent = await response.Content.ReadAsStringAsync();
-                        _logger.LogError(
-                            "❌ Failed to start Node runner: {Status} - {Error}",
-                            response.StatusCode,
-                            errorContent
+                        var payload = new
+                        {
+                            testSuiteId = gf.suiteId.ToString(),
+                            fileContent = gf.fileContent,
+                            browser = run.Browser ?? "chrome",
+                            runId = run.Id.ToString(),
+                            filePath = gf.filePath,
+                        };
+
+                        // Log payload summary (not full content) for debugging
+                        _logger.LogInformation(
+                            "🚀 Sending generated TestCafe file for suite {SuiteId} to TestRunner at {BaseUrl}/run-generated-file with filePath {FilePath}",
+                            gf.suiteId,
+                            baseUrl,
+                            gf.filePath
                         );
 
+                        var response = await client.PostAsJsonAsync("/run-generated-file", payload);
+
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            var errorContent = await response.Content.ReadAsStringAsync();
+                            _logger.LogError(
+                                "❌ Failed to start Node runner for suite {SuiteId}: {Status} - {Error}",
+                                gf.suiteId,
+                                response.StatusCode,
+                                errorContent
+                            );
+
+                            run.Status = TestRunStatus.Failed;
+                            run.CompletedAt = DateTime.UtcNow;
+                            await _db.SaveChangesAsync();
+
+                            // Send SignalR update about the failure
+                            await _hubContext
+                                .Clients.Group($"testrun-{run.Id}")
+                                .SendAsync(
+                                    "ReceiveTestUpdate",
+                                    new
+                                    {
+                                        testRunId = run.Id.ToString(),
+                                        status = "failed",
+                                        message = $"Failed to start test runner for suite {gf.suiteId}: {response.StatusCode} - {errorContent}",
+                                        timestamp = DateTime.UtcNow,
+                                    }
+                                );
+
+                            // Stop running remaining suites for this run
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "❌ Error sending test run request for suite {SuiteId} to TestRunner: {Message}",
+                            gf.suiteId,
+                            ex.Message
+                        );
                         run.Status = TestRunStatus.Failed;
                         run.CompletedAt = DateTime.UtcNow;
                         await _db.SaveChangesAsync();
@@ -174,45 +233,15 @@ public class TestExecutionService : ITestExecutionService
                                 {
                                     testRunId = run.Id.ToString(),
                                     status = "failed",
-                                    message = $"Failed to start test runner: {response.StatusCode} - {errorContent}",
+                                    message = $"Error connecting to TestRunner while starting suite {gf.suiteId}: {ex.Message}",
+                                    error = new { message = ex.Message, stack = ex.StackTrace },
                                     timestamp = DateTime.UtcNow,
                                 }
                             );
-                    }
-                    else
-                    {
-                        var responseContent = await response.Content.ReadAsStringAsync();
-                        _logger.LogInformation(
-                            "✅ TestRunner accepted test run request: {Response}",
-                            responseContent
-                        );
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "❌ Error sending test run request to TestRunner: {Message}",
-                        ex.Message
-                    );
-                    run.Status = TestRunStatus.Failed;
-                    run.CompletedAt = DateTime.UtcNow;
-                    await _db.SaveChangesAsync();
 
-                    // Send SignalR update about the failure
-                    await _hubContext
-                        .Clients.Group($"testrun-{run.Id}")
-                        .SendAsync(
-                            "ReceiveTestUpdate",
-                            new
-                            {
-                                testRunId = run.Id.ToString(),
-                                status = "failed",
-                                message = $"Error connecting to TestRunner: {ex.Message}",
-                                error = new { message = ex.Message, stack = ex.StackTrace },
-                                timestamp = DateTime.UtcNow,
-                            }
-                        );
+                        // Stop running remaining suites for this run
+                        break;
+                    }
                 }
             });
         }
@@ -549,6 +578,36 @@ public class TestExecutionService : ITestExecutionService
         }
 
         testRun.TotalTests = testRun.PassedTests + testRun.FailedTests + testRun.SkippedTests;
+
+        // Update TestCase Passed status
+        if (testResult.TestCaseId.HasValue)
+        {
+            var testCase = await _db.TestCases.FindAsync(testResult.TestCaseId.Value);
+            if (testCase != null)
+            {
+                testCase.Passed = testResult.Status == TestStatus.Passed;
+                testCase.UpdatedAt = DateTime.UtcNow;
+                _db.TestCases.Update(testCase);
+            }
+        }
+
+        // Update TestSuite Passed status (true only if all tests passed)
+        if (testResult.TestSuiteId.HasValue)
+        {
+            var testSuite = await _db.TestSuites.FindAsync(testResult.TestSuiteId.Value);
+            if (testSuite != null)
+            {
+                // Check if any test in this suite has failed
+                var suiteResults = await _db
+                    .TestResults.Where(r => r.TestSuiteId == testResult.TestSuiteId.Value)
+                    .ToListAsync();
+
+                var hasFailed = suiteResults.Any(r => r.Status == TestStatus.Failed);
+                testSuite.Passed = !hasFailed && suiteResults.Count > 0;
+                testSuite.UpdatedAt = DateTime.UtcNow;
+                _db.TestSuites.Update(testSuite);
+            }
+        }
 
         // Save changes
         await _db.SaveChangesAsync();

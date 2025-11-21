@@ -1,12 +1,12 @@
 {
   "name": "@asafarim/testrunner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "TestCafe test runner for Test Automation Platform",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "api": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "api": "concurrently  \"pnpm dev\" \"cd ../TestAutomation.Api && dotnet watch run --project TestAutomation.Api.csproj\"",
     "build": "tsc",
     "test": "testcafe chrome tests/",
     "test:headless": "testcafe chrome:headless tests/",
@@ -20,7 +20,7 @@
     "axios": "^1.6.2",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.6.1",
     "express": "^4.18.2",
     "nanoid": "^4.0.0",
     "testcafe": "^3.7.2",

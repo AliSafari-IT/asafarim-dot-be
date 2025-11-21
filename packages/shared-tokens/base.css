@@ -90,6 +90,7 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
 
   /* Additional semantic colors for backward compatibility */
   --color-primary-dark: var(--color-primary-700);
@@ -298,4 +299,6 @@
   --color-terminal-bg: var(--color-neutral-100);
   --color-terminal-text: var(--color-neutral-600);
   --color-terminal-muted: var(--color-neutral-400);
+
+  --color-background-paper: var(--color-neutral-100);
 }

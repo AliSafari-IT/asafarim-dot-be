@@ -116,7 +116,7 @@ export const Login = () => {
   }
 
   return (
-    <div className="login-page">
+    <div className="login-page" data-testid="login-page">
       <LoginHero 
         passwordSetupRequired={passwordSetupRequired}
         returnUrl={returnUrl}

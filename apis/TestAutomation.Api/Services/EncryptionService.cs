@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.DataProtection;
-using System.Text;
 
 namespace TestAutomation.Api.Services;
 
@@ -46,7 +45,10 @@ public class EncryptionService : IEncryptionService
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException("Failed to decrypt data. The data may be corrupted or encrypted with a different key.", ex);
+            throw new InvalidOperationException(
+                "Failed to decrypt data. The data may be corrupted or encrypted with a different key.",
+                ex
+            );
         }
     }
 }
