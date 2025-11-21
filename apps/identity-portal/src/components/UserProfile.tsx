@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import './admin-components.css';
 import { useAuth } from '../hooks/useAuth';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@asafarim/toast';
 import { ArrowLeftIcon, ButtonComponent } from '@asafarim/shared-ui-react';
+import './user-profile.css';
 
 type AdminUser = { id: string; email?: string; userName?: string; roles: string[] };
 
