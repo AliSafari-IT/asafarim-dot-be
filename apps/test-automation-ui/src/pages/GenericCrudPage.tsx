@@ -1,5 +1,5 @@
 // apps/test-automation-ui/src/pages/GenericCrudPage.tsx - Refactored version using GenericTable and GenericForm
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import React from "react";
 import { api } from "../config/api";
 import { GenericTable, ColumnDefinition } from "../components/GenericTable";
@@ -7,7 +7,7 @@ import { GenericForm, FormFieldDefinition } from "../components/GenericForm";
 import { GenericListView, ListViewColumn } from "../components/GenericListView";
 import { useAuth } from "@asafarim/shared-ui-react";
 import { useToast } from "@asafarim/toast";
-import { List, Grid3x3 } from "lucide-react";
+import { List, Grid3x3, Search } from "lucide-react";
 import { TbGrid4X4 } from "react-icons/tb";
 
 interface GenericCrudPageProps<T> {
@@ -63,6 +63,7 @@ export function GenericCrudPage<T>({
   const [creating, setCreating] = useState(false);
   const [formData, setFormData] = useState<T>(getInitialFormData());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [searchText, setSearchText] = useState('');
   const { isAuthenticated, loading: authLoading } = useAuth();
   const toast = useToast();
 
@@ -176,6 +177,26 @@ export function GenericCrudPage<T>({
     }
   };
 
+  // Filter items based on search text
+  const filteredItems = useMemo(() => {
+    if (!searchText.trim()) return items;
+    
+    const searchLower = searchText.toLowerCase();
+    return items.filter((item) => {
+      // Search across all string and text-like fields
+      for (const key in item) {
+        const value = item[key];
+        if (value !== null && value !== undefined) {
+          const stringValue = String(value).toLowerCase();
+          if (stringValue.includes(searchLower)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+  }, [items, searchText]);
+
   return (
     <div className="page-container" data-testid="crud-page">
       <div className="page-header" data-testid="crud-page-header">
@@ -233,9 +254,30 @@ export function GenericCrudPage<T>({
         />
       )}
 
+      {items.length > 0 && (
+        <div className="generic-search-container">
+          <div className="search-input-wrapper">
+            <Search size={18} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search items..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="search-input"
+              aria-label="Search items"
+            />
+          </div>
+          {searchText && (
+            <div className="search-results-info">
+              Showing {filteredItems.length} of {items.length} item{items.length !== 1 ? 's' : ''}
+            </div>
+          )}
+        </div>
+      )}
+
       {viewMode === 'grid' ? (
         <GenericTable
-          data={items}
+          data={filteredItems}
           columns={columns}
           onEdit={startEdit}
           onDelete={handleDelete}
@@ -251,7 +293,7 @@ export function GenericCrudPage<T>({
         />
       ) : (
         <GenericListView
-          items={items}
+          items={filteredItems}
           columns={columns.map((col, idx) => ({
             key: col.field ? String(col.field) : `col-${idx}`,
             header: col.header,

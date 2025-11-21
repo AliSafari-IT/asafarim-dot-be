@@ -462,6 +462,34 @@
   word-wrap: break-word;
 }
 
+/* Screenshot Section */
+.screenshot-section {
+  margin-top: 1rem;
+}
+
+.screenshot-section strong {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: #991b1b;
+  font-size: 0.9rem;
+}
+
+.screenshot-container {
+  background: #fff;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  overflow: auto;
+  max-height: 600px;
+}
+
+.screenshot-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-sm);
+}
+
 /* Loading & Error States */
 .loading,
 .error {

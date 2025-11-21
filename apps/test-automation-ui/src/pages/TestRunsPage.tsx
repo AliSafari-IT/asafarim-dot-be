@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { API_BASE } from '../config/api';
 import './TestRunsPage.css';
 
@@ -19,6 +20,7 @@ export function TestRunsPage() {
   const [runs, setRuns] = useState<TestRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchRuns = async () => {
@@ -56,6 +58,14 @@ export function TestRunsPage() {
     if (run.totalTests === 0) return 0;
     return (run.passedTests / run.totalTests) * 100;
   };
+
+  const filteredRuns = runs.filter((run) => {
+    const searchLower = searchText.toLowerCase();
+    return (
+      run.runName.toLowerCase().includes(searchLower) ||
+      run.status.toLowerCase().includes(searchLower)
+    );
+  });
 
   // 🌀 Loading state
   if (loading) {
@@ -108,6 +118,50 @@ export function TestRunsPage() {
     );
   }
 
+  // Show empty state if search returns no results
+  if (filteredRuns.length === 0 && searchText) {
+    return (
+      <div className="test-runs-container" data-testid="test-runs-page">
+        <div className="test-runs-content">
+          <div className="test-runs-header">
+            <div>
+              <h1 className="test-runs-title" data-testid="page-title">Test Runs</h1>
+              <p className="test-runs-subtitle">View and manage all test run executions</p>
+            </div>
+          </div>
+
+          <div className="test-runs-search-container">
+            <div className="search-input-wrapper">
+              <Search size={18} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search test runs by name or status..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="search-input"
+                aria-label="Search test runs"
+              />
+            </div>
+          </div>
+
+          <div className="test-runs-empty">
+            <div className="test-runs-empty-icon">🔍</div>
+            <h2 className="test-runs-empty-title">No Test Runs Found</h2>
+            <p className="test-runs-empty-description">
+              No test runs match your search criteria
+            </p>
+            <button
+              className="test-runs-empty-action"
+              onClick={() => setSearchText('')}
+            >
+              Clear Search
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // 📊 Runs table
   return (
     <div className="test-runs-container" data-testid="test-runs-page">
@@ -117,6 +171,25 @@ export function TestRunsPage() {
             <h1 className="test-runs-title" data-testid="page-title">Test Runs</h1>
             <p className="test-runs-subtitle">View and manage all test run executions</p>
           </div>
+        </div>
+
+        <div className="test-runs-search-container">
+          <div className="search-input-wrapper">
+            <Search size={18} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search test runs by name or status..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="search-input"
+              aria-label="Search test runs"
+            />
+          </div>
+          {searchText && (
+            <div className="search-results-info">
+              Showing {filteredRuns.length} of {runs.length} test run{runs.length !== 1 ? 's' : ''}
+            </div>
+          )}
         </div>
 
         <div className="test-runs-table-wrapper">
@@ -131,7 +204,7 @@ export function TestRunsPage() {
               </tr>
             </thead>
             <tbody>
-              {runs.map(run => (
+              {filteredRuns.map(run => (
                 <tr
                   key={run.id}
                   data-testid={`test-run-row-${run.id}`}

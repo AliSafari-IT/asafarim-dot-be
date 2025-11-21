@@ -32,6 +32,7 @@ interface TestResult {
   durationMs: number;
   errorMessage?: string;
   stackTrace?: string;
+  screenshotPath?: string;
   runAt: string;
 }
 
@@ -609,6 +610,22 @@ export function TestRunDetailsPage() {
                             >
                               <strong>Stack Trace:</strong>
                               <pre>{result.stackTrace}</pre>
+                            </div>
+                          )}
+                          {result.screenshotPath && (
+                            <div
+                              className="screenshot-section"
+                              data-testid={`screenshot-section-${result.id}`}
+                            >
+                              <strong>Screenshot:</strong>
+                              <div className="screenshot-container">
+                                <img
+                                  src={result.screenshotPath}
+                                  alt="Test failure screenshot"
+                                  className="screenshot-image"
+                                  data-testid={`screenshot-image-${result.id}`}
+                                />
+                              </div>
                             </div>
                           )}
                         </div>

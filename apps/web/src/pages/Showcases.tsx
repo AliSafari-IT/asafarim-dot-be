@@ -13,6 +13,20 @@ export default function Showcases() {
 
   const projects: Project[] = [
     {
+      title: t("showcases.projects.testora-ui.title"),
+      description: t("showcases.projects.testora-ui.description"),
+      url: isProduction
+        ? "https://testora.asafarim.be/"
+        : "http://testora.asafarim.local:5180/"
+    },
+    {
+      title: t("showcases.projects.testora-testrunner.title"),
+      description: t("showcases.projects.testora-testrunner.description"),
+      url: isProduction
+        ? "https://testora.asafarim.be/"
+        : "http://testora.asafarim.local:5180/"
+    },
+    {
       title: t("showcases.projects.taskManagement.title"),
       description: t("showcases.projects.taskManagement.description"),
       url: isProduction
