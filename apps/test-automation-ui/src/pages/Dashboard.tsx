@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { API_BASE } from '../config/api';
 import './Dashboard.css';
 
@@ -30,6 +31,7 @@ const Dashboard: React.FC = () => {
   const [recentRuns, setRecentRuns] = useState<TestRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -81,6 +83,14 @@ const Dashboard: React.FC = () => {
   const formatDate = (dateString: string) => new Date(dateString).toLocaleString();
 
   const handleRefresh = () => window.location.reload();
+
+  const filteredRuns = recentRuns.filter((run) => {
+    const searchLower = searchText.toLowerCase();
+    return (
+      run.runName.toLowerCase().includes(searchLower) ||
+      run.status.toLowerCase().includes(searchLower)
+    );
+  });
 
   if (loading) {
     return (
@@ -174,6 +184,27 @@ const Dashboard: React.FC = () => {
           </button>
         </div>
 
+        {recentRuns.length > 0 && (
+          <div className="test-runs-search-container">
+            <div className="search-input-wrapper">
+              <Search size={18} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search test runs by name or status..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="search-input"
+                aria-label="Search test runs"
+              />
+            </div>
+            {searchText && (
+              <div className="search-results-info">
+                Showing {filteredRuns.length} of {recentRuns.length} run{recentRuns.length !== 1 ? 's' : ''}
+              </div>
+            )}
+          </div>
+        )}
+
         {recentRuns.length === 0 ? (
           <div data-testid="empty-state" className="empty-state">
             <div className="empty-icon">📋</div>
@@ -185,6 +216,18 @@ const Dashboard: React.FC = () => {
               onClick={() => navigate('/test-suites')}
             >
               Go to Test Suites
+            </button>
+          </div>
+        ) : filteredRuns.length === 0 && searchText ? (
+          <div data-testid="empty-state" className="empty-state">
+            <div className="empty-icon">🔍</div>
+            <h3>No test runs found</h3>
+            <p>No test runs match your search criteria</p>
+            <button
+              className="btn-primary"
+              onClick={() => setSearchText('')}
+            >
+              Clear Search
             </button>
           </div>
         ) : (
@@ -201,7 +244,7 @@ const Dashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentRuns.map((run) => (
+                {filteredRuns.map((run) => (
                   <tr
                     key={run.id}
                     data-testid={`run-row-${run.id}`}

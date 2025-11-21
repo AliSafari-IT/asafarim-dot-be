@@ -1,11 +1,7 @@
-/* Test Automation-specific navbar styles - MINIMAL overrides only */
+/* Test Automation-specific navbar styles
+   Keep overrides minimal and let shared navbar handle layout. */
 
-/* Container max-width for centering content */
-.test-automation-navbar .nav-row {
-}
-
-@media (min-width: 768px) {
-}
-
-@media (min-width: 1024px) {
+.app-header {
+  position: relative;
+  z-index: var(--z-navbar, 200);
 }

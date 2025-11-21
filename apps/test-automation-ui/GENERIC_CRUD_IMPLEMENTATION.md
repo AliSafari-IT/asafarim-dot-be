@@ -64,18 +64,21 @@ I've created a complete set of reusable components for building CRUD pages with 
 ## Key Features
 
 ### Type Safety
+
 - Full TypeScript support with generics
 - Type-safe column definitions
 - Type-safe form field definitions
 - Compile-time error checking
 
 ### Flexibility
+
 - Configurable columns with custom render functions
 - Configurable form fields with multiple types
 - Optional data transformation (preparePayload, onItemLoaded)
 - Customizable labels, messages, and CSS classes
 
 ### Responsive Design
+
 - Mobile-first approach
 - Horizontal scrolling for tables on mobile
 - Sticky first column for better navigation
@@ -83,6 +86,7 @@ I've created a complete set of reusable components for building CRUD pages with 
 - Touch-friendly controls
 
 ### DRY Principle
+
 - Write CRUD logic once, reuse everywhere
 - Consistent UI/UX across all pages
 - Single source of truth for styling
@@ -183,6 +187,7 @@ See `TestSuitesPageRefactored.tsx` for a complete migration example.
 ## Support
 
 For questions or issues, refer to:
+
 - `GENERIC_COMPONENTS_README.md` for detailed documentation
 - Example pages for usage patterns
 - Existing CSS classes in `GenericTable.css`

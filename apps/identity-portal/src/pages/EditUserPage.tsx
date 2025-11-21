@@ -26,8 +26,10 @@ export default function EditUserPage() {
   }, [isAuthenticated, user, navigate, loading]);
 
   return (
-    <AuthLayout>
-      <EditUser />
-    </AuthLayout>
+    <div data-testid="edit-user-page">
+      <AuthLayout>
+        <EditUser />
+      </AuthLayout>
+    </div>
   );
 }

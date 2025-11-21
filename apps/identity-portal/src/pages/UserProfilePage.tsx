@@ -19,9 +19,11 @@ export const UserProfilePage = () => {
   }, [isAuthenticated, navigate, returnUrl, loading]);
 
   return (
-    <AuthLayout>
-      <UserProfile />
-    </AuthLayout>
+    <div data-testid="user-profile-page">
+      <AuthLayout>
+        <UserProfile />
+      </AuthLayout>
+    </div>
   );
 };
 

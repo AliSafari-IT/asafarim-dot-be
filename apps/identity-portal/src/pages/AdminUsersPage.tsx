@@ -5,8 +5,10 @@ import AuthLayout from "../components/AuthLayout";
 
 export default function AdminUsersPage() {
   return (
-    <AuthLayout>
-      <AdminUsers />
-    </AuthLayout>
+    <div data-testid="admin-users-page">
+      <AuthLayout>
+        <AdminUsers />
+      </AuthLayout>
+    </div>
   );
 }

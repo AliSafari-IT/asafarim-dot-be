@@ -1,9 +1,7 @@
 // App.tsx
-import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 //import { isProduction, useAuth, ThemeProvider } from '@asafarim/shared-ui-react';
 import Dashboard from "./pages/Dashboard";
-import TestRunPage from "./pages/TestRunPage";
 import { TestRunsPage } from "./pages/TestRunsPage";
 import { TestRunDetailsPage } from "./pages/TestRunDetailsPage";
 import FunctionalRequirementsPage from "./pages/FunctionalRequirementsPage";
@@ -17,6 +15,7 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import "./App.css";
 import HomePage from "./pages/HomePage";
+import { RunTestsPageToken } from './pages/RunTestsPage-Token';
 
 function App() {
   const location = useLocation();
@@ -34,7 +33,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/test-runs" element={<TestRunsPage />} />
             <Route path="/test-runs/:id" element={<TestRunDetailsPage />} />
-            <Route path="/run" element={<TestRunPage />} />
+            <Route path="/run" element={<RunTestsPageToken />} />
+
             <Route
               path="/functional-requirements"
               element={<FunctionalRequirementsPage />}

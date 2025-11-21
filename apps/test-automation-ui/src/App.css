@@ -1,23 +1,23 @@
 /* App.css */
 :root {
   --sidebar-width: 240px;
-  --navbar-height: 0;
+  --navbar-height: var(--height-navbar);
   --primary-color: #4f46e5;
   --bg-color: #f9fafb;
   --text-color: #111827;
   --border-color: #e5e7eb;
 }
 
-@media (max-width: 1580px) {
-  :root {
-    --navbar-height: 60px;
-  }
-}
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -39,8 +39,10 @@ body {
 
 .content-wrapper {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  /* margin-left: var(--sidebar-width); */
   transition: margin 0.3s ease;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Full width when sidebar is hidden (e.g., on homepage) */
@@ -79,7 +81,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: calc(100vw - var(--sidebar-width));
+  max-width: 100%;
   padding-left: var(--spacing-md, 1rem);
   padding-right: var(--spacing-md, 1rem);
 }

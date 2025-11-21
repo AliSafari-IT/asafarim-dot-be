@@ -344,28 +344,24 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
           }
         } else if (fallbackUserInfo) {
           // If server says not authenticated, but we have fallback user info,
-          // try one token refresh before giving up
-          console.log('🔄 Server says not authenticated but found local user info, attempting token refresh');
-          const newToken = await refreshToken(authApiBase);
+          // DON'T immediately clear auth state - keep the cached state
+          // This handles cross-domain navigation where cookies might not be sent immediately
+          console.log('⚠️ Server says not authenticated but found local user info');
+          console.log('🔄 Keeping cached auth state - cookies may still be syncing across domains');
           
-          if (newToken) {
-            console.log('✅ Token refreshed, setting user from fallback info');
-            if (mounted) {
-              setToken(newToken);
-              setAuthenticated(true);
-              setUser(fallbackUserInfo as TUser);
-              localStorage.setItem('auth_token', newToken);
-            }
-          } else {
-            console.log('❌ Token refresh failed, user not authenticated');
-            if (mounted) {
-              setAuthenticated(false);
-              setUser(null);
-              setToken(null);
+          if (mounted) {
+            // Keep the authenticated state from cached data
+            setAuthenticated(true);
+            setUser(fallbackUserInfo as TUser);
+            
+            // Try to get token from localStorage
+            const cachedToken = localStorage.getItem('auth_token');
+            if (cachedToken) {
+              setToken(cachedToken);
             }
           }
         } else {
-          console.log('❌ User is not authenticated');
+          console.log('❌ User is not authenticated and no cached data found');
           if (mounted) {
             setAuthenticated(false);
             setUser(null);
@@ -376,7 +372,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
         }
 
         if (mounted) {
-          console.log('✅ Auth check complete - setting loading=false, authenticated:', authenticated);
+          console.log('✅ Auth check complete - setting loading=false');
           setLoading(false);
         }
       } catch (error) {

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { NavigateFunction } from 'react-router-dom';
 
 /**
  * Logout page
@@ -8,6 +9,14 @@ import { useNavigate } from 'react-router-dom';
 export default function SyncLogout() {
   const navigate = useNavigate();
 
+  return (
+    <div data-testid="sync-logout-page" style={{ display: 'none' }}>
+      <LogoutHandler navigate={navigate} />
+    </div>
+  );
+}
+
+function LogoutHandler({ navigate }: { navigate: NavigateFunction }) {
   useEffect(() => {
     try {
       // Clear local auth storage for this subdomain
