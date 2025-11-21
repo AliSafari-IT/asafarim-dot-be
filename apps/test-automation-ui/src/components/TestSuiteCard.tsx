@@ -44,6 +44,7 @@ interface TestSuiteCardProps {
   isExpanded?: boolean;
   isSelected?: boolean;
   onToggleSelection?: () => void;
+  onToggleExpand?: () => void;
 }
 
 export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
@@ -55,8 +56,19 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
   isExpanded: initialExpanded = false,
   isSelected = false,
   onToggleSelection,
+  onToggleExpand,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(initialExpanded);
+  // Use external expanded state if onToggleExpand is provided, otherwise use internal state
+  const [internalExpanded, setInternalExpanded] = useState(initialExpanded);
+  const isExpanded = onToggleExpand !== undefined ? initialExpanded : internalExpanded;
+
+  const handleToggleExpand = () => {
+    if (onToggleExpand) {
+      onToggleExpand();
+    } else {
+      setInternalExpanded(!internalExpanded);
+    }
+  };
 
   const getStatusBadge = (status: TestCase["status"]) => {
     const badges = {
@@ -123,7 +135,7 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
           )}
           <button
             className="expand-button"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={handleToggleExpand}
             aria-label={
               isExpanded ? "Collapse test cases" : "Expand test cases"
             }
@@ -201,7 +213,7 @@ export const TestSuiteCard: React.FC<TestSuiteCardProps> = ({
           data-testid={`view-logs-${suite.id}`}
         >
           <Eye size={16} />
-          <span>View Logs</span>
+          <span>View Results</span>
         </button>
         <button
           className="button button-danger"

@@ -4,10 +4,10 @@ import React from "react";
 import { api } from "../config/api";
 import { GenericTable, ColumnDefinition } from "../components/GenericTable";
 import { GenericForm, FormFieldDefinition } from "../components/GenericForm";
-import { GenericListView, ListViewColumn } from "../components/GenericListView";
+import { GenericListView } from "../components/GenericListView";
 import { useAuth } from "@asafarim/shared-ui-react";
 import { useToast } from "@asafarim/toast";
-import { List, Grid3x3, Search } from "lucide-react";
+import { List, Search } from "lucide-react";
 import { TbGrid4X4 } from "react-icons/tb";
 
 interface GenericCrudPageProps<T> {
@@ -67,6 +67,45 @@ export function GenericCrudPage<T>({
   const { isAuthenticated, loading: authLoading } = useAuth();
   const toast = useToast();
 
+  const extractServerMessage = (data: unknown): string | null => {
+    if (!data) return null;
+    if (typeof data === 'string') return data;
+    if (typeof data === 'object') {
+      const record = data as Record<string, unknown>;
+      if (typeof record.message === 'string') return record.message;
+      if (record.errors) {
+        const errors = record.errors as Record<string, string[] | string>;
+        const messages = Object.values(errors)
+          .flat()
+          .map((err) => (Array.isArray(err) ? err.join(', ') : err))
+          .filter(Boolean);
+        if (messages.length > 0) {
+          return messages.join('\n');
+        }
+      }
+    }
+    return null;
+  };
+
+  const handleApiError = (error: any, action: string) => {
+    console.error(`Failed to ${action}:`, error);
+    const status = error?.response?.status as number | undefined;
+    let message = `Failed to ${action}. Please try again.`;
+
+    if (status === 401) {
+      message = 'You need to sign in before continuing.';
+    } else if (status === 403) {
+      message = `You do not have permission to ${action}. Please contact an administrator if you believe this is incorrect.`;
+    } else if (status === 404) {
+      message = 'The requested item could not be found.';
+    } else if (status && status >= 500) {
+      message = 'The server encountered an issue. Please try again later.';
+    }
+
+    const serverMessage = extractServerMessage(error?.response?.data);
+    toast.error(serverMessage ? `${message} (${serverMessage})` : message);
+  };
+
   useEffect(() => {
     loadItems();
   }, []);
@@ -102,14 +141,7 @@ export function GenericCrudPage<T>({
       loadItems();
       toast.success("Item created successfully.");
     } catch (error: any) {
-      console.error("Failed to create:", error);
-      toast.error("Failed to create item. Please check your input.");
-      if (error.response?.data) {
-        console.error("Error details:", error.response.data);
-        alert(`Failed to create: ${JSON.stringify(error.response.data)}`);
-      } else {
-        alert("Failed to create item. Please check your input.");
-      }
+      handleApiError(error, 'create item');
     }
   };
 
@@ -131,14 +163,7 @@ export function GenericCrudPage<T>({
         onEditComplete();
       }
     } catch (error: any) {
-      console.error("Failed to update:", error);
-      toast.error("Failed to update item. Please check your input.");
-      if (error.response?.data) {
-        console.error("Error details:", error.response.data);
-        alert(`Failed to update: ${JSON.stringify(error.response.data)}`);
-      } else {
-        alert("Failed to update item. Please check your input.");
-      }
+      handleApiError(error, 'update item');
     }
   };
 
@@ -154,8 +179,7 @@ export function GenericCrudPage<T>({
       loadItems();
       toast.success("Item deleted successfully.");
     } catch (error) {
-      console.error("Failed to delete:", error);
-      toast.error("Failed to delete item.");
+      handleApiError(error, 'delete item');
     }
   };
 

@@ -43,6 +43,8 @@ export const RunTestsPage: React.FC = () => {
   const [selectedSuites, setSelectedSuites] = useState<string[]>([]);
   const [runningTestIds, setRunningTestIds] = useState<Set<string>>(new Set());
   const [lastRunId, setLastRunId] = useState<string | null>(null);
+  const [expandedSuites, setExpandedSuites] = useState<Set<string>>(new Set());
+  const [suiteRunIds, setSuiteRunIds] = useState<Map<string, string>>(new Map());
   const { isAuthenticated } = useAuth();
   const toast = useToast();
 
@@ -223,6 +225,12 @@ export const RunTestsPage: React.FC = () => {
       // Store run ID and add to running tests set for auto-refresh
       setLastRunId(runId);
       setRunningTestIds((prev) => new Set([...prev, suiteId]));
+      
+      // Track the run ID for this suite so we can link to the correct test run
+      setSuiteRunIds((prev) => new Map([...prev, [suiteId, runId]]));
+      
+      // Expand the suite to show test cases
+      setExpandedSuites((prev) => new Set([...prev, suiteId]));
 
       // Update suite status to running
       setTestSuites((prev) =>
@@ -250,9 +258,15 @@ export const RunTestsPage: React.FC = () => {
     }
   };
 
-  const handleViewLogs = (suiteId: string) => {
-    // Navigate to test runs page to view logs
-    window.location.href = "/test-runs";
+  const handleViewResults = (suiteId: string) => {
+    // Navigate to the specific test run for this suite
+    const runId = suiteRunIds.get(suiteId);
+    if (runId) {
+      window.location.href = `/test-runs/${runId}`;
+    } else {
+      // Fallback to test runs page if no specific run ID
+      window.location.href = "/test-runs";
+    }
   };
 
   const handleDelete = async (suiteId: string) => {
@@ -364,13 +378,25 @@ export const RunTestsPage: React.FC = () => {
       <TestSuitesGrid
         suites={testSuites}
         onRunSuite={handleRunSuite}
-        onViewLogs={handleViewLogs}
+        onViewLogs={handleViewResults}
         onDelete={handleDelete}
         isAuthenticated={isAuthenticated}
         selectedSuites={selectedSuites}
         onSelectionChange={setSelectedSuites}
         showFilter={true}
         showSort={true}
+        expandedSuites={expandedSuites}
+        onToggleExpand={(suiteId: string) => {
+          setExpandedSuites((prev) => {
+            const next = new Set(prev);
+            if (next.has(suiteId)) {
+              next.delete(suiteId);
+            } else {
+              next.add(suiteId);
+            }
+            return next;
+          });
+        }}
       />
     </div>
   );

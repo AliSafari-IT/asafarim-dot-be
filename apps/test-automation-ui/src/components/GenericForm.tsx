@@ -102,9 +102,12 @@ export function GenericForm<T>({
     }
 
     // Common input props
+    const normalizedValue =
+      value === null || value === undefined ? '' : value;
+
     const commonInputProps = {
       className: "form-control",
-      value: value as string | number | string[] | undefined,
+      value: normalizedValue as string | number | string[] | undefined,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue =
           field.type === "number" ? Number(e.target.value) : e.target.value;
@@ -182,7 +185,7 @@ export function GenericForm<T>({
             <input
               type="checkbox"
               className="checkbox-input"
-              checked={value as boolean}
+              checked={(value as boolean) ?? false}
               onChange={(e) => handleFieldChange(field.name, e.target.checked)}
             />
             {field.label}

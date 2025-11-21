@@ -13,6 +13,8 @@ interface TestSuitesGridProps {
   showSort?: boolean;
   selectedSuites?: string[];
   onSelectionChange?: (selectedIds: string[]) => void;
+  expandedSuites?: Set<string>;
+  onToggleExpand?: (suiteId: string) => void;
 }
 
 type SortField = 'name' | 'totalTests' | 'passedTests' | 'failedTests' | 'executionOrder';
@@ -28,6 +30,8 @@ export const TestSuitesGrid: React.FC<TestSuitesGridProps> = ({
   showSort = true,
   selectedSuites = [],
   onSelectionChange,
+  expandedSuites = new Set(),
+  onToggleExpand,
 }) => {
   const [filterText, setFilterText] = useState('');
   const [sortField, setSortField] = useState<SortField>('name');
@@ -215,6 +219,8 @@ export const TestSuitesGrid: React.FC<TestSuitesGridProps> = ({
               isAuthenticated={isAuthenticated}
               isSelected={selectedSuites.includes(suite.id)}
               onToggleSelection={onSelectionChange ? () => handleToggleSelection(suite.id) : undefined}
+              isExpanded={expandedSuites.has(suite.id)}
+              onToggleExpand={onToggleExpand ? () => onToggleExpand(suite.id) : undefined}
             />
           ))}
         </div>
