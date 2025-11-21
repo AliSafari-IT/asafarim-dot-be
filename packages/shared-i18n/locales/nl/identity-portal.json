@@ -55,6 +55,7 @@
             "link": "/admin-area/roles"
         },
         "actions": {
+            "title": "Acties",
             "open": "Openen",
             "editProfile": "Profiel bewerken",
             "changePassword": "Wachtwoord wijzigen",

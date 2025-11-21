@@ -41,6 +41,7 @@
         "title": "Dashboard",
         "description": "Manage Identity Portal entities",
         "actions": {
+            "title": "Actions",
             "open": "Open",
             "editProfile": "Edit profile",
             "changePassword": "Change password",
