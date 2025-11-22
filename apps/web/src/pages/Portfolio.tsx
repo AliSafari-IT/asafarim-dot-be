@@ -13,7 +13,7 @@ const Portfolio = () => {
       techStacks: [{ name: 'React' }, { name: '.NET 8' }, { name: 'PNPM Workspaces' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be' },
-        { label: 'Live Demo', url: 'https://web.asafarim.be' }
+        { label: 'Live Demo', url: 'https://asafarim.be' }
       ],
       category: 'fullstack',
       status: 'active' as const,
@@ -27,7 +27,8 @@ const Portfolio = () => {
         'Backend reference implementation showcasing Clean Architecture, CQRS, MediatR, and modular domain boundaries.',
       techStacks: [{ name: '.NET 8' }, { name: 'PostgreSQL' }, { name: 'CQRS' }],
       links: [
-        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim' }
+        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim'},
+        { label: 'Live Demo', url: 'https://asafarim.com'}
       ],
       category: 'backend',
       status: 'active' as const,
@@ -41,7 +42,8 @@ const Portfolio = () => {
         'Full E2E automation suite with TestCafe generators, GitHub Actions integration, and real-time reporting.',
       techStacks: [{ name: 'React' }, { name: 'Node.js' }, { name: 'TestCafe' }],
       links: [
-        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/apps/test-automation-ui' }
+        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/apps/test-automation-ui' },
+         { label: 'Live Demo', url: 'https://testora.asafarim.be/run'}
       ],
       category: 'testing',
       status: 'active' as const,
@@ -55,7 +57,8 @@ const Portfolio = () => {
         'Operational analytics dashboard with real-time device telemetry, granular RBAC, and SignalR live charts.',
       techStacks: [{ name: 'React' }, { name: 'SignalR' }, { name: 'PostgreSQL' }],
       links: [
-        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/showcases/SmartOperationsDashboard' }
+        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/showcases/SmartOperationsDashboard' },
+                 { label: 'Live Demo', url: 'https://smartops.asafarim.be/devices'}
       ],
       category: 'analytics',
       status: 'in-progress' as const,
@@ -69,7 +72,8 @@ const Portfolio = () => {
         'Project and task management platform featuring SSO, permissions, filters, and a responsive React SPA.',
       techStacks: [{ name: 'React' }, { name: '.NET 8' }, { name: 'PostgreSQL' }],
       links: [
-        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/showcases/TaskManagement' }
+        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/showcases/TaskManagement' },
+         { label: 'Live Demo', url: 'https://taskmanagement.asafarim.be/'}
       ],
       category: 'fullstack',
       status: 'active' as const,
@@ -97,7 +101,8 @@ const Portfolio = () => {
         'Water utility workflow portal with TypeScript micro frontends and API orchestration.',
       techStacks: [{ name: 'TypeScript' }, { name: 'Micro FE' }, { name: 'NX' }],
       links: [
-        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/AquaFlow' }
+        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/AquaFlow' },
+        {label: 'Live Demo', url: 'https://aquaflow.asafarim.com/'}
       ],
       category: 'fullstack',
       status: 'draft' as const,
@@ -165,13 +170,13 @@ const Portfolio = () => {
 
   const npmPackages: ContentCardProps[] = [
     {
-      id: 'shared-ui-react',
-      title: '@asafarim/shared-ui-react',
-      description: 'Headless + styled React component library powering navbars, cards, grids, and notifications.',
-      meta: 'Design System · React 19',
-      tags: ['React', 'Storybook', 'Design tokens'],
+      id: 'toast',
+      title: 'asafarim/toast',
+      description: 'A lightweight, theme-aware toast notification system for React applications with a simple programmatic API.',
+      meta: 'Design System • React >=16.8.0 • Zero external dependencies',
+      tags: ['React', 'Toast', 'Toast notifications', 'Auto-dismiss', 'closable'],
       icon: '🧩',
-      link: 'https://www.npmjs.com/package/@asafarim/shared-ui-react',
+      link: 'https://www.npmjs.com/package/@asafarim/toast',
     },
     {
       id: 'shared-tokens',
