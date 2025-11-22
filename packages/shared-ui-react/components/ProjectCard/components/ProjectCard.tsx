@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProjectCardProps, ProjectBudget, ProjectImage } from '../types';
+import type { ProjectCardProps} from '../types';
 import styles from './ProjectCard.module.css';
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -43,8 +43,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   relatedProjects,
 
   // Database specific
-  id,
-  userId,
+  // id,
+  // userId,
 }) => {
   const isDark = currentTheme === 'dark';
 
@@ -55,6 +55,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     }
     if (updatedAt) {
       return new Date(updatedAt).toLocaleDateString();
+    }
+    if (createdAt){
+      return  new Date(createdAt).toLocaleDateString();
     }
     return '';
   };
@@ -90,27 +93,51 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     if (typeof budget === 'object') {
       const { amount, currencySymbol = '$', currencyCode, currencyFormatOptions } = budget;
 
-      // Create options object without spread operator
-      const options: Intl.NumberFormatOptions = {
-        style: 'currency',
-        currency: currencyCode || 'USD'
+      const applyFormatOverrides = (options: Intl.NumberFormatOptions) => {
+        if (!currencyFormatOptions) {
+          return options;
+        }
+
+        const updated = { ...options };
+
+        if (currencyFormatOptions.minimumFractionDigits !== undefined) {
+          updated.minimumFractionDigits = currencyFormatOptions.minimumFractionDigits;
+        }
+
+        if (currencyFormatOptions.maximumFractionDigits !== undefined) {
+          updated.maximumFractionDigits = currencyFormatOptions.maximumFractionDigits;
+        }
+
+        if (currencyFormatOptions.useGrouping !== undefined) {
+          updated.useGrouping = currencyFormatOptions.useGrouping;
+        }
+
+        return updated;
       };
 
-      // Manually add currencyFormatOptions properties if they exist
-      if (currencyFormatOptions) {
-        if (currencyFormatOptions.minimumFractionDigits !== undefined) {
-          options.minimumFractionDigits = currencyFormatOptions.minimumFractionDigits;
+      if (currencyCode) {
+        const formatter = new Intl.NumberFormat('en-US', applyFormatOverrides({
+          style: 'currency',
+          currency: currencyCode
+        }));
+
+        const parts = formatter.formatToParts(amount);
+        if (currencySymbol) {
+          return parts
+            .map(part => (part.type === 'currency' ? currencySymbol : part.value))
+            .join('');
         }
-        if (currencyFormatOptions.maximumFractionDigits !== undefined) {
-          options.maximumFractionDigits = currencyFormatOptions.maximumFractionDigits;
-        }
-        if (currencyFormatOptions.useGrouping !== undefined) {
-          options.useGrouping = currencyFormatOptions.useGrouping;
-        }
+
+        return formatter.format(amount);
       }
 
-      const formatter = new Intl.NumberFormat('en-US', options);
-      return formatter.format(amount);
+      const numberFormatter = new Intl.NumberFormat('en-US', applyFormatOverrides({
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        useGrouping: true
+      }));
+
+      return `${currencySymbol}${numberFormatter.format(amount)}`;
     }
 
     return '';

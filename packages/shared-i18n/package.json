@@ -3,16 +3,11 @@
   "version": "0.5.2",
   "type": "module",
   "files": [
-    "locales",
-    "config",
-    "hooks",
-    "utils",
-    "index.ts",
-    "package.json",
-    "tsconfig.json"
+    "dist",
+    "package.json"
   ],
-  "main": "index.ts",
-  "types": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
     "dev": "tsc -w",
@@ -23,10 +18,22 @@
     "deploy": "gh-pages -d demo/dist"
   },
   "exports": {
-    ".": "./index.ts",
-    "./config": "./config/i18n.ts",
-    "./hooks": "./hooks/useLanguage.ts",
-    "./utils": "./utils/languageUtils.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config/i18n.d.ts",
+      "default": "./dist/config/i18n.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/useLanguage.d.ts",
+      "default": "./dist/hooks/useLanguage.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/languageUtils.d.ts",
+      "default": "./dist/utils/languageUtils.js"
+    },
     "./locales/*": "./locales/*"
   },
   "peerDependencies": {

@@ -287,14 +287,7 @@ const Portfolio = () => {
             cardsPerPage={3}
             currentTheme="dark"
             enableSearch={false}
-            showLoadMore={false}
-            responsive={{
-              mobile: 1,
-              tablet: 2,
-              desktop: 3,
-              largeDesktop: 4,
-              extraLargeDesktop: 5
-            }}
+            showLoadMore={true}            
           />
         </div>
       </section>

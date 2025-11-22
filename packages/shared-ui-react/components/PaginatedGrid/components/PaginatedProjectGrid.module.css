@@ -105,42 +105,47 @@
 
 /* Project Grid */
 .projectGrid {
+  --columns-mobile: 1;
+  --columns-tablet: 2;
+  --columns-desktop: 3;
+  --columns-large-desktop: 3;
+  --columns-extra-large-desktop: 3;
+  --animation-duration: 0.5s;
   display: grid;
   gap: 2rem;
   margin-bottom: 2rem;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Responsive Grid */
-.gridMobile {
-  grid-template-columns: 1fr;
-}
-
-.gridTablet {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.gridDesktop {
-  grid-template-columns: repeat(3, 1fr);
+  animation: fadeIn var(--animation-duration) ease-in-out;
 }
 
 /* Custom responsive breakpoints */
 @media (max-width: 768px) {
   .projectGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
     gap: 1.5rem;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .projectGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(var(--columns-tablet), 1fr);
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1025px) and (max-width: 1360px) {
   .projectGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(var(--columns-desktop), 1fr);
+  }
+}
+
+@media (min-width: 1361px) and (max-width: 1600px) {
+  .projectGrid {
+    grid-template-columns: repeat(var(--columns-large-desktop), 1fr);
+  }
+}
+
+@media (min-width: 1601px) {
+  .projectGrid {
+    grid-template-columns: repeat(var(--columns-extra-large-desktop), 1fr);
   }
 }
 
@@ -316,7 +321,7 @@
 
 /* Card Animation */
 .projectCard {
-  animation: slideIn 0.3s ease-out forwards;
+  animation: slideIn var(--animation-duration) ease-out forwards;
 }
 
 @keyframes slideIn {

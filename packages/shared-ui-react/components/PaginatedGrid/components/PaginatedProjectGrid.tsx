@@ -1,7 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ProjectCard } from '../../ProjectCard';
-import { PaginatedProjectGridProps, Project } from '../types';
+import type { PaginatedProjectGridProps, Project } from '../types';
 import styles from './PaginatedProjectGrid.module.css';
+
+type GridCSSVariables = React.CSSProperties & {
+  '--columns-mobile'?: number;
+  '--columns-tablet'?: number;
+  '--columns-desktop'?: number;
+  '--columns-large-desktop'?: number;
+  '--columns-extra-large-desktop'?: number;
+  '--animation-duration'?: string;
+};
 
 export const PaginatedProjectGrid: React.FC<PaginatedProjectGridProps> = ({
   projects,
@@ -34,6 +43,22 @@ export const PaginatedProjectGrid: React.FC<PaginatedProjectGridProps> = ({
   const [itemsToShow, setItemsToShow] = useState(cardsPerPage);
 
   const isDark = currentTheme === 'dark';
+  const {
+    mobile,
+    tablet,
+    desktop,
+    largeDesktop,
+    extraLargeDesktop
+  } = responsive;
+
+  const gridStyle = useMemo<GridCSSVariables>(() => ({
+    '--columns-mobile': mobile,
+    '--columns-tablet': tablet,
+    '--columns-desktop': desktop,
+    '--columns-large-desktop': largeDesktop,
+    '--columns-extra-large-desktop': extraLargeDesktop,
+    '--animation-duration': `${animationDuration}ms`
+  }), [mobile, tablet, desktop, largeDesktop, extraLargeDesktop, animationDuration]);
 
   // Filter projects based on search term
   const filteredProjects = useMemo(() => {
@@ -136,11 +161,6 @@ export const PaginatedProjectGrid: React.FC<PaginatedProjectGridProps> = ({
     return pages;
   };
 
-  // Get responsive grid class
-  const getGridClass = () => {
-    return `${styles.projectGrid} ${styles.gridDesktop}`;
-  };
-
   const containerClasses = [
     styles.gridContainer,
     className
@@ -227,7 +247,7 @@ export const PaginatedProjectGrid: React.FC<PaginatedProjectGridProps> = ({
       {/* Project Grid */}
       {filteredProjects.length > 0 && (
         <>
-          <div className={getGridClass()}>
+          <div className={styles.projectGrid} style={gridStyle}>
             {paginatedProjects && paginatedProjects.map((project: Project, index: number) => (
               <div 
                 key={project.id} 

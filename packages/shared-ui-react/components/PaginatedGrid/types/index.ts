@@ -1,4 +1,4 @@
-import { Theme, ProjectCardProps } from '../../ProjectCard/types';
+import type{  Theme, ProjectCardProps } from '../../ProjectCard/types';
 
 export type Project = ProjectCardProps & {
   // add any additional properties here
