@@ -18,3 +18,5 @@ export * from './Card';
 export * from './Avatar';
 export * from './Popover';
 export * from './User';
+export * from './PaginatedGrid';
+export * from './ProjectCard';

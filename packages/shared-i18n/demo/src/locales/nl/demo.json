@@ -1,0 +1,97 @@
+{
+  "hero": {
+    "title": "@asafarim/shared-i18n",
+    "subtitle": "Meertalige React-pakket met cookie-persistentie & backend-synchronisatie",
+    "description": "Een productie-klare i18n-oplossing gebouwd op i18next, met automatische taaldetectie, cookie-gebaseerde persistentie en naadloze backend-integratie."
+  },
+  "features": {
+    "title": "Belangrijkste Kenmerken",
+    "items": {
+      "multilang": {
+        "title": "Meertalige Ondersteuning",
+        "description": "Ingebouwde ondersteuning voor Engels en Nederlands met eenvoudige uitbreidbaarheid"
+      },
+      "persistence": {
+        "title": "Cookie Persistentie",
+        "description": "Taalvoorkeuren blijven behouden over sessies en subdomeinen"
+      },
+      "backend": {
+        "title": "Backend Integratie",
+        "description": "Automatische synchronisatie met gebruikersvoorkeuren API voor geauthenticeerde gebruikers"
+      },
+      "hooks": {
+        "title": "React Hooks",
+        "description": "Eenvoudige useLanguage hook voor het beheren van taalstatus"
+      },
+      "detection": {
+        "title": "Automatische Detectie",
+        "description": "Detecteert automatisch de browsertaal bij het eerste bezoek"
+      },
+      "typescript": {
+        "title": "TypeScript First",
+        "description": "Volledige TypeScript-ondersteuning met type-veilige vertalingen"
+      }
+    }
+  },
+  "demo": {
+    "title": "Interactieve Demo",
+    "currentLang": "Huidige Taal",
+    "switchLang": "Wissel van Taal",
+    "translationExample": "Vertaalvoorbeeld",
+    "commonKeys": "Gemeenschappelijke Vertaalsleutels",
+    "customKeys": "Aangepaste Vertaalsleutels",
+    "hookUsage": "useLanguage Hook",
+    "hookDescription": "De useLanguage hook biedt taalstatus en wijzigingsfunctionaliteit",
+    "changeLanguage": "Taal Wijzigen",
+    "isChanging": "Wijzigen...",
+    "cookieInfo": "Cookie Informatie",
+    "cookieName": "Cookie Naam",
+    "cookieValue": "Cookie Waarde",
+    "cookieExpiry": "Verloopt over 1 jaar"
+  },
+  "installation": {
+    "title": "Installatie",
+    "step1": "Installeer het pakket",
+    "step2": "Initialiseer i18n in je app",
+    "step3": "Gebruik vertalingen in componenten"
+  },
+  "codeExamples": {
+    "title": "Codevoorbeelden",
+    "basic": "Basisgebruik",
+    "hook": "De Hook Gebruiken",
+    "switcher": "Taalwisselaar"
+  },
+  "tutorial": {
+    "title": "Stap-voor-stap Handleiding",
+    "description": "Volg deze eenvoudige stappen om @asafarim/shared-i18n in je React-app te installeren, configureren en gebruiken.",
+    "stepLabel": "Stap {{number}}",
+    "steps": {
+      "install": {
+        "title": "Installeer het pakket",
+        "description": "Voeg het gedeelde i18n-pakket toe aan je workspace met pnpm.",
+        "tip": "Gebruik --filter als je het alleen voor een specifieke workspace-app wilt installeren."
+      },
+      "initialize": {
+        "title": "Initialiseer i18n",
+        "description": "Laad je app-specifieke vertalingen en roep initI18n aan voordat React rendert.",
+        "tip": "Plaats initI18n in main.tsx zodat het één keer draait wanneer de app start."
+      },
+      "translate": {
+        "title": "Vertaal de UI",
+        "description": "Gebruik de useTranslation hook om sleutels uit common of app namespaces te lezen.",
+        "tip": "Gebruik het namespace-prefix (bijv. app:key) wanneer je niet-standaard namespaces nodig hebt."
+      },
+      "languageHook": {
+        "title": "Taalwissel afhandelen",
+        "description": "useLanguage geeft de actieve taal, wijzigingsfunctie en laadstatus terug.",
+        "tip": "Schakel knoppen uit zolang isChanging waar is om dubbele verzoeken te voorkomen."
+      }
+    }
+  },
+  "footer": {
+    "madeWith": "Gemaakt met",
+    "by": "door",
+    "viewSource": "Bekijk Bron",
+    "documentation": "Documentatie"
+  }
+}

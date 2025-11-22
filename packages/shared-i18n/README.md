@@ -1,27 +1,29 @@
 # @asafarim/shared-i18n
 
-Centralized multi-language system for ASafariM monorepo with i18next support for Belgian Dutch (nl) and English (en).
+Lightweight, simple translation module for any React + TypeScript app, built on top of i18next and react-i18next. It ships with sensible defaults (English and Dutch) but can support any language by adding JSON files to your locales folder.
 
 ## Features
 
-- 🌍 Support for English (en) and Belgian Dutch (nl)
-- 🔄 Automatic cookie-based language persistence across all subdomains
-- 🔐 Backend integration with user preferences API
+- 🌍 Works in any React + TypeScript project (monorepo or standalone)
+- 🗂️ JSON-based translations per language and namespace
+- 🔄 Cookie-based language persistence (browser) with automatic detection
+- ⚙️ Optional backend sync for user language preferences
 - ⚡ Lazy loading support for app-specific translations
-- 🎨 Seamless integration with existing theming system
-- 🪝 React hooks for easy language management
+- 🪝 React hooks for language management (useLanguage) and translations (useTranslation)
 
 ## Installation
 
-This package is part of the ASafariM monorepo and uses workspace dependencies.
-
 ```bash
 pnpm add @asafarim/shared-i18n
+# or
+npm i @asafarim/shared-i18n
+# or
+yarn add @asafarim/shared-i18n
 ```
 
 ## Usage
 
-### 1. Initialize i18n in your app
+### 1) Initialize i18n in your app
 
 In your app's main entry point (e.g., `main.tsx`):
 
@@ -31,11 +33,10 @@ import { createRoot } from 'react-dom/client';
 import { initI18n } from '@asafarim/shared-i18n';
 import App from './App';
 
-// Import app-specific translations (optional)
+// Optional: import your app-specific translations
 import enApp from './locales/en/app.json';
 import nlApp from './locales/nl/app.json';
 
-// Initialize i18n with optional app-specific translations
 initI18n({
   defaultNS: 'common',
   ns: ['common', 'app'],
@@ -52,14 +53,13 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
-### 2. Use translations in components
+### 2) Use translations in components
 
 ```tsx
 import { useTranslation } from '@asafarim/shared-i18n';
 
 function MyComponent() {
   const { t } = useTranslation();
-  
   return (
     <div>
       <h1>{t('welcome')}</h1>
@@ -69,81 +69,26 @@ function MyComponent() {
 }
 ```
 
-### 3. Add language switcher
+### 3) Add a language switcher
 
-```tsx
-import { LanguageSwitcher } from '@asafarim/shared-ui-react';
-
-function Header() {
-  return (
-    <header>
-      <nav>
-        {/* Dropdown variant */}
-        <LanguageSwitcher variant="dropdown" />
-        
-        {/* Or toggle variant */}
-        <LanguageSwitcher variant="toggle" />
-      </nav>
-    </header>
-  );
-}
-```
-
-### 4. Use language hook
+If you use @asafarim/shared-ui-react you can leverage its LanguageSwitcher component. Otherwise, call useLanguage directly.
 
 ```tsx
 import { useLanguage } from '@asafarim/shared-i18n';
 
-function LanguageSettings() {
+export function LanguageToggle() {
   const { language, changeLanguage, isChanging } = useLanguage();
-  
   return (
-    <div>
-      <p>Current language: {language}</p>
-      <button 
-        onClick={() => changeLanguage('nl')}
-        disabled={isChanging}
-      >
-        Switch to Dutch
-      </button>
-    </div>
+    <button onClick={() => changeLanguage(language === 'en' ? 'nl' : 'en')} disabled={isChanging}>
+      Switch language (current: {language})
+    </button>
   );
 }
 ```
 
-## API Reference
+## Add more languages
 
-### `initI18n(config?: I18nConfig)`
-
-Initialize i18next with the shared configuration.
-
-**Parameters:**
-- `config.defaultNS` - Default namespace (default: 'common')
-- `config.ns` - Array of namespaces to load (default: ['common'])
-- `config.resources` - App-specific translation resources
-
-### `useLanguage()`
-
-Hook for managing language preferences.
-
-**Returns:**
-- `language` - Current language code ('en' | 'nl')
-- `changeLanguage(lang)` - Function to change language
-- `isChanging` - Boolean indicating if language change is in progress
-
-### `useTranslation()`
-
-Re-exported from react-i18next. See [react-i18next docs](https://react.i18next.com/latest/usetranslation-hook).
-
-## Translation Files
-
-Common translations are provided in:
-- `locales/en/common.json` - English translations
-- `locales/nl/common.json` - Dutch translations
-
-### Adding App-Specific Translations
-
-Create translation files in your app:
+Yes — you can support any language by adding the required JSON files to your locales folder. For example:
 
 ```
 your-app/
@@ -153,41 +98,71 @@ your-app/
         app.json
       nl/
         app.json
+      anotherLang/
+        new.json
 ```
 
-Then import and pass them to `initI18n()` as shown above.
+Then include them when initializing:
 
-## Backend Integration
+```tsx
+import anotherLang from './locales/anotherLang/new.json';
 
-The system automatically syncs language preferences with the backend:
+initI18n({
+  ns: ['common', 'app', 'new'],
+  resources: {
+    anotherLang: { new: anotherLang }
+  },
+  supportedLngs: ['en', 'nl', 'anotherLang'],
+  defaultLanguage: 'en'
+});
+```
 
-- On login, the Identity API sets a `preferredLanguage` cookie
-- Language changes update both cookie and backend via `/api/me/preferences`
-- User preferences are stored in the database
+Notes:
+- If you pass supportedLngs, it will override the default supported languages.
+- defaultLanguage overrides the default fallback (which is English).
 
-## Cookie Configuration
+## API Reference
 
-The `preferredLanguage` cookie is set with:
-- Domain: `.asafarim.be` (shared across all subdomains)
-- Path: `/`
-- Expiration: 1 year
-- SameSite: Lax
-- HttpOnly: false (accessible by JavaScript)
+### initI18n(config?: I18nConfig)
 
-## Environment Variables
+Initialize i18next with the shared configuration.
 
-For backend API integration, set:
+Parameters:
+- config.defaultNS — Default namespace (default: 'common')
+- config.ns — Namespaces to load (default: ['common'])
+- config.resources — App-specific translation resources
+- config.supportedLngs — Optional list of supported language codes to enable
+- config.defaultLanguage — Optional fallback language code
+
+### useLanguage()
+
+Hook for managing language preferences.
+
+Returns:
+- language — Current language code
+- changeLanguage(lang) — Function to change language
+- isChanging — Boolean indicating if language change is in progress
+
+### useTranslation()
+
+Re-exported from react-i18next. See official docs.
+
+## Cookie and backend integration
+
+- A preferredLanguage cookie is used to persist the selected language in the browser.
+- If your environment provides an Identity API, updateUserLanguagePreference can sync the preference server-side. If not, the library still works fully client-side.
+
+To point to a backend, optionally set:
 
 ```env
-VITE_IDENTITY_API_URL=https://identity.asafarim.be
+VITE_IDENTITY_API_URL=https://your-identity.example.com
 ```
 
-## Supported Languages
+## Built-in translations
 
-- `en` - English
-- `nl` - Nederlands (Belgian Dutch)
+This package ships with default English and Dutch common translations. You can ignore them and supply your own resources if preferred.
 
-To add more languages, update:
-1. `SUPPORTED_LANGUAGES` in `config/i18n.ts`
-2. Add translation files in `locales/[lang]/common.json`
-3. Update backend validation in `UserPreferencesDto.cs`
+## License
+
+MIT © ASafariM
+

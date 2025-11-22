@@ -29,37 +29,47 @@ export interface I18nConfig {
   defaultNS?: string;
   ns?: string[];
   resources?: Record<string, Record<string, any>>;
+  supportedLngs?: string[];
+  defaultLanguage?: string;
 }
 
 export const initI18n = (config?: I18nConfig) => {
-  const { defaultNS = 'common', ns = ['common', 'web', 'identityPortal'], resources = {} } =
-    config || {};
+  const {
+    defaultNS = 'common',
+    ns = ['common', 'web', 'identityPortal'],
+    resources = {},
+    supportedLngs,
+    defaultLanguage,
+  } = config || {};
 
   // Merge common translations with app-specific resources
-  const mergedResources = {
-    en: {
-      common: enCommon,
-      web: enWeb,
-      identityPortal: enIdentityPortal,
-      ...resources.en
-    },
-    nl: {
-      common: nlCommon,
-      web: nlWeb,
-      identityPortal: nlIdentityPortal,
-      ...resources.nl
-    }
+  const mergedResources: Record<string, Record<string, any>> = { ...resources };
+
+  mergedResources.en = {
+    common: enCommon,
+    web: enWeb,
+    identityPortal: enIdentityPortal,
+    ...(resources.en || {}),
   };
+  mergedResources.nl = {
+    common: nlCommon,
+    web: nlWeb,
+    identityPortal: nlIdentityPortal,
+    ...(resources.nl || {}),
+  };
+
+  const finalSupportedLngs = supportedLngs ?? Object.keys(mergedResources);
+  const fallbackLng = defaultLanguage ?? DEFAULT_LANGUAGE;
 
   i18n
     .use(initReactI18next)
     .use(LanguageDetector)
     .init({
       resources: mergedResources,
-      fallbackLng: DEFAULT_LANGUAGE,
+      fallbackLng,
       defaultNS,
       ns,
-      supportedLngs: SUPPORTED_LANGUAGES,
+      supportedLngs: finalSupportedLngs,
       detection: {
         order: ['cookie', 'navigator'],
         caches: ['cookie'],

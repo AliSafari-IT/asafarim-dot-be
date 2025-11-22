@@ -1,0 +1,97 @@
+{
+  "hero": {
+    "title": "@asafarim/shared-i18n",
+    "subtitle": "Multi-language React package with cookie persistence & backend sync",
+    "description": "A production-ready i18n solution built on i18next, featuring automatic language detection, cookie-based persistence, and seamless backend integration."
+  },
+  "features": {
+    "title": "Key Features",
+    "items": {
+      "multilang": {
+        "title": "Multi-language Support",
+        "description": "Built-in support for English and Dutch with easy extensibility"
+      },
+      "persistence": {
+        "title": "Cookie Persistence",
+        "description": "Language preferences persist across sessions and subdomains"
+      },
+      "backend": {
+        "title": "Backend Integration",
+        "description": "Automatic sync with user preferences API for authenticated users"
+      },
+      "hooks": {
+        "title": "React Hooks",
+        "description": "Simple useLanguage hook for managing language state"
+      },
+      "detection": {
+        "title": "Auto Detection",
+        "description": "Automatically detects browser language on first visit"
+      },
+      "typescript": {
+        "title": "TypeScript First",
+        "description": "Full TypeScript support with type-safe translations"
+      }
+    }
+  },
+  "demo": {
+    "title": "Interactive Demo",
+    "currentLang": "Current Language",
+    "switchLang": "Switch Language",
+    "translationExample": "Translation Example",
+    "commonKeys": "Common Translation Keys",
+    "customKeys": "Custom Translation Keys",
+    "hookUsage": "useLanguage Hook",
+    "hookDescription": "The useLanguage hook provides language state and change functionality",
+    "changeLanguage": "Change Language",
+    "isChanging": "Changing...",
+    "cookieInfo": "Cookie Information",
+    "cookieName": "Cookie Name",
+    "cookieValue": "Cookie Value",
+    "cookieExpiry": "Expires in 1 year"
+  },
+  "installation": {
+    "title": "Installation",
+    "step1": "Install the package",
+    "step2": "Initialize i18n in your app",
+    "step3": "Use translations in components"
+  },
+  "codeExamples": {
+    "title": "Code Examples",
+    "basic": "Basic Usage",
+    "hook": "Using the Hook",
+    "switcher": "Language Switcher"
+  },
+  "tutorial": {
+    "title": "Step-by-Step Tutorial",
+    "description": "Follow these simple steps to install, configure, and use @asafarim/shared-i18n in your React app.",
+    "stepLabel": "Step {{number}}",
+    "steps": {
+      "install": {
+        "title": "Install the package",
+        "description": "Add the shared i18n package to your workspace using pnpm.",
+        "tip": "Use --filter if you only want to install it for a specific workspace app."
+      },
+      "initialize": {
+        "title": "Initialize i18n",
+        "description": "Load your app-specific translations and call initI18n before rendering React.",
+        "tip": "Keep initI18n in main.tsx so it runs once when the app boots."
+      },
+      "translate": {
+        "title": "Translate UI",
+        "description": "Use the useTranslation hook to read keys from common or app namespaces.",
+        "tip": "Use the namespace prefix (e.g., app:key) when you need non-default namespaces."
+      },
+      "languageHook": {
+        "title": "Handle language changes",
+        "description": "useLanguage exposes the active language, change handler, and loading state.",
+        "tip": "Disable buttons while isChanging is true to avoid duplicate requests."
+      }
+    }
+  },
+  "footer": {
+    "madeWith": "Made with",
+    "by": "by",
+    "viewSource": "View Source",
+    "documentation": "Documentation"
+  }
+}
