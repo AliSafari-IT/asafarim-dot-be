@@ -1,4 +1,4 @@
-import { ProjectCardProps, ProjectLink } from '../types';
+import type { ProjectCardProps, ProjectLink } from '../types';
 
 /**
  * Maps a project from the database to the format expected by ProjectCard component
