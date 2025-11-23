@@ -94,10 +94,9 @@ builder.Services.AddDbContext<TestAutomationDbContext>(options =>
 // No local identity configuration needed as we use SSO
 
 // Configure JWT Authentication to validate tokens from Identity.Api
-var identityApiSettings = builder.Configuration.GetSection("IdentityApi");
+var identityApiSettings = builder.Configuration.GetSection("AuthJwt");
 var secretKey = Encoding.ASCII.GetBytes(
-    identityApiSettings["JwtSecret"]
-        ?? throw new InvalidOperationException("JWT Secret not configured")
+    identityApiSettings["Key"] ?? throw new InvalidOperationException("JWT Key not configured")
 );
 
 builder
