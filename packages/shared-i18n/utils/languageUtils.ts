@@ -1,4 +1,4 @@
-import { LANGUAGE_COOKIE_NAME, DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, type SupportedLanguage } from '../config/i18n';
+import { LANGUAGE_COOKIE_NAME, DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, type SupportedLanguage } from '../config/i18n.js';
 
 /**
  * Resolve Identity API base URL from environment or hostname
