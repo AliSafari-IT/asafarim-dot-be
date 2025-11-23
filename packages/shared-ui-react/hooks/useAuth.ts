@@ -244,6 +244,31 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     let mounted = true;
     let authCheckInProgress = false; // Prevent multiple simultaneous auth checks
 
+    const handleExternalLogout = () => {
+      console.log('🔔 auth-signout event received - clearing auth state');
+      if (mounted) {
+        setAuthenticated(false);
+        setUser(null);
+        setToken(null);
+        setLoading(false);
+      }
+    };
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (!event.key) return;
+      if (event.key === 'auth_token' && !event.newValue) {
+        console.log('🧏 Storage event detected auth_token removal - forcing logout state');
+        handleExternalLogout();
+      }
+      if (event.key === 'logout_in_progress' && event.newValue === 'true') {
+        console.log('🧏 Storage event detected logout_in_progress - forcing logout state');
+        handleExternalLogout();
+      }
+    };
+
+    window.addEventListener('auth-signout', handleExternalLogout);
+    window.addEventListener('storage', handleStorageChange);
+
     const checkAuth = async () => {
       // Check if logout is in progress - don't try to re-authenticate
       const logoutInProgress = localStorage.getItem('logout_in_progress') === 'true';
@@ -342,32 +367,20 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
               setToken(null);
             }
           }
-        } else if (fallbackUserInfo) {
-          // If server says not authenticated, but we have fallback user info,
-          // DON'T immediately clear auth state - keep the cached state
-          // This handles cross-domain navigation where cookies might not be sent immediately
-          console.log('⚠️ Server says not authenticated but found local user info');
-          console.log('🔄 Keeping cached auth state - cookies may still be syncing across domains');
-          
-          if (mounted) {
-            // Keep the authenticated state from cached data
-            setAuthenticated(true);
-            setUser(fallbackUserInfo as TUser);
-            
-            // Try to get token from localStorage
-            const cachedToken = localStorage.getItem('auth_token');
-            if (cachedToken) {
-              setToken(cachedToken);
-            }
-          }
         } else {
-          console.log('❌ User is not authenticated and no cached data found');
+          console.log('❌ User is not authenticated after server checks');
+
+          if (fallbackUserInfo) {
+            console.log('🧹 Clearing stale cached auth data');
+            localStorage.removeItem('user_info');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('refresh_token');
+          }
+
           if (mounted) {
             setAuthenticated(false);
             setUser(null);
             setToken(null);
-            // Don't clear localStorage or cookies here - only signOut should do that
-            // This prevents clearing auth data right after a successful login
           }
         }
 
@@ -424,6 +437,8 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     return () => {
       mounted = false;
       clearTimeout(cleanupTimer);
+      window.removeEventListener('auth-signout', handleExternalLogout);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, [authApiBase, meEndpoint, tokenEndpoint, refreshTokenIfNeeded]);
 
