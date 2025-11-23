@@ -5,6 +5,11 @@ sudo journalctl -u nodejs-testora.service -f
 
 # .NET backend
 sudo journalctl -u dotnet-testora.service -f
+sudo journalctl -u dotnet-ai.service -f
+sudo journalctl -u dotnet-core.service -f
+sudo journalctl -u dotnet-identity.service -f
+sudo journalctl -u dotnet-smartops.service -f
+sudo journalctl -u dotnet-taskmanagement.service -f
 
 # Check if All TESTORA environment variables now loaded correctly:
 sudo cat /proc/$(pgrep -f "node.*testrunner/index.js")/environ | tr '\0' '\n' | grep -E "TESTORA__" | sort
