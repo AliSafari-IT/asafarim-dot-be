@@ -50,7 +50,19 @@ const renderLink = (link: NavLinkItem, isMobile = false) => {
   );
 };
 export default function NavbarWrapper(props: any): React.ReactElement {
-  const { isAuthenticated, user, loading, signOut, signIn } = useAuth();
+  const authOptions = {
+    authApiBase: isProduction
+      ? "https://identity.asafarim.be/auth"
+      : "http://identity.asafarim.local:5101/auth",
+    meEndpoint: "/me",
+    tokenEndpoint: "/token",
+    logoutEndpoint: "/logout",
+    identityLoginUrl: isProduction
+      ? "https://identity.asafarim.be/login"
+      : "http://identity.asafarim.local:5177/login"
+  } as const;
+
+  const { isAuthenticated, user, loading, signOut, signIn } = useAuth(authOptions);
   const { siteConfig } = useDocusaurusContext() as {
     siteConfig: DocusaurusConfig & {
       themeConfig: { navbar?: { logo?: { src?: string } } };
