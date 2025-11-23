@@ -125,13 +125,13 @@ export const Dashboard = () => {
             </Button>
 
             <Button onClick={() => openInNewTab(TASKS_URL)} variant="brand">
-              Tasks
+              Task Management App
             </Button>
             <Button onClick={() => openInNewTab(SMARTOPS_URL)} variant="brand">
               SmartOps
             </Button>
             <Button onClick={() => openInNewTab(TESTORA_URL)} variant="brand">
-              Test Automation
+              E2E Test Automation
             </Button>
           </div>
         </section>
