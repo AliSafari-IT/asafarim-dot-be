@@ -6,14 +6,18 @@ namespace TestAutomation.Api;
 
 public class TestTypeStringConverter : JsonConverter<TestType>
 {
-    public override TestType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override TestType Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         var value = reader.GetString();
         return value?.ToLowerInvariant() switch
         {
             "steps" => TestType.Steps,
             "script" => TestType.Script,
-            _ => TestType.Steps
+            _ => TestType.Steps,
         };
     }
 
