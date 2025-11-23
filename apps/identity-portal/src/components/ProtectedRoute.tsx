@@ -51,6 +51,12 @@ export const ProtectedRoute = ({
 
   // If authentication is not required but user is authenticated, redirect appropriately
   if (!requireAuth && isAuthenticated) {
+    const justLoggedOut = new URLSearchParams(location.search).has('_logout');
+    if (justLoggedOut) {
+      console.log('[ProtectedRoute] _logout detected, allowing public route to render');
+      return <>{children}</>;
+    }
+
     // Check for returnUrl in query params (for login/register pages)
     const searchParams = new URLSearchParams(location.search);
     const returnUrl = searchParams.get('returnUrl');
