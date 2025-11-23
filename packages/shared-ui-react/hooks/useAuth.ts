@@ -29,6 +29,7 @@ async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> 
   
   try {
     console.log(`🔍 fetchIsAuthenticated: ${base}${me}`);
+    console.log(`🍪 Current cookies:`, document.cookie || '(none)');
     const res = await fetch(`${base}${me}`, {
       method: 'GET',
       credentials: 'include',
@@ -38,6 +39,9 @@ async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> 
       }
     });
     console.log(`🔍 fetchIsAuthenticated response: ${res.status}`);
+    if (res.status === 401) {
+      console.warn('⚠️ 401 Unauthorized - auth cookies may not be present or invalid');
+    }
     return res.status !== 401;
   } catch (error) {
     console.error('❌ fetchIsAuthenticated failed:', error);
@@ -243,6 +247,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
   useEffect(() => {
     let mounted = true;
     let authCheckInProgress = false; // Prevent multiple simultaneous auth checks
+    let cleanupTimer: ReturnType<typeof setTimeout> | null = null;
 
     const handleExternalLogout = () => {
       console.log('🔔 auth-signout event received - clearing auth state');
@@ -254,11 +259,28 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       }
     };
 
+    const handleExternalLogin = () => {
+      // Avoid triggering auth checks while logout is still in progress
+      if (localStorage.getItem('logout_in_progress') === 'true') {
+        console.log('🛑 Ignoring auth-login event while logout flag is set');
+        return;
+      }
+
+      console.log('🔔 auth-login event received - rechecking auth state');
+      void checkAuth('external-login');
+    };
+
     const handleStorageChange = (event: StorageEvent) => {
       if (!event.key) return;
       if (event.key === 'auth_token' && !event.newValue) {
         console.log('🧏 Storage event detected auth_token removal - forcing logout state');
         handleExternalLogout();
+        return;
+      }
+      if (event.key === 'auth_token' && event.newValue) {
+        console.log('🧏 Storage event detected auth_token set - revalidating auth state');
+        handleExternalLogin();
+        return;
       }
       if (event.key === 'logout_in_progress' && event.newValue === 'true') {
         console.log('🧏 Storage event detected logout_in_progress - forcing logout state');
@@ -266,10 +288,34 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       }
     };
 
-    window.addEventListener('auth-signout', handleExternalLogout);
-    window.addEventListener('storage', handleStorageChange);
+    // Listen for focus/visibility changes to re-check auth when switching tabs
+    const handleFocus = () => {
+      if (localStorage.getItem('logout_in_progress') === 'true') {
+        console.log('🛑 Ignoring focus event while logout in progress');
+        return;
+      }
+      console.log('👁️ Window focused - rechecking auth state');
+      void checkAuth('window-focus');
+    };
 
-    const checkAuth = async () => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        if (localStorage.getItem('logout_in_progress') === 'true') {
+          console.log('🛑 Ignoring visibility change while logout in progress');
+          return;
+        }
+        console.log('👁️ Tab became visible - rechecking auth state');
+        void checkAuth('visibility-change');
+      }
+    };
+
+    window.addEventListener('auth-signout', handleExternalLogout);
+    window.addEventListener('auth-login', handleExternalLogin);
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    const checkAuth = async (reason: string = 'initial') => {
       // Check if logout is in progress - don't try to re-authenticate
       const logoutInProgress = localStorage.getItem('logout_in_progress') === 'true';
       if (logoutInProgress) {
@@ -296,7 +342,7 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       }
 
       authCheckInProgress = true;
-      console.log('🔍 Checking authentication status...');
+      console.log(`🔍 Checking authentication status (reason: ${reason})...`);
       console.log('API Base:', authApiBase);
       console.log('Me endpoint:', meEndpoint);
 
@@ -314,19 +360,14 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
           }
         }
         
-        // CRITICAL FIX: Add delay to allow cross-domain cookies to be sent on first load
-        // When navigating between subdomains, the browser needs time to include cookies in requests
-        // 1000ms is needed for reliable cross-subdomain cookie transmission in development
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Now check with the server
+        // Check with the server immediately - cookies are sent with credentials: 'include'
         let ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
         
-        // RETRY LOGIC: If first check fails and we have stored user info, retry once more
-        // This handles the case where cookies weren't sent on first request
-        if (!ok && fallbackUserInfo) {
-          console.log('⚠️ First auth check failed but user info in localStorage, retrying...');
-          await new Promise(resolve => setTimeout(resolve, 300));
+        // RETRY LOGIC: If first check fails and we have stored user info, retry once
+        // This handles rare cases where cookies weren't sent on first request
+        if (!ok && fallbackUserInfo && reason === 'initial') {
+          console.log('⚠️ First auth check failed but user info in localStorage, retrying once...');
+          await new Promise(resolve => setTimeout(resolve, 200));
           ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
         }
 
@@ -399,46 +440,50 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
         }
       } finally {
         authCheckInProgress = false;
+
+        if (cleanupTimer) {
+          clearTimeout(cleanupTimer);
+        }
+
+        // CRITICAL: Cleanup logout flag AFTER initial auth check completes and page stabilizes
+        cleanupTimer = setTimeout(() => {
+          if (!mounted) return;
+          
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.has('_logout')) {
+            console.log('🧹 Clearing logout flag after redirect (delayed)');
+            localStorage.removeItem('logout_in_progress');
+            localStorage.removeItem('logout_timestamp');
+            urlParams.delete('_logout');
+            const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}${window.location.hash}`;
+            window.history.replaceState({}, '', newUrl);
+          }
+          
+          const logoutTimestamp = localStorage.getItem('logout_timestamp');
+          if (logoutTimestamp) {
+            const elapsed = Date.now() - parseInt(logoutTimestamp, 10);
+            if (elapsed > 10000) { // 10 seconds
+              console.log('🧹 Clearing stuck logout flag (timeout)');
+              localStorage.removeItem('logout_in_progress');
+              localStorage.removeItem('logout_timestamp');
+            }
+          }
+        }, 2000);
       }
     };
 
-    // Initial check only - don't set up listeners that cause loops
     void checkAuth();
-    
-    // CRITICAL: Cleanup logout flag AFTER initial auth check completes and page stabilizes
-    // This runs AFTER checkAuth finishes
-    const cleanupTimer = setTimeout(() => {
-      if (!mounted) return;
-      
-      // Clear logout flag if we're on a page after redirect (check URL for _logout param)
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('_logout')) {
-        console.log('🧹 Clearing logout flag after redirect (delayed)');
-        localStorage.removeItem('logout_in_progress');
-        localStorage.removeItem('logout_timestamp');
-        // Remove the _logout param from URL without reloading
-        urlParams.delete('_logout');
-        const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}${window.location.hash}`;
-        window.history.replaceState({}, '', newUrl);
-      }
-      
-      // Safety: Clear logout flag if it's been stuck for more than 10 seconds
-      const logoutTimestamp = localStorage.getItem('logout_timestamp');
-      if (logoutTimestamp) {
-        const elapsed = Date.now() - parseInt(logoutTimestamp, 10);
-        if (elapsed > 10000) { // 10 seconds
-          console.log('🧹 Clearing stuck logout flag (timeout)');
-          localStorage.removeItem('logout_in_progress');
-          localStorage.removeItem('logout_timestamp');
-        }
-      }
-    }, 2000); // Wait 2 seconds after mount to ensure auth check is done
     
     return () => {
       mounted = false;
-      clearTimeout(cleanupTimer);
+      if (cleanupTimer) {
+        clearTimeout(cleanupTimer);
+      }
       window.removeEventListener('auth-signout', handleExternalLogout);
+      window.removeEventListener('auth-login', handleExternalLogin);
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [authApiBase, meEndpoint, tokenEndpoint, refreshTokenIfNeeded]);
 

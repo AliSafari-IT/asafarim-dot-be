@@ -84,12 +84,14 @@ const useMobileMenu = () => {
 export default function Navbar() {
   // Use Identity API directly for authentication (not proxied)
   const authApiBase = isProduction ? 'https://identity.asafarim.be/auth' : 'http://identity.asafarim.local:5101/auth';
+  const identityLoginUrl = isProduction ? 'https://identity.asafarim.be/login' : 'http://identity.asafarim.local:5177/login';
 
   const { isAuthenticated, user, loading, signOut, signIn } = useAuth({
     authApiBase,
     meEndpoint: '/me',
     tokenEndpoint: '/token',
-    logoutEndpoint: '/logout'
+    logoutEndpoint: '/logout',
+    identityLoginUrl
   });
 
   const { isOpen } = useMobileMenu();

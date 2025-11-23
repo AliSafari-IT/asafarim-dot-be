@@ -98,8 +98,11 @@ export const useIdentityPortalAuth = () => {
         console.warn('⚠️ Verification failed but login succeeded - this is normal for cross-domain cookie scenarios');
       }
       
-      // Don't dispatch any events - they can cause issues
-      // The LoginForm will handle redirect immediately after this returns true
+      // CRITICAL: Dispatch auth-login event to notify other tabs/windows
+      // This triggers cross-app login synchronization
+      console.log('📢 Dispatching auth-login event for cross-app sync');
+      window.dispatchEvent(new Event('auth-login'));
+      
       console.log('✅ Login complete, returning success');
       
       return true;
@@ -190,6 +193,10 @@ export const useIdentityPortalAuth = () => {
         console.error('❌ Failed to verify authentication:', verifyError);
         console.warn('⚠️ Verification failed but registration succeeded - this is normal for cross-domain cookie scenarios');
       }
+      
+      // CRITICAL: Dispatch auth-login event to notify other tabs/windows
+      console.log('📢 Dispatching auth-login event for cross-app sync');
+      window.dispatchEvent(new Event('auth-login'));
       
       console.log('✅ Registration complete, returning success');
       return true;
