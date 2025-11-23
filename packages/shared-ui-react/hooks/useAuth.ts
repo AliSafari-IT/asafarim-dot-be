@@ -594,6 +594,17 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
 
   const signIn = useCallback(async (redirectUrl?: string) => {
+    console.log('🔑 signIn() called with redirectUrl:', redirectUrl);
+    
+    // CRITICAL: Clear logout flag if it's still set from a previous logout
+    // This ensures auth checks can proceed after clicking Sign In
+    const logoutInProgress = localStorage.getItem('logout_in_progress');
+    if (logoutInProgress === 'true') {
+      console.log('🧹 Clearing stale logout_in_progress flag before sign in');
+      localStorage.removeItem('logout_in_progress');
+      localStorage.removeItem('logout_timestamp');
+    }
+    
     // Use provided redirect URL or current page, but ensure it's a valid URL
     const currentUrl = redirectUrl || window.location.href;
 
@@ -627,8 +638,8 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     const encodedReturnUrl = encodeURIComponent(returnUrl);
     const loginUrl = `${identityLoginUrl}?returnUrl=${encodedReturnUrl}`;
 
-    console.log('Redirecting to login:', loginUrl);
-    console.log('Return URL:', returnUrl);
+    console.log('🔄 Redirecting to login:', loginUrl);
+    console.log('🔄 Return URL:', returnUrl);
 
     window.location.href = loginUrl;
   }, [identityLoginUrl]);
