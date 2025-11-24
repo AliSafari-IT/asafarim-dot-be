@@ -200,7 +200,10 @@ public class RunnerWebhookController : ControllerBase
 
             // Parse optional test data set id
             Guid? testDataSetId = null;
-            if (!string.IsNullOrWhiteSpace(dto.TestDataSetId) && Guid.TryParse(dto.TestDataSetId, out var dsid))
+            if (
+                !string.IsNullOrWhiteSpace(dto.TestDataSetId)
+                && Guid.TryParse(dto.TestDataSetId, out var dsid)
+            )
             {
                 testDataSetId = dsid;
             }
