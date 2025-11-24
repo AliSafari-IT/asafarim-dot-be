@@ -129,6 +129,17 @@ public class TestCafeGeneratorService
                     !line.Trim().StartsWith("require('dotenv')")
                     && !line.Trim().StartsWith("require(\"dotenv\")")
                 )
+                .Select(line =>
+                {
+                    // Filter out 't' from TestCafe imports in shared content
+                    var trimmed = line.Trim();
+                    if (trimmed.StartsWith("import") && trimmed.Contains("from 'testcafe'"))
+                    {
+                        return FilterTestCafeImports(line);
+                    }
+                    return line;
+                })
+                .Where(line => !string.IsNullOrWhiteSpace(line))
                 .ToList();
 
             var filteredContent = string.Join('\n', lines).Trim();
@@ -137,7 +148,7 @@ public class TestCafeGeneratorService
                 sb.AppendLine(filteredContent);
                 sb.AppendLine();
                 Console.WriteLine(
-                    $"  ✓ Added {filteredContent.Length} chars of shared imports content (filtered dotenv)"
+                    $"  ✓ Added {filteredContent.Length} chars of shared imports content (filtered dotenv and 't')"
                 );
             }
         }
@@ -1077,7 +1088,13 @@ public class TestCafeGeneratorService
             if (!importMap.ContainsKey("testcafe"))
                 importMap["testcafe"] = new HashSet<string>();
             foreach (var req in requiredImports)
+            {
+                // In TestCafe, `t` is provided as the test context argument and must not be imported
+                if (string.Equals(req, "t", StringComparison.Ordinal))
+                    continue;
+
                 importMap["testcafe"].Add(req);
+            }
         }
 
         // Generate final import statements
@@ -1318,6 +1335,34 @@ public class TestCafeGeneratorService
         // The JavaScript engine will catch actual syntax errors at runtime
 
         return errors;
+    }
+
+    private static string FilterTestCafeImports(string importLine)
+    {
+        // Remove 't' from TestCafe import statements
+        // Example: "import { ClientFunction, Selector, t } from 'testcafe';"
+        //       -> "import { ClientFunction, Selector } from 'testcafe';"
+
+        var (module, imports) = ParseImportStatement(importLine);
+        if (module == "testcafe")
+        {
+            // Filter out 't' from imports
+            var filteredImports = imports
+                .Where(imp => !string.Equals(imp, "t", StringComparison.Ordinal))
+                .ToList();
+
+            if (filteredImports.Count == 0)
+            {
+                // If no imports remain, return empty line
+                return string.Empty;
+            }
+
+            // Reconstruct the import statement
+            var importsString = string.Join(", ", filteredImports);
+            return $"import {{ {importsString} }} from '{module}';";
+        }
+
+        return importLine; // Return unchanged if not a testcafe import
     }
 
     private static (string module, List<string> imports) ParseImportStatement(
