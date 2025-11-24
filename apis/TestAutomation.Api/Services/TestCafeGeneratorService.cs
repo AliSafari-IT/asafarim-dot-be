@@ -82,6 +82,19 @@ public class TestCafeGeneratorService
             }
         }
 
+        // Extract imports from SharedImportsContent and add to importLines
+        if (!string.IsNullOrEmpty(testSuite.Fixture.SharedImportsContent))
+        {
+            var sharedImportsContent = testSuite.Fixture.SharedImportsContent;
+            var (sharedImports, sharedNonImports) = ExtractImportsAndBody(sharedImportsContent);
+            foreach (var imp in sharedImports)
+                importLines.Add(imp);
+
+            Console.WriteLine(
+                $"  ✓ Extracted {sharedImports.Count} imports from SharedImportsContent"
+            );
+        }
+
         // Collect required imports for steps-based tests
         var requiredImports = new List<string>();
         if (stepTests.Any())
@@ -117,29 +130,19 @@ public class TestCafeGeneratorService
             );
         }
 
-        // Add raw shared imports content if provided
+        // Add non-import content from SharedImportsContent (selectors, functions, etc.)
         if (!string.IsNullOrEmpty(testSuite.Fixture.SharedImportsContent))
         {
-            // Filter out require('dotenv').config() since environment variables are already loaded
-            // by the TestRunner service and test files use ES module syntax
             var sharedImportsContent = testSuite.Fixture.SharedImportsContent;
-            var lines = sharedImportsContent
+            var (sharedImports, sharedNonImports) = ExtractImportsAndBody(sharedImportsContent);
+
+            // Filter out require('dotenv').config() from non-import content
+            var lines = sharedNonImports
                 .Split('\n')
                 .Where(line =>
                     !line.Trim().StartsWith("require('dotenv')")
                     && !line.Trim().StartsWith("require(\"dotenv\")")
                 )
-                .Select(line =>
-                {
-                    // Filter out 't' from TestCafe imports in shared content
-                    var trimmed = line.Trim();
-                    if (trimmed.StartsWith("import") && trimmed.Contains("from 'testcafe'"))
-                    {
-                        return FilterTestCafeImports(line);
-                    }
-                    return line;
-                })
-                .Where(line => !string.IsNullOrWhiteSpace(line))
                 .ToList();
 
             var filteredContent = string.Join('\n', lines).Trim();
@@ -148,7 +151,7 @@ public class TestCafeGeneratorService
                 sb.AppendLine(filteredContent);
                 sb.AppendLine();
                 Console.WriteLine(
-                    $"  ✓ Added {filteredContent.Length} chars of shared imports content (filtered dotenv and 't')"
+                    $"  ✓ Added {filteredContent.Length} chars of shared non-import content (filtered dotenv)"
                 );
             }
         }
@@ -1012,8 +1015,18 @@ public class TestCafeGeneratorService
             var trimmed = line.TrimStart();
             if (trimmed.StartsWith("import "))
             {
-                // Normalize whitespace
-                imports.Add(line.Trim());
+                // Filter out 't' from TestCafe imports before adding to the list
+                var normalizedImport = line.Trim();
+                if (normalizedImport.Contains("from 'testcafe'"))
+                {
+                    normalizedImport = FilterTestCafeImports(normalizedImport);
+                }
+
+                // Only add non-empty import statements
+                if (!string.IsNullOrWhiteSpace(normalizedImport))
+                {
+                    imports.Add(normalizedImport);
+                }
             }
             else
             {
