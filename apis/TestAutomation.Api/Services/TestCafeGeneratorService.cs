@@ -123,11 +123,14 @@ public class TestCafeGeneratorService
             // Filter out require('dotenv').config() since environment variables are already loaded
             // by the TestRunner service and test files use ES module syntax
             var sharedImportsContent = testSuite.Fixture.SharedImportsContent;
-            var lines = sharedImportsContent.Split('\n')
-                .Where(line => !line.Trim().StartsWith("require('dotenv')") && 
-                               !line.Trim().StartsWith("require(\"dotenv\")"))
+            var lines = sharedImportsContent
+                .Split('\n')
+                .Where(line =>
+                    !line.Trim().StartsWith("require('dotenv')")
+                    && !line.Trim().StartsWith("require(\"dotenv\")")
+                )
                 .ToList();
-            
+
             var filteredContent = string.Join('\n', lines).Trim();
             if (!string.IsNullOrEmpty(filteredContent))
             {
@@ -1058,7 +1061,13 @@ public class TestCafeGeneratorService
                 if (!importMap.ContainsKey(module))
                     importMap[module] = new HashSet<string>();
                 foreach (var imp in imports)
-                    importMap[module].Add(imp);
+                {
+                    // In TestCafe, `t` is provided as the test context argument and must not be imported
+                    if (module == "testcafe" && string.Equals(imp, "t", StringComparison.Ordinal))
+                        continue;
+
+                    importMap[module].Add(imp); // Deduplicate by variable name
+                }
             }
         }
 
@@ -1075,6 +1084,9 @@ public class TestCafeGeneratorService
         var result = new List<string>();
         foreach (var kvp in importMap.OrderBy(x => x.Key))
         {
+            if (kvp.Value.Count == 0)
+                continue;
+
             var imports = string.Join(", ", kvp.Value.OrderBy(x => x));
             result.Add($"import {{ {imports} }} from '{kvp.Key}';");
         }

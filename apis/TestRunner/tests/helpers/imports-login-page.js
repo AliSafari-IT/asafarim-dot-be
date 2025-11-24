@@ -1,5 +1,5 @@
 // login.test.ts
-import { Selector, t } from 'testcafe';
+import { Selector, ClientFunction } from 'testcafe';
 require('dotenv').config(); // <-- loads .env
 
 // Environment variables
