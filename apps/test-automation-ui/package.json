@@ -1,10 +1,11 @@
 {
   "name": "@asafarim/testora-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prestart": "npx kill-port 5180",
     "start": "vite --host testora.asafarim.local --port 5180",
     "build": "vite build",
     "lint": "eslint .",

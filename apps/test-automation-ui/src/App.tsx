@@ -7,7 +7,9 @@ import { TestRunDetailsPage } from "./pages/TestRunDetailsPage";
 import FunctionalRequirementsPage from "./pages/FunctionalRequirementsPage";
 import FixturesPage from "./pages/FixturesPage";
 import TestSuitesPage from "./pages/TestSuitesPage";
+import TestSuiteDetailsPage from "./pages/TestSuiteDetailsPage";
 import TestCasesPage from "./pages/TestCasesPage";
+import TestCaseDetailsPage from "./pages/TestCaseDetailsPage";
 import TestDataSetsPage from "./pages/TestDataSetsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -41,7 +43,9 @@ function App() {
             />
             <Route path="/fixtures" element={<FixturesPage />} />
             <Route path="/test-suites" element={<TestSuitesPage />} />
+            <Route path="/test-suites/:id" element={<TestSuiteDetailsPage />} />
             <Route path="/test-cases" element={<TestCasesPage />} />
+            <Route path="/test-cases/:id" element={<TestCaseDetailsPage />} />
             <Route path="/test-data-sets" element={<TestDataSetsPage />} />
             <Route path="/integrations" element={<IntegrationsPage />} />
             <Route path="/settings" element={<SettingsPage />} />

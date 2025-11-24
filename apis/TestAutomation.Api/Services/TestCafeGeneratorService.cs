@@ -149,7 +149,7 @@ public class TestCafeGeneratorService
         var afterEachHookCode = string.Empty;
         var extractedTeardownScript = string.Empty;
         var setupFunctions = new List<string>();
-        var setupSelectors = new List<string>();
+        var setupSelectors = new Dictionary<string, string>(StringComparer.Ordinal); // Deduplicate by variable name
 
         // Extract from SetupScript
         if (testSuite.Fixture.SetupScript != null)
@@ -163,7 +163,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(rawSetupScript);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 setupScript = remainingCode;
                 Console.WriteLine(
                     $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from SetupScript"
@@ -183,7 +188,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(rawTeardownScript);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractedTeardownScript = remainingCode;
                 Console.WriteLine(
                     $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from TeardownScript"
@@ -200,7 +210,12 @@ public class TestCafeGeneratorService
             var (extractedFuncs, extractedSels, remainingCode) =
                 ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.BeforeHook);
             setupFunctions.AddRange(extractedFuncs);
-            setupSelectors.AddRange(extractedSels);
+            foreach (var sel in extractedSels)
+            {
+                var varName = ExtractVariableName(sel);
+                if (!string.IsNullOrEmpty(varName))
+                    setupSelectors[varName] = sel; // Deduplicate by variable name
+            }
             beforeHookCode = remainingCode;
             Console.WriteLine(
                 $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from BeforeHook"
@@ -216,7 +231,12 @@ public class TestCafeGeneratorService
             var (extractedFuncs, extractedSels, remainingCode) =
                 ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.AfterHook);
             setupFunctions.AddRange(extractedFuncs);
-            setupSelectors.AddRange(extractedSels);
+            foreach (var sel in extractedSels)
+            {
+                var varName = ExtractVariableName(sel);
+                if (!string.IsNullOrEmpty(varName))
+                    setupSelectors[varName] = sel; // Deduplicate by variable name
+            }
             afterHookCode = remainingCode;
             Console.WriteLine(
                 $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from AfterHook"
@@ -232,7 +252,12 @@ public class TestCafeGeneratorService
             var (extractedFuncs, extractedSels, remainingCode) =
                 ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.BeforeEachHook);
             setupFunctions.AddRange(extractedFuncs);
-            setupSelectors.AddRange(extractedSels);
+            foreach (var sel in extractedSels)
+            {
+                var varName = ExtractVariableName(sel);
+                if (!string.IsNullOrEmpty(varName))
+                    setupSelectors[varName] = sel; // Deduplicate by variable name
+            }
             beforeEachHookCode = remainingCode;
             Console.WriteLine(
                 $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from BeforeEachHook"
@@ -248,7 +273,12 @@ public class TestCafeGeneratorService
             var (extractedFuncs, extractedSels, remainingCode) =
                 ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.AfterEachHook);
             setupFunctions.AddRange(extractedFuncs);
-            setupSelectors.AddRange(extractedSels);
+            foreach (var sel in extractedSels)
+            {
+                var varName = ExtractVariableName(sel);
+                if (!string.IsNullOrEmpty(varName))
+                    setupSelectors[varName] = sel; // Deduplicate by variable name
+            }
             afterEachHookCode = remainingCode;
             Console.WriteLine(
                 $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from AfterEachHook"
@@ -267,7 +297,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(testCase.BeforeTestHook);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractions["BeforeTestHook"] = remainingCode ?? string.Empty;
             }
 
@@ -277,7 +312,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(testCase.AfterTestHook);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractions["AfterTestHook"] = remainingCode ?? string.Empty;
             }
 
@@ -287,7 +327,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(testCase.BeforeEachStepHook);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractions["BeforeEachStepHook"] = remainingCode ?? string.Empty;
             }
 
@@ -297,7 +342,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(testCase.AfterEachStepHook);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractions["AfterEachStepHook"] = remainingCode ?? string.Empty;
             }
 
@@ -308,7 +358,7 @@ public class TestCafeGeneratorService
         if (setupSelectors.Any())
         {
             sb.AppendLine("// Setup Selectors");
-            foreach (var selector in setupSelectors)
+            foreach (var selector in setupSelectors.Values)
             {
                 sb.AppendLine(selector);
             }
