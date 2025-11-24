@@ -1277,6 +1277,23 @@ public class TestCafeGeneratorService
                 || trimmed.Contains(".after(")
                 || trimmed.StartsWith("async function ")
                 || trimmed.StartsWith("function ")
+                || (
+                    trimmed.StartsWith("const ")
+                    && trimmed.Contains("async ")
+                    && trimmed.Contains("=>")
+                )
+                || (trimmed.StartsWith("const ") && trimmed.Contains("function("))
+                || (trimmed.StartsWith("const ") && trimmed.Contains("=>"))
+                || (
+                    trimmed.StartsWith("let ")
+                    && trimmed.Contains("async ")
+                    && trimmed.Contains("=>")
+                )
+                || (
+                    trimmed.StartsWith("var ")
+                    && trimmed.Contains("async ")
+                    && trimmed.Contains("=>")
+                )
             )
             {
                 functionDepthStack.Push(braceDepth);
