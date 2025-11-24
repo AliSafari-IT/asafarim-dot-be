@@ -5,9 +5,11 @@ import { API_BASE } from "../config/api";
 import "./TestRunDetailsPage.css";
 import React from "react";
 import { ButtonComponent } from "@asafarim/shared-ui-react";
-import { Copy } from "lucide-react";
+import { Copy, CopyIcon } from "lucide-react";
 import { useToast } from "@asafarim/toast";
 import { fetchTestRunReport } from "../hooks/useTestrunReport";
+import { GoBeaker } from "react-icons/go";
+import { CgDetailsLess, CgDetailsMore, CgListTree } from "react-icons/cg";
 
 interface TestRun {
   id: string;
@@ -27,7 +29,9 @@ interface TestRun {
 
 interface TestResult {
   id: string;
+  testCaseId?: string;
   testCaseName?: string;
+  testSuiteId?: string;
   status: string;
   durationMs: number;
   errorMessage?: string;
@@ -352,6 +356,35 @@ export function TestRunDetailsPage() {
           (result) => result.status.toLowerCase() === filter.toLowerCase()
         );
 
+  const copyToClipboard = async (text: string | undefined) => {
+    const value = text || "";
+
+    if (!value) {
+      toast.error("Nothing to copy: error message is empty.");
+      return;
+    }
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(value);
+        toast.info("Error message copied to clipboard.");
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = value;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        toast.info("Error message copied to clipboard.");
+      }
+    } catch (err: any) {
+      console.error("Failed to copy to clipboard", err);
+      toast.error("Failed to copy error message to clipboard.");
+    }
+  };
+
   return (
     <div className="test-run-details-page" data-testid="test-run-details-page">
       <div className="page-header" data-testid="page-header">
@@ -570,19 +603,75 @@ export function TestRunDetailsPage() {
                     <td>{getStatusBadge(result.status)}</td>
                     <td>{formatDuration(result.durationMs)}</td>
                     <td>{formatDateTime(result.runAt)}</td>
-                    <td>
-                      {result.errorMessage && (
-                        <button
-                          className="btn-link"
-                          onClick={() =>
-                            setExpandedRow(
-                              expandedRow === result.id ? null : result.id
-                            )
-                          }
-                          data-testid={`toggle-error-${result.id}`}
-                        >
-                          {expandedRow === result.id ? "▼ Hide" : "▶ Details"}
-                        </button>
+                    <td className="actions-buttons">
+                      {result?.errorMessage &&
+                        (expandedRow === result.id ? (
+                          <button
+                            type="button"
+                            className="btn-link"
+                            title="Hide error details"
+                            data-testid="toggle-error-icon-btn"
+                            onClick={() =>
+                              setExpandedRow(
+                                expandedRow === result.id ? null : result.id
+                              )
+                            }
+                          >
+                            <CgDetailsLess size={32} />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="btn-link"
+                            title="Show error details"
+                            data-testid="toggle-error-icon-btn"
+                            onClick={() =>
+                              setExpandedRow(
+                                expandedRow === result.id ? null : result.id
+                              )
+                            }
+                          >
+                            <CgDetailsMore size={32} />
+                          </button>
+                        ))}
+                      {result?.errorMessage && (
+                        <>
+                          <button
+                            type="button"
+                            className="btn-link"
+                            title="Copy error message to clipboard"
+                            onClick={() => copyToClipboard(result.errorMessage)}
+                            data-testid="copy-to-clipboard-icon-btn"
+                          >
+                            <CopyIcon size={28} />
+                          </button>
+
+                          {result.testSuiteId && (
+                            <button
+                              type="button"
+                              className="btn-link"
+                              title="Open related testsuite"
+                              data-testid="go-to-testsuite-icon-btn"
+                              onClick={() => {
+                                navigate(`/test-suites/${result.testSuiteId}`)
+                              }}
+                            >
+                              <CgListTree size={32} />
+                            </button>
+                          )}
+
+                          {result.testCaseId && (
+                            <button
+                              type="button"
+                              className="btn-link"
+                              title="Open related test case"
+                              data-testid="go-to-testcase-icon-btn"
+                              onClick={() => navigate(`/test-cases/${result.testCaseId}`)}
+                            >
+                              <GoBeaker size={32} />
+                            </button>
+                          )}
+                        </>
                       )}
                     </td>
                   </tr>

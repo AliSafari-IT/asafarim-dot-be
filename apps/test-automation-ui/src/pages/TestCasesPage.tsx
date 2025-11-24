@@ -1,5 +1,7 @@
 // apps/test-automation-ui/src/pages/TestCasesPage.tsx
 import { useEffect, useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
 import { GenericCrudPage } from './GenericCrudPage';
 import { ColumnDefinition } from '../components/GenericTable';
 import { FormFieldDefinition } from '../components/GenericForm';
@@ -59,10 +61,26 @@ interface TestSuite {
 export default function TestCasesPage() {
   const [suites, setSuites] = useState<TestSuite[]>([]);
   const [currentSteps, setCurrentSteps] = useState<TestStep[]>([]);
+  const [editCaseId, setEditCaseId] = useState<string | null>(null);
+  const [focusField, setFocusField] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     loadSuites();
   }, []);
+
+  useEffect(() => {
+    // Handle edit mode from query parameters, e.g. /test-cases?edit=<id>&focus=<field>
+    const editId = searchParams.get('edit');
+    const focus = searchParams.get('focus');
+
+    if (editId) {
+      setEditCaseId(editId);
+      if (focus) {
+        setFocusField(focus);
+      }
+    }
+  }, [searchParams]);
 
   const loadSuites = async () => {
     try {
@@ -86,7 +104,7 @@ export default function TestCasesPage() {
       inListView: true,
       sortable: true,
     },
-        {
+    {
       header: "Description",
       field: "description",
       render: (item) => truncateAtWord(item.description, 105),
@@ -118,14 +136,15 @@ export default function TestCasesPage() {
       header: 'Passed',
       field: 'passed',
       sortAccessor: (item) => item.passed,
- render: (item) => (
+      render: (item) => (
         <span className={`status-badge ${item.passed ? 'test-cases-status-passed' : 'test-cases-status-failed'}`}
-        data-testid="test-case-status"
-        title={item.passed ? 'Passed' : 'Failed'}
+          data-testid="test-case-status"
+          title={item.passed ? 'Passed' : 'Failed'}
         >
           {item.passed ? <CheckCircleIcon /> : <XCircleIcon />}
         </span>
-      ),      width: '15%',
+      ),
+      width: '15%',
       inListView: true,
       sortable: true,
     },
@@ -135,8 +154,8 @@ export default function TestCasesPage() {
       width: '10%',
       render: (item) => (
         <span className={`status-badge ${item.isActive ? 'active' : 'inactive'}`}
-        data-testid="test-case-status"
-        title={item.isActive ? 'Active' : 'Inactive'}
+          data-testid="test-case-status"
+          title={item.isActive ? 'Active' : 'Inactive'}
         >
           {item.isActive ? <CheckCircleIcon /> : <XCircleIcon />}
         </span>
@@ -191,7 +210,6 @@ export default function TestCasesPage() {
       placeholder: 'https://example.com',
       group: 'Basic Information'
     },
-    
     // Test Configuration
     {
       name: 'testType',
@@ -258,16 +276,15 @@ export default function TestCasesPage() {
       type: 'checkbox',
       group: 'Test Configuration'
     },
-    
     // Test Content
     {
       name: 'steps',
       label: 'Test Steps',
       type: 'text',
       render: (value, onChange) => (
-        <StepsEditor 
-          steps={value || []} 
-          onChange={(steps) => onChange(steps)} 
+        <StepsEditor
+          steps={value || []}
+          onChange={(steps) => onChange(steps)}
         />
       ),
       condition: (formData) => formData.testType === 'Steps',
@@ -282,7 +299,6 @@ export default function TestCasesPage() {
       condition: (formData) => formData.testType === 'Script',
       group: 'Test Content'
     },
-    
     // Hooks
     {
       name: 'beforeTestHook',
@@ -316,7 +332,6 @@ export default function TestCasesPage() {
       placeholder: 'Code to run after each step in the test',
       group: 'Test Hooks'
     },
-    
     // Advanced Configuration
     {
       name: 'meta',
@@ -429,6 +444,14 @@ export default function TestCasesPage() {
       createButtonLabel="+ New Test Case"
       editFormTitle="Edit Test Case"
       createFormTitle="Create Test Case"
+      editSuiteId={editCaseId}
+      focusField={focusField}
+      onEditComplete={() => {
+        setEditCaseId(null);
+        setFocusField(null);
+        // Clear the query parameters so the page behaves normally afterwards
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }}
     />
   );
 }

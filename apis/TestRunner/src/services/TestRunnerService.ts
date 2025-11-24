@@ -156,6 +156,7 @@ export class TestRunnerService {
                     body: JSON.stringify({
                         runId: runId,
                         testCaseId: result.testCaseId,
+                        testSuiteId: result.testSuiteId,
                         testCaseName: result.testCaseName || result.name,
                         status: result.status,
                         durationMs: result.durationMs,
@@ -837,11 +838,17 @@ test('${tc.name}', async t => {
         // Prepare all test files and collect their paths
         const filePaths: string[] = [];
         const testCaseMap: { [testName: string]: string } = {};
+        const testSuiteMap: { [testName: string]: string } = {}; // Track suite IDs
 
         for (const testFile of testFiles) {
             // Extract TEST_CASE_ID mappings from all files
             const suiteTestCaseMap = this.extractTestCaseIdMapping(testFile.fileContent, runId);
             Object.assign(testCaseMap, suiteTestCaseMap);
+            
+            // Map all tests in this file to this suite ID
+            for (const testName of Object.keys(suiteTestCaseMap)) {
+                testSuiteMap[testName] = testFile.suiteId;
+            }
 
             // Construct file path
             const normalizedTempDir = path.normalize(this.tempDir);
@@ -1021,7 +1028,7 @@ test('${tc.name}', async t => {
         }
 
         // Parse JSON report and send results
-        await this.parseAndSendTestResults(runId, reportPath, testCaseMap);
+        await this.parseAndSendTestResults(runId, reportPath, testCaseMap, testSuiteMap);
     }
 
     /**
@@ -1030,7 +1037,8 @@ test('${tc.name}', async t => {
     private async parseAndSendTestResults(
         runId: string,
         reportPath: string,
-        testCaseMap: { [testName: string]: string }
+        testCaseMap: { [testName: string]: string },
+        testSuiteMap?: { [testName: string]: string }
     ): Promise<void> {
         let reportData: any = null;
         let actualPassedTests = 0;
@@ -1057,6 +1065,7 @@ test('${tc.name}', async t => {
 
                             // Send individual test result to webhook
                             const testCaseId = testCaseMap[test.name];
+                            const testSuiteId = testSuiteMap?.[test.name];
                             if (!testCaseId) {
                                 logger.warn(`⚠️ Test case ID not found for test: "${test.name}"`, this.context(runId, {
                                     availableTests: Object.keys(testCaseMap)
@@ -1066,6 +1075,7 @@ test('${tc.name}', async t => {
                             await this.sendTestResult(runId, {
                                 name: test.name,
                                 testCaseId: testCaseId,
+                                testSuiteId: testSuiteId,
                                 status: hasFailed ? 'failed' : 'passed',
                                 durationMs: test.durationMs || 0,
                                 errorMessage: hasFailed ? (test.errs[0]?.errMsg || test.errs[0] || 'Test failed') : undefined,
@@ -1118,6 +1128,13 @@ test('${tc.name}', async t => {
 
         // Extract TEST_CASE_ID from generated file content
         const testCaseMap = this.extractTestCaseIdMapping(fileContent, runId);
+        
+        // Create testSuiteMap with the same suite ID for all tests
+        const testSuiteMap: { [testName: string]: string } = {};
+        for (const testName of Object.keys(testCaseMap)) {
+            testSuiteMap[testName] = suiteId;
+        }
+        
         logger.info('📁 Temp directory ensured', { tempDir: this.tempDir });
 
         // Use the generated file path if provided, otherwise create a temporary one
@@ -1325,6 +1342,7 @@ test('${tc.name}', async t => {
 
                             // Send individual test result to webhook
                             const testCaseId = testCaseMap[test.name];
+                            const testSuiteId = testSuiteMap?.[test.name];
                             if (!testCaseId) {
                                 logger.warn(`⚠️ Test case ID not found for test: "${test.name}"`, this.context(runId, {
                                     availableTests: Object.keys(testCaseMap)
@@ -1334,6 +1352,7 @@ test('${tc.name}', async t => {
                             await this.sendTestResult(runId, {
                                 name: test.name,
                                 testCaseId: testCaseId,
+                                testSuiteId: testSuiteId,
                                 status: hasFailed ? 'failed' : 'passed',
                                 durationMs: test.durationMs || 0,
                                 errorMessage: hasFailed ? (test.errs[0]?.errMsg || test.errs[0] || 'Test failed') : undefined,
