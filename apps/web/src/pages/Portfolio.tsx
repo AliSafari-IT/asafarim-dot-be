@@ -81,15 +81,15 @@ const Portfolio = () => {
       isPublic: true,
     },
     {
-      id: 'tko',
-      title: 'DocSys (TKO)',
+      id: 'paginated-project-grid',
+      title: 'Paginated Project Grid',
       description:
-        'Documentation knowledge organizer built with .NET + React, featuring Redux state and Syncfusion UI.',
-      techStacks: [{ name: '.NET 6' }, { name: 'React' }, { name: 'Redux' }],
+        'A React component for paginated project grids with filtering and sorting.',
+      techStacks: [{ name: 'React' }, { name: 'TypeScript' }, { name: 'CSS Modules' }],
       links: [
-        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/tko' }
+        { label: 'GitHub', url: 'https://alisafari-it.github.io/paginated-project-grid/' }
       ],
-      category: 'backend',
+      category: 'frontend',
       status: 'active' as const,
       isFeatured: true,
       isPublic: true,
@@ -110,14 +110,14 @@ const Portfolio = () => {
       isPublic: true,
     },
     {
-      id: 'training-platform',
-      title: 'Training Platform',
+      id: 'react-privacy-consent',
+      title: 'react-privacy-consent',
       description:
-        'Java + JSF learning portal with hundreds of curated exercises and a public Vercel deployment.',
-      techStacks: [{ name: 'Java' }, { name: 'JSF' }, { name: 'Vercel' }],
+        'A React component for handling privacy consent in a user-friendly way.',
+      techStacks: [{ name: 'React' }, { name: 'TypeScript' }, { name: 'CSS' }],
       links: [
-        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/Training' },
-        { label: 'Live Demo', url: 'https://training-self.vercel.app' }
+        { label: 'GitHub', url: 'https://github.com/AliSafari-IT/react-privacy-consent' },
+        { label: 'Live Demo', url: 'https://alisafari-it.github.io/react-privacy-consent/' }
       ],
       category: 'web',
       status: 'active' as const,
@@ -126,10 +126,10 @@ const Portfolio = () => {
     },
     {
       id: 'toast-kit',
-      title: 'Toast Micro SaaS',
+      title: 'Toast Kit',
       description:
-        'Composable toast/notification service with themeable React widgets and a Next.js marketing site.',
-      techStacks: [{ name: 'React' }, { name: 'Next.js' }, { name: 'Tailwind' }],
+        'A lightweight, theme-aware toast notification system for React applications with a simple programmatic API.',
+      techStacks: [{ name: 'React' }, { name: 'TypeScript' }, { name: 'CSS' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/toast' }
       ],
