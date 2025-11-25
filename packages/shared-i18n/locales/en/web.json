@@ -233,8 +233,8 @@
         "research": "Published researcher with focus on web technologies",
         "oss": "Open source contributor and project maintainer"
       },
-      "primaryCta": "View Resume",
-      "secondaryCta": "Contact Me"
+      "primaryCtaLabel": "View Resume",
+      "secondaryCtaLabel": "Contact Me"
     },
     "sections": {
       "title": "Portfolio Sections",

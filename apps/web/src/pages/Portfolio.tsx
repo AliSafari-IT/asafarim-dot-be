@@ -251,11 +251,11 @@ const Portfolio = () => {
           t('portfolio.hero.bullets.oss')
         ]}
         primaryCta={{
-          label: t('portfolio.hero.primaryCta.label'),
+          label: t('portfolio.hero.primaryCtaLabel'),
           to: "/portfolio/my-react-dotnet-cv-10-10-2025/public",
         }}
         secondaryCta={{
-          label: t('portfolio.hero.secondaryCta.label'),
+          label: t('portfolio.hero.secondaryCtaLabel'),
           to: "/contact",
         }}
       />
