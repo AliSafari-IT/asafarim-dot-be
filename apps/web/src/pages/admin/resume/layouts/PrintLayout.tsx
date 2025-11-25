@@ -194,16 +194,19 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
                 )}
                 {project.technologies && project.technologies.length > 0 && (
                   <div className="print-tech-tags">
-                    {(
-                      project.technologies as (
-                        | string
-                        | { id: string; name: string; category: string }
-                      )[]
-                    ).map((tech, index) => (
-                      <span key={index}>
-                        {typeof tech === "string" ? tech : tech.name}
-                      </span>
-                    ))}
+                    <span className="print-tech-label">Tech:</span>
+                    <div className="print-tech-list">
+                      {(
+                        project.technologies as (
+                          | string
+                          | { id: string; name: string; category: string }
+                        )[]
+                      ).map((tech, index) => (
+                        <span key={index} className="print-tech-badge">
+                          {typeof tech === "string" ? tech : tech.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
