@@ -171,7 +171,126 @@
   },
   "portfolio": {
     "title": "Portfolio",
-    "description": "View my work and projects"
+    "description": "View my work and projects",
+    "projects": [
+      {
+        "asafarim-dot-be": {
+          "title": "ASafariM Monorepo",
+          "description": "Monorepo powering my public website, dashboards, and internal tooling with shared design tokens and UI kits."
+        }
+      },
+      {
+        "test-automation-platform": {
+          "title": "Test Automation Platform",
+          "description": "Full E2E automation suite with TestCafe generators, GitHub Actions integration, and real-time reporting."
+        }
+      },
+      {
+        "asafarim-clean-architecture": {
+          "title": "ASafariM Clean Architecture",
+          "description": "Backend reference implementation showcasing Clean Architecture, PostgreSQL, MediatR, and modular domain boundaries."
+        },
+        "task-operations-suite": {
+          "title": "Task Operations Suite",
+          "description": "Smart Operations Dashboard for Task Operations with real-time reporting and analytics."
+        },
+        "taskmanagement": {
+          "title": "TaskManagement Suite",
+          "description": "Project and task management platform featuring SSO, permissions, filters, and a responsive React SPA."
+        },
+        "paginated-project-grid": {
+          "title": "Paginated Project Grid",
+          "description": "A React component for paginated project grids with filtering and sorting."
+        },
+        "aquaflow": {
+          "title": "AquaFlow",
+          "description": "Water utility workflow portal with TypeScript micro frontends and API orchestration."
+        },
+        "react-privacy-consent": {
+          "title": "react-privacy-consent",
+          "description": "A React component for handling privacy consent in a user-friendly way."
+        },
+        "toast-kit": {
+          "title": "Toast Kit",
+          "description": "A lightweight, theme-aware toast notification system for React applications with a simple programmatic API."
+        },
+        "tsrdotnet": {
+          "title": "TSRdotNet",
+          "description": "Energy time-series modeling toolkit leveraging R from .NET for predictive analytics."
+        },
+        "angular-project": {
+          "title": "Angular Enterprise Starter",
+          "description": "Enterprise-ready Angular template with Nx, role-based routing, and Syncfusion integrations."
+        }
+      }
+    ],
+    "hero": {
+      "kicker": "Portfolio",
+      "title": "My Work & Contributions",
+      "subtitle": "Explore my professional journey, publications, research, and projects",
+      "bullets": {
+        "fullstack": "Full-stack developer specializing in .NET and React",
+        "research": "Published researcher with focus on web technologies",
+        "oss": "Open source contributor and project maintainer"
+      },
+      "primaryCta": "View Resume",
+      "secondaryCta": "Contact Me"
+    },
+    "sections": {
+      "title": "Portfolio Sections",
+      "items": {
+        "resume": {
+          "title": "Resume",
+          "description": "View my professional experience, skills, and education."
+        },
+        "publications": {
+          "title": "Publications",
+          "description": "Explore my published articles, papers, and research contributions."
+        },
+        "research": {
+          "title": "Research",
+          "description": "Learn about my research interests and ongoing projects."
+        },
+        "projects": {
+          "title": "Projects",
+          "description": "Browse through my personal and professional projects."
+        }
+      }
+    },
+    "featured": {
+      "title": "Featured Work"
+    },
+    "npm": {
+      "title": "NPM Packages",
+      "packages": {
+        "toast": {
+          "title": "asafarim/toast",
+          "description": "A lightweight, theme-aware toast notification system for React applications with a simple programmatic API.",
+          "meta": "Design System • React >=16.8.0 • Zero external dependencies"
+        },
+        "sharedTokens": {
+          "title": "@asafarim/shared-tokens",
+          "description": "Central theme tokens (colors, spacing, typography) consumed by every FE app in the monorepo.",
+          "meta": "CSS Custom Properties"
+        },
+        "sharedI18n": {
+          "title": "@asafarim/shared-i18n",
+          "description": "Lightweight, simple translation module for any React + TypeScript app, built on top of i18next and react-i18next. It ships with sensible defaults (English and Dutch) but can support any language by adding JSON files to your locales folder.",
+          "meta": "Localization toolkit"
+        },
+        "reactThemes": {
+          "title": "@asafarim/react-themes",
+          "description": "Preset theme bundles (light/dark/high-contrast) with runtime switching utilities.",
+          "meta": "UI Utilities"
+        },
+        "ddMenu": {
+          "title": "@asafarim/dd-menu",
+          "description": "Accessible dropdown menu primitives with keyboard support and portal-based rendering.",
+          "meta": "Navigation widgets"
+        }
+      },
+      "viewOnNpm": "View on npm"
+    }
   },
   "showcases": {
     "title": "Featured Applications",
