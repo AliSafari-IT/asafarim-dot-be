@@ -9,7 +9,7 @@ export default function About() {
   const bullets = [t("about.description"), t("about.tagline")];
   const primaryCta = {
     label: t("about.viewResume"),
-    to: "/portfolio/my-react-dotnet-cv-10-10-2025/public",
+    to: "/portfolio/cv-nov-2025/public",
   };
   const secondaryCta = { label: t("common:contact"), to: "/contact" };
   const media = null;
