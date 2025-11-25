@@ -1,5 +1,6 @@
 import type { ResumeLayoutProps } from "./types.tsx";
 import { formatDate, renderDots } from "./types.tsx";
+import type { SkillDto, PublicSkillDto } from "../../../../services/resumeApi";
 import {
   Github,
   Linkedin,
@@ -13,7 +14,18 @@ import {
 } from "lucide-react";
 import "./print-layout.css";
 
+type AnySkill = SkillDto | PublicSkillDto;
+
 export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
+  const skillsByCategory = (resume.skills ?? []).reduce<
+    Record<string, AnySkill[]>
+  >((acc, skill) => {
+    const key = skill.category || "Other";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(skill as AnySkill);
+    return acc;
+  }, {});
+
   return (
     <div className="print-layout-container">
       {/* Export PDF Button - completely removed for print layout */}
@@ -112,10 +124,24 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
             <section className="print-section">
               <h3 className="print-section-title">SKILLS</h3>
               <div className="print-skills">
-                {resume.skills.map((skill, index) => (
-                  <div key={index} className="print-skill">
-                    <span className="print-skill-name">{skill.name}</span>
-                    {renderDots(skill.rating)}
+                {Object.entries(skillsByCategory).map(([category, skills]) => (
+                  <div
+                    key={category}
+                    className="print-skill-category"
+                    data-testid="print-skill-category"
+                  >
+                    <div
+                      className="print-skill-category-title"
+                      data-testid="print-skill-category-title"
+                    >
+                      {category}
+                    </div>
+                    {skills.map((skill, index) => (
+                      <div key={index} className="print-skill">
+                        <span className="print-skill-name">{skill.name}</span>
+                        {renderDots(skill.rating)}
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
@@ -241,7 +267,6 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
               return (
                 <div key={index} className="print-social-link">
                   <div className="print-social-content">
-                    <strong>{platform}</strong>
                     <a
                       href={link.url}
                       target="_blank"
@@ -251,6 +276,7 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
                       <span className="print-social-icon">
                         <Icon size={16} />
                       </span>
+                      <strong>{platform}</strong>
                     </a>
                   </div>
                 </div>
