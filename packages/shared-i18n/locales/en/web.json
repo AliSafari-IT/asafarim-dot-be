@@ -258,7 +258,8 @@
       }
     },
     "featured": {
-      "title": "Featured Work"
+      "title": "Featured Work",
+      "viewOnNpm": "Visit →"
     },
     "npm": {
       "title": "NPM Packages",
