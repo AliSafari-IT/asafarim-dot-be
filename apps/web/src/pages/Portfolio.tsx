@@ -252,7 +252,7 @@ const Portfolio = () => {
         ]}
         primaryCta={{
           label: t('portfolio.hero.primaryCtaLabel'),
-          to: "/portfolio/cv-nov-2025/public",
+          to: "/portfolio/cv-nov-2025/public?layout=print",
         }}
         secondaryCta={{
           label: t('portfolio.hero.secondaryCtaLabel'),
