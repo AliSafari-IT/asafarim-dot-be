@@ -214,7 +214,7 @@ const Portfolio = () => {
       title: t('portfolio.sections.items.resume.title'),
       description: t('portfolio.sections.items.resume.description'),
       icon: '📄',
-      link: '/portfolio/cv-nov-2025/public',
+      link: '/portfolio/cv-nov-2025/public?layout=print',
     },
     {
       id: 'publications',
