@@ -183,7 +183,7 @@
       },
       "asafarim-clean-architecture": {
         "title": "ASafariM Clean Architecture",
-        "description": "Backend reference implementation met Clean Architecture, PostgreSQL, MediatR en modulaire domeingrenzen."
+        "description": "Backend reference implementatie met Clean Architecture, PostgreSQL, MediatR en modulaire domeingrenzen."
       },
       "task-operations-suite": {
         "title": "Task Operations Suite",
@@ -223,7 +223,7 @@
       "title": "Mijn Werk & Bijdragen",
       "subtitle": "Verken mijn professionele traject, publicaties, onderzoek en projecten",
       "bullets": {
-        "fullstack": "Fullstack developer gespecialiseerd in .NET en React",
+        "fullstack": "Full stack developer gespecialiseerd in .NET en React",
         "research": "Gepubliceerde onderzoeker met focus op webtechnologieën",
         "oss": "Open-source bijdrager en projectmaintainer"
       },
