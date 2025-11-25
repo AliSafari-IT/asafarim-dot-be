@@ -163,7 +163,7 @@ const Portfolio = () => {
     {
       id: 'toast',
       title: 'asafarim/toast',
-      description: 'A lightweight, theme-aware toast notification system for React applications with a simple programmatic API.',
+      description: t('portfolio.npm.packages.toast.description'),
       meta: 'Design System • React >=16.8.0 • Zero external dependencies',
       tags: ['React', 'Toast', 'Toast notifications', 'Auto-dismiss', 'closable'],
       icon: '🧩',
@@ -172,7 +172,7 @@ const Portfolio = () => {
     {
       id: 'shared-tokens',
       title: '@asafarim/shared-tokens',
-      description: 'Central theme tokens (colors, spacing, typography) consumed by every FE app in the monorepo.',
+      description: t('portfolio.npm.packages.sharedTokens.description'),
       meta: 'CSS Custom Properties',
       tags: ['Theming', 'Dark mode', 'CSS'],
       icon: '🎨',
@@ -181,7 +181,7 @@ const Portfolio = () => {
     {
       id: 'shared-i18n',
       title: '@asafarim/shared-i18n',
-      description: 'Lightweight, simple translation module for any React + TypeScript app, built on top of i18next and react-i18next. It ships with sensible defaults (English and Dutch) but can support any language by adding JSON files to your locales folder.',
+      description: t('portfolio.npm.packages.sharedI18n.description'),
       meta: 'Localization toolkit',
       tags: ['i18n', 'TypeScript'],
       icon: '🌐',
@@ -190,7 +190,7 @@ const Portfolio = () => {
     {
       id: 'react-themes',
       title: '@asafarim/react-themes',
-      description: 'Preset theme bundles (light/dark/high-contrast) with runtime switching utilities.',
+      description: t('portfolio.npm.packages.reactThemes.description'),
       meta: 'UI Utilities',
       tags: ['React', 'Themes'],
       icon: '🌓',
@@ -199,7 +199,7 @@ const Portfolio = () => {
     {
       id: 'dd-menu',
       title: '@asafarim/dd-menu',
-      description: 'Accessible dropdown menu primitives with keyboard support and portal-based rendering.',
+      description: t('portfolio.npm.packages.ddMenu.description'),
       meta: 'Navigation widgets',
       tags: ['A11y', 'Menu', 'React'],
       icon: '📦',
@@ -211,29 +211,29 @@ const Portfolio = () => {
   const portfolioSections = [
     {
       id: 'resume',
-      title: 'Resume',
-      description: 'View my professional experience, skills, and education.',
+      title: t('portfolio.sections.items.resume.title'),
+      description: t('portfolio.sections.items.resume.description'),
       icon: '📄',
       link: '/portfolio/my-react-dotnet-cv-10-10-2025/public',
     },
     {
       id: 'publications',
-      title: 'Publications',
-      description: 'Explore my published articles, papers, and research contributions.',
+      title: t('portfolio.sections.items.publications.title'),
+      description: t('portfolio.sections.items.publications.description'),
       icon: '📚',
       link: '/portfolio/publications',
     },
     {
       id: 'research',
-      title: 'Research',
-      description: 'Learn about my research interests and ongoing projects.',
+      title: t('portfolio.sections.items.research.title'),
+      description: t('portfolio.sections.items.research.description'),
       icon: '🔬',
       link: '/portfolio/research',
     },
     {
       id: 'projects',
-      title: 'Projects',
-      description: 'Browse through my personal and professional projects.',
+      title: t('portfolio.sections.items.projects.title'),
+      description: t('portfolio.sections.items.projects.description'),
       icon: '💻',
       link: '/portfolio/projects',
     },
@@ -243,26 +243,26 @@ const Portfolio = () => {
     <div className="portfolio-page">
       <Hero
         kicker="Portfolio"
-        title="My Work & Contributions"
-        subtitle="Explore my professional journey, publications, research, and projects"
+        title={t('portfolio.hero.title')}
+        subtitle={t('portfolio.hero.subtitle')}
         bullets={[
-          "Full-stack developer specializing in .NET and React",
-          "Published researcher with focus on web technologies",
-          "Open source contributor and project maintainer"
+          t('portfolio.hero.bullets.fullstack'),
+          t('portfolio.hero.bullets.research'),
+          t('portfolio.hero.bullets.oss')
         ]}
         primaryCta={{
-          label: "View Resume",
+          label: t('portfolio.hero.primaryCta.label'),
           to: "/portfolio/my-react-dotnet-cv-10-10-2025/public",
         }}
         secondaryCta={{
-          label: "Contact Me",
+          label: t('portfolio.hero.secondaryCta.label'),
           to: "/contact",
         }}
       />
 
       <section className="portfolio-section">
         <div className="portfolio-container">
-          <h2 className="section-title">Portfolio Sections</h2>
+          <h2 className="section-title">{t('portfolio.sections.title')}</h2>
 
           <div className="portfolio-grid">
           {portfolioSections.map((section) => (
@@ -277,7 +277,7 @@ const Portfolio = () => {
 
       <section className="portfolio-section">
         <div className="portfolio-container">
-          <h2 className="section-title">Featured Work</h2>
+          <h2 className="section-title">{t('portfolio.featured.title')}</h2>
           <PaginatedProjectGrid
             projects={featuredProjects}
             cardsPerPage={3}
@@ -297,7 +297,7 @@ const Portfolio = () => {
 
       <section className="portfolio-section">
         <div className="portfolio-container">
-          <h2 className="section-title">NPM Packages</h2>
+          <h2 className="section-title">{t('portfolio.npm.title')}</h2>
 
           <div className="portfolio-grid">
             {npmPackages.map((pkg) => (
@@ -308,7 +308,7 @@ const Portfolio = () => {
                 clickable
                 actionButton={
                   <a href={pkg.link} target="_blank" rel="noopener noreferrer" className="featured-link">
-                    View on npm →
+                    {t('portfolio.featured.viewOnNpm')}
                   </a>
                 }
               />
