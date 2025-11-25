@@ -1,15 +1,16 @@
 import { Hero, PaginatedProjectGrid, ContentCard } from '@asafarim/shared-ui-react';
 import type { Project, ContentCardProps } from '@asafarim/shared-ui-react';
 import './portfolio.css';
+import { useTranslation } from '@asafarim/shared-i18n';
 
 const Portfolio = () => {
+  const {t} = useTranslation( 'web' );
   // Featured projects data
   const featuredProjects: Project[] = [
     {
       id: 'asafarim-dot-be',
-      title: 'ASafariM Monorepo',
-      description:
-        'Monorepo powering my public website, dashboards, and internal tooling with shared design tokens and UI kits.',
+      title: t( 'portfolio.projects.asafarim-dot-be.title' ),
+      description: t( 'portfolio.projects.asafarim-dot-be.description' ),
       techStacks: [{ name: 'React' }, { name: '.NET 8' }, { name: 'PNPM Workspaces' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be' },
@@ -22,9 +23,8 @@ const Portfolio = () => {
     },
     {
       id: 'asafarim-clean-architecture',
-      title: 'ASafariM Clean Architecture',
-      description:
-        'Backend reference implementation showcasing Clean Architecture, CQRS, MediatR, and modular domain boundaries.',
+      title: t( 'portfolio.projects.asafarim-clean-architecture.title' ),
+      description: t( 'portfolio.projects.asafarim-clean-architecture.description' ),
       techStacks: [{ name: '.NET 8' }, { name: 'PostgreSQL' }, { name: 'CQRS' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim'},
@@ -37,9 +37,8 @@ const Portfolio = () => {
     },
     {
       id: 'test-automation-platform',
-      title: 'Test Automation Platform',
-      description:
-        'Full E2E automation suite with TestCafe generators, GitHub Actions integration, and real-time reporting.',
+      title: t( 'portfolio.projects.test-automation-platform.title' ),
+      description: t( 'portfolio.projects.test-automation-platform.description' ),
       techStacks: [{ name: 'React' }, { name: 'Node.js' }, { name: 'TestCafe' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/apps/test-automation-ui' },
@@ -52,9 +51,8 @@ const Portfolio = () => {
     },
     {
       id: 'task-operations-suite',
-      title: 'Smart Operations Dashboard',
-      description:
-        'Operational analytics dashboard with real-time device telemetry, granular RBAC, and SignalR live charts.',
+      title: t( 'portfolio.projects.task-operations-suite.title' ),
+      description: t( 'portfolio.projects.task-operations-suite.description' ),
       techStacks: [{ name: 'React' }, { name: 'SignalR' }, { name: 'PostgreSQL' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/showcases/SmartOperationsDashboard' },
@@ -67,9 +65,8 @@ const Portfolio = () => {
     },
     {
       id: 'taskmanagement',
-      title: 'TaskManagement Suite',
-      description:
-        'Project and task management platform featuring SSO, permissions, filters, and a responsive React SPA.',
+      title: t( 'portfolio.projects.taskmanagement.title' ),
+      description: t( 'portfolio.projects.taskmanagement.description' ),
       techStacks: [{ name: 'React' }, { name: '.NET 8' }, { name: 'PostgreSQL' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/asafarim-dot-be/tree/main/showcases/TaskManagement' },
@@ -82,9 +79,8 @@ const Portfolio = () => {
     },
     {
       id: 'paginated-project-grid',
-      title: 'Paginated Project Grid',
-      description:
-        'A React component for paginated project grids with filtering and sorting.',
+      title: t( 'portfolio.projects.paginated-project-grid.title' ),
+      description: t( 'portfolio.projects.paginated-project-grid.description' ),
       techStacks: [{ name: 'React' }, { name: 'TypeScript' }, { name: 'CSS Modules' }],
       links: [
         { label: 'GitHub', url: 'https://alisafari-it.github.io/paginated-project-grid/' }
@@ -96,9 +92,8 @@ const Portfolio = () => {
     },
     {
       id: 'aquaflow',
-      title: 'AquaFlow',
-      description:
-        'Water utility workflow portal with TypeScript micro frontends and API orchestration.',
+      title: t( 'portfolio.projects.aquaflow.title' ),
+      description: t( 'portfolio.projects.aquaflow.description' ),
       techStacks: [{ name: 'TypeScript' }, { name: 'Micro FE' }, { name: 'NX' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/AquaFlow' },
@@ -111,9 +106,8 @@ const Portfolio = () => {
     },
     {
       id: 'react-privacy-consent',
-      title: 'react-privacy-consent',
-      description:
-        'A React component for handling privacy consent in a user-friendly way.',
+      title: t( 'portfolio.projects.react-privacy-consent.title' ),
+      description: t( 'portfolio.projects.react-privacy-consent.description' ),
       techStacks: [{ name: 'React' }, { name: 'TypeScript' }, { name: 'CSS' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/react-privacy-consent' },
@@ -126,9 +120,8 @@ const Portfolio = () => {
     },
     {
       id: 'toast-kit',
-      title: 'Toast Kit',
-      description:
-        'A lightweight, theme-aware toast notification system for React applications with a simple programmatic API.',
+      title: t( 'portfolio.projects.toast-kit.title' ),
+      description: t( 'portfolio.projects.toast-kit.description' ),
       techStacks: [{ name: 'React' }, { name: 'TypeScript' }, { name: 'CSS' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/toast' }
@@ -140,9 +133,8 @@ const Portfolio = () => {
     },
     {
       id: 'tsrdotnet',
-      title: 'TSRdotNet',
-      description:
-        'Energy time-series modeling toolkit leveraging R from .NET for predictive analytics.',
+      title: t( 'portfolio.projects.tsrdotnet.title' ),
+      description: t( 'portfolio.projects.tsrdotnet.description' ),
       techStacks: [{ name: 'C#' }, { name: 'rDotNet' }, { name: 'Statistics' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/TSRdotNet' }
@@ -154,9 +146,8 @@ const Portfolio = () => {
     },
     {
       id: 'angular-project',
-      title: 'Angular Enterprise Starter',
-      description:
-        'Enterprise-ready Angular template with Nx, role-based routing, and Syncfusion integrations.',
+      title: t( 'portfolio.projects.angular-project.title' ),
+      description: t( 'portfolio.projects.angular-project.description' ),
       techStacks: [{ name: 'Angular' }, { name: 'Nx' }, { name: 'Syncfusion' }],
       links: [
         { label: 'GitHub', url: 'https://github.com/AliSafari-IT/AngularProject' }

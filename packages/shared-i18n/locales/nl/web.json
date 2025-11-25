@@ -171,7 +171,120 @@
   },
   "portfolio": {
     "title": "Portfolio",
-    "description": "Bekijk mijn werk en projecten"
+    "description": "Bekijk mijn werk en projecten",
+    "projects": {
+      "asafarim-dot-be": {
+        "title": "ASafariM Monorepo",
+        "description": "Monorepo die mijn publieke website, dashboards en interne tooling aanstuurt met gedeelde designtokens en UI-kits."
+      },
+      "test-automation-platform": {
+        "title": "Test Automation Platform",
+        "description": "Volledige end-to-end automatiseringssuite met TestCafe-generators, GitHub Actions-integratie en realtime rapportering."
+      },
+      "asafarim-clean-architecture": {
+        "title": "ASafariM Clean Architecture",
+        "description": "Backend reference implementation met Clean Architecture, PostgreSQL, MediatR en modulaire domeingrenzen."
+      },
+      "task-operations-suite": {
+        "title": "Task Operations Suite",
+        "description": "Smart Operations-dashboard voor taakopvolging met realtime rapportering en inzichten."
+      },
+      "taskmanagement": {
+        "title": "TaskManagement Suite",
+        "description": "Platform voor project- en takenbeheer met SSO, rechtenbeheer, filters en een responsieve React-Single Page Application."
+      },
+      "paginated-project-grid": {
+        "title": "Paginated Project Grid",
+        "description": "Een React-component voor gepagineerde projectoverzichten met filtering en sortering."
+      },
+      "aquaflow": {
+        "title": "AquaFlow",
+        "description": "Workflowportaal voor waterbedrijven met TypeScript micro-frontends en API-orchestratie."
+      },
+      "angular-project": {
+        "title": "Angular Enterprise Starter",
+        "description": "Enterprise-klare Angular-starttemplate met Nx, rolgebaseerde routing en Syncfusion-integraties."
+      },
+      "react-privacy-consent": {
+        "title": "react-privacy-consent",
+        "description": "Een React-component om privacytoestemming op een gebruiksvriendelijke manier te beheren."
+      },
+      "toast-kit": {
+        "title": "Toast Kit",
+        "description": "Een lichtgewicht, thema-bewust toastnotificatiesysteem voor React-applicaties met een eenvoudige programmatische API."
+      },
+      "tsrdotnet": {
+        "title": "TSRdotNet",
+        "description": "Toolkit voor tijdreeksmodellering rond energieverbruik, die R vanuit .NET aanstuurt voor voorspellende analyses."
+      }
+    },
+    "hero": {
+      "kicker": "Portfolio",
+      "title": "Mijn Werk & Bijdragen",
+      "subtitle": "Verken mijn professionele traject, publicaties, onderzoek en projecten",
+      "bullets": {
+        "fullstack": "Fullstack developer gespecialiseerd in .NET en React",
+        "research": "Gepubliceerde onderzoeker met focus op webtechnologieën",
+        "oss": "Open-source bijdrager en projectmaintainer"
+      },
+      "primaryCta": "Bekijk CV",
+      "secondaryCta": "Contacteer Mij"
+    },
+    "sections": {
+      "title": "Portfolio-secties",
+      "items": {
+        "resume": {
+          "title": "CV",
+          "description": "Bekijk mijn professionele ervaring, vaardigheden en opleidingen."
+        },
+        "publications": {
+          "title": "Publicaties",
+          "description": "Ontdek mijn gepubliceerde artikels, papers en onderzoeksbijdragen."
+        },
+        "research": {
+          "title": "Onderzoek",
+          "description": "Leer meer over mijn onderzoeksinteresses en lopende projecten."
+        },
+        "projects": {
+          "title": "Projecten",
+          "description": "Blader door mijn persoonlijke en professionele projecten."
+        }
+      }
+    },
+    "featured": {
+      "title": "Aanbevolen Werk"
+    },
+    "npm": {
+      "title": "NPM-pakketten",
+      "packages": {
+        "toast": {
+          "title": "asafarim/toast",
+          "description": "Een lichtgewicht, thema-bewust toastnotificatiesysteem voor React-applicaties met een eenvoudige programmatische API.",
+          "meta": "Design System • React >=16.8.0 • Geen externe afhankelijkheden"
+        },
+        "sharedTokens": {
+          "title": "@asafarim/shared-tokens",
+          "description": "Centrale thematokens (kleuren, spacing, typografie) gebruikt door elke FE-app in de monorepo.",
+          "meta": "CSS Custom Properties"
+        },
+        "sharedI18n": {
+          "title": "@asafarim/shared-i18n",
+          "description": "Lichte, eenvoudige vertaalmodule voor elke React + TypeScript-app, gebouwd bovenop i18next en react-i18next. Standaard met Engels en Nederlands, uitbreidbaar via JSON-bestanden in je locales-map.",
+          "meta": "Localisatie-toolkit"
+        },
+        "reactThemes": {
+          "title": "@asafarim/react-themes",
+          "description": "Vooraf ingestelde themabundels (licht/donker/hoog contrast) met runtime-overschakeling.",
+          "meta": "UI-hulpprogramma's"
+        },
+        "ddMenu": {
+          "title": "@asafarim/dd-menu",
+          "description": "Toegankelijke dropdown-menucomponenten met toetsenbordondersteuning en portal-gebaseerde rendering.",
+          "meta": "Navigatiewidgets"
+        }
+      },
+      "viewOnNpm": "Bekijk op npm →"
+    }
   },
   "showcases": {
     "title": "Aanbevolen Applicaties",
