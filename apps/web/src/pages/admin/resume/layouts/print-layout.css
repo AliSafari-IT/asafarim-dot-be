@@ -270,6 +270,36 @@
   margin-bottom: 8px;
 }
 
+/* Social Links*/
+.print-social-links {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.print-social-link {
+  margin-bottom: 2px;
+}
+
+.print-social-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9pt;
+}
+
+.print-social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.print-social-url {
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 8.5pt;
+}
+
 @media print {
   /* Hide all action buttons and controls when printing */
   .no-print,
