@@ -214,7 +214,7 @@ const Portfolio = () => {
       title: t('portfolio.sections.items.resume.title'),
       description: t('portfolio.sections.items.resume.description'),
       icon: '📄',
-      link: '/portfolio/my-react-dotnet-cv-10-10-2025/public',
+      link: '/portfolio/cv-nov-2025/public',
     },
     {
       id: 'publications',
@@ -252,7 +252,7 @@ const Portfolio = () => {
         ]}
         primaryCta={{
           label: t('portfolio.hero.primaryCtaLabel'),
-          to: "/portfolio/my-react-dotnet-cv-10-10-2025/public",
+          to: "/portfolio/cv-nov-2025/public",
         }}
         secondaryCta={{
           label: t('portfolio.hero.secondaryCtaLabel'),
