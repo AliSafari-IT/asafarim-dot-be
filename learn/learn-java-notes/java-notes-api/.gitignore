@@ -1,0 +1,11 @@
+*.original
+target/*
+**/target/*
+**/target/**
+**/target/**/**
+
+docs/*
+**/docs/*
+**/docs/**
+docs/
+
