@@ -1,0 +1,200 @@
+/* Orders Page Styles - uses CSS variables from shared tokens via global index.css */
+
+.orders-page {
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+}
+
+.orders-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.orders-header h1 {
+   font-size: 1.75rem;
+   font-weight: 700;
+   color: var(--color-neutral-900, #111827);
+}
+
+.orders-stats {
+   display: flex;
+   gap: 24px;
+}
+
+.stat {
+   text-align: center;
+}
+
+.stat-value {
+   display: block;
+   font-size: 1.5rem;
+   font-weight: 700;
+   color: var(--color-primary-600, #2563eb);
+}
+
+.stat-label {
+   font-size: 0.875rem;
+   color: var(--color-neutral-500, #6b7280);
+}
+
+.orders-filters {
+   display: flex;
+   gap: 16px;
+   flex-wrap: wrap;
+}
+
+.search-box {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   padding: 8px 16px;
+   background: #fff;
+   border: 1px solid var(--color-neutral-300, #d1d5db);
+   border-radius: 8px;
+   flex: 1;
+   max-width: 320px;
+}
+
+.search-box input {
+   border: none;
+   outline: none;
+   font-size: 0.95rem;
+   flex: 1;
+}
+
+.filter-buttons {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+}
+
+.filter-btn {
+   padding: 6px 12px;
+   border-radius: 9999px;
+   border: 1px solid var(--color-neutral-300, #d1d5db);
+   background: #fff;
+   font-size: 0.8rem;
+   cursor: pointer;
+   transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+   border-color: var(--color-primary-400, #60a5fa);
+}
+
+.filter-btn.active {
+   background: var(--color-primary-500, #3b82f6);
+   border-color: var(--color-primary-500, #3b82f6);
+   color: #fff;
+}
+
+.orders-table-container {
+   background: #fff;
+   border-radius: 12px;
+   border: 1px solid var(--color-neutral-200, #e5e7eb);
+   overflow: hidden;
+}
+
+.orders-table {
+   width: 100%;
+   border-collapse: collapse;
+   font-size: 0.9rem;
+}
+
+.orders-table thead {
+   background: var(--color-neutral-50, #f9fafb);
+}
+
+.orders-table th,
+.orders-table td {
+   padding: 10px 12px;
+   text-align: left;
+   border-bottom: 1px solid var(--color-neutral-200, #e5e7eb);
+}
+
+.orders-table th {
+   font-size: 0.8rem;
+   text-transform: uppercase;
+   letter-spacing: 0.04em;
+   color: var(--color-neutral-500, #6b7280);
+}
+
+.orders-table tr:last-child td {
+   border-bottom: none;
+}
+
+.order-number {
+   font-weight: 600;
+   color: var(--color-neutral-900, #111827);
+}
+
+.total {
+   font-weight: 600;
+}
+
+.type-badge,
+.status-badge {
+   display: inline-flex;
+   align-items: center;
+   padding: 2px 8px;
+   border-radius: 9999px;
+   font-size: 0.75rem;
+   font-weight: 500;
+}
+
+.type-dine_in {
+   background: var(--color-success-50, #f0fdf4);
+   color: var(--color-success-700, #15803d);
+}
+
+.type-takeout {
+   background: var(--color-warning-50, #fffbeb);
+   color: var(--color-warning-700, #b45309);
+}
+
+.type-delivery {
+   background: var(--color-info-50, #eff6ff);
+   color: var(--color-info-700, #1d4ed8);
+}
+
+.status-pending {
+   background: var(--color-warning-50, #fffbeb);
+   color: var(--color-warning-700, #b45309);
+}
+
+.status-confirmed,
+.status-in_progress,
+.status-ready {
+   background: var(--color-info-50, #eff6ff);
+   color: var(--color-info-700, #1d4ed8);
+}
+
+.status-completed {
+   background: var(--color-neutral-100, #f3f4f6);
+   color: var(--color-neutral-700, #374151);
+}
+
+.action-buttons {
+   display: flex;
+   gap: 6px;
+}
+
+.action-btn {
+   width: 28px;
+   height: 28px;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   border-radius: 9999px;
+   border: 1px solid var(--color-neutral-300, #d1d5db);
+   background: #fff;
+   cursor: pointer;
+   transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.action-btn:hover {
+   background: var(--color-neutral-100, #f3f4f6);
+   border-color: var(--color-neutral-400, #9ca3af);
+}

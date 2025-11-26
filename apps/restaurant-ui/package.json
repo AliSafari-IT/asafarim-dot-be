@@ -1,0 +1,31 @@
+{
+  "name": "@asafarim/restaurant-ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prestart": "npx kill-port 5179",
+    "start": "vite --host rms.asafarim.local --port 5179",    
+    "dev": "pnpm start",
+    "prebuild": "npx kill-port 5179",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "lucide-react": "^0.460.0",
+    "@asafarim/react-themes": "workspace:*",
+    "@asafarim/shared-i18n": "workspace:*",
+    "@asafarim/shared-ui-react": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.7.2",
+    "vite": "^7.1.0"
+  }
+}
