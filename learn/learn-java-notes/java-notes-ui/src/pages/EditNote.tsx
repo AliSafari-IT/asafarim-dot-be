@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getNote, updateNote } from "../api/notesApi";
 import Layout from "../components/Layout";
+import TagInput from "../components/TagInput";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./EditNote.css";
 
@@ -10,6 +11,7 @@ export default function EditNote() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +25,7 @@ export default function EditNote() {
         const note = await getNote(Number(id));
         setTitle(note.title);
         setContent(note.content);
+        setTags(note.tags || []);
       } catch (err) {
         console.error("Failed to load note:", err);
         setError("Failed to load note. It may have been deleted.");
@@ -40,7 +43,7 @@ export default function EditNote() {
     
     try {
       setLoading(true);
-      await updateNote(Number(id), { title, content });
+      await updateNote(Number(id), { title, content, tags });
       navigate(`/note/${id}`);
     } catch (error) {
       console.error("Failed to update note:", error);
@@ -135,19 +138,28 @@ System.out.println(&quot;Hello World&quot;);
             </div>
           </div>
 
+          <div className="form-group">
+            <label className="form-label">
+              🏷️ Tags
+            </label>
+            <TagInput
+              value={tags}
+              onChange={setTags}
+              placeholder="Add tags like 'java', 'spring', 'basics'..."
+            />
+          </div>
+
           <div className="form-actions">
             <Button
               variant="secondary"
               onClick={() => navigate(`/note/${id}`)}
-              className="cancel-btn"
             >
               ← Cancel
             </Button>
             <Button
-              variant="primary"
+              variant="success"
               type="submit"
               disabled={loading || !title.trim()}
-              className="save-btn"
             >
               {loading ? "⏳ Updating..." : "💾 Save Changes"}
             </Button>

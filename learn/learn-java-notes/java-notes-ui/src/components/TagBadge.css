@@ -1,0 +1,118 @@
+/* Tag Badge Component Styles */
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: linear-gradient(135deg, var(--color-primary-50), var(--color-secondary-50));
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-full);
+  color: var(--color-primary-600);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Sizes */
+.tag-badge-sm {
+  padding: 2px var(--spacing-xs);
+  font-size: var(--font-size-xs);
+}
+
+.tag-badge-md {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.tag-badge-lg {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+}
+
+/* Icon */
+.tag-badge-icon {
+  opacity: 0.6;
+  font-weight: 600;
+}
+
+/* Text */
+.tag-badge-text {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Clickable State */
+.tag-badge-clickable {
+  cursor: pointer;
+}
+
+.tag-badge-clickable:hover {
+  background: linear-gradient(135deg, var(--color-primary-100), var(--color-secondary-100));
+  border-color: var(--color-primary-300);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tag-badge-clickable:active {
+  transform: translateY(0);
+}
+
+/* Active State (when filtering by this tag) */
+.tag-badge-active {
+  background: var(--color-info-700);
+  border-color: var(--color-primary-600);
+  color: var(--color-primary-200);
+}
+
+.tag-badge-active .tag-badge-icon {
+  opacity: 0.8;
+}
+
+.tag-badge-active:hover {
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+}
+
+/* Remove Button */
+.tag-badge-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.1);
+  color: inherit;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.tag-badge-remove:hover {
+  background: var(--color-danger-500);
+  color: white;
+}
+
+.tag-badge-active .tag-badge-remove {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tag-badge-active .tag-badge-remove:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .tag-badge-md {
+    padding: 2px var(--spacing-xs);
+    font-size: var(--font-size-xs);
+  }
+  
+  .tag-badge-text {
+    max-width: 80px;
+  }
+}

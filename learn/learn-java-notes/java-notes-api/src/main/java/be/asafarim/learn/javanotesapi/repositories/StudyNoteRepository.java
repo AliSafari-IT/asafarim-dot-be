@@ -30,4 +30,20 @@ public interface StudyNoteRepository extends JpaRepository<StudyNote, Long> {
            "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%')) " +
            "ORDER BY n.createdAt DESC")
     List<StudyNote> searchByTitleOrContentOrderByCreatedAtDesc(@Param("query") String query);
+    
+    /**
+     * Find notes by tag name
+     */
+    @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t WHERE LOWER(t.name) = LOWER(:tagName) ORDER BY n.createdAt DESC")
+    List<StudyNote> findByTagName(@Param("tagName") String tagName);
+    
+    /**
+     * Search notes by query and filter by tag
+     */
+    @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t WHERE " +
+           "LOWER(t.name) = LOWER(:tagName) AND " +
+           "(LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+           "ORDER BY n.createdAt DESC")
+    List<StudyNote> searchByQueryAndTag(@Param("query") String query, @Param("tagName") String tagName);
 }

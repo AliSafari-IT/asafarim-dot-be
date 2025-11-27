@@ -1,18 +1,25 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getNote, type StudyNote } from "../api/notesApi";
 import Layout from "../components/Layout";
+import TagBadge from "../components/TagBadge";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./NoteDetails.css";
 
 export default function NoteDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [, setSearchParams] = useSearchParams();
   const [note, setNote] = useState<StudyNote | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  function handleTagClick(tag: string) {
+    setSearchParams({ tag });
+    navigate(`/?tag=${encodeURIComponent(tag)}`);
+  }
 
   useEffect(() => {
     async function loadNote() {
@@ -100,14 +107,12 @@ export default function NoteDetails() {
           <Button
             variant="secondary"
             onClick={() => navigate("/")}
-            className="nav-btn back-btn"
           >
             ← Back to Notes
           </Button>
           <Link to={`/edit/${note.id}`}>
             <Button
               variant="primary"
-              className="nav-btn edit-btn"
             >
               ✏️ Edit Note
             </Button>
@@ -141,9 +146,18 @@ export default function NoteDetails() {
 
           {/* Tags */}
           <div className="note-details-tags">
-            <span className="tag">📚 study</span>
-            <span className="tag">📝 notes</span>
-            <span className="tag">☕ java</span>
+            {note.tags && note.tags.length > 0 ? (
+              note.tags.map((tag) => (
+                <TagBadge
+                  key={tag}
+                  tag={tag}
+                  onClick={handleTagClick}
+                  size="md"
+                />
+              ))
+            ) : (
+              <span className="no-tags">No tags</span>
+            )}
           </div>
         </header>
 
@@ -176,14 +190,12 @@ export default function NoteDetails() {
             <Button
               variant="secondary"
               onClick={() => navigate("/")}
-              className="footer-btn"
             >
               ← All Notes
             </Button>
             <Link to={`/edit/${note.id}`}>
               <Button
                 variant="primary"
-                className="footer-btn"
               >
                 ✏️ Edit
               </Button>

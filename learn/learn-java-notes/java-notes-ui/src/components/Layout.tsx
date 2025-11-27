@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Layout.css";
+import { getNoteCount } from "../api/notesApi";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const noteCount = React.useMemo(() => {
-    // This will be updated when we pass the actual count from NotesList
-    return 0;
-  }, []);
+  const [noteCount, setNoteCount] = useState(0);
 
+  useEffect(() => {
+    async function loadNoteCount() {
+      try {
+        const count = await getNoteCount();
+        setNoteCount(count);
+      } catch (error) {
+        console.error("Failed to load note count:", error);
+      }
+    }
+    loadNoteCount();
+  }, []);
   return (
     <div className="layout">
       <div className="layout-background">
@@ -27,9 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </header>
-        <main className="layout-main">
-          {children}
-        </main>
+        <main className="layout-main">{children}</main>
       </div>
     </div>
   );

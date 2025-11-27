@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "kill": "kill-port 5183",
     "start": "npm run kill && npm run dev",
+    "app": "pnpm i && concurrently \"pnpm start\" \"cd ../java-notes-api && pnpm api\"",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -22,7 +23,8 @@
     "@asafarim/react-themes": "workspace:*",
     "@asafarim/shared-i18n": "workspace:*",
     "@asafarim/shared-ui-react": "workspace:*",
-    "kill-port": "2.0.1"
+    "kill-port": "2.0.1",
+    "concurrently": "8.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

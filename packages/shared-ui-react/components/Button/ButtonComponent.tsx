@@ -35,6 +35,7 @@ export interface ButtonComponentProps {
   role?: string;
   tabIndex?: number;
   style?: CSSProperties;
+  dataTestId?: string;
 }
 
 export const ButtonComponent = ({
@@ -53,6 +54,7 @@ export const ButtonComponent = ({
   target,
   rel,
   children, 
+  dataTestId,
   ...props
 }: ButtonComponentProps) => {
   const baseClasses = [
@@ -117,6 +119,7 @@ export const ButtonComponent = ({
         rel={rel || 'noopener noreferrer'}
         className={baseClasses}
         {...props}
+        data-testid={dataTestId}
       >
         {buttonContent}
       </a>
@@ -132,6 +135,7 @@ export const ButtonComponent = ({
         href={to}
         className={baseClasses}
         {...props}
+        data-testid={dataTestId}
       >
         {buttonContent}
       </a>
@@ -145,6 +149,7 @@ export const ButtonComponent = ({
       disabled={disabled || isLoading}
       type={type}
       {...props}
+      data-testid={dataTestId}
     >
       {buttonContent}
     </button>
