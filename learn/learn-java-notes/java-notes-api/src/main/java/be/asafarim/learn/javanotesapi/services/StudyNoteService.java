@@ -103,11 +103,12 @@ public class StudyNoteService {
     public StudyNoteResponse create(StudyNoteRequest req) {
         User currentUser = authService.getCurrentUser();
         var note = new StudyNote(req.getTitle(), req.getContent(), currentUser);
-
+        note.setPublic(req.isPublic());
+        
         // Handle tags
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
         note.setTags(tags);
-
+        
         repository.save(note);
         return toResponse(note);
     }
@@ -121,7 +122,8 @@ public class StudyNoteService {
 
         note.setTitle(req.getTitle());
         note.setContent(req.getContent());
-
+        note.setPublic(req.isPublic());
+        
         // Update tags
         note.getTags().clear();
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
@@ -173,7 +175,9 @@ public class StudyNoteService {
                 n.getUpdatedAt(),
                 readingTimeMinutes,
                 wordCount,
-                tagNames);
+                n.isPublic(),
+                tagNames
+        );
     }
 
     private List<StudyNote> applySort(List<StudyNote> notes, String sort) {

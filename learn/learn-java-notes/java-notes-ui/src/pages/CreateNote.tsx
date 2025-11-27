@@ -10,6 +10,7 @@ export default function CreateNote() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +20,7 @@ export default function CreateNote() {
     
     try {
       setLoading(true);
-      await createNote({ title, content, tags });
+      await createNote({ title, content, isPublic, tags });
       navigate("/");
     } catch (error) {
       console.error("Failed to create note:", error);
@@ -92,6 +93,25 @@ System.out.println(&quot;Hello World&quot;);
               onChange={setTags}
               placeholder="Add tags like 'java', 'spring', 'basics'..."
             />
+          </div>
+
+          <div className="form-group">
+            <label className="visibility-toggle">
+              <input
+                type="checkbox"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+                className="visibility-checkbox"
+              />
+              <span className="visibility-label">
+                {isPublic ? "🌍 Public Note" : "🔒 Private Note"}
+                <span className="visibility-description">
+                  {isPublic
+                    ? "Anyone can view this note"
+                    : "Only you can view this note"}
+                </span>
+              </span>
+            </label>
           </div>
 
           <div className="form-actions">

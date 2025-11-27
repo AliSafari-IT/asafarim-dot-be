@@ -3,13 +3,16 @@ import "./NoteCard.css";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import { type StudyNote } from "../api/notesApi";
 import TagBadge from "./TagBadge";
+import VisibilityBadge from "./VisibilityBadge";
 
 interface NoteCardProps {
   note: StudyNote;
   onDelete: (id: string) => void;
+  canDelete?: boolean;
+  linkTo?: string;
 }
 
-export default function NoteCard({ note, onDelete }: NoteCardProps) {
+export default function NoteCard({ note, onDelete , canDelete = false, linkTo }: NoteCardProps) {
   const [, setSearchParams] = useSearchParams();
 
   const getContentPreview = () => {
@@ -21,11 +24,14 @@ export default function NoteCard({ note, onDelete }: NoteCardProps) {
 
   return (
     <div className="note-card">
-      <Link to={`/note/${note.id}`} className="note-card-link">
+      <Link to={linkTo || `/note/${note.id}`} className="note-card-link">
         <div className="note-header">
           <div className="note-icon">📝</div>
           <div className="note-title-section">
-            <h2 className="note-title">{note.title}</h2>
+            <div className="note-title-row">
+              <h2 className="note-title">{note.title}</h2>
+              <VisibilityBadge isPublic={note.isPublic} size="sm" />
+            </div>
             <div className="note-meta">
               <span className="meta-item">
                 📅 {new Date(note.createdAt).toLocaleDateString()}
@@ -65,16 +71,22 @@ export default function NoteCard({ note, onDelete }: NoteCardProps) {
             <span className="no-tags">No tags</span>
           )}
         </div>
-        <div className="note-actions">
-          <Link to={`/edit/${note.id}`}>
-            <Button variant="primary" className="action-btn edit-btn">
-              ✏️ Edit
+        {canDelete && (
+          <div className="note-actions">
+            <Link to={`/edit/${note.id}`}>
+              <Button variant="primary" className="action-btn edit-btn">
+                ✏️ Edit
+              </Button>
+            </Link>
+            <Button
+              variant="danger"
+              onClick={() => onDelete(note.id)}
+              className="action-btn delete-btn"
+            >
+              🗑️ Delete
             </Button>
-          </Link>
-          <Button variant="danger" onClick={() => onDelete(note.id)} className="action-btn delete-btn">
-            🗑️ Delete
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

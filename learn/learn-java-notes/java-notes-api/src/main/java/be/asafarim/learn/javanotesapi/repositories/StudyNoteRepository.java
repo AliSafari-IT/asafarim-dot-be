@@ -53,4 +53,43 @@ public interface StudyNoteRepository extends JpaRepository<StudyNote, UUID> {
      * Count notes by user
      */
     long countByUser(User user);
+
+    /**
+     * Find all public notes ordered by creation date (newest first)
+     */
+    @Query("SELECT n FROM StudyNote n WHERE n.isPublic = true ORDER BY n.createdAt DESC")
+    List<StudyNote> findAllPublicNotes();
+
+    /**
+     * Search public notes by title or content
+     */
+    @Query("SELECT n FROM StudyNote n WHERE n.isPublic = true AND (" +
+           "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+           "ORDER BY n.createdAt DESC")
+    List<StudyNote> searchPublicByTitleOrContent(@Param("query") String query);
+
+    /**
+     * Find public notes by tag name
+     */
+    @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t " +
+           "WHERE n.isPublic = true AND LOWER(t.name) = LOWER(:tagName) " +
+           "ORDER BY n.createdAt DESC")
+    List<StudyNote> findPublicByTagName(@Param("tagName") String tagName);
+
+    /**
+     * Search public notes with both query and tag
+     */
+    @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t " +
+           "WHERE n.isPublic = true AND LOWER(t.name) = LOWER(:tagName) AND (" +
+           "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+           "ORDER BY n.createdAt DESC")
+    List<StudyNote> searchPublicByQueryAndTag(@Param("query") String query, @Param("tagName") String tagName);
+
+    /**
+     * Count all public notes
+     */
+    @Query("SELECT COUNT(n) FROM StudyNote n WHERE n.isPublic = true")
+    long countPublicNotes();
 }

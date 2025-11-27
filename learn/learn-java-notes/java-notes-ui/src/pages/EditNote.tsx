@@ -10,6 +10,7 @@ export default function EditNote() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -24,6 +25,7 @@ export default function EditNote() {
         const note = await getNote(id);
         setTitle(note.title);
         setContent(note.content);
+        setIsPublic(note.isPublic);
         setTags(note.tags || []);
       } catch (err) {
         console.error("Failed to load note:", err);
@@ -42,7 +44,7 @@ export default function EditNote() {
     
     try {
       setLoading(true);
-      await updateNote(id, { title, content, tags });
+      await updateNote(id, { title, content, isPublic, tags });
       navigate(`/note/${id}`);
     } catch (error) {
       console.error("Failed to update note:", error);
@@ -141,6 +143,25 @@ System.out.println(&quot;Hello World&quot;);
               onChange={setTags}
               placeholder="Add tags like 'java', 'spring', 'basics'..."
             />
+          </div>
+
+          <div className="form-group">
+            <label className="visibility-toggle">
+              <input
+                type="checkbox"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+                className="visibility-checkbox"
+              />
+              <span className="visibility-label">
+                {isPublic ? "🌍 Public" : "🔒 Private"}
+                <span className="visibility-description">
+                  {isPublic
+                    ? "Anyone can view this note"
+                    : "Only you can view this note"}
+                </span>
+              </span>
+            </label>
           </div>
 
           <div className="form-actions">

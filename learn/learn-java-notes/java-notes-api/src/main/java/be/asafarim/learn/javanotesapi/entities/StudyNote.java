@@ -17,6 +17,13 @@ public class StudyNote {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    private int readingTimeMinutes;
+
+    private int wordCount;
+
+    @Column(nullable = false)
+    private boolean isPublic = false;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -64,6 +71,18 @@ public class StudyNote {
     public String getContent() { return content; }
 
     public void setContent(String content) { this.content = content; }
+
+    public int getReadingTimeMinutes() { return readingTimeMinutes; }
+
+    public void setReadingTimeMinutes(int readingTimeMinutes) { this.readingTimeMinutes = readingTimeMinutes; }
+
+    public int getWordCount() { return wordCount; }
+
+    public void setWordCount(int wordCount) { this.wordCount = wordCount; }
+
+    public boolean isPublic() { return isPublic; }
+
+    public void setPublic(boolean isPublic) { this.isPublic = isPublic; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 
