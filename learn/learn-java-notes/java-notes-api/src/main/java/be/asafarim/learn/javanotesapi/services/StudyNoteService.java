@@ -4,6 +4,7 @@ import be.asafarim.learn.javanotesapi.dto.StudyNoteRequest;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteResponse;
 import be.asafarim.learn.javanotesapi.entities.StudyNote;
 import be.asafarim.learn.javanotesapi.entities.Tag;
+import be.asafarim.learn.javanotesapi.entities.User;
 import be.asafarim.learn.javanotesapi.repositories.StudyNoteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,20 +13,25 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class StudyNoteService {
 
     private final StudyNoteRepository repository;
     private final TagService tagService;
+    private final AuthService authService;
 
-    public StudyNoteService(StudyNoteRepository repository, TagService tagService) {
+    public StudyNoteService(StudyNoteRepository repository, TagService tagService, AuthService authService) {
         this.repository = repository;
         this.tagService = tagService;
+        this.authService = authService;
     }
 
     public List<StudyNoteResponse> getAll(String sort) {
-        List<StudyNote> notes = repository.findAll();
+        User currentUser = authService.getCurrentUser();
+        List<StudyNote> notes = repository.findByUserOrderByCreatedAtDesc(currentUser);
         return applySort(notes, sort).stream()
                 .map(this::toResponse)
                 .toList();
@@ -35,46 +41,49 @@ public class StudyNoteService {
      * Search notes by query string (searches title and content)
      */
     public List<StudyNoteResponse> search(String query, String sort) {
+        User currentUser = authService.getCurrentUser();
         if (query == null || query.trim().isEmpty()) {
             return getAll(sort);
         }
-        List<StudyNote> notes = repository.searchByTitleOrContent(query.trim());
+        List<StudyNote> notes = repository.searchByTitleOrContentForUser(query.trim(), currentUser);
         return applySort(notes, sort).stream()
                 .map(this::toResponse)
                 .toList();
     }
-    
+
     /**
      * Find notes by tag name
      */
     public List<StudyNoteResponse> findByTag(String tagName, String sort) {
+        User currentUser = authService.getCurrentUser();
         if (tagName == null || tagName.trim().isEmpty()) {
             return getAll(sort);
         }
-        List<StudyNote> notes = repository.findByTagName(tagName.trim());
+        List<StudyNote> notes = repository.findByTagNameForUser(tagName.trim(), currentUser);
         return applySort(notes, sort).stream()
                 .map(this::toResponse)
                 .toList();
     }
-    
+
     /**
      * Search notes with query + tag + optional sort
      */
     public List<StudyNoteResponse> searchWithTag(String query, String tagName, String sort) {
+        User currentUser = authService.getCurrentUser();
         boolean hasQuery = query != null && !query.trim().isEmpty();
         boolean hasTag = tagName != null && !tagName.trim().isEmpty();
-        
+
         if (!hasQuery && !hasTag) {
             return getAll(sort);
         }
 
         List<StudyNote> notes;
         if (hasQuery && !hasTag) {
-            notes = repository.searchByTitleOrContent(query.trim());
+            notes = repository.searchByTitleOrContentForUser(query.trim(), currentUser);
         } else if (!hasQuery && hasTag) {
-            notes = repository.findByTagName(tagName.trim());
+            notes = repository.findByTagNameForUser(tagName.trim(), currentUser);
         } else {
-            notes = repository.searchByQueryAndTag(query.trim(), tagName.trim());
+            notes = repository.searchByQueryAndTagForUser(query.trim(), tagName.trim(), currentUser);
         }
 
         return applySort(notes, sort).stream()
@@ -82,32 +91,37 @@ public class StudyNoteService {
                 .toList();
     }
 
-    public StudyNoteResponse getById(Long id) {
+    public StudyNoteResponse getById(UUID id) {
+        User currentUser = authService.getCurrentUser();
         return repository.findById(id)
+                .filter(note -> note.getUser().getId().equals(currentUser.getId()))
                 .map(this::toResponse)
-                .orElseThrow(() -> new RuntimeException("Note not found"));
+                .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission to access it"));
     }
 
     @Transactional
     public StudyNoteResponse create(StudyNoteRequest req) {
-        var note = new StudyNote(req.getTitle(), req.getContent());
-        
+        User currentUser = authService.getCurrentUser();
+        var note = new StudyNote(req.getTitle(), req.getContent(), currentUser);
+
         // Handle tags
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
         note.setTags(tags);
-        
+
         repository.save(note);
         return toResponse(note);
     }
 
     @Transactional
-    public StudyNoteResponse update(Long id, StudyNoteRequest req) {
+    public StudyNoteResponse update(UUID id, StudyNoteRequest req) {
+        User currentUser = authService.getCurrentUser();
         var note = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Note not found"));
+                .filter(n -> n.getUser().getId().equals(currentUser.getId()))
+                .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission to access it"));
 
         note.setTitle(req.getTitle());
         note.setContent(req.getContent());
-        
+
         // Update tags
         note.getTags().clear();
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
@@ -118,17 +132,21 @@ public class StudyNoteService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        var note = repository.findById(id).orElse(null);
+    public void delete(UUID id) {
+        User currentUser = authService.getCurrentUser();
+        var note = repository.findById(id)
+                .filter(n -> n.getUser().getId().equals(currentUser.getId()))
+                .orElse(null);
         if (note != null) {
             note.getTags().clear();
             repository.delete(note);
         }
     }
 
-    // Get the number of all documents in table
+    // Get the number of documents for current user
     public long getCount() {
-        return repository.count();
+        User currentUser = authService.getCurrentUser();
+        return repository.countByUser(currentUser);
     }
 
     private StudyNoteResponse toResponse(StudyNote n) {
@@ -146,7 +164,7 @@ public class StudyNoteService {
                 .map(Tag::getName)
                 .sorted()
                 .toList();
-        
+
         return new StudyNoteResponse(
                 n.getId(),
                 n.getTitle(),
@@ -155,8 +173,7 @@ public class StudyNoteService {
                 n.getUpdatedAt(),
                 readingTimeMinutes,
                 wordCount,
-                tagNames
-        );
+                tagNames);
     }
 
     private List<StudyNote> applySort(List<StudyNote> notes, String sort) {
@@ -175,14 +192,12 @@ public class StudyNoteService {
             case "az":
                 comparator = Comparator.comparing(
                         n -> n.getTitle() != null ? n.getTitle().toLowerCase(Locale.ROOT) : "",
-                        Comparator.naturalOrder()
-                );
+                        Comparator.naturalOrder());
                 break;
             case "za":
                 comparator = Comparator.comparing(
                         (StudyNote n) -> n.getTitle() != null ? n.getTitle().toLowerCase(Locale.ROOT) : "",
-                        Comparator.reverseOrder()
-                );
+                        Comparator.reverseOrder());
                 break;
             case "readingtime":
                 comparator = Comparator.comparingInt(this::calculateReadingTime)

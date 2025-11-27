@@ -3,9 +3,10 @@ package be.asafarim.learn.javanotesapi.dto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class StudyNoteResponse {
-    private Long id;
+    private UUID id;
     private String title;
     private String content;
     private LocalDateTime createdAt;
@@ -14,7 +15,7 @@ public class StudyNoteResponse {
     private int wordCount;
     private List<String> tags;
 
-    public StudyNoteResponse(Long id, String title, String content,
+    public StudyNoteResponse(UUID id, String title, String content,
                              LocalDateTime createdAt, LocalDateTime updatedAt,
                              int readingTimeMinutes, int wordCount,
                              List<String> tags) {
@@ -28,7 +29,7 @@ public class StudyNoteResponse {
         this.tags = tags != null ? tags : new ArrayList<>();
     }
 
-    public Long getId() { return id; }
+    public UUID getId() { return id; }
     public String getTitle() { return title; }
     public String getContent() { return content; }
     public LocalDateTime getCreatedAt() { return createdAt; }

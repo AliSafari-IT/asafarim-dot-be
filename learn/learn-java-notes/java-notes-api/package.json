@@ -6,7 +6,8 @@
   "scripts": {
     "prestart": "kill-port --port 8080; kill-port --port 8080",
     "start": "mvn spring-boot:run",
-    "app": "concurrently \"pnpm start\" \"cd ../java-notes-ui && pnpm start\"",
+    "api": "pnpm start",
+    "app": "concurrently \"pnpm api\" \"cd ../java-notes-ui && pnpm start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

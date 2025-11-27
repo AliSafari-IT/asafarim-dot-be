@@ -1,10 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getNotes, deleteNote, getTags, type StudyNote } from "../api/notesApi";
-import Layout from "../components/Layout";
 import NoteCard from "../components/NoteCard";
 import TagBadge from "../components/TagBadge";
-import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button, ConfirmDialog } from "@asafarim/shared-ui-react";
 import { useDebounce } from "../hooks/useDebounce";
 import "./NotesList.css";
 
@@ -15,6 +14,8 @@ export default function NotesList() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalCount, setTotalCount] = useState(0);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [noteIdToDelete, setNoteIdToDelete] = useState<string | null>(null);
   
   // Get active tag & sort from URL
   const activeTag = searchParams.get("tag") || "";
@@ -72,8 +73,17 @@ export default function NotesList() {
     }
   }
 
-  async function handleDelete(id: number) {
-    await deleteNote(id);
+  async function handleDelete(id: string) {
+    setNoteIdToDelete(id);
+    setConfirmOpen(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!noteIdToDelete) return;
+
+    await deleteNote(noteIdToDelete);
+    setConfirmOpen(false);
+    setNoteIdToDelete(null);
     load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined);
     reloadTags();
   }
@@ -128,7 +138,7 @@ export default function NotesList() {
   }, [notes, allTags]);
 
   return (
-    <Layout>
+    <div className="notes-page-container">
       <div className="notes-list-header">
         <div className="header-text">
           <h1 className="page-title">Study Notes</h1>
@@ -265,11 +275,27 @@ export default function NotesList() {
           </Button>
         </div>
       ) : notes.length > 0 ? (
-        <div className="notes-grid">
-          {notes.map((note) => (
-            <NoteCard key={note.id} note={note} onDelete={handleDelete} />
-          ))}
-        </div>
+        <>
+          <div className="notes-grid">
+            {notes.map((note) => (
+              <NoteCard key={note.id} note={note} onDelete={handleDelete} />
+            ))}
+          </div>
+
+          <ConfirmDialog
+            open={confirmOpen}
+            title="Delete note?"
+            description="This action will permanently delete the note and cannot be undone."
+            confirmLabel="Delete"
+            cancelLabel="Cancel"
+            confirmVariant="danger"
+            onConfirm={handleConfirmDelete}
+            onCancel={() => {
+              setConfirmOpen(false);
+              setNoteIdToDelete(null);
+            }}
+          />
+        </>
       ) : (
         <div className="empty-state">
           <div className="empty-icon">📝</div>
@@ -286,6 +312,6 @@ export default function NotesList() {
           </Link>
         </div>
       )}
-    </Layout>
+    </div>
   );
 }

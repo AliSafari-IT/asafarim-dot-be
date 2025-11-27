@@ -1,49 +1,56 @@
 package be.asafarim.learn.javanotesapi.repositories;
 
 import be.asafarim.learn.javanotesapi.entities.StudyNote;
+import be.asafarim.learn.javanotesapi.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface StudyNoteRepository extends JpaRepository<StudyNote, Long> {
+public interface StudyNoteRepository extends JpaRepository<StudyNote, UUID> {
     
     /**
-     * Search notes by title or content (case-insensitive)
+     * Find all notes by user ordered by creation date (newest first)
      */
-    @Query("SELECT n FROM StudyNote n WHERE " +
+    List<StudyNote> findByUserOrderByCreatedAtDesc(User user);
+    
+    /**
+     * Search notes by title or content for a specific user (case-insensitive)
+     */
+    @Query("SELECT n FROM StudyNote n WHERE n.user = :user AND (" +
            "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))")
-    List<StudyNote> searchByTitleOrContent(@Param("query") String query);
+           "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%')))")
+    List<StudyNote> searchByTitleOrContentForUser(@Param("query") String query, @Param("user") User user);
     
     /**
-     * Find all notes ordered by creation date (newest first)
+     * Search notes ordered by creation date for a specific user (newest first)
      */
-    List<StudyNote> findAllByOrderByCreatedAtDesc();
-    
-    /**
-     * Search notes ordered by creation date (newest first)
-     */
-    @Query("SELECT n FROM StudyNote n WHERE " +
+    @Query("SELECT n FROM StudyNote n WHERE n.user = :user AND (" +
            "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%')) " +
+           "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
            "ORDER BY n.createdAt DESC")
-    List<StudyNote> searchByTitleOrContentOrderByCreatedAtDesc(@Param("query") String query);
+    List<StudyNote> searchByTitleOrContentOrderByCreatedAtDescForUser(@Param("query") String query, @Param("user") User user);
     
     /**
-     * Find notes by tag name
+     * Find notes by tag name for a specific user
      */
-    @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t WHERE LOWER(t.name) = LOWER(:tagName) ORDER BY n.createdAt DESC")
-    List<StudyNote> findByTagName(@Param("tagName") String tagName);
+    @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t WHERE n.user = :user AND LOWER(t.name) = LOWER(:tagName) ORDER BY n.createdAt DESC")
+    List<StudyNote> findByTagNameForUser(@Param("tagName") String tagName, @Param("user") User user);
     
     /**
-     * Search notes by query and filter by tag
+     * Search notes by query and filter by tag for a specific user
      */
-    @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t WHERE " +
+    @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t WHERE n.user = :user AND " +
            "LOWER(t.name) = LOWER(:tagName) AND " +
            "(LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
            "ORDER BY n.createdAt DESC")
-    List<StudyNote> searchByQueryAndTag(@Param("query") String query, @Param("tagName") String tagName);
+    List<StudyNote> searchByQueryAndTagForUser(@Param("query") String query, @Param("tagName") String tagName, @Param("user") User user);
+    
+    /**
+     * Count notes by user
+     */
+    long countByUser(User user);
 }

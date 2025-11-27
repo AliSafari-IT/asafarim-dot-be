@@ -20,3 +20,4 @@ export * from './Popover';
 export * from './User';
 export * from './PaginatedGrid';
 export * from './ProjectCard';
+export * from './ConfirmDialog';
