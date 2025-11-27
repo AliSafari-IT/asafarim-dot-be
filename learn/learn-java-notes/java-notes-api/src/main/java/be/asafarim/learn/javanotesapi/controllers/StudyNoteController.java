@@ -19,7 +19,12 @@ public class StudyNoteController {
     }
 
     @GetMapping
-    public List<StudyNoteResponse> getAll() {
+    public List<StudyNoteResponse> getAll(
+            @RequestParam(required = false) String query
+    ) {
+        if (query != null && !query.trim().isEmpty()) {
+            return service.search(query);
+        }
         return service.getAll();
     }
 

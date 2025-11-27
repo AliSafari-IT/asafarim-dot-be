@@ -17,8 +17,9 @@ export interface StudyNoteRequest {
   content: string;
 }
 
-export const getNotes = async () => {
-  const res = await api.get<StudyNote[]>("/notes");
+export const getNotes = async (query?: string) => {
+  const params = query ? { query } : {};
+  const res = await api.get<StudyNote[]>("/notes", { params });
   return res.data;
 };
 
