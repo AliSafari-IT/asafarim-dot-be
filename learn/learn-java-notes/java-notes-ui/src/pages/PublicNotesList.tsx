@@ -1,99 +1,53 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { getNotes, getPublicNotes, deleteNote, getTags, type StudyNote } from "../api/notesApi";
+import { useEffect, useState, useMemo } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { getPublicNotes, type StudyNote } from "../api/notesApi";
 import NoteCard from "../components/NoteCard";
 import TagBadge from "../components/TagBadge";
-import { ButtonComponent as Button, ConfirmDialog } from "@asafarim/shared-ui-react";
+import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import { useDebounce } from "../hooks/useDebounce";
-import { useAuth } from "../contexts/useAuth";
-import "./NotesList.css";
+import "./PublicNotesList.css";
 
-export default function NotesList() {
-  const { isAuthenticated } = useAuth();
+export default function PublicNotesList() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [notes, setNotes] = useState<StudyNote[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalCount, setTotalCount] = useState(0);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [noteIdToDelete, setNoteIdToDelete] = useState<string | null>(null);
-  
-  // Get active tag & sort from URL
+
   const activeTag = searchParams.get("tag") || "";
   const activeSort = searchParams.get("sort") || "newest";
-  
-  // Debounce search query by 300ms
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  // Load all available tags
   useEffect(() => {
-    async function loadTags() {
+    async function loadNotes() {
       try {
-        const tags = await getTags();
-        setAllTags(tags);
+        setLoading(true);
+        const filter = {
+          query: debouncedQuery || undefined,
+          tag: activeTag || undefined,
+          sort: activeSort || undefined,
+        };
+        const data = await getPublicNotes(filter);
+        setNotes(data);
+        if (!debouncedQuery && !activeTag) {
+          setTotalCount(data.length);
+        }
+
+        // Extract unique tags from notes
+        const tagSet = new Set<string>();
+        data.forEach((note) => note.tags?.forEach((tag) => tagSet.add(tag)));
+        setAllTags(Array.from(tagSet).sort());
       } catch (error) {
-        console.error("Failed to load tags:", error);
+        console.error("Failed to load public notes:", error);
+      } finally {
+        setLoading(false);
       }
     }
-    loadTags();
-  }, []);
 
-  const load = useCallback(async (query?: string, tag?: string, sort?: string) => {
-    try {
-      setLoading(true);
-      const filter = {
-        query: query || undefined,
-        tag: tag || undefined,
-        sort: sort || undefined,
-      };
-      const data = !isAuthenticated
-        ? await getPublicNotes(filter)
-        : await getNotes(filter);
-      setNotes(data);
-      // Update total count only when not filtering
-      if (!query && !tag) {
-        setTotalCount(data.length);
-      }
-    } catch (error) {
-      console.error("Failed to load notes:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [isAuthenticated]);
-
-  // Load notes when debounced query or active tag changes
-  useEffect(() => {
-    load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined);
-  }, [debouncedQuery, activeTag, activeSort, load]);
-
-  // Reload tags after any note changes
-  async function reloadTags() {
-    try {
-      const tags = await getTags();
-      setAllTags(tags);
-    } catch (error) {
-      console.error("Failed to reload tags:", error);
-    }
-  }
-
-  async function handleDelete(id: string) {
-    if (!isAuthenticated) {
-      return;
-    }
-    setNoteIdToDelete(id);
-    setConfirmOpen(true);
-  }
-
-  async function handleConfirmDelete() {
-    if (!noteIdToDelete) return;
-
-    await deleteNote(noteIdToDelete);
-    setConfirmOpen(false);
-    setNoteIdToDelete(null);
-    load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined);
-    reloadTags();
-  }
+    loadNotes();
+  }, [debouncedQuery, activeTag, activeSort]);
 
   function handleClearSearch() {
     setSearchQuery("");
@@ -101,10 +55,8 @@ export default function NotesList() {
 
   function handleTagClick(tag: string) {
     if (activeTag === tag) {
-      // Clear tag filter
       searchParams.delete("tag");
     } else {
-      // Set tag filter
       searchParams.set("tag", tag);
     }
     setSearchParams(searchParams);
@@ -136,7 +88,6 @@ export default function NotesList() {
   const isFiltering = isSearching || activeTag;
   const hasNoResults = !loading && notes.length === 0 && isFiltering;
 
-  // Collect all unique tags from current notes for display
   const displayTags = useMemo(() => {
     if (allTags.length > 0) return allTags;
     const tagSet = new Set<string>();
@@ -145,22 +96,21 @@ export default function NotesList() {
   }, [notes, allTags]);
 
   return (
-    <div className="notes-page-container">
-      <div className="notes-list-header">
+    <div className="public-notes-page-container">
+      <div className="public-notes-list-header">
         <div className="header-text">
-          <h1 className="page-title">Study Notes</h1>
+          <h1 className="page-title">🌍 Public Notes</h1>
           <p className="page-subtitle">
-            Organize your learning journey with beautiful, searchable notes
+            Explore community knowledge and learning resources
           </p>
         </div>
         <div className="header-actions">
-          <Link to="/create">
-            <Button
-              variant="info"
-            >
-              ✨ Create New Note
-            </Button>
-          </Link>
+          <Button
+            variant="secondary"
+            onClick={() => navigate("/")}
+          >
+            ← Back to My Notes
+          </Button>
         </div>
       </div>
 
@@ -174,7 +124,7 @@ export default function NotesList() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search notes by title or content..."
+              placeholder="Search public notes by title or content..."
               className="search-input"
             />
             {isSearching && (
@@ -262,14 +212,14 @@ export default function NotesList() {
       {loading ? (
         <div className="loading-state">
           <div className="loading-spinner">📚</div>
-          <p>{isSearching ? "Searching..." : "Loading your notes..."}</p>
+          <p>{isSearching ? "Searching..." : "Loading public notes..."}</p>
         </div>
       ) : hasNoResults ? (
         <div className="no-results-state">
           <div className="no-results-icon">🔍</div>
           <h2>No notes found</h2>
           <p>
-            No notes match your filters
+            No public notes match your filters
             {isSearching && <> for "{searchQuery}"</>}
             {activeTag && <> with tag "{activeTag}"</>}
           </p>
@@ -282,47 +232,29 @@ export default function NotesList() {
           </Button>
         </div>
       ) : notes.length > 0 ? (
-        <>
-          <div className="notes-grid">
-            {notes.map((note) => (
-              <NoteCard
-                key={note.id}
-                note={note}
-                onDelete={handleDelete}
-                canDelete={isAuthenticated}
-                linkTo={isAuthenticated ? undefined : `/public/note/${note.id}`}
-              />
-            ))}
-          </div>
-
-          <ConfirmDialog
-            open={confirmOpen}
-            title="Delete note?"
-            description="This action will permanently delete the note and cannot be undone."
-            confirmLabel="Delete"
-            cancelLabel="Cancel"
-            confirmVariant="danger"
-            onConfirm={handleConfirmDelete}
-            onCancel={() => {
-              setConfirmOpen(false);
-              setNoteIdToDelete(null);
-            }}
-          />
-        </>
+        <div className="notes-grid">
+          {notes.map((note) => (
+            <NoteCard 
+              key={note.id} 
+              note={note} 
+              onDelete={() => {}} 
+              canDelete={false} 
+              linkTo={`/public/note/${note.id}`}
+            />
+          ))}
+        </div>
       ) : (
         <div className="empty-state">
-          <div className="empty-icon">📝</div>
-          <h2>No notes yet</h2>
-          <p>Start your learning journey by creating your first study note!</p>
-          <Link to="/create">
-            <Button
-              variant="brand"
-              size="lg"
-
-            >
-              🚀 Create Your First Note
-            </Button>
-          </Link>
+          <div className="empty-icon">🌍</div>
+          <h2>No public notes yet</h2>
+          <p>Be the first to share your knowledge with the community!</p>
+          <Button
+            variant="brand"
+            size="lg"
+            onClick={() => navigate("/")}
+          >
+            ← Back to My Notes
+          </Button>
         </div>
       )}
     </div>

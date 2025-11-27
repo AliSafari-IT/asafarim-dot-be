@@ -43,6 +43,13 @@
   padding-top: var(--spacing-md);
 }
 
+.note-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
 .note-card-link:hover .note-title {
   color: var(--color-primary-600);
 }

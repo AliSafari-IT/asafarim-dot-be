@@ -12,12 +12,14 @@ export interface StudyNote {
   updatedAt: string;
   readingTimeMinutes: number;
   wordCount: number;
+  isPublic: boolean;
   tags: string[];
 }
 
 export interface StudyNoteRequest {
   title: string;
   content: string;
+  isPublic: boolean;
   tags: string[];
 }
 
@@ -68,5 +70,25 @@ export const getAllTags = async () => {
 
 export const getNoteCount = async () => {
   const res = await api.get<number>("/notes/count");
+  return res.data;
+};
+
+// Public Notes API
+export const getPublicNotes = async (filter?: NotesFilter) => {
+  const params: Record<string, string> = {};
+  if (filter?.query) params.query = filter.query;
+  if (filter?.tag) params.tag = filter.tag;
+  if (filter?.sort) params.sort = filter.sort;
+  const res = await api.get<StudyNote[]>("/public/notes", { params });
+  return res.data;
+};
+
+export const getPublicNote = async (id: string) => {
+  const res = await api.get<StudyNote>(`/public/notes/${id}`);
+  return res.data;
+};
+
+export const getPublicNoteCount = async () => {
+  const res = await api.get<number>("/public/notes/count");
   return res.data;
 };

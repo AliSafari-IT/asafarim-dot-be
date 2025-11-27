@@ -13,12 +13,13 @@ public class StudyNoteResponse {
     private LocalDateTime updatedAt;
     private int readingTimeMinutes;
     private int wordCount;
+    private boolean isPublic;
     private List<String> tags;
 
     public StudyNoteResponse(UUID id, String title, String content,
                              LocalDateTime createdAt, LocalDateTime updatedAt,
                              int readingTimeMinutes, int wordCount,
-                             List<String> tags) {
+                             boolean isPublic, List<String> tags) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -26,6 +27,7 @@ public class StudyNoteResponse {
         this.updatedAt = updatedAt;
         this.readingTimeMinutes = readingTimeMinutes;
         this.wordCount = wordCount;
+        this.isPublic = isPublic;
         this.tags = tags != null ? tags : new ArrayList<>();
     }
 
@@ -36,5 +38,8 @@ public class StudyNoteResponse {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public int getReadingTimeMinutes() { return readingTimeMinutes; }
     public int getWordCount() { return wordCount; }
+    public boolean isPublic() { return isPublic; }
+    
+    public boolean getIsPublic() { return isPublic; }
     public List<String> getTags() { return tags; }
 }

@@ -5,6 +5,8 @@ import NotesList from "./pages/NotesList";
 import NoteDetails from "./pages/NoteDetails";
 import CreateNote from "./pages/CreateNote";
 import EditNote from "./pages/EditNote";
+import PublicNotesList from "./pages/PublicNotesList";
+import PublicNoteDetails from "./pages/PublicNoteDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
@@ -19,13 +21,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          {/* Protected routes with layout */}
+          {/* Public homepage with layout */}
           <Route path="/" element={
-            <ProtectedRoute>
-              <Layout>
-                <NotesList />
-              </Layout>
-            </ProtectedRoute>
+            <Layout>
+              <NotesList />
+            </Layout>
           } />
           
           <Route path="/note/:id" element={
@@ -50,6 +50,19 @@ function App() {
                 <EditNote />
               </Layout>
             </ProtectedRoute>
+          } />
+
+          {/* Public notes routes */}
+          <Route path="/public" element={
+            <Layout>
+              <PublicNotesList />
+            </Layout>
+          } />
+
+          <Route path="/public/note/:id" element={
+            <Layout>
+              <PublicNoteDetails />
+            </Layout>
           } />
         </Routes>
       </BrowserRouter>
