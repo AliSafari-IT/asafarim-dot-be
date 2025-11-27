@@ -1,28 +1,53 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getNotes, deleteNote, type StudyNote } from "../api/notesApi";
+import { useEffect, useState, useMemo } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { getNotes, deleteNote, getTags, type StudyNote } from "../api/notesApi";
 import Layout from "../components/Layout";
 import NoteCard from "../components/NoteCard";
+import TagBadge from "../components/TagBadge";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import { useDebounce } from "../hooks/useDebounce";
 import "./NotesList.css";
 
 export default function NotesList() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [notes, setNotes] = useState<StudyNote[]>([]);
+  const [allTags, setAllTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalCount, setTotalCount] = useState(0);
   
+  // Get active tag & sort from URL
+  const activeTag = searchParams.get("tag") || "";
+  const activeSort = searchParams.get("sort") || "newest";
+  
   // Debounce search query by 300ms
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  async function load(query?: string) {
+  // Load all available tags
+  useEffect(() => {
+    async function loadTags() {
+      try {
+        const tags = await getTags();
+        setAllTags(tags);
+      } catch (error) {
+        console.error("Failed to load tags:", error);
+      }
+    }
+    loadTags();
+  }, []);
+
+  async function load(query?: string, tag?: string, sort?: string) {
     try {
       setLoading(true);
-      const data = await getNotes(query);
+      const filter = {
+        query: query || undefined,
+        tag: tag || undefined,
+        sort: sort || undefined,
+      };
+      const data = await getNotes(filter);
       setNotes(data);
-      // Update total count only when not searching
-      if (!query) {
+      // Update total count only when not filtering
+      if (!query && !tag) {
         setTotalCount(data.length);
       }
     } catch (error) {
@@ -32,22 +57,75 @@ export default function NotesList() {
     }
   }
 
-  // Load notes when debounced query changes (includes initial load)
+  // Load notes when debounced query or active tag changes
   useEffect(() => {
-    load(debouncedQuery || undefined);
-  }, [debouncedQuery]);
+    load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined);
+  }, [debouncedQuery, activeTag, activeSort]);
+
+  // Reload tags after any note changes
+  async function reloadTags() {
+    try {
+      const tags = await getTags();
+      setAllTags(tags);
+    } catch (error) {
+      console.error("Failed to reload tags:", error);
+    }
+  }
 
   async function handleDelete(id: number) {
     await deleteNote(id);
-    load(debouncedQuery || undefined);
+    load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined);
+    reloadTags();
   }
 
   function handleClearSearch() {
     setSearchQuery("");
   }
 
+  function handleTagClick(tag: string) {
+    if (activeTag === tag) {
+      // Clear tag filter
+      searchParams.delete("tag");
+    } else {
+      // Set tag filter
+      searchParams.set("tag", tag);
+    }
+    setSearchParams(searchParams);
+  }
+
+  function handleClearTagFilter() {
+    searchParams.delete("tag");
+    setSearchParams(searchParams);
+  }
+
+  function handleClearAllFilters() {
+    setSearchQuery("");
+    searchParams.delete("tag");
+    searchParams.delete("sort");
+    setSearchParams(searchParams);
+  }
+
+  function handleSortChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value;
+    if (value === "newest") {
+      searchParams.delete("sort");
+    } else {
+      searchParams.set("sort", value);
+    }
+    setSearchParams(searchParams);
+  }
+
   const isSearching = searchQuery.trim().length > 0;
-  const hasNoResults = !loading && notes.length === 0 && isSearching;
+  const isFiltering = isSearching || activeTag;
+  const hasNoResults = !loading && notes.length === 0 && isFiltering;
+
+  // Collect all unique tags from current notes for display
+  const displayTags = useMemo(() => {
+    if (allTags.length > 0) return allTags;
+    const tagSet = new Set<string>();
+    notes.forEach((note) => note.tags?.forEach((tag) => tagSet.add(tag)));
+    return Array.from(tagSet).sort();
+  }, [notes, allTags]);
 
   return (
     <Layout>
@@ -61,8 +139,7 @@ export default function NotesList() {
         <div className="header-actions">
           <Link to="/create">
             <Button
-              variant="primary"
-              className="create-note-btn"
+              variant="info"
             >
               ✨ Create New Note
             </Button>
@@ -70,31 +147,97 @@ export default function NotesList() {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="search-container">
-        <div className="search-input-wrapper">
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search notes by title or content..."
-            className="search-input"
-          />
-          {isSearching && (
-            <button
-              onClick={handleClearSearch}
-              className="clear-search-btn"
-              title="Clear search"
+      {/* Search & Filter Section */}
+      <div className="search-filter-section">
+        {/* Search Bar */}
+        <div className="search-container">
+          <div className="search-input-wrapper">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search notes by title or content..."
+              className="search-input"
+            />
+            {isSearching && (
+              <button
+                onClick={handleClearSearch}
+                className="clear-search-btn"
+                title="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Sort & Tags Filter */}
+        <div className="notes-sort-filter-row">
+          <div className="notes-sort-control">
+            <label className="notes-sort-label" htmlFor="sort">
+              Sort by
+            </label>
+            <select
+              id="sort"
+              value={activeSort}
+              onChange={handleSortChange}
+              className="notes-sort-select"
             >
-              ✕
-            </button>
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="az">Title A–Z</option>
+              <option value="za">Title Z–A</option>
+              <option value="readingTime">Shortest reading time</option>
+              <option value="wordCount">Smallest word count</option>
+            </select>
+          </div>
+
+          {displayTags.length > 0 && (
+            <div className="notes-tags-filter-container">
+              <span className="notes-tags-filter-label">Filter by tag:</span>
+              <div className="notes-tags-filter-list">
+                {displayTags.map((tag) => (
+                  <TagBadge
+                    key={tag}
+                    tag={tag}
+                    onClick={handleTagClick}
+                    isActive={activeTag === tag}
+                    size="sm"
+                  />
+                ))}
+              </div>
+            </div>
           )}
         </div>
-        {isSearching && !loading && (
-          <div className="search-results-info">
-            Found <strong>{notes.length}</strong> {notes.length === 1 ? "note" : "notes"} 
-            {totalCount > 0 && ` out of ${totalCount}`} matching "{searchQuery}"
+
+        {/* Active Filters Info */}
+        {isFiltering && !loading && (
+          <div className="active-filters-info">
+            <div className="filter-summary">
+              Found <strong>{notes.length}</strong> {notes.length === 1 ? "note" : "notes"}
+              {totalCount > 0 && ` out of ${totalCount}`}
+              {isSearching && <> matching "<em>{searchQuery}</em>"</>}
+              {activeTag && (
+                <span className="active-tag-filter">
+                  {isSearching ? " with tag " : " tagged "}
+                  <TagBadge
+                    tag={activeTag}
+                    onRemove={handleClearTagFilter}
+                    isActive
+                    size="sm"
+                  />
+                </span>
+              )}
+            </div>
+            {(isSearching || activeTag) && (
+              <button
+                onClick={handleClearAllFilters}
+                className="clear-all-filters-btn"
+              >
+                Clear all filters
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -108,13 +251,17 @@ export default function NotesList() {
         <div className="no-results-state">
           <div className="no-results-icon">🔍</div>
           <h2>No notes found</h2>
-          <p>No notes match your search for "{searchQuery}"</p>
+          <p>
+            No notes match your filters
+            {isSearching && <> for "{searchQuery}"</>}
+            {activeTag && <> with tag "{activeTag}"</>}
+          </p>
           <Button
             variant="secondary"
-            onClick={handleClearSearch}
+            onClick={handleClearAllFilters}
             className="clear-search-action-btn"
           >
-            ✕ Clear Search
+            ✕ Clear All Filters
           </Button>
         </div>
       ) : notes.length > 0 ? (
@@ -130,8 +277,9 @@ export default function NotesList() {
           <p>Start your learning journey by creating your first study note!</p>
           <Link to="/create">
             <Button
-              variant="primary"
-              className="empty-action-btn"
+              variant="brand"
+              size="lg"
+
             >
               🚀 Create Your First Note
             </Button>

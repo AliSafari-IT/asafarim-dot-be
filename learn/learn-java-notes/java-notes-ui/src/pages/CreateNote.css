@@ -15,10 +15,6 @@
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 var(--spacing-md);
-  background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .page-subtitle {

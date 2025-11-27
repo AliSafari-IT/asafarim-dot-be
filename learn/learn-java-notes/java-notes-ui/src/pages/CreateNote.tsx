@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createNote } from "../api/notesApi";
 import Layout from "../components/Layout";
+import TagInput from "../components/TagInput";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./CreateNote.css";
 
@@ -9,6 +10,7 @@ export default function CreateNote() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -17,7 +19,7 @@ export default function CreateNote() {
     
     try {
       setLoading(true);
-      await createNote({ title, content });
+      await createNote({ title, content, tags });
       navigate("/");
     } catch (error) {
       console.error("Failed to create note:", error);
@@ -80,6 +82,17 @@ System.out.println(&quot;Hello World&quot;);
                 💡 Tip: Use Markdown for rich formatting (headers, code blocks, lists, etc.)
               </span>
             </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">
+              🏷️ Tags
+            </label>
+            <TagInput
+              value={tags}
+              onChange={setTags}
+              placeholder="Add tags like 'java', 'spring', 'basics'..."
+            />
           </div>
 
           <div className="form-actions">

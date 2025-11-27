@@ -20,12 +20,11 @@ public class StudyNoteController {
 
     @GetMapping
     public List<StudyNoteResponse> getAll(
-            @RequestParam(required = false) String query
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false, defaultValue = "newest") String sort
     ) {
-        if (query != null && !query.trim().isEmpty()) {
-            return service.search(query);
-        }
-        return service.getAll();
+        return service.searchWithTag(query, tag, sort);
     }
 
     @GetMapping("/{id}")

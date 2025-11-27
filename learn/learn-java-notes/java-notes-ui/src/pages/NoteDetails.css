@@ -42,7 +42,7 @@
 
 .nav-btn.edit-btn {
   background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
-  color: white;
+  color: var(--color-neutral-500);
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -71,15 +71,11 @@
 }
 
 .note-details-title {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-3xl);
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 var(--spacing-lg);
   line-height: 1.2;
-  background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* Meta Information */
@@ -133,6 +129,12 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
+}
+
+.note-details-tags .no-tags {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
 }
 
 .note-details-tags .tag {

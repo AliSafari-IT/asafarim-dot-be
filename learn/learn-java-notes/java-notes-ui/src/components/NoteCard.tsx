@@ -1,24 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import "./NoteCard.css";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import { type StudyNote } from "../api/notesApi";
+import TagBadge from "./TagBadge";
 
-export default function NoteCard({
-  note,
-  onDelete
-}: {
+interface NoteCardProps {
   note: StudyNote;
   onDelete: (id: number) => void;
-}) {
-  const getWordCount = () => {
-    return note.content ? note.content.split(/\s+/).filter(word => word.length > 0).length : 0;
-  };
+}
 
-  const getReadingTime = () => {
-    const words = getWordCount();
-    const readingSpeed = 200; // words per minute
-    return Math.max(1, Math.ceil(words / readingSpeed));
-  };
+export default function NoteCard({ note, onDelete }: NoteCardProps) {
+  const [, setSearchParams] = useSearchParams();
 
   const getContentPreview = () => {
     if (!note.content) return null;
@@ -39,10 +31,10 @@ export default function NoteCard({
                 📅 {new Date(note.createdAt).toLocaleDateString()}
               </span>
               <span className="meta-item">
-                ⏱️ {getReadingTime()} min read
+                ⏱️ {note.readingTimeMinutes} min read
               </span>
               <span className="meta-item">
-                📊 {getWordCount()} words
+                📊 {note.wordCount} words
               </span>
             </div>
           </div>
@@ -60,8 +52,18 @@ export default function NoteCard({
 
       <div className="note-footer">
         <div className="note-tags">
-          <span className="tag">📚 study</span>
-          <span className="tag">📝 notes</span>
+          {note.tags && note.tags.length > 0 ? (
+            note.tags.map((tag) => (
+              <TagBadge
+                key={tag}
+                tag={tag}
+                onClick={(t) => setSearchParams({ tag: t })}
+                size="sm"
+              />
+            ))
+          ) : (
+            <span className="no-tags">No tags</span>
+          )}
         </div>
         <div className="note-actions">
           <Link to={`/edit/${note.id}`}>
