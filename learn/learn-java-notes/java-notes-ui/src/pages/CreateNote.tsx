@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createNote } from "../api/notesApi";
-import Layout from "../components/Layout";
+// import Layout from "../components/Layout";
 import TagInput from "../components/TagInput";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./CreateNote.css";
@@ -29,7 +29,6 @@ export default function CreateNote() {
   }
 
   return (
-    <Layout>
       <div className="create-note">
         <div className="create-note-header">
           <h1 className="page-title">✨ Create New Note</h1>
@@ -114,6 +113,5 @@ System.out.println(&quot;Hello World&quot;);
           </div>
         </form>
       </div>
-    </Layout>
   );
 }

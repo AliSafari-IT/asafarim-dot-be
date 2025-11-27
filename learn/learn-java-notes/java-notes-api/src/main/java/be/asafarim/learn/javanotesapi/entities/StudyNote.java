@@ -2,16 +2,15 @@ package be.asafarim.learn.javanotesapi.entities;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "study_notes")
 public class StudyNote {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String title;
 
@@ -21,6 +20,10 @@ public class StudyNote {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
@@ -43,15 +46,16 @@ public class StudyNote {
 
     public StudyNote() {}
 
-    public StudyNote(String title, String content) {
+    public StudyNote(String title, String content, User user) {
         this.title = title;
         this.content = content;
+        this.user = user;
     }
 
     // getters and setters
-    public Long getId() { return id; }
+    public UUID getId() { return id; }
 
-    public void setId(Long id) { this.id = id; }
+    public void setId(UUID id) { this.id = id; }
 
     public String getTitle() { return title; }
 
@@ -64,6 +68,10 @@ public class StudyNote {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public User getUser() { return user; }
+
+    public void setUser(User user) { this.user = user; }
 
     public Set<Tag> getTags() { return tags; }
 

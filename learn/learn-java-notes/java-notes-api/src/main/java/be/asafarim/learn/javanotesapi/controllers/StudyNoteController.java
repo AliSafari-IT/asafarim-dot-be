@@ -6,6 +6,7 @@ import be.asafarim.learn.javanotesapi.services.StudyNoteService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/notes")
@@ -22,13 +23,12 @@ public class StudyNoteController {
     public List<StudyNoteResponse> getAll(
             @RequestParam(required = false) String query,
             @RequestParam(required = false) String tag,
-            @RequestParam(required = false, defaultValue = "newest") String sort
-    ) {
+            @RequestParam(required = false, defaultValue = "newest") String sort) {
         return service.searchWithTag(query, tag, sort);
     }
 
     @GetMapping("/{id}")
-    public StudyNoteResponse getById(@PathVariable Long id) {
+    public StudyNoteResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
@@ -39,14 +39,13 @@ public class StudyNoteController {
 
     @PutMapping("/{id}")
     public StudyNoteResponse update(
-            @PathVariable Long id,
-            @RequestBody StudyNoteRequest req
-    ) {
+            @PathVariable UUID id,
+            @RequestBody StudyNoteRequest req) {
         return service.update(id, req);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
 

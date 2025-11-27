@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: "/api",
 });
 
 export interface StudyNote {
-  id: number;
+  id: string;
   title: string;
   content: string;
   createdAt: string;
@@ -31,12 +31,12 @@ export const getNotes = async (filter?: NotesFilter) => {
   const params: Record<string, string> = {};
   if (filter?.query) params.query = filter.query;
   if (filter?.tag) params.tag = filter.tag;
-   if (filter?.sort) params.sort = filter.sort;
+  if (filter?.sort) params.sort = filter.sort;
   const res = await api.get<StudyNote[]>("/notes", { params });
   return res.data;
 };
 
-export const getNote = async (id: number) => {
+export const getNote = async (id: string) => {
   const res = await api.get<StudyNote>(`/notes/${id}`);
   return res.data;
 };
@@ -46,12 +46,12 @@ export const createNote = async (data: StudyNoteRequest) => {
   return res.data;
 };
 
-export const updateNote = async (id: number, data: StudyNoteRequest) => {
+export const updateNote = async (id: string, data: StudyNoteRequest) => {
   const res = await api.put<StudyNote>(`/notes/${id}`, data);
   return res.data;
 };
 
-export const deleteNote = async (id: number) => {
+export const deleteNote = async (id: string) => {
   await api.delete(`/notes/${id}`);
 };
 

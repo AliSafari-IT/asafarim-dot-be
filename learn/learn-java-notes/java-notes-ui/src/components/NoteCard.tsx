@@ -6,7 +6,7 @@ import TagBadge from "./TagBadge";
 
 interface NoteCardProps {
   note: StudyNote;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 export default function NoteCard({ note, onDelete }: NoteCardProps) {

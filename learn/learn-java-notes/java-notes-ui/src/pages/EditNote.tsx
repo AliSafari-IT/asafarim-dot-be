@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getNote, updateNote } from "../api/notesApi";
-import Layout from "../components/Layout";
 import TagInput from "../components/TagInput";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./EditNote.css";
@@ -22,7 +21,7 @@ export default function EditNote() {
       
       try {
         setInitialLoading(true);
-        const note = await getNote(Number(id));
+        const note = await getNote(id);
         setTitle(note.title);
         setContent(note.content);
         setTags(note.tags || []);
@@ -43,7 +42,7 @@ export default function EditNote() {
     
     try {
       setLoading(true);
-      await updateNote(Number(id), { title, content, tags });
+      await updateNote(id, { title, content, tags });
       navigate(`/note/${id}`);
     } catch (error) {
       console.error("Failed to update note:", error);
@@ -54,36 +53,31 @@ export default function EditNote() {
 
   if (initialLoading) {
     return (
-      <Layout>
-        <div className="edit-note-loading">
-          <div className="loading-spinner">📝</div>
-          <p>Loading note...</p>
-        </div>
-      </Layout>
+      <div className="edit-note-loading">
+        <div className="loading-spinner">📝</div>
+        <p>Loading note...</p>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Layout>
-        <div className="edit-note-error">
-          <div className="error-icon">😔</div>
-          <h2>Note not found</h2>
-          <p>{error}</p>
-          <Button
-            variant="primary"
-            onClick={() => navigate("/")}
-            className="back-btn"
-          >
-            ← Back to Notes
-          </Button>
-        </div>
-      </Layout>
+      <div className="edit-note-error">
+        <div className="error-icon">😔</div>
+        <h2>Note not found</h2>
+        <p>{error}</p>
+        <Button
+          variant="primary"
+          onClick={() => navigate("/")}
+          className="back-btn"
+        >
+          ← Back to Notes
+        </Button>
+      </div>
     );
   }
 
   return (
-    <Layout>
       <div className="edit-note">
         <div className="edit-note-header">
           <h1 className="page-title">✏️ Edit Note</h1>
@@ -166,6 +160,5 @@ System.out.println(&quot;Hello World&quot;);
           </div>
         </form>
       </div>
-    </Layout>
   );
 }

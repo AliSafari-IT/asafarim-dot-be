@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom"
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getNote, type StudyNote } from "../api/notesApi";
-import Layout from "../components/Layout";
 import TagBadge from "../components/TagBadge";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./NoteDetails.css";
@@ -28,7 +27,7 @@ export default function NoteDetails() {
       try {
         setLoading(true);
         setError(null);
-        const data = await getNote(Number(id));
+        const data = await getNote(id);
         setNote(data);
       } catch (err) {
         console.error("Failed to load note:", err);
@@ -71,36 +70,31 @@ export default function NoteDetails() {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="note-details-loading">
-          <div className="loading-spinner">📖</div>
-          <p>Loading your note...</p>
-        </div>
-      </Layout>
+      <div className="note-details-loading">
+        <div className="loading-spinner">📖</div>
+        <p>Loading your note...</p>
+      </div>
     );
   }
 
   if (error || !note) {
     return (
-      <Layout>
-        <div className="note-details-error">
-          <div className="error-icon">😔</div>
-          <h2>Oops! Note not found</h2>
-          <p>{error || "The note you're looking for doesn't exist."}</p>
-          <Button
-            variant="primary"
-            onClick={() => navigate("/")}
-            className="back-btn"
-          >
-            ← Back to Notes
-          </Button>
-        </div>
-      </Layout>
+      <div className="note-details-error">
+        <div className="error-icon">😔</div>
+        <h2>Oops! Note not found</h2>
+        <p>{error || "The note you're looking for doesn't exist."}</p>
+        <Button
+          variant="primary"
+          onClick={() => navigate("/")}
+          className="back-btn"
+        >
+          ← Back to Notes
+        </Button>
+      </div>
     );
   }
 
   return (
-    <Layout>
       <div className="note-details">
         {/* Navigation Bar */}
         <nav className="note-nav">
@@ -114,7 +108,7 @@ export default function NoteDetails() {
             <Button
               variant="primary"
             >
-              ✏️ Edit Note
+              ✏️ Edit
             </Button>
           </Link>
         </nav>
@@ -203,6 +197,5 @@ export default function NoteDetails() {
           </div>
         </footer>
       </div>
-    </Layout>
   );
 }

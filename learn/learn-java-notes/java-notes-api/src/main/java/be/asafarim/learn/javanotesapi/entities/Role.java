@@ -1,11 +1,11 @@
 package be.asafarim.learn.javanotesapi.entities;
 
 import jakarta.persistence.*;
-import java.util.*;
+import java.util.UUID;
 
 @Entity
-@Table(name = "tags")
-public class Tag {
+@Table(name = "roles")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -14,13 +14,10 @@ public class Tag {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
-    private Set<StudyNote> notes = new HashSet<>();
+    public Role() {}
 
-    public Tag() {}
-
-    public Tag(String name) {
-        this.name = name.toLowerCase().trim();
+    public Role(String name) {
+        this.name = name.toUpperCase();
     }
 
     // Getters and Setters
@@ -28,17 +25,14 @@ public class Tag {
     public void setId(UUID id) { this.id = id; }
 
     public String getName() { return name; }
-    public void setName(String name) { this.name = name.toLowerCase().trim(); }
-
-    public Set<StudyNote> getNotes() { return notes; }
-    public void setNotes(Set<StudyNote> notes) { this.notes = notes; }
+    public void setName(String name) { this.name = name.toUpperCase(); }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Tag tag = (Tag) o;
-        return name != null && name.equals(tag.name);
+        Role role = (Role) o;
+        return name != null && name.equals(role.name);
     }
 
     @Override
