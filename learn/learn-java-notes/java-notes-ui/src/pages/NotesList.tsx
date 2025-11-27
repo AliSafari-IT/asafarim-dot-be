@@ -4,17 +4,27 @@ import { getNotes, deleteNote, type StudyNote } from "../api/notesApi";
 import Layout from "../components/Layout";
 import NoteCard from "../components/NoteCard";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import { useDebounce } from "../hooks/useDebounce";
 import "./NotesList.css";
 
 export default function NotesList() {
   const [notes, setNotes] = useState<StudyNote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
+  
+  // Debounce search query by 300ms
+  const debouncedQuery = useDebounce(searchQuery, 300);
 
-  async function load() {
+  async function load(query?: string) {
     try {
       setLoading(true);
-      const data = await getNotes();
+      const data = await getNotes(query);
       setNotes(data);
+      // Update total count only when not searching
+      if (!query) {
+        setTotalCount(data.length);
+      }
     } catch (error) {
       console.error("Failed to load notes:", error);
     } finally {
@@ -22,14 +32,22 @@ export default function NotesList() {
     }
   }
 
+  // Load notes when debounced query changes (includes initial load)
   useEffect(() => {
-    load();
-  }, []);
+    load(debouncedQuery || undefined);
+  }, [debouncedQuery]);
 
   async function handleDelete(id: number) {
     await deleteNote(id);
-    load();
+    load(debouncedQuery || undefined);
   }
+
+  function handleClearSearch() {
+    setSearchQuery("");
+  }
+
+  const isSearching = searchQuery.trim().length > 0;
+  const hasNoResults = !loading && notes.length === 0 && isSearching;
 
   return (
     <Layout>
@@ -52,10 +70,52 @@ export default function NotesList() {
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="search-container">
+        <div className="search-input-wrapper">
+          <span className="search-icon">🔍</span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search notes by title or content..."
+            className="search-input"
+          />
+          {isSearching && (
+            <button
+              onClick={handleClearSearch}
+              className="clear-search-btn"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        {isSearching && !loading && (
+          <div className="search-results-info">
+            Found <strong>{notes.length}</strong> {notes.length === 1 ? "note" : "notes"} 
+            {totalCount > 0 && ` out of ${totalCount}`} matching "{searchQuery}"
+          </div>
+        )}
+      </div>
+
       {loading ? (
         <div className="loading-state">
           <div className="loading-spinner">📚</div>
-          <p>Loading your notes...</p>
+          <p>{isSearching ? "Searching..." : "Loading your notes..."}</p>
+        </div>
+      ) : hasNoResults ? (
+        <div className="no-results-state">
+          <div className="no-results-icon">🔍</div>
+          <h2>No notes found</h2>
+          <p>No notes match your search for "{searchQuery}"</p>
+          <Button
+            variant="secondary"
+            onClick={handleClearSearch}
+            className="clear-search-action-btn"
+          >
+            ✕ Clear Search
+          </Button>
         </div>
       ) : notes.length > 0 ? (
         <div className="notes-grid">

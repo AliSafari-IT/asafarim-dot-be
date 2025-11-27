@@ -18,7 +18,19 @@ public class StudyNoteService {
     }
 
     public List<StudyNoteResponse> getAll() {
-        return repository.findAll().stream()
+        return repository.findAllByOrderByCreatedAtDesc().stream()
+                .map(this::toResponse)
+                .toList();
+    }
+    
+    /**
+     * Search notes by query string (searches title and content)
+     */
+    public List<StudyNoteResponse> search(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return getAll();
+        }
+        return repository.searchByTitleOrContentOrderByCreatedAtDesc(query.trim()).stream()
                 .map(this::toResponse)
                 .toList();
     }
