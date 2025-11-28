@@ -1,11 +1,11 @@
 {
   "name": "java-notes-api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "prestart": "kill-port --port 8080; kill-port --port 8080",
-    "start": "mvn spring-boot:run",
+    "start": "mvn clean spring-boot:run",
     "api": "pnpm start",
     "app": "concurrently \"pnpm api\" \"cd ../java-notes-ui && pnpm start\"",
     "test": "echo \"Error: no test specified\" && exit 1"

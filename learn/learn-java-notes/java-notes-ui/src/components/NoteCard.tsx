@@ -33,6 +33,11 @@ export default function NoteCard({ note, onDelete , canDelete = false, linkTo }:
               <VisibilityBadge isPublic={note.isPublic} size="sm" />
             </div>
             <div className="note-meta">
+              {note.createdBy && (
+                <span className="meta-item">
+                  👤 by {note.createdBy}
+                </span>
+              )}
               <span className="meta-item">
                 📅 {new Date(note.createdAt).toLocaleDateString()}
               </span>

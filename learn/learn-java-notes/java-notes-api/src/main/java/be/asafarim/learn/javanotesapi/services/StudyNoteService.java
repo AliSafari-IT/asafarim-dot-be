@@ -103,6 +103,9 @@ public class StudyNoteService {
                 .filter(n -> n.getUser().getId().equals(currentUser.getId()))
                 .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission to access it"));
         
+        // Force load the user to avoid lazy loading issues
+        note.getUser().getUsername();
+        
         // Convert to response without analytics first
         StudyNoteResponse response = toResponse(note);
         
@@ -195,7 +198,8 @@ public class StudyNoteService {
                 readingTimeMinutes,
                 wordCount,
                 n.isPublic(),
-                tagNames);
+                tagNames,
+                n.getUser() != null ? n.getUser().getUsername() : "Unknown");
     }
 
     /**

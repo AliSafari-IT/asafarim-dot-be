@@ -15,7 +15,7 @@ export default function PublicNotesList() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalCount, setTotalCount] = useState(0);
-
+  const [isMobileView, setIsMobileView] = useState(false);
   const activeTag = searchParams.get("tag") || "";
   const activeSort = searchParams.get("sort") || "newest";
   const debouncedQuery = useDebounce(searchQuery, 300);
@@ -48,6 +48,17 @@ export default function PublicNotesList() {
 
     loadNotes();
   }, [debouncedQuery, activeTag, activeSort]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   function handleClearSearch() {
     setSearchQuery("");
@@ -160,7 +171,7 @@ export default function PublicNotesList() {
             </select>
           </div>
 
-          {displayTags.length > 0 && (
+          { isMobileView && displayTags.length > 0 && (
             <div className="notes-tags-filter-container">
               <span className="notes-tags-filter-label">Filter by tag:</span>
               <div className="notes-tags-filter-list">

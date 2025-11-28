@@ -85,6 +85,11 @@ export default function PublicNoteDetails() {
 
         <div className="note-details-meta">
           <div className="meta-row">
+            {note.createdBy && (
+              <span className="meta-badge">
+                👤 by {note.createdBy}
+              </span>
+            )}
             <span className="meta-badge">
               📅 {new Date(note.createdAt).toLocaleDateString()}
             </span>

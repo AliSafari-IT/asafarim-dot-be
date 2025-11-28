@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getTags } from "../api/notesApi";
+import { getAllTags } from "../api/notesApi";
 import TagBadge from "./TagBadge";
 import "./TagsSidebar.css";
 
@@ -30,7 +30,7 @@ export default function TagsSidebar() {
 
   const loadTags = async () => {
     try {
-      const tagsList = await getTags();
+      const tagsList = await getAllTags();
       setTags(tagsList);
       setFilteredTags(tagsList);
     } catch (error) {
@@ -117,7 +117,7 @@ export default function TagsSidebar() {
                 className={`tag-item ${activeTag === tag ? "active" : ""}`}
                 onClick={() => handleTagClick(tag)}
                 aria-label={`Tag: ${tag}`}
-                data-testid={"tag-item" + index}
+                data-testid={"tag-item-" + index}
                 role="button"
                 tabIndex={0}
               >

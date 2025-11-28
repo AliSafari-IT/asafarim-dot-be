@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getNotes, getPublicNotes, deleteNote, type StudyNote } from "../api/notesApi";
+import { getNotes, getPublicNotes, deleteNote, searchNotes, searchPublicNotes, type StudyNote, type SearchResult } from "../api/notesApi";
 import NoteCard from "../components/NoteCard";
 import TagBadge from "../components/TagBadge";
 import { ButtonComponent as Button, ConfirmDialog } from "@asafarim/shared-ui-react";
@@ -29,21 +29,43 @@ export default function NotesList() {
   const load = useCallback(async (query?: string, tag?: string, sort?: string) => {
     try {
       setLoading(true);
-      const filter = {
-        query: query || undefined,
-        tag: tag || undefined,
-        sort: sort || undefined,
-      };
-      const data = !isAuthenticated
-        ? await getPublicNotes(filter)
-        : await getNotes(filter);
-      setNotes(data);
-      // Update total count only when not filtering
-      if (!query && !tag) {
-        setTotalCount(data.length);
+      let data: StudyNote[];
+      
+      // Use full-text search when there's a search query
+      if (query && query.trim()) {
+        const searchFn = isAuthenticated ? searchNotes : searchPublicNotes;
+        const results = await searchFn({ q: query, tag: tag || undefined });
+        // Convert SearchResult to StudyNote format
+        data = results.map((r: SearchResult) => ({
+          id: r.id,
+          title: r.title,
+          content: r.content,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          readingTimeMinutes: r.readingTimeMinutes,
+          wordCount: r.wordCount,
+          isPublic: r.isPublic,
+          tags: r.tags,
+          analytics: r.analytics || undefined,
+          highlightedTitle: r.highlightedTitle,
+          highlightedContent: r.highlightedContent,
+        })) as StudyNote[];
+      } else {
+        // Regular listing without search
+        const filter = { query: undefined, tag: tag || undefined, sort: sort || undefined };
+        data = isAuthenticated ? await getNotes(filter) : await getPublicNotes(filter);
       }
+      
+      setNotes(data);
+      if (!query && !tag) setTotalCount(data.length);
     } catch (error) {
       console.error("Failed to load notes:", error);
+      // On search error, fall back to regular listing
+      try {
+        const filter = { query: undefined, tag: tag || undefined, sort: sort || undefined };
+        const fallback = isAuthenticated ? await getNotes(filter) : await getPublicNotes(filter);
+        setNotes(fallback);
+      } catch { /* ignore fallback error */ }
     } finally {
       setLoading(false);
     }
@@ -134,7 +156,7 @@ export default function NotesList() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search notes by title or content..."
+              placeholder="Full-text search notes..."
               className="search-input"
             />
             {isSearching && (
@@ -161,6 +183,7 @@ export default function NotesList() {
               onChange={handleSortChange}
               className="notes-sort-select"
             >
+              {isSearching && <option value="relevance">Most relevant</option>}
               <option value="newest">Newest first</option>
               <option value="oldest">Oldest first</option>
               <option value="az">Title A–Z</option>

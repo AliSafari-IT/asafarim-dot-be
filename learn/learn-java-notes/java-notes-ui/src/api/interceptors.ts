@@ -24,6 +24,7 @@ api.interceptors.response.use(
     const isViewTrackingEndpoint = url.includes('/view');
     const isAuthEndpoint = url.includes('/auth/');
     const isPublicEndpoint = url.includes('/public/');
+    const isSearchEndpoint = url.includes('/search');
     
     // Only log non-view-tracking errors
     if (!isViewTrackingEndpoint) {
@@ -33,7 +34,7 @@ api.interceptors.response.use(
     // Only handle 401 for protected endpoints (not auth, view-tracking, or public)
     // Don't redirect on auth endpoints (login failures should show error, not redirect)
     // Don't redirect on public endpoints (they should work without auth)
-    if (error.response?.status === 401 && !isViewTrackingEndpoint && !isAuthEndpoint && !isPublicEndpoint) {
+    if (error.response?.status === 401 && !isViewTrackingEndpoint && !isAuthEndpoint && !isPublicEndpoint && !isSearchEndpoint) {
       // Only clear auth if we're not already on login page
       if (!window.location.pathname.includes('/login')) {
         localStorage.removeItem("token");
