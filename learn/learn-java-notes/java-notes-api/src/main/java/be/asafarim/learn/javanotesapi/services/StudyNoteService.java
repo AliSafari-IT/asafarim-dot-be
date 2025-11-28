@@ -97,10 +97,25 @@ public class StudyNoteService {
 
     public StudyNoteResponse getById(UUID id) {
         User currentUser = authService.getCurrentUser();
-        return repository.findById(id)
-                .filter(note -> note.getUser().getId().equals(currentUser.getId()))
-                .map(this::toResponse)
+        
+        // First get the note without analytics (to avoid transaction issues)
+        StudyNote note = repository.findById(id)
+                .filter(n -> n.getUser().getId().equals(currentUser.getId()))
                 .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission to access it"));
+        
+        // Convert to response without analytics first
+        StudyNoteResponse response = toResponse(note);
+        
+        // Then try to add analytics separately (outside the main query)
+        try {
+            NoteAnalytics analytics = noteViewService.getSafeAnalytics(note.getId());
+            response.setAnalytics(analytics);
+        } catch (Exception e) {
+            // Analytics failed, but note still loads
+            System.err.println("Warning: Could not load analytics for note: " + e.getMessage());
+        }
+        
+        return response;
     }
 
     @Transactional
@@ -184,18 +199,23 @@ public class StudyNoteService {
     }
 
     /**
-     * Convert note to response with analytics data (for single note view)
+     * Convert note to response with SAFE analytics (never throws, returns empty on error)
+     * Use this for API responses where analytics failure should not break the request.
+     */
+    private StudyNoteResponse toResponseWithSafeAnalytics(StudyNote n) {
+        StudyNoteResponse response = toResponse(n);
+        NoteAnalytics analytics = noteViewService.getSafeAnalytics(n.getId());
+        response.setAnalytics(analytics);
+        return response;
+    }
+
+    /**
+     * Convert note to response with analytics data (may throw on DB errors)
      */
     private StudyNoteResponse toResponseWithAnalytics(StudyNote n) {
         StudyNoteResponse response = toResponse(n);
-        try {
-            NoteAnalytics analytics = noteViewService.getAnalytics(n.getId());
-            response.setAnalytics(analytics);
-        } catch (Exception e) {
-            // Analytics not available (table may not exist yet), return response without
-            // analytics
-            System.err.println("Warning: Could not fetch analytics for note " + n.getId() + ": " + e.getMessage());
-        }
+        NoteAnalytics analytics = noteViewService.getAnalytics(n.getId());
+        response.setAnalytics(analytics);
         return response;
     }
 

@@ -70,8 +70,9 @@ public interface NoteViewRepository extends JpaRepository<NoteView, UUID> {
 
     /**
      * Get unique viewer count for a note
+     * Counts distinct combinations of authenticated users and anonymous IPs
      */
-    @Query("SELECT COUNT(DISTINCT COALESCE(v.user.id, v.ipAddress)) FROM NoteView v WHERE v.note.id = :noteId")
+    @Query(value = "SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id::text ELSE ip_address END) FROM note_views WHERE note_id = :noteId", nativeQuery = true)
     long countUniqueViewersByNoteId(@Param("noteId") UUID noteId);
 
     // ============ Dashboard Analytics Queries ============

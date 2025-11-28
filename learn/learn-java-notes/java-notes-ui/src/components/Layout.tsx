@@ -38,10 +38,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <header className="layout-header">
           <div className="header-content">
             <div className="logo">
-              <div className="logo-icon">📚</div>
-              <h1 className="logo-text">Study Notes</h1>
+              <Button
+                variant="ghost"
+                size="lg"
+                to="/"
+                leftIcon="📚"
+                className="logo-icon"
+              >
+                Study Notes
+              </Button>
             </div>
-            
+
             {isAuthenticated && (
               <>
                 <nav className="header-nav">
@@ -62,7 +69,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     📊 Analytics
                   </Button>
                 </nav>
-                
+
                 <div className="header-user">
                   <div className="user-info">
                     <span className="user-avatar">👤</span>

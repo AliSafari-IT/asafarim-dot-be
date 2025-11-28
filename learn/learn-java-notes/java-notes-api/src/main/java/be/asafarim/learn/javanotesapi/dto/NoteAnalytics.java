@@ -12,6 +12,14 @@ public class NoteAnalytics {
     private long viewsLast30Days;
     private long uniqueViewers;
 
+    /**
+     * Returns an empty analytics object with all zeros.
+     * Used as a fallback when analytics queries fail.
+     */
+    public static NoteAnalytics empty() {
+        return new NoteAnalytics(0, 0, 0, 0, 0, 0);
+    }
+
     public NoteAnalytics() {}
 
     public NoteAnalytics(long totalViews, long publicViews, long privateViews,

@@ -7,6 +7,7 @@ import be.asafarim.learn.javanotesapi.entities.User;
 import be.asafarim.learn.javanotesapi.repositories.NoteViewRepository;
 import be.asafarim.learn.javanotesapi.repositories.StudyNoteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -93,9 +94,31 @@ public class NoteViewService {
     }
 
     /**
-     * Get analytics for a specific note
+     * Get analytics for a specific note (SAFE - never throws, returns empty on error)
+     * Use this method in controllers/services to prevent analytics errors from breaking requests.
+     * Uses REQUIRES_NEW to isolate transaction so failures don't affect parent transaction.
+     */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public NoteAnalytics getSafeAnalytics(UUID noteId) {
+        try {
+            return getAnalyticsInternal(noteId);
+        } catch (Exception e) {
+            System.err.println("Warning: Analytics query failed for note " + noteId + ": " + e.getMessage());
+            return NoteAnalytics.empty();
+        }
+    }
+
+    /**
+     * Get analytics for a specific note (may throw on DB errors)
      */
     public NoteAnalytics getAnalytics(UUID noteId) {
+        return getAnalyticsInternal(noteId);
+    }
+
+    /**
+     * Internal analytics computation
+     */
+    private NoteAnalytics getAnalyticsInternal(UUID noteId) {
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
 
