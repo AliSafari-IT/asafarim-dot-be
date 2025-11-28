@@ -33,11 +33,24 @@
 }
 
 .layout-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
   position: relative;
   z-index: 1;
+}
+
+.layout-with-sidebar {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  width: 100%;
+}
+
+.layout-with-sidebar .layout-main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--spacing-xl);
 }
 
 .layout-header {
