@@ -59,7 +59,7 @@ export default function TagsSidebar() {
   };
 
   return (
-    <aside className="tags-sidebar">
+    <aside className="tags-sidebar" aria-label="Tags Sidebar" data-testid="tags-sidebar">
       <div className="tags-sidebar-header">
         <div className="tags-sidebar-title">
           <h3>
@@ -71,6 +71,8 @@ export default function TagsSidebar() {
               onClick={handleClearTag}
               className="clear-tag-btn"
               title="Clear filter"
+              aria-label="Clear filter"
+              data-testid="clear-tag-btn"
             >
               ✕
             </button>
@@ -91,6 +93,8 @@ export default function TagsSidebar() {
               onClick={handleClearSearch}
               className="tags-search-clear"
               title="Clear search"
+              aria-label="Clear search"
+              data-testid="clear-search-btn"
             >
               ✕
             </button>
@@ -107,11 +111,15 @@ export default function TagsSidebar() {
           </div>
         ) : (
           <ul className="tags-list">
-            {filteredTags.map((tag) => (
+            {filteredTags.map((tag, index) => (
               <li
                 key={tag}
                 className={`tag-item ${activeTag === tag ? "active" : ""}`}
                 onClick={() => handleTagClick(tag)}
+                aria-label={`Tag: ${tag}`}
+                data-testid={"tag-item" + index}
+                role="button"
+                tabIndex={0}
               >
                 <TagBadge tag={tag} />
               </li>

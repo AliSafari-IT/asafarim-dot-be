@@ -3,9 +3,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./Layout.css";
 import { getNoteCount } from "../api/notesApi";
 import { useAuth } from "../contexts/useAuth";
-import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import {
+  ButtonComponent as Button,
+  SignIn,
+  SignOut,
+} from "@asafarim/shared-ui-react";
 import TagsSidebar from "./TagsSidebar";
-import { ThemeToggle } from '@asafarim/react-themes';
+import { ThemeToggle } from "@asafarim/react-themes";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -47,6 +51,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 to="/"
                 leftIcon="📚"
                 className="logo-icon"
+                aria-label="Study Notes"
+                data-testid="study-notes-brand"
               >
                 Study Notes
               </Button>
@@ -60,6 +66,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     size="sm"
                     onClick={() => navigate("/")}
                     className="nav-btn"
+                    aria-label="Notes"
+                    data-testid="notes-button"
                   >
                     📝 Notes ({noteCount})
                   </Button>
@@ -68,6 +76,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     size="sm"
                     onClick={() => navigate("/analytics")}
                     className="nav-btn"
+                    aria-label="Analytics"
+                    data-testid="analytics-button"
                   >
                     📊 Analytics
                   </Button>
@@ -79,12 +89,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <span className="user-name">{user?.username}</span>
                   </div>
                   <Button
-                    variant="secondary"
-                    size="sm"
+                    variant="ghost"
+                    size="xs"
                     onClick={handleLogout}
-                    className="logout-btn"
+                    title="Logout"
+                    aria-label="Logout"
                   >
-                    🚪 Logout
+                    <SignOut title="Logout" />
                   </Button>
                 </div>
               </>
@@ -99,13 +110,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   variant="secondary"
                   size="sm"
                   onClick={() => navigate("/login")}
-                  className="logout-btn"
+                  title="Login"
+                  aria-label="Login"
+                  data-testid="login-button"
                 >
-                  🚪 Login
+                  <SignIn title="Login" />
                 </Button>
               </div>
             )}
-            <ThemeToggle />
+            <ThemeToggle aria-label="theme-toggler" />
           </div>
         </header>
         {isAuthenticated && location.pathname === "/" ? (
