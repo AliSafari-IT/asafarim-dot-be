@@ -92,4 +92,36 @@ public interface StudyNoteRepository extends JpaRepository<StudyNote, UUID> {
      */
     @Query("SELECT COUNT(n) FROM StudyNote n WHERE n.isPublic = true")
     long countPublicNotes();
+
+    // ============ Analytics Queries ============
+
+    /**
+     * Count public notes for a user
+     */
+    @Query("SELECT COUNT(n) FROM StudyNote n WHERE n.user = :user AND n.isPublic = true")
+    long countPublicNotesByUser(@Param("user") User user);
+
+    /**
+     * Count private notes for a user
+     */
+    @Query("SELECT COUNT(n) FROM StudyNote n WHERE n.user = :user AND n.isPublic = false")
+    long countPrivateNotesByUser(@Param("user") User user);
+
+    /**
+     * Sum of word counts for a user's notes
+     */
+    @Query("SELECT COALESCE(SUM(n.wordCount), 0) FROM StudyNote n WHERE n.user = :user")
+    long sumWordCountByUser(@Param("user") User user);
+
+    /**
+     * Sum of reading time for a user's notes
+     */
+    @Query("SELECT COALESCE(SUM(n.readingTimeMinutes), 0) FROM StudyNote n WHERE n.user = :user")
+    long sumReadingTimeByUser(@Param("user") User user);
+
+    /**
+     * Find notes created since a date for a user
+     */
+    @Query("SELECT n FROM StudyNote n WHERE n.user = :user AND n.createdAt >= :since ORDER BY n.createdAt ASC")
+    List<StudyNote> findByUserAndCreatedAtAfter(@Param("user") User user, @Param("since") java.time.LocalDateTime since);
 }

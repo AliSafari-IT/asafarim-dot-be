@@ -7,6 +7,7 @@ import CreateNote from "./pages/CreateNote";
 import EditNote from "./pages/EditNote";
 import PublicNotesList from "./pages/PublicNotesList";
 import PublicNoteDetails from "./pages/PublicNoteDetails";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
@@ -52,6 +53,15 @@ function App() {
             </ProtectedRoute>
           } />
 
+          {/* Analytics Dashboard */}
+          <Route path="/analytics" element={
+            <ProtectedRoute>
+              <Layout>
+                <AnalyticsDashboard />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
           {/* Public notes routes */}
           <Route path="/public" element={
             <Layout>
@@ -62,6 +72,13 @@ function App() {
           <Route path="/public/note/:id" element={
             <Layout>
               <PublicNoteDetails />
+            </Layout>
+          } />
+          
+          {/* Catch-all route - redirect to home */}
+          <Route path="*" element={
+            <Layout>
+              <NotesList />
             </Layout>
           } />
         </Routes>

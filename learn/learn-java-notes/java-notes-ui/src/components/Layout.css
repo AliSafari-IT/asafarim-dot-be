@@ -79,6 +79,16 @@
   margin: 0;
 }
 
+.header-nav {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.nav-btn {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
 .header-stats {
   display: flex;
   gap: var(--spacing-lg);

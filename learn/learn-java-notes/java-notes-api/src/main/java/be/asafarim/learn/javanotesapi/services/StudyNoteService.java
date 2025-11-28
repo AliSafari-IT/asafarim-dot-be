@@ -1,5 +1,6 @@
 package be.asafarim.learn.javanotesapi.services;
 
+import be.asafarim.learn.javanotesapi.dto.NoteAnalytics;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteRequest;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteResponse;
 import be.asafarim.learn.javanotesapi.entities.StudyNote;
@@ -22,11 +23,14 @@ public class StudyNoteService {
     private final StudyNoteRepository repository;
     private final TagService tagService;
     private final AuthService authService;
+    private final NoteViewService noteViewService;
 
-    public StudyNoteService(StudyNoteRepository repository, TagService tagService, AuthService authService) {
+    public StudyNoteService(StudyNoteRepository repository, TagService tagService,
+            AuthService authService, NoteViewService noteViewService) {
         this.repository = repository;
         this.tagService = tagService;
         this.authService = authService;
+        this.noteViewService = noteViewService;
     }
 
     public List<StudyNoteResponse> getAll(String sort) {
@@ -104,11 +108,11 @@ public class StudyNoteService {
         User currentUser = authService.getCurrentUser();
         var note = new StudyNote(req.getTitle(), req.getContent(), currentUser);
         note.setPublic(req.isPublic());
-        
+
         // Handle tags
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
         note.setTags(tags);
-        
+
         repository.save(note);
         return toResponse(note);
     }
@@ -123,7 +127,7 @@ public class StudyNoteService {
         note.setTitle(req.getTitle());
         note.setContent(req.getContent());
         note.setPublic(req.isPublic());
-        
+
         // Update tags
         note.getTags().clear();
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
@@ -176,8 +180,23 @@ public class StudyNoteService {
                 readingTimeMinutes,
                 wordCount,
                 n.isPublic(),
-                tagNames
-        );
+                tagNames);
+    }
+
+    /**
+     * Convert note to response with analytics data (for single note view)
+     */
+    private StudyNoteResponse toResponseWithAnalytics(StudyNote n) {
+        StudyNoteResponse response = toResponse(n);
+        try {
+            NoteAnalytics analytics = noteViewService.getAnalytics(n.getId());
+            response.setAnalytics(analytics);
+        } catch (Exception e) {
+            // Analytics not available (table may not exist yet), return response without
+            // analytics
+            System.err.println("Warning: Could not fetch analytics for note " + n.getId() + ": " + e.getMessage());
+        }
+        return response;
     }
 
     private List<StudyNote> applySort(List<StudyNote> notes, String sort) {

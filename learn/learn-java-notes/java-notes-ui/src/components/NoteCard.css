@@ -136,11 +136,8 @@
   transform: translateX(4px);
 }
 
-.note-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-md) var(--spacing-xl) var(--spacing-xl);
+.note-tags-section {
+  padding: var(--spacing-md) var(--spacing-xl);
   border-top: 1px solid var(--color-border-muted);
   background: var(--color-neutral-50);
 }
@@ -148,6 +145,16 @@
 .note-tags {
   display: flex;
   gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.note-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-xl) var(--spacing-xl);
+  border-top: 1px solid var(--color-border-muted);
+  background: var(--color-neutral-50);
 }
 
 .tag {
@@ -211,10 +218,11 @@
     padding: 0 var(--spacing-lg) var(--spacing-md);
   }
   
+  .note-tags-section {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
   .note-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-md);
     padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
   }
   

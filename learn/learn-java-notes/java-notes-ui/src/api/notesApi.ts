@@ -4,6 +4,15 @@ export const api = axios.create({
   baseURL: "/api",
 });
 
+export interface NoteAnalytics {
+  totalViews: number;
+  publicViews: number;
+  privateViews: number;
+  viewsLast7Days: number;
+  viewsLast30Days: number;
+  uniqueViewers: number;
+}
+
 export interface StudyNote {
   id: string;
   title: string;
@@ -14,6 +23,7 @@ export interface StudyNote {
   wordCount: number;
   isPublic: boolean;
   tags: string[];
+  analytics?: NoteAnalytics;
 }
 
 export interface StudyNoteRequest {
@@ -90,5 +100,64 @@ export const getPublicNote = async (id: string) => {
 
 export const getPublicNoteCount = async () => {
   const res = await api.get<number>("/public/notes/count");
+  return res.data;
+};
+
+// View Tracking API
+export const trackNoteView = async (id: string) => {
+  try {
+    await api.post(`/notes/${id}/view`);
+  } catch (error) {
+    console.log("Failed to track view (non-critical):", error);
+  }
+};
+
+export const trackPublicNoteView = async (id: string) => {
+  try {
+    await api.post(`/public/notes/${id}/view`);
+  } catch (error) {
+    console.log("Failed to track public view (non-critical):", error);
+  }
+};
+
+// Analytics API
+export const getNoteAnalytics = async (id: string) => {
+  const res = await api.get<NoteAnalytics>(`/notes/${id}/analytics`);
+  return res.data;
+};
+
+// Dashboard Analytics Types
+export interface TagCount {
+  tag: string;
+  count: number;
+}
+
+export interface NoteViewSummary {
+  id: string;
+  title: string;
+  viewCount: number;
+  isPublic: boolean;
+}
+
+export interface DashboardAnalytics {
+  totalNotes: number;
+  publicNotes: number;
+  privateNotes: number;
+  totalViews: number;
+  totalPublicViews: number;
+  totalPrivateViews: number;
+  viewsLast7Days: number;
+  viewsLast30Days: number;
+  totalWords: number;
+  totalReadingTimeMinutes: number;
+  tagDistribution: TagCount[];
+  mostViewedNotes: NoteViewSummary[];
+  viewsPerDay: Record<string, number>;
+  notesCreatedPerDay: Record<string, number>;
+}
+
+// Dashboard Analytics API
+export const getDashboardAnalytics = async (): Promise<DashboardAnalytics> => {
+  const res = await api.get<DashboardAnalytics>("/analytics/dashboard");
   return res.data;
 };

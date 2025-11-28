@@ -44,12 +44,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             
             {isAuthenticated && (
               <>
-                <div className="header-stats">
-                  <div className="stat-item">
-                    <span className="stat-number">{noteCount}</span>
-                    <span className="stat-label">Notes</span>
-                  </div>
-                </div>
+                <nav className="header-nav">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate("/")}
+                    className="nav-btn"
+                  >
+                    📝 Notes ({noteCount})
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate("/analytics")}
+                    className="nav-btn"
+                  >
+                    📊 Analytics
+                  </Button>
+                </nav>
                 
                 <div className="header-user">
                   <div className="user-info">
@@ -66,6 +78,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </Button>
                 </div>
               </>
+            )}
+            {!isAuthenticated && (
+              <div className="header-user">
+                <div className="user-info">
+                  <span className="user-avatar">👤</span>
+                  <span className="user-name">Guest</span>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => navigate("/login")}
+                  className="logout-btn"
+                >
+                  🚪 Login
+                </Button>
+              </div>
             )}
           </div>
         </header>

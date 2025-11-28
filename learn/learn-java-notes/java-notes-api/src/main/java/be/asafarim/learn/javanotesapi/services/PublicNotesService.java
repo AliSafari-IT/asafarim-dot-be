@@ -1,12 +1,15 @@
 package be.asafarim.learn.javanotesapi.services;
 
+import be.asafarim.learn.javanotesapi.dto.NoteAnalytics;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteResponse;
 import be.asafarim.learn.javanotesapi.entities.StudyNote;
 import be.asafarim.learn.javanotesapi.entities.Tag;
+import be.asafarim.learn.javanotesapi.repositories.NoteViewRepository;
 import be.asafarim.learn.javanotesapi.repositories.StudyNoteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -17,9 +20,11 @@ import java.util.UUID;
 public class PublicNotesService {
 
     private final StudyNoteRepository repository;
+    private final NoteViewRepository viewRepository;
 
-    public PublicNotesService(StudyNoteRepository repository) {
+    public PublicNotesService(StudyNoteRepository repository, NoteViewRepository viewRepository) {
         this.repository = repository;
+        this.viewRepository = viewRepository;
     }
 
     public List<StudyNoteResponse> getPublicNotes(String query, String tag, String sort) {
@@ -45,7 +50,7 @@ public class PublicNotesService {
     public StudyNoteResponse getPublicNoteById(UUID id) {
         return repository.findById(id)
                 .filter(StudyNote::isPublic)
-                .map(this::toResponse)
+                .map(this::toResponse)  // Don't include analytics for public notes to avoid DB issues
                 .orElseThrow(() -> new RuntimeException("Public note not found"));
     }
 
@@ -80,6 +85,46 @@ public class PublicNotesService {
                 n.isPublic(),
                 tagNames
         );
+    }
+
+    /**
+     * Convert note to response with analytics data (for single note view)
+     */
+    private StudyNoteResponse toResponseWithAnalytics(StudyNote n) {
+        StudyNoteResponse response = toResponse(n);
+        NoteAnalytics analytics = getAnalytics(n.getId());
+        response.setAnalytics(analytics);
+        return response;
+    }
+
+    /**
+     * Get analytics for a specific note (defensive - won't fail if table doesn't exist)
+     */
+    private NoteAnalytics getAnalytics(UUID noteId) {
+        try {
+            LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+            LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+
+            long totalViews = viewRepository.countByNoteId(noteId);
+            long publicViews = viewRepository.countPublicViewsByNoteId(noteId);
+            long privateViews = viewRepository.countPrivateViewsByNoteId(noteId);
+            long viewsLast7Days = viewRepository.countViewsSince(noteId, sevenDaysAgo);
+            long viewsLast30Days = viewRepository.countViewsSince(noteId, thirtyDaysAgo);
+            long uniqueViewers = viewRepository.countUniqueViewersByNoteId(noteId);
+
+            return new NoteAnalytics(
+                totalViews,
+                publicViews,
+                privateViews,
+                viewsLast7Days,
+                viewsLast30Days,
+                uniqueViewers
+            );
+        } catch (Exception e) {
+            // Analytics table might not exist or have issues - return empty analytics
+            System.err.println("Warning: Could not fetch analytics: " + e.getMessage());
+            return new NoteAnalytics(0, 0, 0, 0, 0, 0);
+        }
     }
 
     private List<StudyNote> applySort(List<StudyNote> notes, String sort) {

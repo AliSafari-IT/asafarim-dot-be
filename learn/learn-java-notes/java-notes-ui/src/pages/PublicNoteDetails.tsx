@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getPublicNote, type StudyNote } from "../api/notesApi";
+import { getPublicNote, trackPublicNoteView, type StudyNote } from "../api/notesApi";
 import TagBadge from "../components/TagBadge";
 import VisibilityBadge from "../components/VisibilityBadge";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
@@ -14,6 +14,7 @@ export default function PublicNoteDetails() {
   const [note, setNote] = useState<StudyNote | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const viewTrackedRef = useRef(false);
 
   useEffect(() => {
     async function loadNote() {
@@ -24,6 +25,12 @@ export default function PublicNoteDetails() {
         setError(null);
         const data = await getPublicNote(id);
         setNote(data);
+        
+        // Track view (only once per page load)
+        if (!viewTrackedRef.current) {
+          viewTrackedRef.current = true;
+          trackPublicNoteView(id);
+        }
       } catch (err) {
         console.error("Failed to load public note:", err);
         setError("Failed to load note. It may be private or deleted.");
@@ -118,6 +125,35 @@ export default function PublicNoteDetails() {
           </div>
         )}
       </article>
+
+      {/* Analytics Section */}
+      {note.analytics && (
+        <section className="note-analytics">
+          <h3 className="analytics-title">📊 Analytics</h3>
+          <div className="analytics-grid">
+            <div className="analytics-card">
+              <span className="analytics-value">{note.analytics.totalViews}</span>
+              <span className="analytics-label">Total Views</span>
+            </div>
+            <div className="analytics-card">
+              <span className="analytics-value">{note.analytics.viewsLast7Days}</span>
+              <span className="analytics-label">Last 7 Days</span>
+            </div>
+            <div className="analytics-card">
+              <span className="analytics-value">{note.analytics.viewsLast30Days}</span>
+              <span className="analytics-label">Last 30 Days</span>
+            </div>
+            <div className="analytics-card">
+              <span className="analytics-value">{note.analytics.uniqueViewers}</span>
+              <span className="analytics-label">Unique Viewers</span>
+            </div>
+          </div>
+          <div className="analytics-extra">
+            <span className="meta-badge">📝 {note.wordCount} words</span>
+            <span className="meta-badge">⏱️ {note.readingTimeMinutes} min read</span>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
