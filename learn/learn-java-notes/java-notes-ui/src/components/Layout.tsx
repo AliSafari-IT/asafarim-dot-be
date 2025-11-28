@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Layout.css";
 import { getNoteCount } from "../api/notesApi";
 import { useAuth } from "../contexts/useAuth";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import TagsSidebar from "./TagsSidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
   const [noteCount, setNoteCount] = useState(0);
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -104,7 +106,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             )}
           </div>
         </header>
-        <main className="layout-main">{children}</main>
+        {isAuthenticated && location.pathname === "/" ? (
+          <div className="layout-with-sidebar">
+            <TagsSidebar />
+            <main className="layout-main">{children}</main>
+          </div>
+        ) : (
+          <main className="layout-main">{children}</main>
+        )}
       </div>
     </div>
   );

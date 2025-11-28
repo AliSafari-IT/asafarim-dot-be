@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getNotes, getPublicNotes, deleteNote, getTags, type StudyNote } from "../api/notesApi";
+import { getNotes, getPublicNotes, deleteNote, type StudyNote } from "../api/notesApi";
 import NoteCard from "../components/NoteCard";
 import TagBadge from "../components/TagBadge";
 import { ButtonComponent as Button, ConfirmDialog } from "@asafarim/shared-ui-react";
@@ -12,7 +12,6 @@ export default function NotesList() {
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [notes, setNotes] = useState<StudyNote[]>([]);
-  const [allTags, setAllTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalCount, setTotalCount] = useState(0);
@@ -26,18 +25,6 @@ export default function NotesList() {
   // Debounce search query by 300ms
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  // Load all available tags
-  useEffect(() => {
-    async function loadTags() {
-      try {
-        const tags = await getTags();
-        setAllTags(tags);
-      } catch (error) {
-        console.error("Failed to load tags:", error);
-      }
-    }
-    loadTags();
-  }, []);
 
   const load = useCallback(async (query?: string, tag?: string, sort?: string) => {
     try {
@@ -67,15 +54,6 @@ export default function NotesList() {
     load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined);
   }, [debouncedQuery, activeTag, activeSort, load]);
 
-  // Reload tags after any note changes
-  async function reloadTags() {
-    try {
-      const tags = await getTags();
-      setAllTags(tags);
-    } catch (error) {
-      console.error("Failed to reload tags:", error);
-    }
-  }
 
   async function handleDelete(id: string) {
     if (!isAuthenticated) {
@@ -92,23 +70,12 @@ export default function NotesList() {
     setConfirmOpen(false);
     setNoteIdToDelete(null);
     load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined);
-    reloadTags();
   }
 
   function handleClearSearch() {
     setSearchQuery("");
   }
 
-  function handleTagClick(tag: string) {
-    if (activeTag === tag) {
-      // Clear tag filter
-      searchParams.delete("tag");
-    } else {
-      // Set tag filter
-      searchParams.set("tag", tag);
-    }
-    setSearchParams(searchParams);
-  }
 
   function handleClearTagFilter() {
     searchParams.delete("tag");
@@ -136,13 +103,6 @@ export default function NotesList() {
   const isFiltering = isSearching || activeTag;
   const hasNoResults = !loading && notes.length === 0 && isFiltering;
 
-  // Collect all unique tags from current notes for display
-  const displayTags = useMemo(() => {
-    if (allTags.length > 0) return allTags;
-    const tagSet = new Set<string>();
-    notes.forEach((note) => note.tags?.forEach((tag) => tagSet.add(tag)));
-    return Array.from(tagSet).sort();
-  }, [notes, allTags]);
 
   return (
     <div className="notes-page-container">
@@ -209,23 +169,6 @@ export default function NotesList() {
               <option value="wordCount">Smallest word count</option>
             </select>
           </div>
-
-          {displayTags.length > 0 && (
-            <div className="notes-tags-filter-container">
-              <span className="notes-tags-filter-label">Filter by tag:</span>
-              <div className="notes-tags-filter-list">
-                {displayTags.map((tag) => (
-                  <TagBadge
-                    key={tag}
-                    tag={tag}
-                    onClick={handleTagClick}
-                    isActive={activeTag === tag}
-                    size="sm"
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Active Filters Info */}
