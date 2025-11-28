@@ -5,6 +5,7 @@ import { getNoteCount } from "../api/notesApi";
 import { useAuth } from "../contexts/useAuth";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import TagsSidebar from "./TagsSidebar";
+import { ThemeToggle } from '@asafarim/react-themes';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -104,6 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </Button>
               </div>
             )}
+            <ThemeToggle />
           </div>
         </header>
         {isAuthenticated && location.pathname === "/" ? (
