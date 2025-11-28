@@ -121,7 +121,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <ThemeToggle aria-label="theme-toggler" />
           </div>
         </header>
-        {isAuthenticated && location.pathname === "/" ? (
+        {(location.pathname === "/" || location.pathname === "/public") ? (
           <div className="layout-with-sidebar">
             <TagsSidebar />
             <main className="layout-main">{children}</main>

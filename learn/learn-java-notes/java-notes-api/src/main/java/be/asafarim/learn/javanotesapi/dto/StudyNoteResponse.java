@@ -15,6 +15,7 @@ public class StudyNoteResponse {
     private int wordCount;
     private boolean isPublic;
     private List<String> tags;
+    private String createdBy;
     
     // Analytics fields
     private NoteAnalytics analytics;
@@ -22,7 +23,7 @@ public class StudyNoteResponse {
     public StudyNoteResponse(UUID id, String title, String content,
                              LocalDateTime createdAt, LocalDateTime updatedAt,
                              int readingTimeMinutes, int wordCount,
-                             boolean isPublic, List<String> tags) {
+                             boolean isPublic, List<String> tags, String createdBy) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -32,14 +33,15 @@ public class StudyNoteResponse {
         this.wordCount = wordCount;
         this.isPublic = isPublic;
         this.tags = tags != null ? tags : new ArrayList<>();
+        this.createdBy = createdBy;
     }
 
     public StudyNoteResponse(UUID id, String title, String content,
                              LocalDateTime createdAt, LocalDateTime updatedAt,
                              int readingTimeMinutes, int wordCount,
-                             boolean isPublic, List<String> tags,
+                             boolean isPublic, List<String> tags, String createdBy,
                              NoteAnalytics analytics) {
-        this(id, title, content, createdAt, updatedAt, readingTimeMinutes, wordCount, isPublic, tags);
+        this(id, title, content, createdAt, updatedAt, readingTimeMinutes, wordCount, isPublic, tags, createdBy);
         this.analytics = analytics;
     }
 
@@ -54,6 +56,7 @@ public class StudyNoteResponse {
     
     public boolean getIsPublic() { return isPublic; }
     public List<String> getTags() { return tags; }
+    public String getCreatedBy() { return createdBy; }
     
     public NoteAnalytics getAnalytics() { return analytics; }
     public void setAnalytics(NoteAnalytics analytics) { this.analytics = analytics; }

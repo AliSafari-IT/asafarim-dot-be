@@ -53,6 +53,9 @@ public class PublicNotesService {
                 .filter(StudyNote::isPublic)
                 .orElseThrow(() -> new RuntimeException("Public note not found"));
         
+        // Force load the user to avoid lazy loading issues
+        note.getUser().getUsername();
+        
         // Convert to response without analytics first
         StudyNoteResponse response = toResponse(note);
         
@@ -97,7 +100,8 @@ public class PublicNotesService {
                 readingTimeMinutes,
                 wordCount,
                 n.isPublic(),
-                tagNames
+                tagNames,
+                n.getUser() != null ? n.getUser().getUsername() : "Unknown"
         );
     }
 

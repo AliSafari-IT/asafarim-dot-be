@@ -2,6 +2,7 @@ import axios from "axios";
 
 export const api = axios.create({
   baseURL: "/api",
+  withCredentials: true,
 });
 
 export interface NoteAnalytics {
@@ -23,6 +24,7 @@ export interface StudyNote {
   wordCount: number;
   isPublic: boolean;
   tags: string[];
+  createdBy?: string;
   analytics?: NoteAnalytics;
 }
 
@@ -159,5 +161,44 @@ export interface DashboardAnalytics {
 // Dashboard Analytics API
 export const getDashboardAnalytics = async (): Promise<DashboardAnalytics> => {
   const res = await api.get<DashboardAnalytics>("/analytics/dashboard");
+  return res.data;
+};
+
+// Full-Text Search Types
+export interface SearchResult {
+  id: string;
+  title: string;
+  content: string;
+  highlightedTitle: string | null;
+  highlightedContent: string | null;
+  tags: string[];
+  isPublic: boolean;
+  readingTimeMinutes: number;
+  wordCount: number;
+  createdAt: string;
+  updatedAt: string;
+  relevanceScore: number;
+  analytics: NoteAnalytics | null;
+}
+
+export interface SearchFilter {
+  q?: string;
+  tag?: string;
+}
+
+// Full-Text Search API
+export const searchNotes = async (filter?: SearchFilter): Promise<SearchResult[]> => {
+  const params: Record<string, string> = {};
+  if (filter?.q) params.q = filter.q;
+  if (filter?.tag) params.tag = filter.tag;
+  const res = await api.get<SearchResult[]>("/search", { params });
+  return res.data;
+};
+
+export const searchPublicNotes = async (filter?: SearchFilter): Promise<SearchResult[]> => {
+  const params: Record<string, string> = {};
+  if (filter?.q) params.q = filter.q;
+  if (filter?.tag) params.tag = filter.tag;
+  const res = await api.get<SearchResult[]>("/search/public", { params });
   return res.data;
 };

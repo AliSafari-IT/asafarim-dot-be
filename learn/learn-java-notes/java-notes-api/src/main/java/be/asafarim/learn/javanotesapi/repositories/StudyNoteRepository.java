@@ -124,4 +124,69 @@ public interface StudyNoteRepository extends JpaRepository<StudyNote, UUID> {
      */
     @Query("SELECT n FROM StudyNote n WHERE n.user = :user AND n.createdAt >= :since ORDER BY n.createdAt ASC")
     List<StudyNote> findByUserAndCreatedAtAfter(@Param("user") User user, @Param("since") java.time.LocalDateTime since);
+
+    // ============ Full-Text Search Queries ============
+
+    /**
+     * Full-text search for user's notes with relevance ranking
+     */
+    @Query(value = """
+        SELECT n.*, ts_rank(n.search_vector, websearch_to_tsquery('english', :query)) as rank
+        FROM study_notes n
+        WHERE n.user_id = :userId
+          AND n.search_vector @@ websearch_to_tsquery('english', :query)
+        ORDER BY rank DESC
+        """, nativeQuery = true)
+    List<StudyNote> fullTextSearchForUser(@Param("query") String query, @Param("userId") UUID userId);
+
+    /**
+     * Full-text search for user's notes filtered by tag
+     */
+    @Query(value = """
+        SELECT DISTINCT n.*, ts_rank(n.search_vector, websearch_to_tsquery('english', :query)) as rank
+        FROM study_notes n
+        JOIN study_note_tags snt ON n.id = snt.study_note_id
+        JOIN tags t ON snt.tag_id = t.id
+        WHERE n.user_id = :userId
+          AND LOWER(t.name) = LOWER(:tagName)
+          AND n.search_vector @@ websearch_to_tsquery('english', :query)
+        ORDER BY rank DESC
+        """, nativeQuery = true)
+    List<StudyNote> fullTextSearchByTagForUser(@Param("query") String query, @Param("tagName") String tagName, @Param("userId") UUID userId);
+
+    /**
+     * Full-text search for public notes with relevance ranking
+     */
+    @Query(value = """
+        SELECT n.*, ts_rank(n.search_vector, websearch_to_tsquery('english', :query)) as rank
+        FROM study_notes n
+        WHERE n.is_public = true
+          AND n.search_vector @@ websearch_to_tsquery('english', :query)
+        ORDER BY rank DESC
+        """, nativeQuery = true)
+    List<StudyNote> fullTextSearchPublic(@Param("query") String query);
+
+    /**
+     * Full-text search for public notes filtered by tag
+     */
+    @Query(value = """
+        SELECT DISTINCT n.*, ts_rank(n.search_vector, websearch_to_tsquery('english', :query)) as rank
+        FROM study_notes n
+        JOIN study_note_tags snt ON n.id = snt.study_note_id
+        JOIN tags t ON snt.tag_id = t.id
+        WHERE n.is_public = true
+          AND LOWER(t.name) = LOWER(:tagName)
+          AND n.search_vector @@ websearch_to_tsquery('english', :query)
+        ORDER BY rank DESC
+        """, nativeQuery = true)
+    List<StudyNote> fullTextSearchPublicByTag(@Param("query") String query, @Param("tagName") String tagName);
+
+    /**
+     * Get search headline (highlighted snippet) for a note
+     */
+    @Query(value = """
+        SELECT ts_headline('english', :content, plainto_tsquery('english', :query),
+            'StartSel=<mark>, StopSel=</mark>, MaxWords=50, MinWords=20, MaxFragments=2')
+        """, nativeQuery = true)
+    String getSearchHeadline(@Param("content") String content, @Param("query") String query);
 }
