@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/useAuth";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./AuthPages.css";
+import Layout from "../components/Layout";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -50,6 +51,7 @@ export default function Login() {
   };
 
   return (
+    <Layout>
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-header">
@@ -120,5 +122,6 @@ export default function Login() {
         </div>
       </div>
     </div>
+    </Layout>
   );
 }

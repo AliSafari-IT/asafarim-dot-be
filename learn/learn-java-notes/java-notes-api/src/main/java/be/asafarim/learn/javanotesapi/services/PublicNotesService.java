@@ -48,10 +48,24 @@ public class PublicNotesService {
     }
 
     public StudyNoteResponse getPublicNoteById(UUID id) {
-        return repository.findById(id)
+        // First get the note without analytics (to avoid transaction issues)
+        StudyNote note = repository.findById(id)
                 .filter(StudyNote::isPublic)
-                .map(this::toResponse)  // Don't include analytics for public notes to avoid DB issues
                 .orElseThrow(() -> new RuntimeException("Public note not found"));
+        
+        // Convert to response without analytics first
+        StudyNoteResponse response = toResponse(note);
+        
+        // Then try to add analytics separately (outside the main query)
+        try {
+            NoteAnalytics analytics = getSafeAnalytics(note.getId());
+            response.setAnalytics(analytics);
+        } catch (Exception e) {
+            // Analytics failed, but note still loads
+            System.err.println("Warning: Could not load analytics for public note: " + e.getMessage());
+        }
+        
+        return response;
     }
 
     public long getPublicNotesCount() {
@@ -88,6 +102,16 @@ public class PublicNotesService {
     }
 
     /**
+     * Convert note to response with SAFE analytics (never throws, returns empty on error)
+     */
+    private StudyNoteResponse toResponseWithSafeAnalytics(StudyNote n) {
+        StudyNoteResponse response = toResponse(n);
+        NoteAnalytics analytics = getSafeAnalytics(n.getId());
+        response.setAnalytics(analytics);
+        return response;
+    }
+
+    /**
      * Convert note to response with analytics data (for single note view)
      */
     private StudyNoteResponse toResponseWithAnalytics(StudyNote n) {
@@ -98,7 +122,19 @@ public class PublicNotesService {
     }
 
     /**
-     * Get analytics for a specific note (defensive - won't fail if table doesn't exist)
+     * Get analytics safely - never throws, returns empty on error
+     */
+    private NoteAnalytics getSafeAnalytics(UUID noteId) {
+        try {
+            return getAnalytics(noteId);
+        } catch (Exception e) {
+            System.err.println("Warning: Analytics query failed for public note " + noteId + ": " + e.getMessage());
+            return NoteAnalytics.empty();
+        }
+    }
+
+    /**
+     * Get analytics for a specific note (may throw on DB errors)
      */
     private NoteAnalytics getAnalytics(UUID noteId) {
         try {
