@@ -56,7 +56,7 @@ export default function NoteCard({ note, onDelete , canDelete = false, linkTo }:
         </div>
       </Link>
 
-      <div className="note-footer">
+      <div className="note-tags-section">
         <div className="note-tags">
           {note.tags && note.tags.length > 0 ? (
             note.tags.map((tag) => (
@@ -71,7 +71,10 @@ export default function NoteCard({ note, onDelete , canDelete = false, linkTo }:
             <span className="no-tags">No tags</span>
           )}
         </div>
-        {canDelete && (
+      </div>
+      
+      {canDelete && (
+        <div className="note-footer">
           <div className="note-actions">
             <Link to={`/edit/${note.id}`}>
               <Button variant="primary" className="action-btn edit-btn">
@@ -86,8 +89,8 @@ export default function NoteCard({ note, onDelete , canDelete = false, linkTo }:
               🗑️ Delete
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

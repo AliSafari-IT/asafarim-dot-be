@@ -15,6 +15,9 @@ public class StudyNoteResponse {
     private int wordCount;
     private boolean isPublic;
     private List<String> tags;
+    
+    // Analytics fields
+    private NoteAnalytics analytics;
 
     public StudyNoteResponse(UUID id, String title, String content,
                              LocalDateTime createdAt, LocalDateTime updatedAt,
@@ -31,6 +34,15 @@ public class StudyNoteResponse {
         this.tags = tags != null ? tags : new ArrayList<>();
     }
 
+    public StudyNoteResponse(UUID id, String title, String content,
+                             LocalDateTime createdAt, LocalDateTime updatedAt,
+                             int readingTimeMinutes, int wordCount,
+                             boolean isPublic, List<String> tags,
+                             NoteAnalytics analytics) {
+        this(id, title, content, createdAt, updatedAt, readingTimeMinutes, wordCount, isPublic, tags);
+        this.analytics = analytics;
+    }
+
     public UUID getId() { return id; }
     public String getTitle() { return title; }
     public String getContent() { return content; }
@@ -42,4 +54,7 @@ public class StudyNoteResponse {
     
     public boolean getIsPublic() { return isPublic; }
     public List<String> getTags() { return tags; }
+    
+    public NoteAnalytics getAnalytics() { return analytics; }
+    public void setAnalytics(NoteAnalytics analytics) { this.analytics = analytics; }
 }
