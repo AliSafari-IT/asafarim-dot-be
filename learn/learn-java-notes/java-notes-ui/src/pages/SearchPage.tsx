@@ -137,7 +137,7 @@ export default function SearchPage() {
 
   const handleResultClick = (hit: SearchHit, index: number) => {
     trackSearchClick(hit.id, index);
-    navigate(`/notes/${hit.id}`);
+    navigate(`/note/${hit.id}`);
   };
 
   const handleLoadMore = () => {
