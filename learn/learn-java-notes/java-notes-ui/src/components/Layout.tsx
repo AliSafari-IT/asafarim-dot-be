@@ -64,6 +64,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Button
                     variant="secondary"
                     size="sm"
+                    onClick={() => navigate("/search")}
+                    className="nav-btn"
+                    aria-label="Search"
+                    data-testid="search-button"
+                  >
+                    🔍 Search
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => navigate("/")}
                     className="nav-btn"
                     aria-label="Notes"

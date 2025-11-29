@@ -305,3 +305,129 @@ export const downloadPublicAttachment = async (attachmentId: string): Promise<Bl
   });
   return res.data;
 };
+
+// ============ Advanced Search 2.0 Types ============
+
+export interface AdvancedSearchRequest {
+  query?: string;
+  tags?: string[];
+  hasAttachments?: boolean;
+  createdAfter?: string;
+  createdBefore?: string;
+  updatedAfter?: string;
+  updatedBefore?: string;
+  sort?: "relevance" | "date" | "updated" | "popularity";
+  limit?: number;
+  offset?: number;
+}
+
+export interface HighlightMatch {
+  field: string;
+  text: string;
+  startIndex: number;
+  endIndex: number;
+}
+
+export interface SearchHit {
+  id: string;
+  title: string;
+  contentPreview: string;
+  matchedTags: string[];
+  allTags: string[];
+  attachmentCount: number;
+  isPublic: boolean;
+  relevanceScore: number;
+  viewCount: number;
+  createdAt: string;
+  updatedAt: string;
+  highlights: HighlightMatch[];
+}
+
+export interface TagSuggestion {
+  name: string;
+  count: number;
+}
+
+export interface AdvancedSearchResult {
+  hits: SearchHit[];
+  totalCount: number;
+  limit: number;
+  offset: number;
+  query: string;
+  searchTimeMs: number;
+  suggestions: string[];
+  relatedTags: TagSuggestion[];
+}
+
+export interface SearchAnalytics {
+  totalSearches: number;
+  averageResultCount: number | null;
+  clickThroughRate: number | null;
+  topQueries: { query: string; count: number }[];
+  zeroResultQueries: { query: string; count: number }[];
+  searchTrend: { date: string; count: number }[];
+  popularTags: { tag: string; count: number }[];
+}
+
+// ============ Advanced Search 2.0 API ============
+
+/**
+ * Advanced search for authenticated users
+ * Sees own notes + public notes
+ */
+export const advancedSearch = async (
+  request: AdvancedSearchRequest
+): Promise<AdvancedSearchResult> => {
+  const res = await api.post<AdvancedSearchResult>("/search/advanced", request);
+  return res.data;
+};
+
+/**
+ * Public advanced search
+ * Only sees public notes
+ */
+export const publicAdvancedSearch = async (
+  request: AdvancedSearchRequest
+): Promise<AdvancedSearchResult> => {
+  const res = await api.post<AdvancedSearchResult>("/search/public/advanced", request);
+  return res.data;
+};
+
+/**
+ * Get autosuggest results for search bar
+ */
+export const getSearchSuggestions = async (
+  prefix: string,
+  limit: number = 10
+): Promise<string[]> => {
+  const res = await api.get<string[]>("/search/suggest", {
+    params: { q: prefix, limit },
+  });
+  return res.data;
+};
+
+/**
+ * Track click on search result
+ */
+export const trackSearchClick = async (
+  noteId: string,
+  position: number = 0
+): Promise<void> => {
+  try {
+    await api.post("/search/click", null, {
+      params: { noteId, position },
+    });
+  } catch (error) {
+    console.log("Failed to track search click (non-critical):", error);
+  }
+};
+
+/**
+ * Get search analytics dashboard data
+ */
+export const getSearchAnalytics = async (days: number = 30): Promise<SearchAnalytics> => {
+  const res = await api.get<SearchAnalytics>("/search/analytics", {
+    params: { days },
+  });
+  return res.data;
+};
