@@ -55,4 +55,16 @@ public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
      */
     @Query("SELECT COUNT(a) FROM Attachment a WHERE a.note.id = :noteId AND a.isPublic = true")
     long countPublicByNoteId(@Param("noteId") UUID noteId);
+
+    /**
+     * Get total storage size in bytes (sum of all attachment sizes)
+     */
+    @Query("SELECT COALESCE(SUM(a.size), 0) FROM Attachment a")
+    long getTotalStorageSize();
+
+    /**
+     * Get storage size for a specific user
+     */
+    @Query("SELECT COALESCE(SUM(a.size), 0) FROM Attachment a WHERE a.note.user.id = :userId")
+    long getStorageSizeByUserId(@Param("userId") UUID userId);
 }
