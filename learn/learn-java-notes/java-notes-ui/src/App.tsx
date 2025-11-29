@@ -9,6 +9,7 @@ import PublicNotesList from "./pages/PublicNotesList";
 import PublicNoteDetails from "./pages/PublicNoteDetails";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import TagManagementPage from "./pages/TagManagementPage";
+import SearchPage from "./pages/SearchPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
@@ -70,6 +71,13 @@ function App() {
                 <TagManagementPage />
               </Layout>
             </ProtectedRoute>
+          } />
+
+          {/* Search Page - accessible to all */}
+          <Route path="/search" element={
+            <Layout>
+              <SearchPage />
+            </Layout>
           } />
 
           {/* Public notes routes */}
