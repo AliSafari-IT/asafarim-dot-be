@@ -49,4 +49,10 @@ public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
      * Count attachments for a note
      */
     long countByNoteId(UUID noteId);
+
+    /**
+     * Count public attachments for a note
+     */
+    @Query("SELECT COUNT(a) FROM Attachment a WHERE a.note.id = :noteId AND a.isPublic = true")
+    long countPublicByNoteId(@Param("noteId") UUID noteId);
 }

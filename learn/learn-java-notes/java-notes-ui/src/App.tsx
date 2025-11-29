@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import NotesList from "./pages/NotesList";
@@ -7,6 +8,8 @@ import CreateNote from "./pages/CreateNote";
 import EditNote from "./pages/EditNote";
 import PublicNotesList from "./pages/PublicNotesList";
 import PublicNoteDetails from "./pages/PublicNoteDetails";
+import PublicNotePage from "./pages/PublicNotePage";
+import PublicFeedPage from "./pages/PublicFeedPage";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import TagManagementPage from "./pages/TagManagementPage";
 import SearchPage from "./pages/SearchPage";
@@ -17,9 +20,10 @@ import "./api/interceptors";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+    <HelmetProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -92,6 +96,16 @@ function App() {
               <PublicNoteDetails />
             </Layout>
           } />
+
+          {/* Public Sharing Routes - Phase 11 */}
+          <Route path="/p/:publicId/:slug?" element={<PublicNotePage />} />
+          <Route path="/p/:publicId" element={<PublicNotePage />} />
+
+          <Route path="/feed" element={
+            <Layout>
+              <PublicFeedPage />
+            </Layout>
+          } />
           
           {/* Catch-all route - redirect to home */}
           <Route path="*" element={
@@ -99,9 +113,10 @@ function App() {
               <NotesList />
             </Layout>
           } />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 

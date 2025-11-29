@@ -3,10 +3,15 @@ package be.asafarim.learn.javanotesapi.services;
 import be.asafarim.learn.javanotesapi.dto.NoteAnalytics;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteRequest;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteResponse;
+import be.asafarim.learn.javanotesapi.dto.VisibilityResponse;
 import be.asafarim.learn.javanotesapi.entities.StudyNote;
 import be.asafarim.learn.javanotesapi.entities.Tag;
 import be.asafarim.learn.javanotesapi.entities.User;
+import be.asafarim.learn.javanotesapi.enums.NoteVisibility;
 import be.asafarim.learn.javanotesapi.repositories.StudyNoteRepository;
+import be.asafarim.learn.javanotesapi.utils.PublicIdGenerator;
+import be.asafarim.learn.javanotesapi.utils.SlugGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +30,9 @@ public class StudyNoteService {
     private final AuthService authService;
     private final NoteViewService noteViewService;
     private final AttachmentService attachmentService;
+
+    @Value("${app.base-url:http://localhost:5183}")
+    private String baseUrl;
 
     public StudyNoteService(StudyNoteRepository repository, TagService tagService,
             AuthService authService, NoteViewService noteViewService,
@@ -130,12 +138,45 @@ public class StudyNoteService {
         var note = new StudyNote(req.getTitle(), req.getContent(), currentUser);
         note.setPublic(req.isPublic());
 
+        // Generate slug from title
+        String baseSlug = SlugGenerator.toSlug(req.getTitle());
+        note.setSlug(ensureUniqueSlug(baseSlug, currentUser));
+
+        // Generate unique publicId
+        note.setPublicId(generateUniquePublicId());
+
+        // Set default visibility
+        note.setVisibility(req.isPublic() ? NoteVisibility.PUBLIC : NoteVisibility.PRIVATE);
+
         // Handle tags
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
         note.setTags(tags);
 
         repository.save(note);
         return toResponse(note);
+    }
+
+    private String ensureUniqueSlug(String baseSlug, User user) {
+        if (baseSlug == null || baseSlug.isEmpty()) {
+            baseSlug = "note";
+        }
+        int attempt = 1;
+        String slug = baseSlug;
+        while (repository.existsByUserAndSlug(user, slug)) {
+            slug = SlugGenerator.makeUnique(baseSlug, ++attempt);
+        }
+        return slug;
+    }
+
+    private String generateUniquePublicId() {
+        String publicId;
+        int maxAttempts = 10;
+        int attempts = 0;
+        do {
+            publicId = PublicIdGenerator.generate();
+            attempts++;
+        } while (repository.existsByPublicId(publicId) && attempts < maxAttempts);
+        return publicId;
     }
 
     @Transactional
@@ -292,5 +333,110 @@ public class StudyNoteService {
     private int calculateReadingTime(StudyNote n) {
         int wc = calculateWordCount(n);
         return Math.max(1, (int) Math.ceil(wc / 200.0));
+    }
+
+    // ============ Visibility Management ============
+
+    /**
+     * Get visibility status for a note
+     */
+    public VisibilityResponse getVisibility(UUID noteId) {
+        User currentUser = authService.getCurrentUser();
+        StudyNote note = repository.findById(noteId)
+                .filter(n -> n.getUser().getId().equals(currentUser.getId()))
+                .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission"));
+        return buildVisibilityResponse(note);
+    }
+
+    /**
+     * Update visibility for a note
+     */
+    @Transactional
+    public VisibilityResponse updateVisibility(UUID noteId, NoteVisibility newVisibility) {
+        User currentUser = authService.getCurrentUser();
+        StudyNote note = repository.findById(noteId)
+                .filter(n -> n.getUser().getId().equals(currentUser.getId()))
+                .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission"));
+
+        NoteVisibility oldVisibility = note.getVisibility();
+
+        // If changing to PRIVATE, make all attachments private
+        if (newVisibility == NoteVisibility.PRIVATE && oldVisibility != NoteVisibility.PRIVATE) {
+            attachmentService.makeAllPrivate(noteId);
+        }
+
+        // Sync isPublic flag with visibility
+        boolean isPublic = newVisibility == NoteVisibility.PUBLIC || 
+                          newVisibility == NoteVisibility.FEATURED ||
+                          newVisibility == NoteVisibility.UNLISTED;
+        note.setPublic(isPublic);
+        note.setVisibility(newVisibility);
+
+        // Generate publicId if missing
+        if (note.getPublicId() == null || note.getPublicId().isEmpty()) {
+            note.setPublicId(generateUniquePublicId());
+        }
+
+        // Generate slug if missing
+        if (note.getSlug() == null || note.getSlug().isEmpty()) {
+            String baseSlug = SlugGenerator.toSlug(note.getTitle());
+            note.setSlug(ensureUniqueSlug(baseSlug, currentUser));
+        }
+
+        repository.save(note);
+        return buildVisibilityResponse(note);
+    }
+
+    /**
+     * Update custom slug for a note
+     */
+    @Transactional
+    public VisibilityResponse updateSlug(UUID noteId, String newSlug) {
+        User currentUser = authService.getCurrentUser();
+        StudyNote note = repository.findById(noteId)
+                .filter(n -> n.getUser().getId().equals(currentUser.getId()))
+                .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission"));
+
+        // Validate and normalize slug
+        String normalizedSlug = SlugGenerator.toSlug(newSlug);
+        if (normalizedSlug.isEmpty()) {
+            throw new RuntimeException("Invalid slug");
+        }
+
+        // Check uniqueness (excluding current note)
+        if (!normalizedSlug.equals(note.getSlug()) && repository.existsByUserAndSlug(currentUser, normalizedSlug)) {
+            throw new RuntimeException("Slug already exists for another note");
+        }
+
+        note.setSlug(normalizedSlug);
+        repository.save(note);
+        return buildVisibilityResponse(note);
+    }
+
+    private VisibilityResponse buildVisibilityResponse(StudyNote note) {
+        String publicUrl = String.format("%s/p/%s/%s", baseUrl, note.getPublicId(), note.getSlug());
+        return new VisibilityResponse(
+                note.getVisibility(),
+                note.getSlug(),
+                note.getPublicId(),
+                publicUrl,
+                publicUrl
+        );
+    }
+
+    /**
+     * Find note by publicId (for public access)
+     */
+    public StudyNote findByPublicId(String publicId) {
+        return repository.findByPublicId(publicId)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
+    }
+
+    /**
+     * Get note by ID without user check (for public access, visibility checked separately)
+     */
+    public StudyNote findById(UUID id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
     }
 }
