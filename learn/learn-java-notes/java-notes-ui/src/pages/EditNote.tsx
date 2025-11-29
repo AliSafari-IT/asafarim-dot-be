@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getNote, updateNote } from "../api/notesApi";
+import { getNote, updateNote, getAttachments, updateAttachment, type Attachment } from "../api/notesApi";
 import TagInput from "../components/TagInput";
+import AttachmentUploader from "../components/AttachmentUploader";
+import AttachmentList from "../components/AttachmentList";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./EditNote.css";
 
@@ -12,6 +14,8 @@ export default function EditNote() {
   const [content, setContent] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [attachmentBaseline, setAttachmentBaseline] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +31,16 @@ export default function EditNote() {
         setContent(note.content);
         setIsPublic(note.isPublic);
         setTags(note.tags || []);
+        
+        // Load attachments
+        try {
+          const noteAttachments = await getAttachments(id);
+          setAttachments(noteAttachments);
+          setAttachmentBaseline(noteAttachments);
+        } catch (err) {
+          console.error("Failed to load attachments:", err);
+          // Non-critical, continue
+        }
       } catch (err) {
         console.error("Failed to load note:", err);
         setError("Failed to load note. It may have been deleted.");
@@ -38,6 +52,24 @@ export default function EditNote() {
     loadNote();
   }, [id]);
 
+  const handleAttachmentUploaded = (attachment: Attachment) => {
+    setAttachments((prev) => [attachment, ...prev]);
+    setAttachmentBaseline((prev) => [attachment, ...prev]);
+  };
+
+  const handleAttachmentDeleted = (attachmentId: string) => {
+    setAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+    setAttachmentBaseline((prev) => prev.filter((a) => a.id !== attachmentId));
+  };
+
+  const handleAttachmentVisibilityToggle = (attachmentId: string, isPublicValue: boolean) => {
+    setAttachments((prev) =>
+      prev.map((attachment) =>
+        attachment.id === attachmentId ? { ...attachment, isPublic: isPublicValue } : attachment
+      )
+    );
+  };
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !id) return;
@@ -45,6 +77,22 @@ export default function EditNote() {
     try {
       setLoading(true);
       await updateNote(id, { title, content, isPublic, tags });
+
+      const baselineMap = new Map(attachmentBaseline.map((attachment) => [attachment.id, attachment]));
+      const attachmentsToUpdate = attachments.filter((attachment) => {
+        const original = baselineMap.get(attachment.id);
+        return original && original.isPublic !== attachment.isPublic;
+      });
+
+      if (attachmentsToUpdate.length > 0) {
+        await Promise.all(
+          attachmentsToUpdate.map((attachment) =>
+            updateAttachment(attachment.id, { isPublic: attachment.isPublic })
+          )
+        );
+      }
+
+      setAttachmentBaseline(attachments);
       navigate(`/note/${id}`);
     } catch (error) {
       console.error("Failed to update note:", error);
@@ -162,6 +210,27 @@ System.out.println(&quot;Hello World&quot;);
                 </span>
               </span>
             </label>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">📎 Attachments</label>
+            <AttachmentUploader
+              noteId={id!}
+              onUploaded={handleAttachmentUploaded}
+              allowPublicToggle={isPublic}
+              defaultPublic={false}
+            />
+            {attachments.length > 0 && (
+              <div style={{ marginTop: "1rem" }}>
+                <AttachmentList
+                  attachments={attachments}
+                  onDelete={handleAttachmentDeleted}
+                  onToggleVisibility={handleAttachmentVisibilityToggle}
+                  canDelete={true}
+                  isPublicContext={false}
+                />
+              </div>
+            )}
           </div>
 
           <div className="form-actions">

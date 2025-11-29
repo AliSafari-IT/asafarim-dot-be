@@ -2,9 +2,10 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getPublicNote, trackPublicNoteView, type StudyNote } from "../api/notesApi";
+import { getPublicNote, trackPublicNoteView, getPublicAttachments, type StudyNote, type Attachment } from "../api/notesApi";
 import TagBadge from "../components/TagBadge";
 import VisibilityBadge from "../components/VisibilityBadge";
+import AttachmentList from "../components/AttachmentList";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./PublicNoteDetails.css";
 
@@ -12,6 +13,7 @@ export default function PublicNoteDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [note, setNote] = useState<StudyNote | null>(null);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const viewTrackedRef = useRef(false);
@@ -25,6 +27,15 @@ export default function PublicNoteDetails() {
         setError(null);
         const data = await getPublicNote(id);
         setNote(data);
+        
+        // Load public attachments
+        try {
+          const publicAttachments = await getPublicAttachments(id);
+          setAttachments(publicAttachments);
+        } catch (err) {
+          console.error("Failed to load public attachments:", err);
+          // Non-critical, continue
+        }
         
         // Track view (only once per page load)
         if (!viewTrackedRef.current) {
@@ -130,6 +141,18 @@ export default function PublicNoteDetails() {
           </div>
         )}
       </article>
+
+      {/* Attachments Section */}
+      {attachments.length > 0 && (
+        <section className="note-attachments">
+          <h3 className="attachments-title">📎 Attachments</h3>
+          <AttachmentList
+            attachments={attachments}
+            canDelete={false}
+            isPublicContext={true}
+          />
+        </section>
+      )}
 
       {/* Analytics Section */}
       {note.analytics && (

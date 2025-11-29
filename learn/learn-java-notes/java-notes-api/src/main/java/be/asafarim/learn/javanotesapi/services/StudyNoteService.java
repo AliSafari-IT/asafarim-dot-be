@@ -24,13 +24,16 @@ public class StudyNoteService {
     private final TagService tagService;
     private final AuthService authService;
     private final NoteViewService noteViewService;
+    private final AttachmentService attachmentService;
 
     public StudyNoteService(StudyNoteRepository repository, TagService tagService,
-            AuthService authService, NoteViewService noteViewService) {
+            AuthService authService, NoteViewService noteViewService,
+            AttachmentService attachmentService) {
         this.repository = repository;
         this.tagService = tagService;
         this.authService = authService;
         this.noteViewService = noteViewService;
+        this.attachmentService = attachmentService;
     }
 
     public List<StudyNoteResponse> getAll(String sort) {
@@ -142,6 +145,10 @@ public class StudyNoteService {
                 .filter(n -> n.getUser().getId().equals(currentUser.getId()))
                 .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission to access it"));
 
+        // Track visibility change
+        boolean wasPublic = note.isPublic();
+        boolean willBePublic = req.isPublic();
+
         note.setTitle(req.getTitle());
         note.setContent(req.getContent());
         note.setPublic(req.isPublic());
@@ -152,6 +159,12 @@ public class StudyNoteService {
         note.setTags(tags);
 
         repository.save(note);
+
+        // Sync attachment visibility: if note becomes private, make all attachments private
+        if (wasPublic && !willBePublic) {
+            attachmentService.makeAllPrivate(id);
+        }
+
         return toResponse(note);
     }
 

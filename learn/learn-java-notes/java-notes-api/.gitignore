@@ -8,6 +8,7 @@ docs/*
 **/docs/*
 **/docs/**
 docs/
+uploads/
 
 init.sql
 docker-compose.yml

@@ -202,3 +202,63 @@ export const searchPublicNotes = async (filter?: SearchFilter): Promise<SearchRe
   const res = await api.get<SearchResult[]>("/search/public", { params });
   return res.data;
 };
+
+// Attachment Types
+export interface Attachment {
+  id: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  isPublic: boolean;
+  uploadedAt: string;
+}
+
+// Attachment API (Private - Owner Only)
+export const uploadAttachment = async (
+  noteId: string,
+  file: File,
+  isPublic: boolean = false
+): Promise<Attachment> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await api.post<Attachment>(
+    `/notes/${noteId}/attachments?public=${isPublic}`,
+    formData
+  );
+  return res.data;
+};
+
+export const getAttachments = async (noteId: string): Promise<Attachment[]> => {
+  const res = await api.get<Attachment[]>(`/notes/${noteId}/attachments`);
+  return res.data;
+};
+
+export const downloadAttachment = async (attachmentId: string): Promise<Blob> => {
+  const res = await api.get(`/attachments/${attachmentId}/download`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
+
+export const deleteAttachment = async (attachmentId: string): Promise<void> => {
+  await api.delete(`/attachments/${attachmentId}`);
+};
+
+export const updateAttachment = async (attachmentId: string, data: { isPublic: boolean }): Promise<Attachment> => {
+  const res = await api.put<Attachment>(`/attachments/${attachmentId}`, data);
+  return res.data;
+};
+
+// Attachment API (Public - No Auth Required)
+export const getPublicAttachments = async (noteId: string): Promise<Attachment[]> => {
+  const res = await api.get<Attachment[]>(`/public/notes/${noteId}/attachments`);
+  return res.data;
+};
+
+export const downloadPublicAttachment = async (attachmentId: string): Promise<Blob> => {
+  const res = await api.get(`/public/attachments/${attachmentId}/download`, {
+    responseType: "blob",
+  });
+  return res.data;
+};
