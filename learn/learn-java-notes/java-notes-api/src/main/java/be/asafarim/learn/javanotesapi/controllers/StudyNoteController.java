@@ -2,8 +2,11 @@ package be.asafarim.learn.javanotesapi.controllers;
 
 import be.asafarim.learn.javanotesapi.dto.MessageResponse;
 import be.asafarim.learn.javanotesapi.dto.NoteAnalytics;
+import be.asafarim.learn.javanotesapi.dto.SlugUpdateRequest;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteRequest;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteResponse;
+import be.asafarim.learn.javanotesapi.dto.VisibilityResponse;
+import be.asafarim.learn.javanotesapi.dto.VisibilityUpdateRequest;
 import be.asafarim.learn.javanotesapi.services.NoteViewService;
 import be.asafarim.learn.javanotesapi.services.StudyNoteService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -109,5 +112,50 @@ public class StudyNoteController {
             return xRealIp;
         }
         return request.getRemoteAddr();
+    }
+
+    // ============ Visibility Management Endpoints ============
+
+    /**
+     * Get visibility status for a note
+     */
+    @GetMapping("/{id}/visibility")
+    public ResponseEntity<VisibilityResponse> getVisibility(@PathVariable UUID id) {
+        try {
+            VisibilityResponse response = service.getVisibility(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Update visibility for a note
+     */
+    @PutMapping("/{id}/visibility")
+    public ResponseEntity<VisibilityResponse> updateVisibility(
+            @PathVariable UUID id,
+            @RequestBody VisibilityUpdateRequest request) {
+        try {
+            VisibilityResponse response = service.updateVisibility(id, request.getVisibility());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Update custom slug for a note
+     */
+    @PutMapping("/{id}/slug")
+    public ResponseEntity<VisibilityResponse> updateSlug(
+            @PathVariable UUID id,
+            @RequestBody SlugUpdateRequest request) {
+        try {
+            VisibilityResponse response = service.updateSlug(id, request.getSlug());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

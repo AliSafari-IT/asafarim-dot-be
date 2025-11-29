@@ -157,4 +157,19 @@ public class NoteViewService {
 
         return getAnalytics(noteId);
     }
+
+    /**
+     * Get total view count for a note
+     */
+    public long getViewCount(UUID noteId) {
+        return viewRepository.countByNoteId(noteId);
+    }
+
+    /**
+     * Track a public view (simplified - without userAgent/IP)
+     */
+    @Transactional
+    public void trackPublicView(UUID noteId) {
+        trackPublicView(noteId, null, null);
+    }
 }

@@ -64,6 +64,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Button
                     variant="secondary"
                     size="sm"
+                    onClick={() => navigate("/feed")}
+                    className="nav-btn"
+                    aria-label="Feed"
+                    data-testid="feed-button"
+                  >
+                    📚 Feed
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => navigate("/search")}
                     className="nav-btn"
                     aria-label="Search"
@@ -121,7 +131,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </>
             )}
             {!isAuthenticated && (
-              <div className="header-user">
+              <div className="header-user guest-nav">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => navigate("/feed")}
+                  className="nav-btn"
+                  aria-label="Feed"
+                >
+                  📚 Feed
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => navigate("/search")}
+                  className="nav-btn"
+                  aria-label="Search"
+                >
+                  🔍 Search
+                </Button>
                 <div className="user-info">
                   <span className="user-avatar">👤</span>
                   <span className="user-name">Guest</span>

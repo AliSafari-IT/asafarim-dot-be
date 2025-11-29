@@ -431,3 +431,129 @@ export const getSearchAnalytics = async (days: number = 30): Promise<SearchAnaly
   });
   return res.data;
 };
+
+// ============ Public Sharing API ============
+
+export type NoteVisibility = "PRIVATE" | "UNLISTED" | "PUBLIC" | "FEATURED";
+
+export interface VisibilityResponse {
+  visibility: NoteVisibility;
+  slug: string;
+  publicId: string;
+  publicUrl: string;
+  shareUrl: string;
+}
+
+export interface PublicNoteResponse {
+  id: string;
+  publicId: string;
+  slug: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+  readingTimeMinutes: number;
+  wordCount: number;
+  visibility: NoteVisibility;
+  authorDisplayName: string;
+  hasPublicAttachments: boolean;
+  viewCount: number;
+}
+
+export interface PublicNoteListItem {
+  id: string;
+  publicId: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  tags: string[];
+  createdAt: string;
+  readingTimeMinutes: number;
+  authorDisplayName: string;
+  viewCount: number;
+}
+
+/**
+ * Get public note by publicId
+ */
+export const getPublicNoteByPublicId = async (publicId: string): Promise<PublicNoteResponse> => {
+  const res = await api.get<PublicNoteResponse>(`/public/notes/by-id/${publicId}`);
+  return res.data;
+};
+
+/**
+ * Track public note view
+ */
+export const trackPublicNoteViewById = async (publicId: string): Promise<void> => {
+  try {
+    await api.post(`/public/notes/${publicId}/view`);
+  } catch (error) {
+    console.log("Failed to track public view (non-critical):", error);
+  }
+};
+
+/**
+ * Get featured notes for feed
+ */
+export const getFeaturedNotes = async (page = 0, size = 10): Promise<PublicNoteListItem[]> => {
+  const res = await api.get<PublicNoteListItem[]>("/public/feed/featured", {
+    params: { page, size },
+  });
+  return res.data;
+};
+
+/**
+ * Get trending notes for feed
+ */
+export const getTrendingNotes = async (page = 0, size = 10): Promise<PublicNoteListItem[]> => {
+  const res = await api.get<PublicNoteListItem[]>("/public/feed/trending", {
+    params: { page, size },
+  });
+  return res.data;
+};
+
+/**
+ * Get recent public notes for feed
+ */
+export const getRecentPublicNotes = async (page = 0, size = 10): Promise<PublicNoteListItem[]> => {
+  const res = await api.get<PublicNoteListItem[]>("/public/feed/recent", {
+    params: { page, size },
+  });
+  return res.data;
+};
+
+/**
+ * Get public notes by tag
+ */
+export const getPublicNotesByTag = async (tag: string, page = 0, size = 10): Promise<PublicNoteListItem[]> => {
+  const res = await api.get<PublicNoteListItem[]>("/public/feed/by-tag", {
+    params: { tag, page, size },
+  });
+  return res.data;
+};
+
+/**
+ * Get visibility status for a note
+ */
+export const getNoteVisibility = async (noteId: string): Promise<VisibilityResponse> => {
+  const res = await api.get<VisibilityResponse>(`/notes/${noteId}/visibility`);
+  return res.data;
+};
+
+/**
+ * Update visibility for a note
+ */
+export const updateNoteVisibility = async (noteId: string, visibility: NoteVisibility): Promise<VisibilityResponse> => {
+  const res = await api.put<VisibilityResponse>(`/notes/${noteId}/visibility`, { visibility });
+  return res.data;
+};
+
+/**
+ * Update custom slug for a note
+ */
+export const updateNoteSlug = async (noteId: string, slug: string): Promise<VisibilityResponse> => {
+  const res = await api.put<VisibilityResponse>(`/notes/${noteId}/slug`, { slug });
+  return res.data;
+};

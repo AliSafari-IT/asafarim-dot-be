@@ -1,5 +1,6 @@
 package be.asafarim.learn.javanotesapi.entities;
 
+import be.asafarim.learn.javanotesapi.enums.NoteVisibility;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,6 +24,16 @@ public class StudyNote {
 
     @Column(nullable = false)
     private boolean isPublic = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private NoteVisibility visibility = NoteVisibility.PRIVATE;
+
+    @Column(columnDefinition = "TEXT")
+    private String slug;
+
+    @Column(name = "public_id", length = 20)
+    private String publicId;
 
     private LocalDateTime createdAt;
 
@@ -95,6 +106,18 @@ public class StudyNote {
     public Set<Tag> getTags() { return tags; }
 
     public void setTags(Set<Tag> tags) { this.tags = tags; }
+
+    public NoteVisibility getVisibility() { return visibility; }
+
+    public void setVisibility(NoteVisibility visibility) { this.visibility = visibility; }
+
+    public String getSlug() { return slug; }
+
+    public void setSlug(String slug) { this.slug = slug; }
+
+    public String getPublicId() { return publicId; }
+
+    public void setPublicId(String publicId) { this.publicId = publicId; }
 
     public void addTag(Tag tag) {
         this.tags.add(tag);
