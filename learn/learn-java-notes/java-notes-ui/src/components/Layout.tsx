@@ -81,6 +81,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   >
                     📊 Analytics
                   </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate("/tags/manage")}
+                    className="nav-btn"
+                    aria-label="Tag Management"
+                    data-testid="tags-manage-button"
+                  >
+                    🏷️ Tags
+                  </Button>
                 </nav>
 
                 <div className="header-user">

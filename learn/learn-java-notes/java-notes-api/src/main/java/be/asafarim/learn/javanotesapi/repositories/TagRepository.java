@@ -1,5 +1,6 @@
 package be.asafarim.learn.javanotesapi.repositories;
 
+import be.asafarim.learn.javanotesapi.dto.TagUsageProjection;
 import be.asafarim.learn.javanotesapi.entities.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -36,4 +37,13 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
      */
     @Query("SELECT t FROM Tag t WHERE LOWER(t.name) IN :names")
     List<Tag> findByNamesIgnoreCase(List<String> names);
+
+    /**
+     * Get tag usage statistics
+     */
+    @Query("SELECT t.id as id, t.name as name, COUNT(n.id) as usageCount " +
+           "FROM Tag t LEFT JOIN t.notes n " +
+           "GROUP BY t.id, t.name " +
+           "ORDER BY COUNT(n.id) DESC, t.name ASC")
+    List<TagUsageProjection> findTagUsageStats();
 }

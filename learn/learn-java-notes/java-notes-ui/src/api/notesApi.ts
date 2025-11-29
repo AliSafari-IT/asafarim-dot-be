@@ -80,6 +80,49 @@ export const getAllTags = async () => {
   return res.data;
 };
 
+// Tag Management Types
+export interface TagUsage {
+  id: string;
+  name: string;
+  usageCount: number;
+  createdAt?: string;
+}
+
+export interface TagRenameRequest {
+  tagId: string;
+  newName: string;
+}
+
+export interface TagMergeRequest {
+  sourceTagIds: string[];
+  targetName: string;
+}
+
+export interface TagDeleteRequest {
+  tagId: string;
+  force?: boolean;
+}
+
+// Tag Management API
+export const getTagUsage = async (): Promise<TagUsage[]> => {
+  const res = await api.get<TagUsage[]>("/tags/manage/usage");
+  return res.data;
+};
+
+export const renameTag = async (req: TagRenameRequest): Promise<TagUsage> => {
+  const res = await api.post<TagUsage>("/tags/manage/rename", req);
+  return res.data;
+};
+
+export const mergeTags = async (req: TagMergeRequest): Promise<TagUsage> => {
+  const res = await api.post<TagUsage>("/tags/manage/merge", req);
+  return res.data;
+};
+
+export const deleteTag = async (req: TagDeleteRequest): Promise<void> => {
+  await api.post("/tags/manage/delete", req);
+};
+
 export const getNoteCount = async () => {
   const res = await api.get<number>("/notes/count");
   return res.data;

@@ -8,6 +8,7 @@ import EditNote from "./pages/EditNote";
 import PublicNotesList from "./pages/PublicNotesList";
 import PublicNoteDetails from "./pages/PublicNoteDetails";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import TagManagementPage from "./pages/TagManagementPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
@@ -58,6 +59,15 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <AnalyticsDashboard />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          {/* Tag Management */}
+          <Route path="/tags/manage" element={
+            <ProtectedRoute>
+              <Layout>
+                <TagManagementPage />
               </Layout>
             </ProtectedRoute>
           } />
