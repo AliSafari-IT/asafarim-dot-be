@@ -7,8 +7,9 @@ import {
 } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getNote, trackNoteView, type StudyNote } from "../api/notesApi";
+import { getNote, trackNoteView, getAttachments, type StudyNote, type Attachment } from "../api/notesApi";
 import TagBadge from "../components/TagBadge";
+import AttachmentList from "../components/AttachmentList";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./NoteDetails.css";
 
@@ -17,6 +18,7 @@ export default function NoteDetails() {
   const navigate = useNavigate();
   const [, setSearchParams] = useSearchParams();
   const [note, setNote] = useState<StudyNote | null>(null);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const viewTrackedRef = useRef(false);
@@ -35,6 +37,15 @@ export default function NoteDetails() {
         setError(null);
         const data = await getNote(id);
         setNote(data);
+
+        // Load attachments
+        try {
+          const noteAttachments = await getAttachments(id);
+          setAttachments(noteAttachments);
+        } catch (err) {
+          console.error("Failed to load attachments:", err);
+          // Non-critical, continue
+        }
 
         // Track view (only once per page load)
         if (!viewTrackedRef.current) {
@@ -191,6 +202,18 @@ export default function NoteDetails() {
           </div>
         )}
       </article>
+
+      {/* Attachments Section */}
+      {attachments.length > 0 && (
+        <section className="note-attachments">
+          <h3 className="attachments-title">📎 Attachments</h3>
+          <AttachmentList
+            attachments={attachments}
+            canDelete={false}
+            isPublicContext={false}
+          />
+        </section>
+      )}
 
       {/* Analytics Section */}
       {note.analytics && (

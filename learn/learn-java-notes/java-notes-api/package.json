@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prestart": "kill-port --port 8080; kill-port --port 8080",
+    "prestart": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-8080.ps1",
     "start": "mvn clean spring-boot:run",
-    "api": "pnpm start",
-    "app": "concurrently \"pnpm api\" \"cd ../java-notes-ui && pnpm start\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "api": "pnpm run start",
+    "app": "concurrently \"pnpm api\" \"cd ../java-notes-ui && pnpm run start\""
   },
   "dependencies": {
     "kill-port": "^2.0.1",
