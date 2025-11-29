@@ -16,6 +16,15 @@ import SearchPage from "./pages/SearchPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
+import AdminLayout from "./components/AdminLayout";
+import {
+  AdminDashboard,
+  AdminUsersPage,
+  AdminRolesPage,
+  AdminPermissionsPage,
+  AdminLogsPage,
+  AdminSettingsPage,
+} from "./pages/admin";
 import "./api/interceptors";
 
 function App() {
@@ -107,6 +116,38 @@ function App() {
             </Layout>
           } />
           
+          {/* Admin Routes */}
+          <Route path="/admin" element={
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+          } />
+          <Route path="/admin/users" element={
+            <AdminLayout>
+              <AdminUsersPage />
+            </AdminLayout>
+          } />
+          <Route path="/admin/roles" element={
+            <AdminLayout>
+              <AdminRolesPage />
+            </AdminLayout>
+          } />
+          <Route path="/admin/permissions" element={
+            <AdminLayout>
+              <AdminPermissionsPage />
+            </AdminLayout>
+          } />
+          <Route path="/admin/logs" element={
+            <AdminLayout>
+              <AdminLogsPage />
+            </AdminLayout>
+          } />
+          <Route path="/admin/settings" element={
+            <AdminLayout>
+              <AdminSettingsPage />
+            </AdminLayout>
+          } />
+
           {/* Catch-all route - redirect to home */}
           <Route path="*" element={
             <Layout>

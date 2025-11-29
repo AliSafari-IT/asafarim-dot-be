@@ -270,4 +270,22 @@ public interface StudyNoteRepository extends JpaRepository<StudyNote, UUID> {
       "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
       "ORDER BY n.createdAt DESC")
   List<StudyNote> searchPublicOrFeaturedByQuery(@Param("query") String query);
+
+  // ============ Admin Statistics Queries ============
+
+  /**
+   * Count notes where isPublic is true
+   */
+  long countByIsPublicTrue();
+
+  /**
+   * Count notes where isPublic is false
+   */
+  long countByIsPublicFalse();
+
+  /**
+   * Count notes by user ID
+   */
+  @Query("SELECT COUNT(n) FROM StudyNote n WHERE n.user.id = :userId")
+  long countByUserId(@Param("userId") UUID userId);
 }

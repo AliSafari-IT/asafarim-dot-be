@@ -111,6 +111,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   >
                     🏷️ Tags
                   </Button>
+                  {user?.roles?.includes('ROLE_ADMIN') && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => navigate("/admin")}
+                      className="nav-btn"
+                      aria-label="Admin Panel"
+                      data-testid="admin-button"
+                    >
+                      ⚙️ Admin
+                    </Button>
+                  )}
                 </nav>
 
                 <div className="header-user">

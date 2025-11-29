@@ -220,7 +220,7 @@
   color: inherit;
 }
 
-.empty-state {
+.public-empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -234,13 +234,13 @@
   margin-bottom: var(--spacing-lg);
 }
 
-.empty-state h2 {
+.public-empty-state h2 {
   font-size: var(--font-size-2xl);
   color: var(--color-text);
   margin: 0 0 var(--spacing-md);
 }
 
-.empty-state p {
+.public-empty-state p {
   font-size: var(--font-size-md);
   color: var(--color-text-muted);
   margin: 0 0 var(--spacing-lg);

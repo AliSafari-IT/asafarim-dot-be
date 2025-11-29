@@ -46,4 +46,10 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
            "GROUP BY t.id, t.name " +
            "ORDER BY COUNT(n.id) DESC, t.name ASC")
     List<TagUsageProjection> findTagUsageStats();
+
+    /**
+     * Find top N tags by usage count
+     */
+    @Query("SELECT t.name, COUNT(n.id) as cnt FROM Tag t JOIN t.notes n GROUP BY t.name ORDER BY cnt DESC")
+    List<Object[]> findTopTags(org.springframework.data.domain.Pageable pageable);
 }

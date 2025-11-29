@@ -255,7 +255,7 @@ export default function PublicNotesList() {
           ))}
         </div>
       ) : (
-        <div className="empty-state">
+        <div className="public-empty-state">
           <div className="empty-icon">🌍</div>
           <h2>No public notes yet</h2>
           <p>Be the first to share your knowledge with the community!</p>
