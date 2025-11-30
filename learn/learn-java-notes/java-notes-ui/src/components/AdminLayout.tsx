@@ -70,27 +70,28 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <span className="admin-nav-label">{item.label}</span>
             </Link>
           ))}
+        </nav>
+
+        <div className="admin-sidebar-footer">
+          <Link to="/" className="admin-back-link">
+            👈 Back to App
+          </Link>
+          <div className="admin-sidebar-footer-right">
           <Button
             variant="ghost"
             size="xs"
             onClick={handleLogout}
             title="Logout"
             aria-label="Logout"
-            className="admin-nav-item"
           >
             <SignOut title="Logout" />
           </Button>
-        </nav>
-
-        <div className="admin-sidebar-footer">
           <ThemeToggle
             variant="ghost"
             ariaLabel="Toggle theme"
             className="admin-themetoggler-btn"
           />
-          <Link to="/" className="admin-back-link">
-            👈 Back to App
-          </Link>
+          </div>
         </div>
       </aside>
 

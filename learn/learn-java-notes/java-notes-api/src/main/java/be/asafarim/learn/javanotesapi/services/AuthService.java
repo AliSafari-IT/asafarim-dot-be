@@ -3,6 +3,7 @@ package be.asafarim.learn.javanotesapi.services;
 import be.asafarim.learn.javanotesapi.entities.Role;
 import be.asafarim.learn.javanotesapi.entities.User;
 import be.asafarim.learn.javanotesapi.repositories.RoleRepository;
+import be.asafarim.learn.javanotesapi.repositories.SystemSettingRepository;
 import be.asafarim.learn.javanotesapi.repositories.UserRepository;
 import be.asafarim.learn.javanotesapi.security.JwtUtils;
 
@@ -37,6 +38,9 @@ public class AuthService {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    SystemSettingRepository systemSettingRepository;
+
     public Authentication authenticate(String username, String password) {
         return authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
@@ -44,6 +48,12 @@ public class AuthService {
     }
 
     public User registerUser(String username, String email, String password) {
+        // Check if registration is enabled
+        boolean registrationEnabled = systemSettingRepository.getBooleanSetting("REGISTRATION_ENABLED", true);
+        if (!registrationEnabled) {
+            throw new RuntimeException("Error: Registration is currently disabled!");
+        }
+
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Error: Username is already taken!");
         }
@@ -85,5 +95,10 @@ public class AuthService {
                     .orElseThrow(() -> new RuntimeException("User not found: " + username));
         }
         throw new RuntimeException("No authenticated user found");
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isRegistrationEnabled() {
+        return systemSettingRepository.getBooleanSetting("REGISTRATION_ENABLED", true);
     }
 }

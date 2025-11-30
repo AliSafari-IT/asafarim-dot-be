@@ -8,6 +8,9 @@
   /* Container Max Width */
   --container-max-width: var(--width-0);
 
+  /* Admin sidebar */
+  --admin-sidebar-width: var();
+
   /* Common spacing - using existing tokens */
   --gap-0: var(--space-0);
   --gap-xs: var(--space-1);

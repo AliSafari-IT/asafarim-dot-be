@@ -6,7 +6,7 @@
 
 /* Sidebar */
 .admin-sidebar {
-  width: 260px;
+  width: var(--width-3xs);
   background: var(--color-primary-100);
   color: var(--color-info-600);
   display: flex;
@@ -105,12 +105,19 @@
 /* Sidebar Footer */
 .admin-sidebar-footer {
   float: right;
-  padding: 1rem 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  justify-content: space-around;
+}
+
+.admin-sidebar-footer-right {
+  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  gap: var(--space-0);
 }
 
 .admin-back-link {
@@ -130,7 +137,7 @@
 /* Main Content */
 .admin-main {
   flex: 1;
-  margin-left: 260px;
+  margin-left: var(--width-3xs);
   min-height: 100vh;
   display: flex;
   flex-direction: column;

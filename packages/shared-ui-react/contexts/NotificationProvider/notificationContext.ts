@@ -6,11 +6,12 @@ export interface Notification {
   id: string;
   type: NotificationType;
   message: string;
+  timeout?: number;
 }
 
 export interface NotificationContextType {
   notifications: Notification[];
-  addNotification: (type: NotificationType, message: string) => void;
+  addNotification: (type: NotificationType, message: string, timeout?: number) => void;
   removeNotification: (id: string) => void;
 }
 
