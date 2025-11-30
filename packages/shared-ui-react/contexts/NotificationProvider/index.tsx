@@ -12,15 +12,17 @@ export const NotificationProvider= ({
 } : NotificationProviderProps)  => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const addNotification = (type: NotificationType, message: string) => {
+  const addNotification = (type: NotificationType, message: string, timeout?: number) => {
     const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, type, message }]);
+    const notificationTimeout = timeout !== undefined ? timeout : autoRemoveTimeout;
+    
+    setNotifications((prev) => [...prev, { id, type, message, timeout: notificationTimeout }]);
     
     // Auto-remove after specified timeout
-    if (autoRemoveTimeout > 0) {
+    if (notificationTimeout > 0) {
       setTimeout(() => {
         removeNotification(id);
-      }, autoRemoveTimeout);
+      }, notificationTimeout);
     }
   };
 

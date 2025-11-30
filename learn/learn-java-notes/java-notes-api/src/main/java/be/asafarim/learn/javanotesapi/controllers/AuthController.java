@@ -87,4 +87,12 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
+
+    @GetMapping("/registration-status")
+    public ResponseEntity<?> getRegistrationStatus() {
+        boolean registrationEnabled = authService.isRegistrationEnabled();
+        return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
+            put("registrationEnabled", registrationEnabled);
+        }});
+    }
 }

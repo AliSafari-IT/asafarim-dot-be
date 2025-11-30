@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/useAuth";
-import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import {
+  ButtonComponent as Button,
+  useNotifications,
+} from "@asafarim/shared-ui-react";
+import { api } from "../api/notesApi";
 import "./AuthPages.css";
 import Layout from "../components/Layout";
 
@@ -14,8 +18,36 @@ export default function Register() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [registrationDisabled, setRegistrationDisabled] = useState(false);
   const { register, isAuthenticated } = useAuth();
+  const { addNotification } = useNotifications();
   const navigate = useNavigate();
+  const notificationShownRef = useRef(false);
+
+  useEffect(() => {
+    // Prevent duplicate notifications in Strict Mode
+    if (notificationShownRef.current) return;
+    notificationShownRef.current = true; // Set immediately to prevent race condition
+
+    const checkRegistrationStatus = async () => {
+      try {
+        const response = await api.get("/auth/registration-status");
+        console.log("Registration status response:", response.data);
+        if (!response.data.registrationEnabled) {
+          setRegistrationDisabled(true);
+          addNotification(
+            "warning",
+            "Registration is currently disabled. Please try again later.",
+            10000 // 10 seconds timeout for this specific notification
+          );
+        }
+      } catch (err) {
+        console.error("Failed to check registration status:", err);
+      }
+    };
+
+    checkRegistrationStatus();
+  }, []); // We intentionally use an empty dependency array [] so the effect runs only once on component mount.
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
@@ -172,10 +204,14 @@ export default function Register() {
               type="submit"
               variant="primary"
               size="lg"
-              disabled={loading}
+              disabled={loading || registrationDisabled}
               className="auth-submit-btn"
             >
-              {loading ? "⏳ Creating account..." : "🚀 Create Account"}
+              {registrationDisabled
+                ? "❌ Registration Disabled"
+                : loading
+                ? "⏳ Creating account..."
+                : "🚀 Create Account"}
             </Button>
           </form>
 
