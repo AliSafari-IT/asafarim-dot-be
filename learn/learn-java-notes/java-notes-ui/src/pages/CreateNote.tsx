@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createNote } from "../api/notesApi";
-// import Layout from "../components/Layout";
 import TagInput from "../components/TagInput";
+import { MarkdownEditor } from "../components/MarkdownEditor";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import "./CreateNote.css";
 
@@ -58,30 +58,26 @@ export default function CreateNote() {
             <label htmlFor="content" className="form-label">
               📖 Content (Markdown supported)
             </label>
-            <textarea
-              id="content"
+            <MarkdownEditor
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="# Java Basics
+              onChange={setContent}
+              placeholder={`# Java Basics
 
 ## Variables
-- `int` - integers
-- `String` - text
+- \`int\` - integers
+- \`String\` - text
 
 ### Code Example
-```java
-System.out.println(&quot;Hello World&quot;);
-```
+\`\`\`java
+System.out.println('Hello World');
+\`\`\`
 
-> 💡 **Tip:** Use markdown for formatting!"
-              className="form-textarea"
-              rows={12}
+> 💡 **Tip:** Use markdown for formatting!
+
+Type @ to insert citations to other notes.`}
+              minHeight={400}
+              showPreview={true}
             />
-            <div className="form-help">
-              <span className="help-text">
-                💡 Tip: Use Markdown for rich formatting (headers, code blocks, lists, etc.)
-              </span>
-            </div>
           </div>
 
           <div className="form-group">

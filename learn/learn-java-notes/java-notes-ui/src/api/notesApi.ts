@@ -16,6 +16,7 @@ export interface NoteAnalytics {
 
 export interface StudyNote {
   id: string;
+  publicId?: string;
   title: string;
   content: string;
   createdAt: string;
@@ -26,6 +27,16 @@ export interface StudyNote {
   tags: string[];
   createdBy?: string;
   analytics?: NoteAnalytics;
+  // Academic metadata
+  authors?: string;
+  publicationYear?: number;
+  noteType?: string;
+  citationStyle?: string;
+  journalName?: string;
+  publisher?: string;
+  doi?: string;
+  url?: string;
+  citationKey?: string;
 }
 
 export interface StudyNoteRequest {
@@ -33,6 +44,16 @@ export interface StudyNoteRequest {
   content: string;
   isPublic: boolean;
   tags: string[];
+  // Academic metadata
+  authors?: string;
+  publicationYear?: number;
+  noteType?: string;
+  citationStyle?: string;
+  journalName?: string;
+  publisher?: string;
+  doi?: string;
+  url?: string;
+  citationKey?: string;
 }
 
 export interface NotesFilter {
