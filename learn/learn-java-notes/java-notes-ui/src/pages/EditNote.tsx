@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getNote, updateNote, getAttachments, updateAttachment, type Attachment } from "../api/notesApi";
 import TagInput from "../components/TagInput";
 import AttachmentUploader from "../components/AttachmentUploader";
 import AttachmentList from "../components/AttachmentList";
 import { CitationSidebar } from "../components/citations";
-import { MarkdownEditor } from "../components/MarkdownEditor";
+import { MarkdownEditor, type MarkdownEditorHandle } from "../components/MarkdownEditor";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import type { CitationStyle } from "../types/citation";
 import "./EditNote.css";
@@ -29,6 +29,9 @@ export default function EditNote() {
   
   // Citation state
   const [citationStyle, setCitationStyle] = useState<CitationStyle>("APA");
+  
+  // Editor ref for imperative control (insert at cursor)
+  const editorRef = useRef<MarkdownEditorHandle>(null);
 
   useEffect(() => {
     async function loadNote() {
@@ -82,12 +85,6 @@ export default function EditNote() {
     );
   };
 
-  // Citation handlers
-  const handleInsertCitation = (marker: string) => {
-    // Insert citation at the end when using sidebar
-    const newContent = content + marker;
-    setContent(newContent);
-  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -185,6 +182,7 @@ export default function EditNote() {
               📖 Content (Markdown supported)
             </label>
             <MarkdownEditor
+              ref={editorRef}
               value={content}
               onChange={setContent}
               excludeNoteId={id}
@@ -318,7 +316,9 @@ Type @ to insert citations to other notes.`}
           <CitationSidebar
             noteId={id}
             citationStyle={citationStyle}
-            onInsertCitation={handleInsertCitation}
+            onInsertCitation={(marker) => {
+              editorRef.current?.insertTextAtCursor(`${marker} `);
+            }}
             onStyleChange={setCitationStyle}
           />
         )}

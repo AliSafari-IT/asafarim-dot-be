@@ -1,3 +1,52 @@
+/* ============ Citation Toggle Button (Mobile) ============ */
+.citation-toggle-btn {
+  display: none; /* Hidden on desktop */
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 50;
+  padding: 0.75rem 1rem;
+  background: var(--color-primary-600);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.citation-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.citation-toggle-btn .badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.375rem;
+  margin-left: 0.5rem;
+  background: white;
+  color: var(--color-primary-600);
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ============ Citation Backdrop (Mobile) ============ */
+.citation-backdrop {
+  display: none; /* Hidden on desktop */
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 45;
+}
+
+/* ============ Citation Sidebar ============ */
 .citation-sidebar {
   width: 320px;
   background: var(--color-surface);
@@ -9,13 +58,37 @@
 }
 
 .sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
 }
 
 .sidebar-header h3 {
-  margin: 0 0 var(--spacing-sm) 0;
+  margin: 0;
   font-size: var(--font-size-base);
+}
+
+.sidebar-header .close-btn {
+  display: none; /* Hidden on desktop */
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.sidebar-header .close-btn:hover {
+  background: var(--color-neutral-200);
+  color: var(--color-text);
+}
+
+.sidebar-style-select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .style-select {
@@ -155,4 +228,88 @@
   display: flex;
   gap: var(--spacing-xs);
   flex-shrink: 0;
+}
+
+/* ============ Mobile Responsive Styles ============ */
+@media (max-width: 900px) {
+  /* Show toggle button on mobile */
+  .citation-toggle-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Show backdrop on mobile when sidebar is open */
+  .citation-backdrop {
+    display: block;
+  }
+
+  /* Transform sidebar into bottom drawer on mobile */
+  .citation-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 70vh;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.2);
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+    z-index: 46;
+  }
+
+  /* Show sidebar when open */
+  .citation-sidebar.open {
+    transform: translateY(0);
+  }
+
+  /* Show close button on mobile */
+  .sidebar-header .close-btn {
+    display: block;
+  }
+
+  /* Adjust citations list for mobile */
+  .citations-list {
+    max-height: calc(70vh - 180px);
+    overflow-y: auto;
+  }
+
+  /* Add drag handle indicator */
+  .sidebar-header::before {
+    content: '';
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2.5rem;
+    height: 0.25rem;
+    background: var(--color-border);
+    border-radius: 0.125rem;
+  }
+
+  .sidebar-header {
+    position: relative;
+    padding-top: 1.25rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .citation-toggle-btn {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .citation-sidebar {
+    max-height: 80vh;
+  }
+
+  .citations-list {
+    max-height: calc(80vh - 180px);
+  }
 }

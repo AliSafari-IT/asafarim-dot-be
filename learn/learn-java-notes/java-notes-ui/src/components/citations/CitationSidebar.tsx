@@ -1,3 +1,4 @@
+// learn/learn-java-notes/java-notes-ui/src/components/citations/CitationSidebar.tsx 
 import { useState, useEffect, useCallback } from 'react';
 import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
 import {
@@ -13,7 +14,7 @@ import { CitationStyleLabels } from '../../types/bibliography';
 import './CitationSidebar.css';
 
 interface CitationSidebarProps {
-  noteId: string;
+  noteId?: string; // Optional - undefined for new notes in "pending" mode
   citationStyle: CitationStyle;
   onInsertCitation: (marker: string) => void;
   onStyleChange: (style: CitationStyle) => void;
@@ -39,6 +40,9 @@ export default function CitationSidebar({
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'cited' | 'citing' | 'add'>('cited');
+  
+  // Mobile drawer state
+  const [isOpen, setIsOpen] = useState(false);
 
   const loadCitations = useCallback(async () => {
     if (!noteId) return;
@@ -81,6 +85,11 @@ export default function CitationSidebar({
   }, [loadCitations, loadAllNotes]);
 
   const handleAddCitation = async (targetNoteId: string) => {
+    // Can't create citation relationship without a saved note
+    if (!noteId) {
+      console.log('Note must be saved before creating citation relationships');
+      return;
+    }
     try {
       await createCitation(noteId, targetNoteId, {});
       loadCitations();
@@ -111,21 +120,50 @@ export default function CitationSidebar({
   );
 
   return (
-    <div className="citation-sidebar">
-      <header className="sidebar-header">
-        <h3>📚 Citations</h3>
-        <select
-          value={citationStyle}
-          onChange={(e) => onStyleChange(e.target.value as CitationStyle)}
-          className="style-select"
-        >
-          {Object.entries(CitationStyleLabels).map(([key, { name, example }]) => (
-            <option key={key} value={key}>
-              {name} {example}
-            </option>
-          ))}
-        </select>
-      </header>
+    <>
+      {/* Mobile toggle button */}
+      <button
+        className="citation-toggle-btn"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Close citations' : 'Open citations'}
+      >
+        📚 {citedNotes.length > 0 && <span className="badge">{citedNotes.length}</span>}
+      </button>
+
+      {/* Backdrop for mobile */}
+      {isOpen && (
+        <div 
+          className="citation-backdrop" 
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      <div className={`citation-sidebar ${isOpen ? 'open' : ''}`}>
+        <header className="sidebar-header">
+          <h3>📚 Citations</h3>
+          <button 
+            className="close-btn"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </header>
+        
+        <div className="sidebar-style-select">
+          <select
+            value={citationStyle}
+            onChange={(e) => onStyleChange(e.target.value as CitationStyle)}
+            className="style-select"
+          >
+            {Object.entries(CitationStyleLabels).map(([key, { name, example }]) => (
+              <option key={key} value={key}>
+                {name} {example}
+              </option>
+            ))}
+          </select>
+        </div>
 
       {stats && (
         <div className="stats-bar">
@@ -235,5 +273,6 @@ export default function CitationSidebar({
         )}
       </div>
     </div>
+    </>
   );
 }
