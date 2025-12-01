@@ -152,8 +152,35 @@ public class StudyNoteService {
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
         note.setTags(tags);
 
+        // Set academic metadata
+        setAcademicMetadata(note, req, currentUser);
+
         repository.save(note);
         return toResponse(note);
+    }
+    
+    private void setAcademicMetadata(StudyNote note, StudyNoteRequest req, User user) {
+        // Use provided authors or fall back to current user's username
+        if (req.getAuthors() != null && !req.getAuthors().isBlank()) {
+            note.setAuthors(req.getAuthors());
+        } else if (note.getAuthors() == null) {
+            note.setAuthors(user.getUsername());
+        }
+        
+        // Use provided year or current year as default
+        if (req.getPublicationYear() != null) {
+            note.setPublicationYear(req.getPublicationYear());
+        } else if (note.getPublicationYear() == null) {
+            note.setPublicationYear(java.time.Year.now().getValue());
+        }
+        
+        if (req.getNoteType() != null) note.setNoteType(req.getNoteType());
+        if (req.getCitationStyle() != null) note.setCitationStyle(req.getCitationStyle());
+        if (req.getJournalName() != null) note.setJournalName(req.getJournalName());
+        if (req.getPublisher() != null) note.setPublisher(req.getPublisher());
+        if (req.getDoi() != null) note.setDoi(req.getDoi());
+        if (req.getUrl() != null) note.setUrl(req.getUrl());
+        if (req.getCitationKey() != null) note.setCitationKey(req.getCitationKey());
     }
 
     private String ensureUniqueSlug(String baseSlug, User user) {
@@ -199,6 +226,9 @@ public class StudyNoteService {
         Set<Tag> tags = tagService.findOrCreateTags(req.getTags());
         note.setTags(tags);
 
+        // Update academic metadata
+        setAcademicMetadata(note, req, currentUser);
+
         repository.save(note);
 
         // Sync attachment visibility: if note becomes private, make all attachments private
@@ -243,7 +273,7 @@ public class StudyNoteService {
                 .sorted()
                 .toList();
 
-        return new StudyNoteResponse(
+        StudyNoteResponse response = new StudyNoteResponse(
                 n.getId(),
                 n.getTitle(),
                 n.getContent(),
@@ -254,6 +284,22 @@ public class StudyNoteService {
                 n.isPublic(),
                 tagNames,
                 n.getUser() != null ? n.getUser().getUsername() : "Unknown");
+        
+        // Set publicId for citations
+        response.setPublicId(n.getPublicId());
+        
+        // Set academic metadata
+        response.setAuthors(n.getAuthors());
+        response.setPublicationYear(n.getPublicationYear());
+        response.setNoteType(n.getNoteType() != null ? n.getNoteType().name() : null);
+        response.setCitationStyle(n.getCitationStyle() != null ? n.getCitationStyle().name() : null);
+        response.setJournalName(n.getJournalName());
+        response.setPublisher(n.getPublisher());
+        response.setDoi(n.getDoi());
+        response.setUrl(n.getUrl());
+        response.setCitationKey(n.getCitationKey());
+        
+        return response;
     }
 
     /**

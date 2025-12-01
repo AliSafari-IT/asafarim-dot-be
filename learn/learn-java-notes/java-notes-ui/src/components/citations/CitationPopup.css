@@ -1,0 +1,88 @@
+.citation-popup {
+  position: fixed;
+  z-index: 9999;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  min-width: 320px;
+  max-width: 400px;
+  max-height: 350px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  background: var(--color-background, #f8fafc);
+}
+
+.popup-icon {
+  font-size: 1rem;
+}
+
+.popup-title {
+  font-weight: 600;
+  color: var(--color-text, #1e293b);
+  flex: 1;
+}
+
+.popup-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.popup-loading,
+.popup-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--color-text-muted, #64748b);
+}
+
+.popup-list {
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;
+  overflow-y: auto;
+  max-height: 280px;
+}
+
+.popup-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.popup-item:hover,
+.popup-item.selected {
+  background: var(--color-primary-light, #eff6ff);
+}
+
+.item-title {
+  font-weight: 500;
+  color: var(--color-text, #1e293b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-meta {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #64748b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-year {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #94a3b8);
+}

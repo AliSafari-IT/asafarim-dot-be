@@ -4,7 +4,10 @@ import { getNote, updateNote, getAttachments, updateAttachment, type Attachment 
 import TagInput from "../components/TagInput";
 import AttachmentUploader from "../components/AttachmentUploader";
 import AttachmentList from "../components/AttachmentList";
+import { CitationSidebar } from "../components/citations";
+import { MarkdownEditor } from "../components/MarkdownEditor";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import type { CitationStyle } from "../types/citation";
 import "./EditNote.css";
 
 export default function EditNote() {
@@ -19,6 +22,13 @@ export default function EditNote() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Academic metadata state
+  const [authors, setAuthors] = useState("");
+  const [publicationYear, setPublicationYear] = useState<number | undefined>();
+  
+  // Citation state
+  const [citationStyle, setCitationStyle] = useState<CitationStyle>("APA");
 
   useEffect(() => {
     async function loadNote() {
@@ -31,6 +41,8 @@ export default function EditNote() {
         setContent(note.content);
         setIsPublic(note.isPublic);
         setTags(note.tags || []);
+        setAuthors(note.authors || "");
+        setPublicationYear(note.publicationYear);
         
         // Load attachments
         try {
@@ -70,13 +82,27 @@ export default function EditNote() {
     );
   };
 
+  // Citation handlers
+  const handleInsertCitation = (marker: string) => {
+    // Insert citation at the end when using sidebar
+    const newContent = content + marker;
+    setContent(newContent);
+  };
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !id) return;
     
     try {
       setLoading(true);
-      await updateNote(id, { title, content, isPublic, tags });
+      await updateNote(id, { 
+        title, 
+        content, 
+        isPublic, 
+        tags,
+        authors: authors || undefined,
+        publicationYear: publicationYear || undefined,
+      });
 
       const baselineMap = new Map(attachmentBaseline.map((attachment) => [attachment.id, attachment]));
       const attachmentsToUpdate = attachments.filter((attachment) => {
@@ -128,15 +154,17 @@ export default function EditNote() {
   }
 
   return (
-      <div className="edit-note">
-        <div className="edit-note-header">
-          <h1 className="page-title">✏️ Edit Note</h1>
-          <p className="page-subtitle">
-            Update your study notes with new insights
-          </p>
-        </div>
+      <div className="edit-note-page">
+        <div className="edit-note-main">
+          <div className="edit-note">
+            <div className="edit-note-header">
+              <h1 className="page-title">✏️ Edit Note</h1>
+              <p className="page-subtitle">
+                Update your study notes with new insights
+              </p>
+            </div>
 
-        <form onSubmit={handleSubmit} className="edit-note-form">
+            <form onSubmit={handleSubmit} className="edit-note-form">
           <div className="form-group">
             <label htmlFor="title" className="form-label">
               📝 Note Title
@@ -156,30 +184,27 @@ export default function EditNote() {
             <label htmlFor="content" className="form-label">
               📖 Content (Markdown supported)
             </label>
-            <textarea
-              id="content"
+            <MarkdownEditor
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="# Java Basics
+              onChange={setContent}
+              excludeNoteId={id}
+              placeholder={`# Java Basics
 
 ## Variables
-- `int` - integers
-- `String` - text
+- \`int\` - integers
+- \`String\` - text
 
 ### Code Example
-```java
-System.out.println(&quot;Hello World&quot;);
-```
+\`\`\`java
+System.out.println('Hello World');
+\`\`\`
 
-> 💡 **Tip:** Use markdown for formatting!"
-              className="form-textarea"
-              rows={12}
+> 💡 **Tip:** Use markdown for formatting!
+
+Type @ to insert citations to other notes.`}
+              minHeight={400}
+              showPreview={true}
             />
-            <div className="form-help">
-              <span className="help-text">
-                💡 Tip: Use Markdown for rich formatting (headers, code blocks, lists, etc.)
-              </span>
-            </div>
           </div>
 
           <div className="form-group">
@@ -191,6 +216,42 @@ System.out.println(&quot;Hello World&quot;);
               onChange={setTags}
               placeholder="Add tags like 'java', 'spring', 'basics'..."
             />
+          </div>
+
+          {/* Academic Metadata Section */}
+          <div className="form-group academic-metadata">
+            <label className="form-label">📚 Citation Metadata (for references)</label>
+            <div className="metadata-row">
+              <div className="metadata-field">
+                <label htmlFor="authors">Author(s)</label>
+                <input
+                  id="authors"
+                  type="text"
+                  value={authors}
+                  onChange={(e) => setAuthors(e.target.value)}
+                  placeholder="e.g., Smith, John or Smith, J. & Doe, J."
+                  className="form-input"
+                />
+              </div>
+              <div className="metadata-field year-field">
+                <label htmlFor="publicationYear">Year</label>
+                <input
+                  id="publicationYear"
+                  type="number"
+                  value={publicationYear || ""}
+                  onChange={(e) => setPublicationYear(e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder={new Date().getFullYear().toString()}
+                  className="form-input"
+                  min="1900"
+                  max="2100"
+                />
+              </div>
+            </div>
+            <div className="form-help">
+              <span className="help-text">
+                Used when this note is cited by other notes
+              </span>
+            </div>
           </div>
 
           <div className="form-group">
@@ -248,7 +309,20 @@ System.out.println(&quot;Hello World&quot;);
               {loading ? "⏳ Updating..." : "💾 Save Changes"}
             </Button>
           </div>
-        </form>
+            </form>
+          </div>
+        </div>
+
+        {/* Citation Sidebar */}
+        {id && (
+          <CitationSidebar
+            noteId={id}
+            citationStyle={citationStyle}
+            onInsertCitation={handleInsertCitation}
+            onStyleChange={setCitationStyle}
+          />
+        )}
+
       </div>
   );
 }

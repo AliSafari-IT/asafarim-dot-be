@@ -91,7 +91,7 @@ public class PublicNotesService {
                 .sorted()
                 .toList();
 
-        return new StudyNoteResponse(
+        StudyNoteResponse response = new StudyNoteResponse(
                 n.getId(),
                 n.getTitle(),
                 n.getContent(),
@@ -103,6 +103,11 @@ public class PublicNotesService {
                 tagNames,
                 n.getUser() != null ? n.getUser().getUsername() : "Unknown"
         );
+        
+        // Set publicId for citations
+        response.setPublicId(n.getPublicId());
+        
+        return response;
     }
 
     /**

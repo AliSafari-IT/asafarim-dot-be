@@ -1,0 +1,37 @@
+.reference-list {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--color-border, #e2e8f0);
+}
+
+.reference-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text, #1e293b);
+  margin: 0 0 1rem 0;
+}
+
+.references {
+  margin: 0;
+  padding-left: 2rem;
+  list-style-type: decimal;
+}
+
+.reference-item {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.reference-text {
+  cursor: pointer;
+  color: var(--color-text, #1e293b);
+  transition: color 0.2s;
+}
+
+.reference-text:hover {
+  color: var(--color-primary, #3b82f6);
+}
+
+.reference-formatted {
+  display: inline;
+}

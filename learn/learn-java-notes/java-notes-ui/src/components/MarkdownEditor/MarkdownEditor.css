@@ -1,0 +1,458 @@
+/* MarkdownEditor.css - CodeMirror Markdown Editor with Theme Support */
+
+.markdown-editor {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  background-color: var(--color-surface, #ffffff);
+  overflow: hidden;
+}
+
+/* Toolbar */
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background-color: var(--color-surface-muted, #f8fafc);
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.toolbar-group button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-muted, #64748b);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.toolbar-group button:hover {
+  background-color: var(--bg-hover-color, #e2e8f0);
+  color: var(--color-text, #1e293b);
+}
+
+.toolbar-group button:active {
+  background-color: var(--bg-active-color, #cbd5e1);
+}
+
+.toolbar-group button.active {
+  background-color: var(--color-primary-muted, #3b82f620);
+  color: var(--color-primary, #3b82f6);
+}
+
+.toolbar-group button.citation-btn {
+  background-color: var(--color-primary-muted, #3b82f615);
+  color: var(--color-primary, #3b82f6);
+  font-weight: 500;
+}
+
+.toolbar-group button.citation-btn:hover {
+  background-color: var(--color-primary, #3b82f6);
+  color: white;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--color-border, #e2e8f0);
+  margin: 0 6px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.view-toggle button {
+  padding: 4px 12px;
+  font-size: 13px;
+}
+
+/* Editor Content Area */
+.editor-content {
+  display: flex;
+  flex: 1;
+  min-height: 200px;
+  overflow: hidden;
+}
+
+.editor-content.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.editor-content.split .editor-pane {
+  display: block !important;
+  border-right: 1px solid var(--color-border, #e2e8f0);
+}
+
+/* CodeMirror Wrapper */
+.codemirror-wrapper {
+  flex: 1;
+  overflow: auto;
+}
+
+.codemirror-wrapper .cm-editor {
+  height: 100%;
+  background-color: var(--color-background, #ffffff);
+}
+
+.codemirror-wrapper .cm-editor.cm-focused {
+  outline: none;
+}
+
+/* Preview Pane */
+.preview-pane {
+  flex: 1;
+  padding: 16px;
+  overflow: auto;
+  background-color: var(--color-background, #ffffff);
+  color: var(--color-text, #1e293b);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.preview-pane h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-border, #e2e8f0);
+  color: var(--color-text, #1e293b);
+}
+
+.preview-pane h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem 0;
+  color: var(--color-text, #1e293b);
+}
+
+.preview-pane h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem 0;
+  color: var(--color-text, #1e293b);
+}
+
+.preview-pane p {
+  margin: 0 0 1rem 0;
+}
+
+.preview-pane ul,
+.preview-pane ol {
+  margin: 0 0 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.preview-pane li {
+  margin-bottom: 0.25rem;
+}
+
+.preview-pane blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--color-primary, #3b82f6);
+  background-color: var(--color-surface-muted, #f8fafc);
+  border-radius: 0 4px 4px 0;
+  color: var(--color-text-muted, #64748b);
+  font-style: italic;
+}
+
+.preview-pane pre.code-block {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: var(--color-neutral-900, #0f172a);
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.preview-pane pre.code-block code {
+  color: #e2e8f0;
+}
+
+.preview-pane .inline-code {
+  padding: 0.15rem 0.4rem;
+  background-color: var(--color-surface-muted, #f1f5f9);
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9em;
+  color: var(--color-primary, #3b82f6);
+}
+
+.preview-pane a {
+  color: var(--color-primary, #3b82f6);
+  text-decoration: none;
+}
+
+.preview-pane a:hover {
+  text-decoration: underline;
+}
+
+.preview-pane hr {
+  margin: 1.5rem 0;
+  border: none;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+.preview-pane table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+}
+
+.preview-pane th,
+.preview-pane td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+  text-align: left;
+}
+
+.preview-pane th {
+  background-color: var(--color-surface-muted, #f8fafc);
+  font-weight: 600;
+}
+
+.preview-pane img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+/* Citation in preview */
+.preview-pane [📚] {
+  color: var(--color-primary, #3b82f6);
+}
+
+/* Editor Footer */
+.editor-footer {
+  padding: 8px 12px;
+  background-color: var(--color-surface-muted, #f8fafc);
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+.shortcuts-hint {
+  font-size: 12px;
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.shortcuts-hint kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: inherit;
+  font-size: 11px;
+  background-color: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== DARK THEME ===== */
+.markdown-editor.dark {
+  background-color: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.markdown-editor.dark .editor-toolbar {
+  background-color: var(--color-surface-muted, #0f172a);
+  border-color: var(--color-border, #334155);
+}
+
+.markdown-editor.dark .toolbar-group button {
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.markdown-editor.dark .toolbar-group button:hover {
+  background-color: var(--bg-hover-color, #334155);
+  color: var(--color-text, #f1f5f9);
+}
+
+.markdown-editor.dark .toolbar-divider {
+  background-color: var(--color-border, #334155);
+}
+
+.markdown-editor.dark .codemirror-wrapper .cm-editor {
+  background-color: var(--color-background, #0f172a);
+}
+
+.markdown-editor.dark .preview-pane {
+  background-color: var(--color-background, #0f172a);
+  color: var(--color-text, #f1f5f9);
+}
+
+.markdown-editor.dark .preview-pane h1,
+.markdown-editor.dark .preview-pane h2,
+.markdown-editor.dark .preview-pane h3 {
+  color: var(--color-text, #f1f5f9);
+}
+
+.markdown-editor.dark .preview-pane h1 {
+  border-color: var(--color-border, #334155);
+}
+
+.markdown-editor.dark .preview-pane blockquote {
+  background-color: var(--color-surface-muted, #1e293b);
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.markdown-editor.dark .preview-pane .inline-code {
+  background-color: var(--color-surface-muted, #1e293b);
+}
+
+.markdown-editor.dark .preview-pane th {
+  background-color: var(--color-surface-muted, #1e293b);
+}
+
+.markdown-editor.dark .preview-pane th,
+.markdown-editor.dark .preview-pane td {
+  border-color: var(--color-border, #334155);
+}
+
+.markdown-editor.dark .preview-pane hr {
+  border-color: var(--color-border, #334155);
+}
+
+.markdown-editor.dark .editor-footer {
+  background-color: var(--color-surface-muted, #0f172a);
+  border-color: var(--color-border, #334155);
+}
+
+.markdown-editor.dark .shortcuts-hint kbd {
+  background-color: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .editor-toolbar {
+    padding: 6px 8px;
+  }
+
+  .toolbar-group button {
+    min-width: 28px;
+    height: 28px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .toolbar-divider {
+    margin: 0 4px;
+  }
+
+  .view-toggle {
+    margin-top: 4px;
+  }
+
+  .editor-content.split {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .editor-content.split .editor-pane {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+  }
+
+  .shortcuts-hint {
+    display: none;
+  }
+}
+
+/* ===== CodeMirror Syntax Highlighting ===== */
+.cm-header-1 {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--color-primary, #3b82f6);
+}
+
+.cm-header-2 {
+  font-size: 1.3em;
+  font-weight: 600;
+  color: var(--color-primary, #3b82f6);
+}
+
+.cm-header-3 {
+  font-size: 1.15em;
+  font-weight: 600;
+  color: var(--color-primary, #3b82f6);
+}
+
+.cm-strong {
+  font-weight: 700;
+  color: var(--color-text, #1e293b);
+}
+
+.cm-emphasis {
+  font-style: italic;
+  color: var(--color-text, #1e293b);
+}
+
+.cm-strikethrough {
+  text-decoration: line-through;
+  color: var(--color-text-muted, #64748b);
+}
+
+.cm-link {
+  color: var(--color-primary, #3b82f6);
+  text-decoration: underline;
+}
+
+.cm-url {
+  color: var(--color-text-muted, #64748b);
+  font-size: 0.9em;
+}
+
+.cm-quote {
+  color: var(--color-text-muted, #64748b);
+  font-style: italic;
+}
+
+.cm-list {
+  color: var(--color-primary, #3b82f6);
+}
+
+/* Citation Marker in Editor */
+.cm-citation-marker {
+  background-color: var(--color-primary-muted, #3b82f620);
+  border-radius: 4px;
+  padding: 0 4px;
+  color: var(--color-primary, #3b82f6);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cm-citation-marker:hover {
+  background-color: var(--color-primary-muted, #3b82f640);
+  text-decoration: underline;
+}
+
+/* Animation */
+@keyframes pulse-citation {
+  0%, 100% {
+    background-color: var(--color-primary-muted, #3b82f620);
+  }
+  50% {
+    background-color: var(--color-primary-muted, #3b82f640);
+  }
+}
+
+.cm-citation-marker.new {
+  animation: pulse-citation 0.5s ease;
+}

@@ -5,12 +5,13 @@ import {
   Link,
   useSearchParams,
 } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { getNote, trackNoteView, getAttachments, type StudyNote, type Attachment } from "../api/notesApi";
+import { renderCitations, getCitedNotes, getCitingNotes, type CitationRenderResult } from "../api/citationApi";
+import { MarkdownWithCitations, CitationGraph } from "../components/citations";
 import TagBadge from "../components/TagBadge";
 import AttachmentList from "../components/AttachmentList";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import type { CitationStyle, CitedNote, CitingNote } from "../types/citation";
 import "./NoteDetails.css";
 
 export default function NoteDetails() {
@@ -22,6 +23,13 @@ export default function NoteDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const viewTrackedRef = useRef(false);
+  
+  // Citation state
+  const [citationStyle, setCitationStyle] = useState<CitationStyle>("APA");
+  const [citationResult, setCitationResult] = useState<CitationRenderResult | undefined>();
+  const [citedNotes, setCitedNotes] = useState<CitedNote[]>([]);
+  const [citingNotes, setCitingNotes] = useState<CitingNote[]>([]);
+  const [showCitationGraph, setShowCitationGraph] = useState(false);
 
   function handleTagClick(tag: string) {
     setSearchParams({ tag });
@@ -69,6 +77,32 @@ export default function NoteDetails() {
     if (!note) return;
     console.log("current note", note);
   }, [note]);
+
+  // Load citation data when note changes or citation style changes
+  useEffect(() => {
+    async function loadCitations() {
+      if (!id || !note) return;
+      
+      try {
+        // Load citation render result
+        const result = await renderCitations(id, citationStyle);
+        setCitationResult(result);
+        
+        // Load cited and citing notes for graph
+        const [cited, citing] = await Promise.all([
+          getCitedNotes(id),
+          getCitingNotes(id),
+        ]);
+        setCitedNotes(cited);
+        setCitingNotes(citing);
+      } catch (err) {
+        console.error("Failed to load citations:", err);
+        // Non-critical, continue without citations
+      }
+    }
+    
+    loadCitations();
+  }, [id, note, citationStyle]);
 
   const getWordCount = () => {
     return note?.content
@@ -187,14 +221,52 @@ export default function NoteDetails() {
         </div>
       </header>
 
-      {/* Note Content */}
+      {/* Citation Style Selector */}
+      <div className="citation-controls">
+        <label htmlFor="citation-style">📚 Citation Style:</label>
+        <select
+          id="citation-style"
+          value={citationStyle}
+          onChange={(e) => setCitationStyle(e.target.value as CitationStyle)}
+          className="citation-style-select"
+        >
+          <option value="APA">APA</option>
+          <option value="MLA">MLA</option>
+          <option value="IEEE">IEEE</option>
+          <option value="CHICAGO">Chicago</option>
+          <option value="HARVARD">Harvard</option>
+          <option value="VANCOUVER">Vancouver</option>
+        </select>
+        <button
+          type="button"
+          onClick={() => setShowCitationGraph(!showCitationGraph)}
+          className="toggle-graph-btn"
+        >
+          {showCitationGraph ? "📊 Hide Graph" : "📊 Show Citation Graph"}
+        </button>
+      </div>
+
+      {/* Citation Graph */}
+      {showCitationGraph && (
+        <section className="citation-graph-section">
+          <h3>🔗 Citation Network</h3>
+          <CitationGraph
+            noteId={id!}
+            noteTitle={note.title}
+            citedNotes={citedNotes}
+            citingNotes={citingNotes}
+          />
+        </section>
+      )}
+
+      {/* Note Content with Citations */}
       <article className="note-details-content">
         {note.content ? (
-          <div className="markdown-content">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {note.content}
-            </ReactMarkdown>
-          </div>
+          <MarkdownWithCitations
+            content={note.content}
+            renderResult={citationResult}
+            showReferences={true}
+          />
         ) : (
           <div className="empty-content">
             <div className="empty-icon">📄</div>

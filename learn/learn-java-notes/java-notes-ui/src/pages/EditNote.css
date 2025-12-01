@@ -1,3 +1,16 @@
+/* Edit Note Page Layout with Sidebar */
+.edit-note-page {
+  display: flex;
+  gap: var(--spacing-xl);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.edit-note-main {
+  flex: 1;
+  min-width: 0;
+}
+
 /* Edit Note Page Styles */
 .edit-note {
   max-width: 800px;
@@ -215,7 +228,52 @@
   max-width: 400px;
 }
 
+/* Academic Metadata Section */
+.academic-metadata {
+  background: var(--color-background);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  border: 1px dashed var(--color-border);
+}
+
+.metadata-row {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-sm);
+}
+
+.metadata-field {
+  flex: 1;
+}
+
+.metadata-field.year-field {
+  flex: 0 0 120px;
+}
+
+.metadata-field label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .edit-note-page {
+    flex-direction: column;
+  }
+  
+  .edit-note-page .citation-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 40vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    z-index: 100;
+  }
+}
+
 @media (max-width: 768px) {
   .edit-note {
     padding: 0 var(--spacing-md);
@@ -252,6 +310,25 @@
   .save-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .metadata-row {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .metadata-field.year-field {
+    flex: 1;
+  }
+  
+  .citation-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-sm);
+  }
+  
+  .toggle-graph-btn {
+    margin-left: 0;
   }
 }
 
