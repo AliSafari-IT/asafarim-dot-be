@@ -156,6 +156,7 @@ export default function SearchPage() {
         <h1>Search Notes</h1>
         <SearchBar
           initialQuery={query}
+          initialTags={selectedTags}
           onSearch={handleSearch}
           showAdvancedLink={false}
           className="search-page-bar"
@@ -169,10 +170,7 @@ export default function SearchPage() {
           <select
             className="search-filter-select"
             value={sort}
-            onChange={(e) => {
-              setSort(e.target.value as SortOption);
-              executeSearch(true);
-            }}
+            onChange={(e) => setSort(e.target.value as SortOption)}
           >
             <option value="relevance">Relevance</option>
             <option value="date">Newest First</option>
@@ -186,10 +184,7 @@ export default function SearchPage() {
           <select
             className="search-filter-select"
             value={dateFilter}
-            onChange={(e) => {
-              setDateFilter(e.target.value);
-              executeSearch(true);
-            }}
+            onChange={(e) => setDateFilter(e.target.value)}
           >
             <option value="">All Time</option>
             <option value="today">Today</option>
@@ -204,10 +199,7 @@ export default function SearchPage() {
             <input
               type="checkbox"
               checked={hasAttachments}
-              onChange={(e) => {
-                setHasAttachments(e.target.checked);
-                executeSearch(true);
-              }}
+              onChange={(e) => setHasAttachments(e.target.checked)}
             />
             <span>Has Attachments</span>
           </label>
