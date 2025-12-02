@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Layout.css";
-import { getNoteCount } from "../api/notesApi";
+import { getPublicNoteCount } from "../api/notesApi";
 import { useAuth } from "../contexts/useAuth";
 import {
   ButtonComponent as Button,
@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     if (isAuthenticated) {
       async function loadNoteCount() {
         try {
-          const count = await getNoteCount();
+          const count = await getPublicNoteCount();
           setNoteCount(count);
         } catch (error) {
           console.error("Failed to load note count:", error);

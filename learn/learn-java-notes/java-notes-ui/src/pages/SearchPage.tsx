@@ -4,7 +4,6 @@ import {
   advancedSearch,
   publicAdvancedSearch,
   trackSearchClick,
-  getTags,
   type AdvancedSearchRequest,
   type AdvancedSearchResult,
   type SearchHit,
@@ -38,24 +37,10 @@ export default function SearchPage() {
   const [result, setResult] = useState<AdvancedSearchResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [allTags, setAllTags] = useState<string[]>([]);
-
+  
   // Pagination
   const [offset, setOffset] = useState(0);
-  const limit = 20;
-
-  // Load tags for filter
-  useEffect(() => {
-    const loadTags = async () => {
-      try {
-        const tags = await getTags();
-        setAllTags(tags);
-      } catch (err) {
-        console.error("Failed to load tags:", err);
-      }
-    };
-    loadTags();
-  }, []);
+  const limit = 10;
 
   // Execute search when params change
   const executeSearch = useCallback(async (resetOffset = true) => {
@@ -229,34 +214,7 @@ export default function SearchPage() {
         </div>
       </div>
 
-      {/* Tag Filters */}
-      {allTags.length > 0 && (
-        <div className="search-tag-filters">
-          <span className="search-tag-filters-label">Tags:</span>
-          <div className="search-tag-chips">
-            {allTags.slice(0, 15).map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                className={`search-tag-chip ${selectedTags.includes(tag) ? "active" : ""}`}
-                style={getTagColorStyle(tag)}
-                onClick={() => {
-                  const newTags = selectedTags.includes(tag)
-                    ? selectedTags.filter((t) => t !== tag)
-                    : [...selectedTags, tag];
-                  setSelectedTags(newTags);
-                  executeSearch(true);
-                }}
-              >
-                {tag}
-              </button>
-            ))}
-            {allTags.length > 15 && (
-              <span className="search-tag-more">+{allTags.length - 15} more</span>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Tag chips removed - use SearchBar's tag dropdown instead */}
 
       {/* Search Info */}
       {result && !loading && (
@@ -302,7 +260,7 @@ export default function SearchPage() {
                 <div className="search-suggestions-box">
                   <p>Try searching for:</p>
                   <div className="search-suggestions-list">
-                    {result.suggestions.map((s) => (
+                    {result.suggestions?.map((s) => (
                       <button
                         key={s}
                         className="search-suggestion-btn"
@@ -388,7 +346,7 @@ export default function SearchPage() {
                   onClick={handleLoadMore}
                   disabled={loading}
                 >
-                  Load More ({result.totalCount - result.hits.length - offset} remaining)
+                  Load More (showing {result.hits.length} of {result.totalCount})
                 </button>
               )}
             </>

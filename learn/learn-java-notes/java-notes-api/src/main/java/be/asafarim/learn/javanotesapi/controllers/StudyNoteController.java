@@ -2,6 +2,7 @@ package be.asafarim.learn.javanotesapi.controllers;
 
 import be.asafarim.learn.javanotesapi.dto.MessageResponse;
 import be.asafarim.learn.javanotesapi.dto.NoteAnalytics;
+import be.asafarim.learn.javanotesapi.dto.PagedResponse;
 import be.asafarim.learn.javanotesapi.dto.SlugUpdateRequest;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteRequest;
 import be.asafarim.learn.javanotesapi.dto.StudyNoteResponse;
@@ -29,12 +30,71 @@ public class StudyNoteController {
         this.viewService = viewService;
     }
 
+    /**
+     * Get all notes for current user (legacy endpoint, kept for backwards compatibility)
+     */
     @GetMapping
     public List<StudyNoteResponse> getAll(
             @RequestParam(required = false) String query,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false, defaultValue = "newest") String sort) {
         return service.searchWithTag(query, tag, sort);
+    }
+
+    // ============ Feed Endpoints (Public Notes Bug Fix) ============
+
+    /**
+     * Get paginated feed - PUBLIC/FEATURED notes + current user's notes (if authenticated)
+     * This is the main endpoint for the homepage.
+     * 
+     * Anonymous user: sees only PUBLIC and FEATURED notes
+     * Authenticated user: sees PUBLIC/FEATURED notes + their own notes (any visibility)
+     */
+    @GetMapping("/feed")
+    public ResponseEntity<PagedResponse<StudyNoteResponse>> getFeed(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String tag,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "newest") String sort) {
+        return ResponseEntity.ok(service.getFeed(query, tag, page, size, sort));
+    }
+
+    /**
+     * Get paginated "My Notes" - only current user's notes (requires authentication)
+     */
+    @GetMapping("/my")
+    public ResponseEntity<PagedResponse<StudyNoteResponse>> getMyNotes(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String tag,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "newest") String sort) {
+        return ResponseEntity.ok(service.getMyNotes(query, tag, page, size, sort));
+    }
+
+    /**
+     * Get total feed count
+     */
+    @GetMapping("/feed/count")
+    public ResponseEntity<Long> getFeedCount() {
+        return ResponseEntity.ok(service.getFeedCount());
+    }
+
+    // ============ Citable Notes Endpoint (Citation Sidebar) ============
+
+    /**
+     * Get citable notes for citation sidebar.
+     * Returns: PUBLIC/FEATURED notes from ALL users + current user's own notes (any visibility)
+     * 
+     * This fixes the bug where citation sidebar showed zero results for non-admin users.
+     */
+    @GetMapping("/citable")
+    public ResponseEntity<PagedResponse<StudyNoteResponse>> getCitableNotes(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(service.getCitableNotes(query, page, size));
     }
 
     @GetMapping("/{id}")

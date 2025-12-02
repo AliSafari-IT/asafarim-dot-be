@@ -1,11 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { getPublicNotes, type StudyNote } from "../api/notesApi";
+import { getPublicNotes, getMyNotes, type StudyNote } from "../api/notesApi";
 import NoteCard from "../components/NoteCard";
 import TagBadge from "../components/TagBadge";
 import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import { useDebounce } from "../hooks/useDebounce";
 import "./PublicNotesList.css";
+import { useAuth } from "../contexts/useAuth";
 
 export default function PublicNotesList() {
   const navigate = useNavigate();
@@ -19,17 +20,33 @@ export default function PublicNotesList() {
   const activeTag = searchParams.get("tag") || "";
   const activeSort = searchParams.get("sort") || "newest";
   const debouncedQuery = useDebounce(searchQuery, 300);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     async function loadNotes() {
       try {
         setLoading(true);
-        const filter = {
-          query: debouncedQuery || undefined,
-          tag: activeTag || undefined,
-          sort: activeSort || undefined,
-        };
-        const data = await getPublicNotes(filter);
+        let data: StudyNote[];
+
+        // Handle "myNotes" filter
+        if (activeSort === "myNotes" && isAuthenticated) {
+          const response = await getMyNotes({
+            query: debouncedQuery || undefined,
+            tag: activeTag || undefined,
+            sort: undefined, // Don't pass sort to myNotes endpoint
+            page: 0,
+            size: 100, // Load more for public view
+          });
+          data = response.items;
+        } else {
+          const filter = {
+            query: debouncedQuery || undefined,
+            tag: activeTag || undefined,
+            sort: activeSort || undefined,
+          };
+          data = await getPublicNotes(filter);
+        }
+
         setNotes(data);
         if (!debouncedQuery && !activeTag) {
           setTotalCount(data.length);
@@ -47,7 +64,7 @@ export default function PublicNotesList() {
     }
 
     loadNotes();
-  }, [debouncedQuery, activeTag, activeSort]);
+  }, [debouncedQuery, activeTag, activeSort, isAuthenticated]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -96,7 +113,7 @@ export default function PublicNotesList() {
   }
 
   const isSearching = searchQuery.trim().length > 0;
-  const isFiltering = isSearching || activeTag;
+  const isFiltering = isSearching || activeTag || activeSort === "myNotes";
   const hasNoResults = !loading && notes.length === 0 && isFiltering;
 
   const displayTags = useMemo(() => {
@@ -116,10 +133,7 @@ export default function PublicNotesList() {
           </p>
         </div>
         <div className="header-actions">
-          <Button
-            variant="secondary"
-            onClick={() => navigate("/")}
-          >
+          <Button variant="secondary" onClick={() => navigate("/")}>
             ← Back to My Notes
           </Button>
         </div>
@@ -162,6 +176,9 @@ export default function PublicNotesList() {
               onChange={handleSortChange}
               className="notes-sort-select"
             >
+              {isAuthenticated && (
+                <option value="myNotes">Notes created by me</option>
+              )}
               <option value="newest">Newest first</option>
               <option value="oldest">Oldest first</option>
               <option value="az">Title A–Z</option>
@@ -171,7 +188,7 @@ export default function PublicNotesList() {
             </select>
           </div>
 
-          { isMobileView && displayTags.length > 0 && (
+          {isMobileView && displayTags.length > 0 && (
             <div className="notes-tags-filter-container">
               <span className="notes-tags-filter-label">Filter by tag:</span>
               <div className="notes-tags-filter-list">
@@ -193,12 +210,21 @@ export default function PublicNotesList() {
         {isFiltering && !loading && (
           <div className="active-filters-info">
             <div className="filter-summary">
-              Found <strong>{notes.length}</strong> {notes.length === 1 ? "note" : "notes"}
+              Found <strong>{notes.length}</strong>{" "}
+              {notes.length === 1 ? "note" : "notes"}
               {totalCount > 0 && ` out of ${totalCount}`}
-              {isSearching && <> matching "<em>{searchQuery}</em>"</>}
+              {activeSort === "myNotes" && <> created by me</>}
+              {isSearching && (
+                <>
+                  {activeSort === "myNotes" ? " matching " : " matching "}
+                  <em>"{searchQuery}"</em>
+                </>
+              )}
               {activeTag && (
                 <span className="active-tag-filter">
-                  {isSearching ? " with tag " : " tagged "}
+                  {isSearching || activeSort === "myNotes"
+                    ? " with tag "
+                    : " tagged "}
                   <TagBadge
                     tag={activeTag}
                     onRemove={handleClearTagFilter}
@@ -208,7 +234,7 @@ export default function PublicNotesList() {
                 </span>
               )}
             </div>
-            {(isSearching || activeTag) && (
+            {(isSearching || activeTag || activeSort === "myNotes") && (
               <button
                 onClick={handleClearAllFilters}
                 className="clear-all-filters-btn"
@@ -245,11 +271,11 @@ export default function PublicNotesList() {
       ) : notes.length > 0 ? (
         <div className="notes-grid">
           {notes.map((note) => (
-            <NoteCard 
-              key={note.id} 
-              note={note} 
-              onDelete={() => {}} 
-              canDelete={false} 
+            <NoteCard
+              key={note.id}
+              note={note}
+              onDelete={() => {}}
+              canDelete={false}
               linkTo={`/public/note/${note.id}`}
             />
           ))}
@@ -259,11 +285,7 @@ export default function PublicNotesList() {
           <div className="empty-icon">🌍</div>
           <h2>No public notes yet</h2>
           <p>Be the first to share your knowledge with the community!</p>
-          <Button
-            variant="brand"
-            size="lg"
-            onClick={() => navigate("/")}
-          >
+          <Button variant="brand" size="lg" onClick={() => navigate("/")}>
             ← Back to My Notes
           </Button>
         </div>
