@@ -38,6 +38,7 @@ declare -A FRONTEND_APPS=(
     ["jobs-ui"]="apps/jobs-ui/dist"
     ["taskmanagement-web"]="showcases/TaskManagement/taskmanagement-web/dist"
     ["smartops-web"]="showcases/SmartOperationsDashboard/smartops-web/dist"
+    ["studynotes-ui"]="learn/learn-java-notes/java-notes-ui/dist"
 )
 
 # .NET APIs with their project paths and output directories
@@ -48,6 +49,11 @@ declare -A DotNet_API_PROJECTS=(
     ["TestAutomation.Api"]="apis/TestAutomation.Api/TestAutomation.Api.csproj"
     ["TaskManagement.Api"]="showcases/TaskManagement/TaskManagement.Api/TaskManagement.Api.csproj"
     ["SmartOps.Api"]="showcases/SmartOperationsDashboard/SmartOps.Api/SmartOps.Api.csproj"
+)
+
+# Java APIs with their project paths and output directories
+declare -A Java_API_PROJECTS=(
+    ["StudyNotes.Api"]="learn/learn-java-notes/java-notes-api"
 )
 
 # Nodejs APIs with their project paths and output directories
@@ -63,6 +69,7 @@ declare -A API_OUTPUTS=(
     ["TestRunner"]="$SITE_ROOT/apis/testrunner"
     ["TaskManagement.Api"]="$SITE_ROOT/apis/taskmanagement"
     ["SmartOps.Api"]="$SITE_ROOT/apis/smartops"
+    ["StudyNotes.Api"]="$SITE_ROOT/apis/studynotes"
 )
 
 # Systemd services
@@ -74,6 +81,7 @@ declare -A API_SERVICES=(
     ["TestRunner"]="nodejs-testora"
     ["TaskManagement.Api"]="dotnet-taskmanagement"
     ["SmartOps.Api"]="dotnet-smartops"
+    ["StudyNotes.Api"]="java-studynotes"
 )
 
 #############################################
@@ -191,6 +199,7 @@ need_bin pnpm
 need_bin node
 need_bin rsync
 need_bin dotnet
+need_bin mvn
 need_bin systemctl
 
 if [[ $(id -u) -ne 0 ]]; then
@@ -242,6 +251,12 @@ declare -A ALL_API_TYPES
 for key in "${!DotNet_API_PROJECTS[@]}"; do
     ALL_API_PROJECTS[$key]="${DotNet_API_PROJECTS[$key]}"
     ALL_API_TYPES[$key]="dotnet"
+done
+
+# Add Java APIs
+for key in "${!Java_API_PROJECTS[@]}"; do
+    ALL_API_PROJECTS[$key]="${Java_API_PROJECTS[$key]}"
+    ALL_API_TYPES[$key]="java"
 done
 
 # Add Node.js APIs
@@ -456,8 +471,9 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
     
     mkdir -p "$SITE_ROOT/apis"
     
-    # Separate .NET and Node.js APIs
+    # Separate .NET, Java, and Node.js APIs
     dotnet_apis=()
+    java_apis=()
     nodejs_apis=()
     
     for idx in "${selected_apis[@]}"; do
@@ -466,6 +482,8 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
         
         if [ "$api_type" = "dotnet" ]; then
             dotnet_apis+=("$idx")
+        elif [ "$api_type" = "java" ]; then
+            java_apis+=("$idx")
         elif [ "$api_type" = "nodejs" ]; then
             nodejs_apis+=("$idx")
         fi
@@ -511,6 +529,68 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                 fi
             else
                 print_error "Failed to build $key"
+                exit 1
+            fi
+        done
+    fi
+    
+    # Deploy Java APIs
+    if [ ${#java_apis[@]} -gt 0 ]; then
+        print_info "Building Java APIs..."
+        cd "$REPO_DIR"
+        
+        for idx in "${java_apis[@]}"; do
+            key="${api_keys[$((idx-1))]}"
+            project_path="${Java_API_PROJECTS[$key]}"
+            output_path="${API_OUTPUTS[$key]}"
+            project_dir="$REPO_DIR/$project_path"
+            
+            print_info "Building $key..."
+            
+            if [ ! -d "$project_dir" ]; then
+                print_error "Project directory not found: $project_dir"
+                exit 1
+            fi
+            
+            cd "$project_dir"
+            
+            # Build with Maven
+            if [ -f "pom.xml" ]; then
+                print_info "Building $key with Maven..."
+                if mvn clean package -DskipTests -q; then
+                    print_success "$key build successful"
+                    
+                    # Remove existing output directory
+                    if [ -d "$output_path" ]; then
+                        print_info "Removing existing deployment for $key"
+                        rm -rf "$output_path"
+                    fi
+                    
+                    # Deploy built JAR
+                    print_info "Deploying $key to $output_path"
+                    mkdir -p "$output_path"
+                    
+                    # Copy JAR file
+                    jar_file=$(find target -name "*.jar" -type f | head -1)
+                    if [ -n "$jar_file" ]; then
+                        cp "$jar_file" "$output_path/app.jar"
+                        
+                        # Set proper permissions for Java API
+                        chown -R www-data:www-data "$output_path"
+                        chmod -R 755 "$output_path"
+                        chmod 644 "$output_path/app.jar"
+                        
+                        print_success "$key deployed successfully"
+                    else
+                        print_error "JAR file not found for $key"
+                        exit 1
+                    fi
+                else
+                    print_error "Failed to build $key with Maven"
+                    exit 1
+                fi
+            else
+                print_error "pom.xml not found in $project_dir"
                 exit 1
             fi
         done
