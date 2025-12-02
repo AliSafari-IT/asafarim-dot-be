@@ -1,3 +1,4 @@
+// learn/learn-java-notes/java-notes-api/src/main/java/be/asafarim/learn/javanotesapi/services/StudyNoteService.java
 package be.asafarim.learn.javanotesapi.services;
 
 import be.asafarim.learn.javanotesapi.dto.NoteAnalytics;
@@ -20,6 +21,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import be.asafarim.learn.javanotesapi.dto.PagedResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -106,12 +113,164 @@ public class StudyNoteService {
                 .toList();
     }
 
+    // ============ Feed Methods (Fix for Public Notes Bug) ============
+
+    /**
+     * Get paginated feed for homepage.
+     * - Anonymous users: PUBLIC and FEATURED notes only
+     * - Authenticated users: PUBLIC/FEATURED notes + their own notes (any visibility)
+     */
+    public PagedResponse<StudyNoteResponse> getFeed(String query, String tagName, int page, int size, String sort) {
+        Pageable pageable = createPageable(page, size, sort);
+        boolean hasQuery = query != null && !query.trim().isEmpty();
+        boolean hasTag = tagName != null && !tagName.trim().isEmpty();
+
+        Page<StudyNote> notesPage;
+        
+        // Check if user is authenticated (avoid transactional exception)
+        User currentUser = null;
+        org.springframework.security.core.Authentication auth = 
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            try {
+                currentUser = authService.getCurrentUser();
+            } catch (Exception e) {
+                // User lookup failed - treat as anonymous
+            }
+        }
+
+        if (currentUser != null) {
+            // Authenticated: PUBLIC/FEATURED + own notes
+            UUID userId = currentUser.getId();
+            if (hasQuery && hasTag) {
+                notesPage = repository.searchFeedByQueryAndTagForUser(query.trim(), tagName.trim(), userId, pageable);
+            } else if (hasQuery) {
+                notesPage = repository.searchFeedForUser(query.trim(), userId, pageable);
+            } else if (hasTag) {
+                notesPage = repository.findFeedByTagForUser(tagName.trim(), userId, pageable);
+            } else {
+                notesPage = repository.findFeedForUser(userId, pageable);
+            }
+        } else {
+            // Anonymous: PUBLIC/FEATURED only
+            if (hasQuery && hasTag) {
+                notesPage = repository.searchFeedByQueryAndTagForAnonymous(query.trim(), tagName.trim(), pageable);
+            } else if (hasQuery) {
+                notesPage = repository.searchFeedForAnonymous(query.trim(), pageable);
+            } else if (hasTag) {
+                notesPage = repository.findFeedByTagForAnonymous(tagName.trim(), pageable);
+            } else {
+                notesPage = repository.findFeedForAnonymous(pageable);
+            }
+        }
+
+        List<StudyNoteResponse> items = notesPage.getContent().stream()
+                .map(this::toResponse)
+                .toList();
+
+        return new PagedResponse<>(items, notesPage.getNumber(), notesPage.getSize(), notesPage.getTotalElements());
+    }
+
+    /**
+     * Get paginated "My Notes" - only current user's notes (any visibility)
+     */
+    public PagedResponse<StudyNoteResponse> getMyNotes(String query, String tagName, int page, int size, String sort) {
+        User currentUser = authService.getCurrentUser();
+        Pageable pageable = createPageable(page, size, sort);
+        boolean hasQuery = query != null && !query.trim().isEmpty();
+        boolean hasTag = tagName != null && !tagName.trim().isEmpty();
+
+        Page<StudyNote> notesPage;
+        
+        if (hasQuery || hasTag) {
+            // For search, fall back to list and filter (can be optimized later with paginated queries)
+            List<StudyNote> filtered;
+            if (hasQuery && hasTag) {
+                filtered = repository.searchByQueryAndTagForUser(query.trim(), tagName.trim(), currentUser);
+            } else if (hasQuery) {
+                filtered = repository.searchByTitleOrContentForUser(query.trim(), currentUser);
+            } else {
+                filtered = repository.findByTagNameForUser(tagName.trim(), currentUser);
+            }
+            // Manual pagination
+            int start = page * size;
+            int end = Math.min(start + size, filtered.size());
+            List<StudyNote> pageContent = start < filtered.size() ? filtered.subList(start, end) : List.of();
+            
+            List<StudyNoteResponse> items = pageContent.stream().map(this::toResponse).toList();
+            return new PagedResponse<>(items, page, size, filtered.size());
+        } else {
+            notesPage = repository.findByUserOrderByCreatedAtDesc(currentUser, pageable);
+        }
+
+        List<StudyNoteResponse> items = notesPage.getContent().stream()
+                .map(this::toResponse)
+                .toList();
+
+        return new PagedResponse<>(items, notesPage.getNumber(), notesPage.getSize(), notesPage.getTotalElements());
+    }
+
+    /**
+     * Get feed count for display
+     */
+    public long getFeedCount() {
+        try {
+            User currentUser = authService.getCurrentUser();
+            return repository.countFeedForUser(currentUser.getId());
+        } catch (Exception e) {
+            return repository.countFeedForAnonymous();
+        }
+    }
+
+    private Pageable createPageable(int page, int size, String sort) {
+        // Validate page and size
+        page = Math.max(0, page);
+        size = Math.min(Math.max(1, size), 100); // Max 100 per page
+
+        Sort sortOrder = switch (sort != null ? sort.toLowerCase(Locale.ROOT) : "newest") {
+            case "oldest" -> Sort.by(Sort.Direction.ASC, "createdAt");
+            case "az" -> Sort.by(Sort.Direction.ASC, "title");
+            case "za" -> Sort.by(Sort.Direction.DESC, "title");
+            default -> Sort.by(Sort.Direction.DESC, "createdAt"); // newest
+        };
+
+        return PageRequest.of(page, size, sortOrder);
+    }
+
+    /**
+     * Get citable notes: PUBLIC/FEATURED from all users + user's own notes
+     */
+    public PagedResponse<StudyNoteResponse> getCitableNotes(String query, int page, int size) {
+        User currentUser = authService.getCurrentUser();
+        Pageable pageable = PageRequest.of(Math.max(0, page), Math.min(Math.max(1, size), 50));
+
+        Page<StudyNote> notesPage;
+        if (query != null && !query.isBlank()) {
+            notesPage = repository.searchCitableNotesForUser(query.trim(), currentUser.getId(), pageable);
+        } else {
+            notesPage = repository.findCitableNotesForUser(currentUser.getId(), pageable);
+        }
+
+        List<StudyNoteResponse> items = notesPage.getContent().stream()
+                .map(this::toResponse)
+                .toList();
+
+        return new PagedResponse<>(items, notesPage.getNumber(), notesPage.getSize(),
+                notesPage.getTotalElements());
+    }
+
     public StudyNoteResponse getById(UUID id) {
         User currentUser = authService.getCurrentUser();
         
         // First get the note without analytics (to avoid transaction issues)
         StudyNote note = repository.findById(id)
-                .filter(n -> n.getUser().getId().equals(currentUser.getId()))
+                .filter(n -> {
+                    // Allow: owner OR public/featured notes
+                    boolean isOwner = n.getUser().getId().equals(currentUser.getId());
+                    boolean isPublic = n.getVisibility() == NoteVisibility.PUBLIC 
+                            || n.getVisibility() == NoteVisibility.FEATURED;
+                    return isOwner || isPublic;
+                })
                 .orElseThrow(() -> new RuntimeException("Note not found or you don't have permission to access it"));
         
         // Force load the user to avoid lazy loading issues
@@ -220,6 +379,7 @@ public class StudyNoteService {
         note.setTitle(req.getTitle());
         note.setContent(req.getContent());
         note.setPublic(req.isPublic());
+        note.setVisibility(req.isPublic() ? NoteVisibility.PUBLIC : NoteVisibility.PRIVATE);
 
         // Update tags
         note.getTags().clear();
@@ -268,11 +428,18 @@ public class StudyNoteService {
 
         int readingTimeMinutes = Math.max(1, (int) Math.ceil(wordCount / 200.0));
 
-        List<String> tagNames = n.getTags().stream()
-                .map(Tag::getName)
-                .sorted()
-                .toList();
+        List<String> tagNames = n.getTags() != null 
+                ? n.getTags().stream()
+                    .map(Tag::getName)
+                    .sorted()
+                    .toList()
+                : List.of();
 
+        // Check visibility safely (may be null for legacy notes)
+        boolean isPublicNote = n.isPublic() || 
+                NoteVisibility.PUBLIC.equals(n.getVisibility()) || 
+                NoteVisibility.FEATURED.equals(n.getVisibility());
+        
         StudyNoteResponse response = new StudyNoteResponse(
                 n.getId(),
                 n.getTitle(),
@@ -281,7 +448,7 @@ public class StudyNoteService {
                 n.getUpdatedAt(),
                 readingTimeMinutes,
                 wordCount,
-                n.isPublic(),
+                isPublicNote,
                 tagNames,
                 n.getUser() != null ? n.getUser().getUsername() : "Unknown");
         

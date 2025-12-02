@@ -1,3 +1,4 @@
+// learn/learn-java-notes/java-notes-ui/src/api/notesApi.ts
 import axios from "axios";
 
 export const api = axios.create({
@@ -60,6 +61,29 @@ export interface NotesFilter {
   query?: string;
   tag?: string;
   sort?: string;
+  page?: number;
+  size?: number;
+}
+
+export interface PagedResponse<T> {
+  items: T[];
+  page: number;
+  size: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface UserPreference {
+  notesPerPage: number;
+  theme: 'LIGHT' | 'DARK' | 'SYSTEM';
+  language: string;
+  updatedAt: string;
+}
+
+export interface UpdatePreferenceRequest {
+  notesPerPage?: number;
+  theme?: string;
+  language?: string;
 }
 
 export const getNotes = async (filter?: NotesFilter) => {
@@ -68,6 +92,33 @@ export const getNotes = async (filter?: NotesFilter) => {
   if (filter?.tag) params.tag = filter.tag;
   if (filter?.sort) params.sort = filter.sort;
   const res = await api.get<StudyNote[]>("/notes", { params });
+  return res.data;
+};
+
+export const getNotesFeed = async (filter?: NotesFilter): Promise<PagedResponse<StudyNote>> => {
+  const params: Record<string, string | number> = {};
+  if (filter?.query) params.query = filter.query;
+  if (filter?.tag) params.tag = filter.tag;
+  if (filter?.sort) params.sort = filter.sort;
+  if (filter?.page !== undefined) params.page = filter.page;
+  if (filter?.size !== undefined) params.size = filter.size;
+  const res = await api.get<PagedResponse<StudyNote>>("/notes/feed", { params });
+  return res.data;
+};
+
+export const getMyNotes = async (filter?: NotesFilter): Promise<PagedResponse<StudyNote>> => {
+  const params: Record<string, string | number> = {};
+  if (filter?.query) params.query = filter.query;
+  if (filter?.tag) params.tag = filter.tag;
+  if (filter?.sort) params.sort = filter.sort;
+  if (filter?.page !== undefined) params.page = filter.page;
+  if (filter?.size !== undefined) params.size = filter.size;
+  const res = await api.get<PagedResponse<StudyNote>>("/notes/my", { params });
+  return res.data;
+};
+
+export const getFeedCount = async (): Promise<number> => {
+  const res = await api.get<number>("/notes/feed/count");
   return res.data;
 };
 
@@ -88,6 +139,27 @@ export const updateNote = async (id: string, data: StudyNoteRequest) => {
 
 export const deleteNote = async (id: string) => {
   await api.delete(`/notes/${id}`);
+};
+
+// ============ Citable Notes API (Citation Sidebar) ============
+
+/**
+ * Get citable notes for citation sidebar.
+ * Returns: PUBLIC/FEATURED notes from ALL users + current user's own notes.
+ */
+export const getCitableNotes = async (params?: {
+  query?: string;
+  page?: number;
+  size?: number;
+}): Promise<PagedResponse<StudyNote>> => {
+  const res = await api.get<PagedResponse<StudyNote>>("/notes/citable", {
+    params: {
+      query: params?.query || undefined,
+      page: params?.page ?? 0,
+      size: params?.size ?? 20,
+    },
+  });
+  return res.data;
 };
 
 // Tags API
@@ -576,5 +648,23 @@ export const updateNoteVisibility = async (noteId: string, visibility: NoteVisib
  */
 export const updateNoteSlug = async (noteId: string, slug: string): Promise<VisibilityResponse> => {
   const res = await api.put<VisibilityResponse>(`/notes/${noteId}/slug`, { slug });
+  return res.data;
+};
+
+// ============ User Preferences API ============
+
+/**
+ * Get current user's preferences
+ */
+export const getUserPreferences = async (): Promise<UserPreference> => {
+  const res = await api.get<UserPreference>("/users/me/preferences");
+  return res.data;
+};
+
+/**
+ * Update current user's preferences
+ */
+export const updateUserPreferences = async (data: UpdatePreferenceRequest): Promise<UserPreference> => {
+  const res = await api.put<UserPreference>("/users/me/preferences", data);
   return res.data;
 };

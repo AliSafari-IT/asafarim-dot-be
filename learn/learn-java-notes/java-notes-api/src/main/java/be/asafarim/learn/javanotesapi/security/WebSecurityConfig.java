@@ -62,6 +62,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/search/public/**").permitAll()
                         .requestMatchers("/api/tags/**").permitAll()
+                        .requestMatchers("/api/notes/feed").permitAll()
                         .anyRequest().authenticated()
                 );
 

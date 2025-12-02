@@ -288,4 +288,123 @@ public interface StudyNoteRepository extends JpaRepository<StudyNote, UUID> {
    */
   @Query("SELECT COUNT(n) FROM StudyNote n WHERE n.user.id = :userId")
   long countByUserId(@Param("userId") UUID userId);
+
+  // ============ Feed Queries (Public Notes Bug Fix) ============
+
+  /**
+   * Get feed for anonymous users: PUBLIC and FEATURED notes only
+   * Also includes legacy notes where isPublic=true but visibility not set
+   */
+  @Query("SELECT n FROM StudyNote n WHERE n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> findFeedForAnonymous(Pageable pageable);
+
+  /**
+   * Get feed for authenticated users: PUBLIC/FEATURED notes + user's own notes (any visibility)
+   * Also includes legacy notes where isPublic=true but visibility not set
+   */
+  @Query("SELECT n FROM StudyNote n WHERE n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true OR n.user.id = :userId ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> findFeedForUser(@Param("userId") UUID userId, Pageable pageable);
+
+  /**
+   * Search feed for anonymous users with query
+   */
+  @Query("SELECT n FROM StudyNote n WHERE (n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true) AND (" +
+      "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+      "ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> searchFeedForAnonymous(@Param("query") String query, Pageable pageable);
+
+  /**
+   * Search feed for authenticated users with query
+   */
+  @Query("SELECT n FROM StudyNote n WHERE (n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true OR n.user.id = :userId) AND (" +
+      "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+      "ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> searchFeedForUser(@Param("query") String query, @Param("userId") UUID userId, Pageable pageable);
+
+  /**
+   * Search feed for anonymous users with tag filter
+   */
+  @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t " +
+      "WHERE (n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true) AND LOWER(t.name) = LOWER(:tagName) " +
+      "ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> findFeedByTagForAnonymous(@Param("tagName") String tagName, Pageable pageable);
+
+  /**
+   * Search feed for authenticated users with tag filter
+   */
+  @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t " +
+      "WHERE (n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true OR n.user.id = :userId) AND LOWER(t.name) = LOWER(:tagName) " +
+      "ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> findFeedByTagForUser(@Param("tagName") String tagName, @Param("userId") UUID userId, Pageable pageable);
+
+  /**
+   * Search feed for anonymous users with query and tag
+   */
+  @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t " +
+      "WHERE (n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true) AND LOWER(t.name) = LOWER(:tagName) AND (" +
+      "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+      "ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> searchFeedByQueryAndTagForAnonymous(@Param("query") String query, @Param("tagName") String tagName, Pageable pageable);
+
+  /**
+   * Search feed for authenticated users with query and tag
+   */
+  @Query("SELECT DISTINCT n FROM StudyNote n JOIN n.tags t " +
+      "WHERE (n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true OR n.user.id = :userId) AND LOWER(t.name) = LOWER(:tagName) AND (" +
+      "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+      "ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> searchFeedByQueryAndTagForUser(@Param("query") String query, @Param("tagName") String tagName, @Param("userId") UUID userId, Pageable pageable);
+
+  /**
+   * Count feed notes for anonymous
+   */
+  @Query("SELECT COUNT(n) FROM StudyNote n WHERE n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true")
+  long countFeedForAnonymous();
+
+  /**
+   * Count feed notes for authenticated user
+   */
+  @Query("SELECT COUNT(n) FROM StudyNote n WHERE n.visibility IN ('PUBLIC', 'FEATURED') OR n.isPublic = true OR n.user.id = :userId")
+  long countFeedForUser(@Param("userId") UUID userId);
+
+  /**
+   * Get only user's own notes (for "My Notes" view) with pagination
+   */
+  org.springframework.data.domain.Page<StudyNote> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
+
+  // ============ Citable Notes Queries (Citation Sidebar) ============
+
+  /**
+   * Find all citable notes for a user: PUBLIC/FEATURED from anyone + user's own notes (any visibility)
+   */
+  @Query("SELECT n FROM StudyNote n WHERE n.visibility IN ('PUBLIC', 'FEATURED') OR n.user.id = :userId ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> findCitableNotesForUser(@Param("userId") UUID userId, Pageable pageable);
+
+  /**
+   * Search citable notes for a user by query
+   */
+  @Query("SELECT n FROM StudyNote n WHERE (n.visibility IN ('PUBLIC', 'FEATURED') OR n.user.id = :userId) AND (" +
+      "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+      "ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> searchCitableNotesForUser(@Param("query") String query, @Param("userId") UUID userId, Pageable pageable);
+
+  /**
+   * Find all public citable notes (for anonymous users, if needed)
+   */
+  @Query("SELECT n FROM StudyNote n WHERE n.visibility IN ('PUBLIC', 'FEATURED') ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> findPublicCitableNotes(Pageable pageable);
+
+  /**
+   * Search public citable notes by query (for anonymous users)
+   */
+  @Query("SELECT n FROM StudyNote n WHERE n.visibility IN ('PUBLIC', 'FEATURED') AND (" +
+      "LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+      "ORDER BY n.createdAt DESC")
+  org.springframework.data.domain.Page<StudyNote> searchPublicCitableNotes(@Param("query") String query, Pageable pageable);
 }

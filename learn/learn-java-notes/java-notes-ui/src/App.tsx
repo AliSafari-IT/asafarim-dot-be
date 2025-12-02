@@ -19,6 +19,7 @@ import TagManagementPage from "./pages/TagManagementPage";
 import SearchPage from "./pages/SearchPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import UserSettingsPage from "./pages/UserSettingsPage";
 import Layout from "./components/Layout";
 import AdminLayout from "./components/AdminLayout";
 import {
@@ -81,6 +82,18 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <EditNote />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* User Settings */}
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <UserSettingsPage />
                     </Layout>
                   </ProtectedRoute>
                 }

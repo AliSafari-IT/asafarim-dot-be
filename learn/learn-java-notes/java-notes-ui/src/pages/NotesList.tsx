@@ -1,8 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getNotes, getPublicNotes, deleteNote, searchNotes, searchPublicNotes, type StudyNote, type SearchResult } from "../api/notesApi";
+import { 
+  getNotesFeed, 
+  getMyNotes,
+  deleteNote, 
+  getUserPreferences, 
+  updateUserPreferences,
+  type StudyNote, 
+  type PagedResponse 
+} from "../api/notesApi";
 import NoteCard from "../components/NoteCard";
 import TagBadge from "../components/TagBadge";
+import Pagination from "../components/Pagination";
 import { ButtonComponent as Button, ConfirmDialog } from "@asafarim/shared-ui-react";
 import { useDebounce } from "../hooks/useDebounce";
 import { useAuth } from "../contexts/useAuth";
@@ -14,7 +23,13 @@ export default function NotesList() {
   const [notes, setNotes] = useState<StudyNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [totalCount, setTotalCount] = useState(0);
+  
+  // Pagination state
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [noteIdToDelete, setNoteIdToDelete] = useState<string | null>(null);
   
@@ -25,56 +40,86 @@ export default function NotesList() {
   // Debounce search query by 300ms
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-
-  const load = useCallback(async (query?: string, tag?: string, sort?: string) => {
-    try {
-      setLoading(true);
-      let data: StudyNote[];
-      
-      // Use full-text search when there's a search query
-      if (query && query.trim()) {
-        const searchFn = isAuthenticated ? searchNotes : searchPublicNotes;
-        const results = await searchFn({ q: query, tag: tag || undefined });
-        // Convert SearchResult to StudyNote format
-        data = results.map((r: SearchResult) => ({
-          id: r.id,
-          title: r.title,
-          content: r.content,
-          createdAt: r.createdAt,
-          updatedAt: r.updatedAt,
-          readingTimeMinutes: r.readingTimeMinutes,
-          wordCount: r.wordCount,
-          isPublic: r.isPublic,
-          tags: r.tags,
-          analytics: r.analytics || undefined,
-          highlightedTitle: r.highlightedTitle,
-          highlightedContent: r.highlightedContent,
-        })) as StudyNote[];
-      } else {
-        // Regular listing without search
-        const filter = { query: undefined, tag: tag || undefined, sort: sort || undefined };
-        data = isAuthenticated ? await getNotes(filter) : await getPublicNotes(filter);
-      }
-      
-      setNotes(data);
-      if (!query && !tag) setTotalCount(data.length);
-    } catch (error) {
-      console.error("Failed to load notes:", error);
-      // On search error, fall back to regular listing
-      try {
-        const filter = { query: undefined, tag: tag || undefined, sort: sort || undefined };
-        const fallback = isAuthenticated ? await getNotes(filter) : await getPublicNotes(filter);
-        setNotes(fallback);
-      } catch { /* ignore fallback error */ }
-    } finally {
-      setLoading(false);
+  // Load user preferences on mount (for authenticated users)
+  useEffect(() => {
+    if (isAuthenticated) {
+      getUserPreferences()
+        .then((prefs) => {
+          setPageSize(prefs.notesPerPage);
+        })
+        .catch(() => {
+          // Use default if preferences can't be loaded
+        });
     }
   }, [isAuthenticated]);
 
-  // Load notes when debounced query or active tag changes
+  const load = useCallback(async (query?: string, tag?: string, sort?: string, currentPage?: number, size?: number) => {
+    try {
+      setLoading(true);
+      
+      let response: PagedResponse<StudyNote>;
+      
+      // Handle "myNotes" filter
+      if (sort === "myNotes") {
+        response = await getMyNotes({
+          query: query || undefined,
+          tag: tag || undefined,
+          sort: undefined, // Don't pass sort to myNotes endpoint
+          page: currentPage ?? page,
+          size: size ?? pageSize,
+        });
+      } else {
+        response = await getNotesFeed({
+          query: query || undefined,
+          tag: tag || undefined,
+          sort: sort || undefined,
+          page: currentPage ?? page,
+          size: size ?? pageSize,
+        });
+      }
+      
+      setNotes(response.items);
+      setTotalItems(response.totalItems);
+      setTotalPages(response.totalPages);
+      
+    } catch (error) {
+      console.error("Failed to load notes:", error);
+      setNotes([]);
+      setTotalItems(0);
+      setTotalPages(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, pageSize]);
+
+  // Load notes when debounced query, active tag, sort, or page changes
   useEffect(() => {
-    load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined);
-  }, [debouncedQuery, activeTag, activeSort, load]);
+    load(debouncedQuery || undefined, activeTag || undefined, activeSort || undefined, page, pageSize);
+  }, [debouncedQuery, activeTag, activeSort, page, pageSize, load]);
+
+  // Reset to page 0 when filters change
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedQuery, activeTag, activeSort]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePageSizeChange = async (newSize: number) => {
+    setPageSize(newSize);
+    setPage(0);
+    
+    // Persist preference for authenticated users
+    if (isAuthenticated) {
+      try {
+        await updateUserPreferences({ notesPerPage: newSize });
+      } catch {
+        // Non-critical, ignore
+      }
+    }
+  };
 
 
   async function handleDelete(id: string) {
@@ -184,6 +229,7 @@ export default function NotesList() {
               className="notes-sort-select"
             >
               {isSearching && <option value="relevance">Most relevant</option>}
+              {isAuthenticated && <option value="myNotes">Notes created by me</option>}
               <option value="newest">Newest first</option>
               <option value="oldest">Oldest first</option>
               <option value="az">Title A–Z</option>
@@ -199,7 +245,7 @@ export default function NotesList() {
           <div className="active-filters-info">
             <div className="filter-summary">
               Found <strong>{notes.length}</strong> {notes.length === 1 ? "note" : "notes"}
-              {totalCount > 0 && ` out of ${totalCount}`}
+              {totalItems > notes.length && ` out of ${totalItems}`}
               {isSearching && <> matching "<em>{searchQuery}</em>"</>}
               {activeTag && (
                 <span className="active-tag-filter">
@@ -260,6 +306,17 @@ export default function NotesList() {
               />
             ))}
           </div>
+
+          {/* Pagination */}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            size={pageSize}
+            onPageChange={handlePageChange}
+            onSizeChange={handlePageSizeChange}
+            showSizeSelector={isAuthenticated}
+          />
 
           <ConfirmDialog
             open={confirmOpen}
