@@ -6,6 +6,7 @@ import "./SearchBar.css";
 
 interface SearchBarProps {
   initialQuery?: string;
+  initialTags?: string[];
   onSearch?: (query: string, tags: string[]) => void;
   placeholder?: string;
   showAdvancedLink?: boolean;
@@ -14,6 +15,7 @@ interface SearchBarProps {
 
 export default function SearchBar({
   initialQuery = "",
+  initialTags = [],
   onSearch,
   placeholder = "Search notes...",
   showAdvancedLink = true,
@@ -23,7 +25,7 @@ export default function SearchBar({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +34,11 @@ export default function SearchBar({
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const tagDropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  // Sync selectedTags when initialTags prop changes
+  useEffect(() => {
+    setSelectedTags(initialTags);
+  }, [initialTags]);
 
   // Load all tags for filter dropdown
   useEffect(() => {

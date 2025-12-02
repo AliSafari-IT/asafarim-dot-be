@@ -61,6 +61,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/search/public/**").permitAll()
+                        .requestMatchers("/api/search/suggest").permitAll()
                         .requestMatchers("/api/tags/**").permitAll()
                         .requestMatchers("/api/notes/feed").permitAll()
                         .anyRequest().authenticated()

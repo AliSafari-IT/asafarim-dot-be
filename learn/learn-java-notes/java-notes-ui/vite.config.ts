@@ -1,3 +1,4 @@
+// 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
@@ -31,7 +32,7 @@ function getWorkspaceAliases(baseDir: string, scope = '@asafarim') {
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: 'playground.asafarim.local',
+    host: 'studynotes.asafarim.local',
     port: 5183,
     proxy: {
       '/api': {
