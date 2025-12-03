@@ -13,3 +13,4 @@ uploads/
 init.sql
 docker-compose.yml
 application.properties
+application-production.properties
