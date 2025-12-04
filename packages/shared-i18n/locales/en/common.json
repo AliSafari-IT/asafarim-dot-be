@@ -50,7 +50,7 @@
       "testora": "Testora",
       "taskmanagement": "Task Management",
       "smartops": "SmartOps",
-      "StudyNotes": "Study notes"
+      "studynotes": "Study notes"
     },
     "description": {
       "web": "ASafariM web portal",
@@ -62,7 +62,7 @@
       "testora": "Test Automation System - Testora",
       "taskmanagement": "Task Management",
       "smartops": "SmartOps",
-      "StudyNotes": "Study notes"
+      "studynotes": "Study notes"
     }
   }
 }
