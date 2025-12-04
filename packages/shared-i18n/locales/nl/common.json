@@ -49,7 +49,8 @@
       "identity": "Identiteitsportaal",
       "testora": "Testora",
       "taskmanagement": "Taakbeheer",
-      "smartops": "SmartOps"
+      "smartops": "SmartOps",
+      "studynotes": "Studie notities"
     },
     "description": {
       "web": "ASafariM webportaal",
@@ -60,7 +61,8 @@
       "identity": "Gebruikersbeheer en authenticatie",
       "testora": "Testautomatiseringssysteem - Testora",
       "taskmanagement": "Taakbeheer",
-      "smartops": "SmartOps"
+      "smartops": "SmartOps",
+      "studynotes": "Studie notities"
     }
   }
 }
