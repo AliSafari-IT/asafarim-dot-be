@@ -1,0 +1,880 @@
+/* ===== PROJECT CARD THEME VARIABLES ===== */
+
+/* Light Theme Variables */
+:root {
+  /* Base Colors */
+  --pc-primary: #0066cc;
+  --pc-primary-hover: #0052a3;
+  --pc-primary-light: #4da6ff;
+  --pc-primary-bg: #f6f9fc;
+  --pc-primary-bg-light: #eef6ff;
+  
+  /* Background Colors */
+  --pc-bg-primary: #ffffff;
+  --pc-bg-secondary: #f8f9fa;
+  --pc-bg-tertiary: #f1f3f4;
+  --pc-bg-placeholder: #f0f0f0;
+  --pc-bg-placeholder-alt: #e0e0e0;
+  
+  /* Text Colors */
+  --pc-text-primary: #1a1a1a;
+  --pc-text-secondary: #666;
+  --pc-text-tertiary: #9ca3af;
+  --pc-text-muted: #6b7280;
+  
+  /* Border Colors */
+  --pc-border-primary: #e1e5e9;
+  --pc-border-secondary: #d1d5db;
+  --pc-border-tertiary: #333;
+  
+  /* Status Colors */
+  --pc-status-active-bg: #dcfce7;
+  --pc-status-active-text: #166534;
+  --pc-status-archived-bg: #f3f4f6;
+  --pc-status-archived-text: #6b7280;
+  --pc-status-in-progress-bg: #fef3c7;
+  --pc-status-in-progress-text: #92400e;
+  --pc-status-completed-bg: #dbeafe;
+  --pc-status-completed-text: #1e40af;
+  --pc-status-draft-bg: #f3f4f6;
+  --pc-status-draft-text: #6b7280;
+  --pc-status-coming-soon-bg: #fef3c7;
+  --pc-status-coming-soon-text: #92400e;
+  --pc-status-planning-bg: #e0e7ff;
+  --pc-status-planning-text: #3730a3;
+  
+  /* Link Colors */
+  --pc-link-demo-bg: #0066cc;
+  --pc-link-demo-hover: #0052a3;
+  --pc-link-repo-bg: #f1f3f4;
+  --pc-link-repo-hover: #e5e7eb;
+  --pc-link-documentation-bg: #f59e0b;
+  --pc-link-documentation-hover: #d97706;
+  --pc-link-custom-bg: #6b7280;
+  --pc-link-custom-hover: #4b5563;
+  
+  /* State Colors */
+  --pc-state-private-border: #ef4444;
+  --pc-state-private-bg: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  --pc-state-completed-border: #10b981;
+  --pc-state-completed-bg: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  --pc-state-draft-border: #6b7280;
+  --pc-state-draft-bg: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  --pc-state-in-progress-border: #f59e0b;
+  --pc-state-in-progress-bg: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  --pc-state-coming-soon-border: #8b5cf6;
+  --pc-state-coming-soon-bg: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  --pc-state-active-border: #10b981;
+  --pc-state-active-bg: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  --pc-state-planning-border: #3b82f6;
+  --pc-state-planning-bg: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  
+  /* Progress Bar */
+  --pc-progress-bg: #e1e5e9;
+  --pc-progress-fill: linear-gradient(90deg, #0066cc 0%, #4da6ff 100%);
+  
+  /* Tag Colors */
+  --pc-tag-bg: #f0f0f0;
+  --pc-tag-hover: #e0e0e0;
+  --pc-tag-text: #666;
+  
+  /* Metadata Colors */
+  --pc-metadata-bg: #f8f9fa;
+  --pc-metadata-border: #0066cc;
+  --pc-metadata-label: #666;
+  --pc-metadata-value: #1a1a1a;
+  
+  /* Shadow Colors */
+  --pc-shadow-light: rgba(0, 0, 0, 0.1);
+  --pc-shadow-medium: rgba(0, 0, 0, 0.15);
+  --pc-shadow-heavy: rgba(0, 0, 0, 0.4);
+  
+  /* Featured Colors */
+  --pc-featured-border: #0066cc;
+  --pc-featured-bg: linear-gradient(135deg, #f6f9fc 0%, #eef6ff 100%);
+  
+  /* Image Placeholder */
+  --pc-image-placeholder-bg: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  --pc-image-placeholder-text: #666;
+  
+  /* Loading Colors */
+  --pc-loading-bg: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  /* Base Colors */
+  --pc-primary: #4da6ff;
+  --pc-primary-hover: #3b82f6;
+  --pc-primary-light: #60a5fa;
+  --pc-primary-bg: #1a2332;
+  --pc-primary-bg-light: #2a3f5f;
+  
+  /* Background Colors */
+  --pc-bg-primary: #1a1a1a;
+  --pc-bg-secondary: #2a2a2a;
+  --pc-bg-tertiary: #333;
+  --pc-bg-placeholder: #333;
+  --pc-bg-placeholder-alt: #444;
+  
+  /* Text Colors */
+  --pc-text-primary: #ffffff;
+  --pc-text-secondary: #ccc;
+  --pc-text-tertiary: #6b7280;
+  --pc-text-muted: #9ca3af;
+  
+  /* Border Colors */
+  --pc-border-primary: #333;
+  --pc-border-secondary: #555;
+  --pc-border-tertiary: #666;
+  
+  /* Status Colors */
+  --pc-status-active-bg: #166534;
+  --pc-status-active-text: #dcfce7;
+  --pc-status-archived-bg: #374151;
+  --pc-status-archived-text: #9ca3af;
+  --pc-status-in-progress-bg: #92400e;
+  --pc-status-in-progress-text: #fef3c7;
+  --pc-status-completed-bg: #1e40af;
+  --pc-status-completed-text: #dbeafe;
+  --pc-status-draft-bg: #374151;
+  --pc-status-draft-text: #9ca3af;
+  --pc-status-coming-soon-bg: #92400e;
+  --pc-status-coming-soon-text: #fef3c7;
+  --pc-status-planning-bg: #3730a3;
+  --pc-status-planning-text: #e0e7ff;
+  
+  /* Link Colors */
+  --pc-link-demo-bg: #0066cc;
+  --pc-link-demo-hover: #0052a3;
+  --pc-link-repo-bg: #333;
+  --pc-link-repo-hover: #444;
+  --pc-link-documentation-bg: #f59e0b;
+  --pc-link-documentation-hover: #d97706;
+  --pc-link-custom-bg: #6b7280;
+  --pc-link-custom-hover: #4b5563;
+  
+  /* State Colors - Dark theme uses same borders but darker backgrounds */
+  --pc-state-private-border: #ef4444;
+  --pc-state-private-bg: linear-gradient(135deg, #2a1a1a 0%, #1a0a0a 100%);
+  --pc-state-completed-border: #10b981;
+  --pc-state-completed-bg: linear-gradient(135deg, #0a1a0a 0%, #0a2a0a 100%);
+  --pc-state-draft-border: #6b7280;
+  --pc-state-draft-bg: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  --pc-state-in-progress-border: #f59e0b;
+  --pc-state-in-progress-bg: linear-gradient(135deg, #2a1a0a 0%, #1a0a0a 100%);
+  --pc-state-coming-soon-border: #8b5cf6;
+  --pc-state-coming-soon-bg: linear-gradient(135deg, #1a0a2a 0%, #0a0a1a 100%);
+  --pc-state-active-border: #10b981;
+  --pc-state-active-bg: linear-gradient(135deg, #0a1a0a 0%, #0a2a0a 100%);
+  --pc-state-planning-border: #3b82f6;
+  --pc-state-planning-bg: linear-gradient(135deg, #0a0a2a 0%, #0a1a3a 100%);
+  
+  /* Progress Bar */
+  --pc-progress-bg: #333;
+  --pc-progress-fill: linear-gradient(90deg, #0066cc 0%, #4da6ff 100%);
+  
+  /* Tag Colors */
+  --pc-tag-bg: #333;
+  --pc-tag-hover: #444;
+  --pc-tag-text: #ccc;
+  
+  /* Metadata Colors */
+  --pc-metadata-bg: #2a2a2a;
+  --pc-metadata-border: #4da6ff;
+  --pc-metadata-label: #ccc;
+  --pc-metadata-value: #ffffff;
+  
+  /* Shadow Colors */
+  --pc-shadow-light: rgba(0, 0, 0, 0.3);
+  --pc-shadow-medium: rgba(0, 0, 0, 0.4);
+  --pc-shadow-heavy: rgba(0, 0, 0, 0.6);
+  
+  /* Featured Colors */
+  --pc-featured-border: #4da6ff;
+  --pc-featured-bg: linear-gradient(135deg, #1a2332 0%, #2a3f5f 100%);
+  
+  /* Image Placeholder */
+  --pc-image-placeholder-bg: linear-gradient(135deg, #333 0%, #444 100%);
+  --pc-image-placeholder-text: #ccc;
+  
+  /* Loading Colors */
+  --pc-loading-bg: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+}
+
+/* Dark theme status badge overrides */
+[data-theme="dark"] .status {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.hidden {
+  display: none;
+}
+
+.card {
+  border: 1px solid var(--pc-border-primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: var(--pc-bg-primary);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px var(--pc-shadow-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--pc-shadow-medium);
+}
+
+.cardDark {
+  background: var(--pc-bg-primary);
+  border-color: var(--pc-border-primary);
+  color: var(--pc-text-primary);
+}
+
+.cardDark:hover {
+  box-shadow: 0 8px 24px var(--pc-shadow-heavy);
+}
+
+.featured {
+  border: 2px solid var(--pc-featured-border);
+  background: var(--pc-featured-bg);
+}
+
+.featuredDark {
+  border: 2px solid var(--pc-featured-border);
+  background: var(--pc-featured-bg);
+}
+
+.imageContainer {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--pc-image-placeholder-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pc-image-placeholder-text);
+  font-size: 0.9rem;
+}
+
+.imagePlaceholderDark {
+  background: var(--pc-image-placeholder-bg);
+  color: var(--pc-image-placeholder-text);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--pc-text-primary);
+  line-height: 1.3;
+}
+
+.titleDark {
+  color: var(--pc-text-primary);
+}
+
+.description {
+  color: var(--pc-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.descriptionDark {
+  color: var(--pc-text-secondary);
+}
+
+/* Loading state styles */
+.loading {
+  pointer-events: none;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  width: 100% !important;
+  display: block !important;
+}
+
+.loadingPlaceholder {
+  background: var(--pc-loading-bg);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  width: 100% !important;
+  display: block !important;
+  min-height: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.loadingPlaceholderDark {
+  background: var(--pc-loading-bg) !important;
+  background-size: 200% 100% !important;
+  animation: loading 1.5s infinite !important;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.techStack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.techTag {
+  background: var(--pc-bg-tertiary);
+  color: var(--pc-text-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.techTagDark {
+  background: var(--pc-bg-tertiary);
+  color: var(--pc-text-primary);
+}
+
+.techIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.links {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.link {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.linkDemo {
+  background: var(--pc-link-demo-bg);
+  color: white;
+}
+
+.linkDemo:hover {
+  background: var(--pc-link-demo-hover);
+}
+
+.linkRepo {
+  background: var(--pc-link-repo-bg);
+  color: var(--pc-text-primary);
+  border: 1px solid var(--pc-border-secondary);
+}
+
+.linkRepo:hover {
+  background: var(--pc-link-repo-hover);
+}
+
+.linkRepoDark {
+  background: var(--pc-link-repo-bg);
+  color: var(--pc-text-primary);
+  border: 1px solid var(--pc-border-secondary);
+}
+
+.linkRepoDark:hover {
+  background: var(--pc-link-repo-hover);
+}
+
+.linkCustom {
+  background: var(--pc-link-custom-bg);
+  color: white;
+}
+
+.linkCustom:hover {
+  background: var(--pc-link-custom-hover);
+}
+
+.status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Ensure text is always readable */
+  color: #1a1a1a;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.statusActive {
+  background: var(--pc-status-active-bg);
+  color: var(--pc-status-active-text);
+}
+
+.statusActiveDark {
+  background: var(--pc-status-active-bg);
+  color: var(--pc-status-active-text);
+}
+
+.statusArchived {
+  background: var(--pc-status-archived-bg);
+  color: var(--pc-status-archived-text);
+}
+
+.statusArchivedDark {
+  background: var(--pc-status-archived-bg);
+  color: var(--pc-status-archived-text);
+}
+
+.statusInProgress {
+  background: var(--pc-status-in-progress-bg);
+  color: var(--pc-status-in-progress-text);
+}
+
+.statusInProgressDark {
+  background: var(--pc-status-in-progress-bg);
+  color: var(--pc-status-in-progress-text);
+}
+
+/* Missing status classes */
+.statusCompleted {
+  background: var(--pc-status-completed-bg);
+  color: var(--pc-status-completed-text);
+}
+
+.statusCompletedDark {
+  background: var(--pc-status-completed-bg);
+  color: var(--pc-status-completed-text);
+}
+
+.statusDraft {
+  background: var(--pc-status-draft-bg);
+  color: var(--pc-status-draft-text);
+}
+
+.statusDraftDark {
+  background: var(--pc-status-draft-bg);
+  color: var(--pc-status-draft-text);
+}
+
+.statusComingSoon {
+  background: var(--pc-status-coming-soon-bg);
+  color: var(--pc-status-coming-soon-text);
+}
+
+.statusComingSoonDark {
+  background: var(--pc-status-coming-soon-bg);
+  color: var(--pc-status-coming-soon-text);
+}
+
+.statusPlanning {
+  background: var(--pc-status-planning-bg);
+  color: var(--pc-status-planning-text);
+}
+
+.statusPlanningDark {
+  background: var(--pc-status-planning-bg);
+  color: var(--pc-status-planning-text);
+}
+
+/* Missing link classes */
+.linkDocumentation {
+  background: var(--pc-link-documentation-bg);
+  color: white;
+}
+
+.linkDocumentation:hover {
+  background: var(--pc-link-documentation-hover);
+}
+
+/* Missing state classes */
+.private {
+  border: 2px solid var(--pc-state-private-border);
+  background: var(--pc-state-private-bg);
+}
+
+.archived {
+  opacity: 0.7;
+  filter: grayscale(0.3);
+}
+
+.completed {
+  border: 2px solid var(--pc-state-completed-border);
+  background: var(--pc-state-completed-bg);
+}
+
+.draft {
+  border: 2px solid var(--pc-state-draft-border);
+  background: var(--pc-state-draft-bg);
+}
+
+.inProgress {
+  border: 2px solid var(--pc-state-in-progress-border);
+  background: var(--pc-state-in-progress-bg);
+}
+
+.comingSoon {
+  border: 2px solid var(--pc-state-coming-soon-border);
+  background: var(--pc-state-coming-soon-bg);
+}
+
+.active {
+  border: 2px solid var(--pc-state-active-border);
+  background: var(--pc-state-active-bg);
+}
+
+.planning {
+  border: 2px solid var(--pc-state-planning-border);
+  background: var(--pc-state-planning-bg);
+}
+
+.lastUpdated {
+  font-size: 0.75rem;
+  color: var(--pc-text-tertiary);
+  margin-top: 0.5rem;
+}
+
+.lastUpdatedDark {
+  color: var(--pc-text-muted);
+}
+
+/* Progress Bar Styles */
+.progressContainer {
+  margin: 1rem 0;
+}
+
+.progressLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--pc-text-secondary);
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--pc-progress-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--pc-progress-fill);
+  transition: width 0.3s ease;
+}
+
+/* Tags Styles */
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.tag {
+  padding: 0.25rem 0.75rem;
+  background-color: var(--pc-tag-bg);
+  color: var(--pc-tag-text);
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  background-color: var(--pc-tag-hover);
+  transform: translateY(-1px);
+}
+
+/* Metadata Section */
+.metadataSection {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: var(--pc-metadata-bg);
+  border-radius: 8px;
+  border-left: 4px solid var(--pc-metadata-border);
+}
+
+.metadataItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.metadataItem:last-child {
+  margin-bottom: 0;
+}
+
+.metadataLabel {
+  font-weight: 600;
+  color: var(--pc-metadata-label);
+}
+
+.metadataValue {
+  color: var(--pc-metadata-value);
+  font-weight: 500;
+}
+
+/* Dark theme overrides - These are now handled by CSS variables */
+.cardDark .progressLabel {
+  color: var(--pc-text-secondary);
+}
+
+.cardDark .tag {
+  background-color: var(--pc-tag-bg);
+  color: var(--pc-tag-text);
+}
+
+.cardDark .tag:hover {
+  background-color: var(--pc-tag-hover);
+}
+
+.cardDark .metadataSection {
+  background-color: var(--pc-metadata-bg);
+  border-left-color: var(--pc-metadata-border);
+}
+
+.cardDark .metadataLabel {
+  color: var(--pc-metadata-label);
+}
+
+.cardDark .metadataValue {
+  color: var(--pc-metadata-value);
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+  }
+  
+  .links {
+    flex-direction: column;
+  }
+  
+  .link {
+    justify-content: center;
+  }
+}
+
+/* Related Projects Dialog Styles */
+.relatedProjectDialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.dialogOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.dialogContent {
+  background: var(--pc-bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px var(--pc-shadow-heavy);
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid var(--pc-border-primary);
+}
+
+.dialogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--pc-border-primary);
+}
+
+.dialogTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--pc-text-primary);
+}
+
+.dialogClose {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--pc-text-secondary);
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.dialogClose:hover {
+  background: var(--pc-bg-tertiary);
+  color: var(--pc-text-primary);
+}
+
+.dialogBody {
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.dialogDescription {
+  color: var(--pc-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.dialogTechStack {
+  margin-bottom: 1rem;
+}
+
+.dialogTechStack h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pc-text-primary);
+}
+
+.dialogTechList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dialogTechTag {
+  background: var(--pc-bg-tertiary);
+  color: var(--pc-text-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.dialogLinks {
+  margin-bottom: 1rem;
+}
+
+.dialogLinks h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pc-text-primary);
+}
+
+.dialogLinksList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dialogLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* Dark theme overrides for dialog */
+[data-theme="dark"] .dialogContent {
+  background: var(--pc-bg-primary);
+  border-color: var(--pc-border-primary);
+}
+
+[data-theme="dark"] .dialogTitle {
+  color: var(--pc-text-primary);
+}
+
+[data-theme="dark"] .dialogClose {
+  color: var(--pc-text-secondary);
+}
+
+[data-theme="dark"] .dialogClose:hover {
+  background: var(--pc-bg-tertiary);
+  color: var(--pc-text-primary);
+}
+
+[data-theme="dark"] .dialogDescription {
+  color: var(--pc-text-secondary);
+}
+
+[data-theme="dark"] .dialogTechStack h4,
+[data-theme="dark"] .dialogLinks h4 {
+  color: var(--pc-text-primary);
+}
+
+[data-theme="dark"] .dialogTechTag {
+  background: var(--pc-bg-tertiary);
+  color: var(--pc-text-primary);
+}

@@ -1,0 +1,176 @@
+/* Tag Badge Component Styles */
+.tag-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--tag-bg, var(--color-primary));
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  color: var(--tag-text-color, var(--color-background));
+  font-weight: 500;
+  transition: all 120ms ease;
+  white-space: nowrap;
+}
+
+/* Sizes */
+.tag-badge-sm {
+  padding: 2px var(--spacing-xs);
+  font-size: var(--font-size-xs);
+}
+
+.tag-badge-md {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.tag-badge-lg {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+}
+
+/* Icon */
+.tag-badge-icon {
+  opacity: 0.6;
+  font-weight: 600;
+}
+
+/* Text */
+.tag-badge-text {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Clickable State */
+.tag-badge-clickable {
+  cursor: pointer;
+}
+
+.tag-badge-clickable:hover {
+  background: var(--tag-bg-hover, var(--color-primary));
+  transform: scale(1.03) translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tag-badge-clickable:active {
+  transform: scale(0.97);
+}
+
+/* Active State (when filtering by this tag) */
+.tag-badge-active {
+  background: var(--tag-bg, var(--color-primary));
+  border: 2px solid var(--color-background);
+  box-shadow: 0 0 0 2px var(--tag-bg, var(--color-primary));
+  color: var(--tag-text-color, var(--color-background));
+}
+
+.tag-badge-active .tag-badge-icon {
+  opacity: 0.9;
+}
+
+.tag-badge-active:hover {
+  background: var(--tag-bg-hover, var(--color-primary));
+  transform: scale(1.05);
+}
+
+/* Remove Button */
+.tag-badge-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.1);
+  color: inherit;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.tag-badge-remove:hover {
+  background: var(--color-danger-500);
+  color: white;
+}
+
+.tag-badge-active .tag-badge-remove {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tag-badge-active .tag-badge-remove:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Tooltip */
+.tag-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  animation: fadeInUp 150ms ease;
+  border: 1px solid var(--color-border);
+}
+
+.tag-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--color-surface);
+}
+
+.tag-tooltip strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.tooltip-hint {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-2xs);
+  margin-top: 2px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .tag-badge-md {
+    padding: 2px var(--spacing-xs);
+    font-size: var(--font-size-xs);
+  }
+  
+  .tag-badge-text {
+    max-width: 80px;
+  }
+  
+  .tag-tooltip {
+    font-size: var(--font-size-2xs);
+  }
+}

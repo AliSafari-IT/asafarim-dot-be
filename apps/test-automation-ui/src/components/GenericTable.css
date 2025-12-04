@@ -429,7 +429,7 @@ td[data-label="Actions"]::before {
 }
 
 .search-icon {
-  color: var(--color-text-muted);
+  color: var(--color-info-600);
   flex-shrink: 0;
 }
 

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "lib": ["ES2020", "DOM"],
     "strict": true,
     "skipLibCheck": true,
@@ -11,6 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "composite": true
-  }
+    "composite": false
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.ts"],
+  "exclude": ["node_modules", "dist"]
 }

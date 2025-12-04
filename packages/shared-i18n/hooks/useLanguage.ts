@@ -5,8 +5,8 @@ import {
   updateUserLanguagePreference, 
   fetchUserLanguagePreference,
   isSupportedLanguage
-} from '../utils/languageUtils';
-import type { SupportedLanguage } from '../config/i18n';
+} from '../utils/languageUtils.js';
+import type { SupportedLanguage } from '../config/i18n.js';
 
 export interface UseLanguageReturn {
   language: SupportedLanguage;

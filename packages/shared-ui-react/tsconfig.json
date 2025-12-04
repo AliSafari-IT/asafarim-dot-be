@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "jsx": "react-jsx",
     "lib": ["ES2020", "DOM"],
     "strict": true,
@@ -12,6 +12,6 @@
     "outDir": "dist",
     "types": ["react", "react-dom"]
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "../../../package.json"],
   "exclude": ["node_modules", "dist"]
 }

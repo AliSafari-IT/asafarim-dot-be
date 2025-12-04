@@ -49,7 +49,8 @@
       "identity": "Identity Portal",
       "testora": "Testora",
       "taskmanagement": "Task Management",
-      "smartops": "SmartOps"
+      "smartops": "SmartOps",
+      "studynotes": "Study notes"
     },
     "description": {
       "web": "ASafariM web portal",
@@ -60,7 +61,8 @@
       "identity": "User management and authentication",
       "testora": "Test Automation System - Testora",
       "taskmanagement": "Task Management",
-      "smartops": "SmartOps"
+      "smartops": "SmartOps",
+      "studynotes": "Study notes"
     }
   }
 }

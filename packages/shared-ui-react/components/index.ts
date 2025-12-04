@@ -1,4 +1,5 @@
 // Export all components
+export * from './AppLauncher';
 export * from './Button';
 export * from './ContentCard';
 export * from './ContentCardExample';
@@ -17,4 +18,7 @@ export * from './Card';
 
 export * from './Avatar';
 export * from './Popover';
-export * from './User';
+export { User, type UserProps} from './User';
+export * from './PaginatedGrid';
+export * from './ProjectCard';
+export * from './ConfirmDialog';

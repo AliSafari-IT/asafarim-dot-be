@@ -82,6 +82,19 @@ public class TestCafeGeneratorService
             }
         }
 
+        // Extract imports from SharedImportsContent and add to importLines
+        if (!string.IsNullOrEmpty(testSuite.Fixture.SharedImportsContent))
+        {
+            var sharedImportsContent = testSuite.Fixture.SharedImportsContent;
+            var (sharedImports, sharedNonImports) = ExtractImportsAndBody(sharedImportsContent);
+            foreach (var imp in sharedImports)
+                importLines.Add(imp);
+
+            Console.WriteLine(
+                $"  ✓ Extracted {sharedImports.Count} imports from SharedImportsContent"
+            );
+        }
+
         // Collect required imports for steps-based tests
         var requiredImports = new List<string>();
         if (stepTests.Any())
@@ -117,24 +130,28 @@ public class TestCafeGeneratorService
             );
         }
 
-        // Add raw shared imports content if provided
+        // Add non-import content from SharedImportsContent (selectors, functions, etc.)
         if (!string.IsNullOrEmpty(testSuite.Fixture.SharedImportsContent))
         {
-            // Filter out require('dotenv').config() since environment variables are already loaded
-            // by the TestRunner service and test files use ES module syntax
             var sharedImportsContent = testSuite.Fixture.SharedImportsContent;
-            var lines = sharedImportsContent.Split('\n')
-                .Where(line => !line.Trim().StartsWith("require('dotenv')") && 
-                               !line.Trim().StartsWith("require(\"dotenv\")"))
+            var (sharedImports, sharedNonImports) = ExtractImportsAndBody(sharedImportsContent);
+
+            // Filter out require('dotenv').config() from non-import content
+            var lines = sharedNonImports
+                .Split('\n')
+                .Where(line =>
+                    !line.Trim().StartsWith("require('dotenv')")
+                    && !line.Trim().StartsWith("require(\"dotenv\")")
+                )
                 .ToList();
-            
+
             var filteredContent = string.Join('\n', lines).Trim();
             if (!string.IsNullOrEmpty(filteredContent))
             {
                 sb.AppendLine(filteredContent);
                 sb.AppendLine();
                 Console.WriteLine(
-                    $"  ✓ Added {filteredContent.Length} chars of shared imports content (filtered dotenv)"
+                    $"  ✓ Added {filteredContent.Length} chars of shared non-import content (filtered dotenv)"
                 );
             }
         }
@@ -149,7 +166,7 @@ public class TestCafeGeneratorService
         var afterEachHookCode = string.Empty;
         var extractedTeardownScript = string.Empty;
         var setupFunctions = new List<string>();
-        var setupSelectors = new List<string>();
+        var setupSelectors = new Dictionary<string, string>(StringComparer.Ordinal); // Deduplicate by variable name
 
         // Extract from SetupScript
         if (testSuite.Fixture.SetupScript != null)
@@ -163,7 +180,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(rawSetupScript);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 setupScript = remainingCode;
                 Console.WriteLine(
                     $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from SetupScript"
@@ -183,7 +205,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(rawTeardownScript);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractedTeardownScript = remainingCode;
                 Console.WriteLine(
                     $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from TeardownScript"
@@ -200,7 +227,12 @@ public class TestCafeGeneratorService
             var (extractedFuncs, extractedSels, remainingCode) =
                 ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.BeforeHook);
             setupFunctions.AddRange(extractedFuncs);
-            setupSelectors.AddRange(extractedSels);
+            foreach (var sel in extractedSels)
+            {
+                var varName = ExtractVariableName(sel);
+                if (!string.IsNullOrEmpty(varName))
+                    setupSelectors[varName] = sel; // Deduplicate by variable name
+            }
             beforeHookCode = remainingCode;
             Console.WriteLine(
                 $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from BeforeHook"
@@ -216,7 +248,12 @@ public class TestCafeGeneratorService
             var (extractedFuncs, extractedSels, remainingCode) =
                 ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.AfterHook);
             setupFunctions.AddRange(extractedFuncs);
-            setupSelectors.AddRange(extractedSels);
+            foreach (var sel in extractedSels)
+            {
+                var varName = ExtractVariableName(sel);
+                if (!string.IsNullOrEmpty(varName))
+                    setupSelectors[varName] = sel; // Deduplicate by variable name
+            }
             afterHookCode = remainingCode;
             Console.WriteLine(
                 $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from AfterHook"
@@ -232,7 +269,12 @@ public class TestCafeGeneratorService
             var (extractedFuncs, extractedSels, remainingCode) =
                 ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.BeforeEachHook);
             setupFunctions.AddRange(extractedFuncs);
-            setupSelectors.AddRange(extractedSels);
+            foreach (var sel in extractedSels)
+            {
+                var varName = ExtractVariableName(sel);
+                if (!string.IsNullOrEmpty(varName))
+                    setupSelectors[varName] = sel; // Deduplicate by variable name
+            }
             beforeEachHookCode = remainingCode;
             Console.WriteLine(
                 $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from BeforeEachHook"
@@ -248,7 +290,12 @@ public class TestCafeGeneratorService
             var (extractedFuncs, extractedSels, remainingCode) =
                 ExtractFunctionsAndSelectorsFromSetup(testSuite.Fixture.AfterEachHook);
             setupFunctions.AddRange(extractedFuncs);
-            setupSelectors.AddRange(extractedSels);
+            foreach (var sel in extractedSels)
+            {
+                var varName = ExtractVariableName(sel);
+                if (!string.IsNullOrEmpty(varName))
+                    setupSelectors[varName] = sel; // Deduplicate by variable name
+            }
             afterEachHookCode = remainingCode;
             Console.WriteLine(
                 $"  ✓ Extracted {extractedFuncs.Count} functions, {extractedSels.Count} selectors from AfterEachHook"
@@ -267,7 +314,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(testCase.BeforeTestHook);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractions["BeforeTestHook"] = remainingCode ?? string.Empty;
             }
 
@@ -277,7 +329,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(testCase.AfterTestHook);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractions["AfterTestHook"] = remainingCode ?? string.Empty;
             }
 
@@ -287,7 +344,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(testCase.BeforeEachStepHook);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractions["BeforeEachStepHook"] = remainingCode ?? string.Empty;
             }
 
@@ -297,7 +359,12 @@ public class TestCafeGeneratorService
                 var (extractedFuncs, extractedSels, remainingCode) =
                     ExtractFunctionsAndSelectorsFromSetup(testCase.AfterEachStepHook);
                 setupFunctions.AddRange(extractedFuncs);
-                setupSelectors.AddRange(extractedSels);
+                foreach (var sel in extractedSels)
+                {
+                    var varName = ExtractVariableName(sel);
+                    if (!string.IsNullOrEmpty(varName))
+                        setupSelectors[varName] = sel; // Deduplicate by variable name
+                }
                 extractions["AfterEachStepHook"] = remainingCode ?? string.Empty;
             }
 
@@ -308,7 +375,7 @@ public class TestCafeGeneratorService
         if (setupSelectors.Any())
         {
             sb.AppendLine("// Setup Selectors");
-            foreach (var selector in setupSelectors)
+            foreach (var selector in setupSelectors.Values)
             {
                 sb.AppendLine(selector);
             }
@@ -948,8 +1015,18 @@ public class TestCafeGeneratorService
             var trimmed = line.TrimStart();
             if (trimmed.StartsWith("import "))
             {
-                // Normalize whitespace
-                imports.Add(line.Trim());
+                // Filter out 't' from TestCafe imports before adding to the list
+                var normalizedImport = line.Trim();
+                if (normalizedImport.Contains("from 'testcafe'"))
+                {
+                    normalizedImport = FilterTestCafeImports(normalizedImport);
+                }
+
+                // Only add non-empty import statements
+                if (!string.IsNullOrWhiteSpace(normalizedImport))
+                {
+                    imports.Add(normalizedImport);
+                }
             }
             else
             {
@@ -1008,7 +1085,13 @@ public class TestCafeGeneratorService
                 if (!importMap.ContainsKey(module))
                     importMap[module] = new HashSet<string>();
                 foreach (var imp in imports)
-                    importMap[module].Add(imp);
+                {
+                    // In TestCafe, `t` is provided as the test context argument and must not be imported
+                    if (module == "testcafe" && string.Equals(imp, "t", StringComparison.Ordinal))
+                        continue;
+
+                    importMap[module].Add(imp); // Deduplicate by variable name
+                }
             }
         }
 
@@ -1018,13 +1101,22 @@ public class TestCafeGeneratorService
             if (!importMap.ContainsKey("testcafe"))
                 importMap["testcafe"] = new HashSet<string>();
             foreach (var req in requiredImports)
+            {
+                // In TestCafe, `t` is provided as the test context argument and must not be imported
+                if (string.Equals(req, "t", StringComparison.Ordinal))
+                    continue;
+
                 importMap["testcafe"].Add(req);
+            }
         }
 
         // Generate final import statements
         var result = new List<string>();
         foreach (var kvp in importMap.OrderBy(x => x.Key))
         {
+            if (kvp.Value.Count == 0)
+                continue;
+
             var imports = string.Join(", ", kvp.Value.OrderBy(x => x));
             result.Add($"import {{ {imports} }} from '{kvp.Key}';");
         }
@@ -1185,6 +1277,23 @@ public class TestCafeGeneratorService
                 || trimmed.Contains(".after(")
                 || trimmed.StartsWith("async function ")
                 || trimmed.StartsWith("function ")
+                || (
+                    trimmed.StartsWith("const ")
+                    && trimmed.Contains("async ")
+                    && trimmed.Contains("=>")
+                )
+                || (trimmed.StartsWith("const ") && trimmed.Contains("function("))
+                || (trimmed.StartsWith("const ") && trimmed.Contains("=>"))
+                || (
+                    trimmed.StartsWith("let ")
+                    && trimmed.Contains("async ")
+                    && trimmed.Contains("=>")
+                )
+                || (
+                    trimmed.StartsWith("var ")
+                    && trimmed.Contains("async ")
+                    && trimmed.Contains("=>")
+                )
             )
             {
                 functionDepthStack.Push(braceDepth);
@@ -1256,6 +1365,34 @@ public class TestCafeGeneratorService
         // The JavaScript engine will catch actual syntax errors at runtime
 
         return errors;
+    }
+
+    private static string FilterTestCafeImports(string importLine)
+    {
+        // Remove 't' from TestCafe import statements
+        // Example: "import { ClientFunction, Selector, t } from 'testcafe';"
+        //       -> "import { ClientFunction, Selector } from 'testcafe';"
+
+        var (module, imports) = ParseImportStatement(importLine);
+        if (module == "testcafe")
+        {
+            // Filter out 't' from imports
+            var filteredImports = imports
+                .Where(imp => !string.Equals(imp, "t", StringComparison.Ordinal))
+                .ToList();
+
+            if (filteredImports.Count == 0)
+            {
+                // If no imports remain, return empty line
+                return string.Empty;
+            }
+
+            // Reconstruct the import statement
+            var importsString = string.Join(", ", filteredImports);
+            return $"import {{ {importsString} }} from '{module}';";
+        }
+
+        return importLine; // Return unchanged if not a testcafe import
     }
 
     private static (string module, List<string> imports) ParseImportStatement(

@@ -17,12 +17,13 @@
 
 ## 🎯 Overview
 
-This repository hosts a **polyrepo-style monorepo** that powers the entire ASafariM ecosystem. It includes:
+This repository hosts a **polyrepo-style monorepo** driven by the PnPM workspace declared in [`pnpm-workspace.yaml`](./pnpm-workspace.yaml). It currently includes:
 
-- **6 Frontend Applications**: Web portal, blog, AI interface, job listings, identity management, and core app
-- **3 Backend APIs**: AI services, core domain logic, and identity management
-- **2 Shared Packages**: Reusable React components and design tokens
-- **Advanced Features**: Resume publishing, portfolio management, authentication, and content validation
+- **7 Frontend Applications**: Web portal, Docusaurus blog, Core App dashboard, AI UI, Identity Portal, Test Automation UI (Testora), and Jobs UI
+- **5 Backend APIs & Services**: Core, Identity, AI, Test Automation, and the Node-based TestRunner service
+- **Showcase Solutions**: TaskManagement and SmartOperations dashboards (each with API + web client)
+- **6 Shared Packages**: UI kits, design tokens, internationalization, helpers, dropdown menus, and theme infrastructure
+- **Advanced Features**: Resume publishing, portfolio management, centralized authentication, SSO, GitHub Actions integration, and automated testing
 
 **Key Principles:**
 
@@ -35,33 +36,41 @@ This repository hosts a **polyrepo-style monorepo** that powers the entire ASafa
 
 ### **Monorepo Structure**
 
-```
+```text
 asafarim-dot-be/
 ├── apps/                    # Frontend applications
 │   ├── web/                # Main portfolio & publications site
 │   ├── blog/               # Docusaurus-based blog
-│   ├── core-app/           # Core user experiences
+│   ├── core-app/           # Core user experiences / dashboard
 │   ├── ai-ui/              # AI interface application
-│   ├── jobs-ui/            # Job listings management
-│   └── identity-portal/    # Authentication & user management
+│   ├── identity-portal/    # Authentication & user management
+│   ├── test-automation-ui/ # Testora E2E management console
+│   ├── jobs-ui/            # Job listings experience
+│   └── showcase clients    # (see showcases/)
 ├── apis/                   # Backend services
 │   ├── Core.Api/           # Main business logic API
 │   ├── Identity.Api/       # Authentication & authorization
-│   └── Ai.Api/             # AI-related endpoints
+│   ├── Ai.Api/             # AI-related endpoints
+│   ├── TestAutomation.Api/ # Test orchestration & GitHub Actions bridge
+│   └── TestRunner/         # Node/Express TestCafe runner (port 4000)
+├── showcases/              # End-to-end verticals (SmartOps, TaskManagement)
 └── packages/               # Shared libraries
     ├── shared-ui-react/    # React components & utilities
-    ├── react-themes/       # React themes
-    └── shared-tokens/      # Design system tokens
+    ├── shared-tokens/      # Design system tokens
+    ├── shared-i18n/        # i18next wrappers & language utilities
+    ├── react-themes/       # Theme provider + toggles
+    ├── helpers/            # Shared TypeScript helpers
+    └── dd-menu/            # Dropdown menu primitives
 ```
 
 ### **Data Flow**
 
-```
+```text
 Frontend Apps → APIs → Database
      ↓           ↓       ↓
    React UI  → .NET APIs → PostgreSQL
      ↓           ↓       ↓
-   Shared UI ← Tokens ← Consistent UX
+Shared UI & Services (TestRunner, SignalR) ← Tokens ← Consistent UX
 ```
 
 ## 📁 Repository Structure
@@ -72,26 +81,39 @@ Frontend Apps → APIs → Database
 |-------------|---------|------------|------|
 | **web** | Portfolio & publications | React + TypeScript + Vite | 5175 |
 | **blog** | Technical blog | Docusaurus + TypeScript | 3000 |
-| **core-app** | Core user experiences | React + TypeScript | 5174 |
-| **ai-ui** | AI interface | React + TypeScript | 5173 |
-| **jobs-ui** | Job listings | React/Angular + TypeScript | 4200 |
-| **identity-portal** | Auth & user management | React/Angular + TypeScript | 5177 |
+| **core-app** | Core experiences (resume, hero, dashboards) | React + TypeScript | 5174 |
+| **ai-ui** | Conversational AI assistant | React + TypeScript | 5173 |
+| **identity-portal** | Auth & user management UI | React + TypeScript | 5177 |
+| **test-automation-ui** | Testora test runner console | React + TypeScript | 5172 |
+| **jobs-ui** | Job listings portal | React + TypeScript (with Angular legacy support) | 4200 |
 
-### **Backend APIs**
+### **Backend APIs & Services**
 
 | API | Purpose | Tech Stack | Port |
 |-----|---------|------------|------|
 | **Core.Api** | Business logic & data | .NET 8 + Entity Framework | 5102 |
 | **Identity.Api** | Authentication & users | .NET 8 + ASP.NET Identity | 5101 |
 | **Ai.Api** | AI services | .NET 8 + ML.NET | 5103 |
+| **TestAutomation.Api** | Test orchestration, GitHub Actions integration | .NET 8 + SignalR | 5106 |
+| **TestRunner** | TestCafe runner exposing REST + SignalR hooks | Node.js + Express + TestCafe | 4000 |
+
+### **Showcase Solutions**
+
+| Showcase | Components | Description |
+|----------|------------|-------------|
+| **TaskManagement** | `showcases/TaskManagement/TaskManagement.Api` + `showcases/TaskManagement/taskmanagement-web` | Collaborative project & task tracking with PostgreSQL backend, cookie-based auth, and role-driven permissions |
+| **SmartOperationsDashboard** | `showcases/SmartOperationsDashboard/SmartOps.Api` + `.../smartops-web` | IoT-style device monitoring with SignalR live updates, audit logging, and responsive admin UI |
 
 ### **Shared Packages**
 
-| Package | Purpose | Version |
-|---------|---------|---------|
-| **shared-ui-react** | Reusable React components | v0.6.0 |
-| **react-themes** | React themes | v1.0.0 |
-| **shared-tokens** | Design system tokens | v1.0.0 |
+| Package | Purpose |
+|---------|---------|
+| **shared-ui-react** | React components (Navbar, Auth, Cards, Notifications, etc.) |
+| **shared-tokens** | CSS variables & semantic design tokens |
+| **shared-i18n** | i18next initialization, hooks, and language utilities |
+| **react-themes** | Theme provider, toggle, and default palettes |
+| **helpers** | Cross-app TypeScript helpers (env, datetime, layout) |
+| **dd-menu** | Dropdown/Menu primitives usable across apps |
 
 ## 🛠️ Technology Stack
 
@@ -99,9 +121,9 @@ Frontend Apps → APIs → Database
 
 - **React 19.1.1** - UI framework (consistent across all apps)
 - **TypeScript** - Type safety and developer experience
-- **Vite** - Fast build tool and dev server
+- **Vite** (or Docusaurus for blog) - Fast build tool and dev server
 - **React Router** - Client-side routing
-- **Tailwind CSS** - Utility-first styling (via shared tokens)
+- **Shared Tokens & CSS Modules** - Design system enforced by `@asafarim/shared-tokens`; no Tailwind required
 
 ### **Backend**
 
@@ -363,38 +385,28 @@ pnpm run dev:shared  # Rebuild shared packages
 
 ## 📈 Recent Developments
 
-### **Resume Publishing System** (October 2025)
+### **Test Automation Platform (Q4 2025)**
 
-- **Public Resume Sharing**: GDPR-compliant resume sharing with slug-based URLs
-- **Privacy Controls**: Public/private toggle with consent tracking and IP logging
-- **Secure Slug Generation**: Automated slug generation with collision detection and sanitization
-- **Public DTOs**: Privacy-focused data transfer objects excluding sensitive information
+- **TestAutomation.Api** now validates GitHub credentials, encrypts secrets, and triggers workflows with structured payloads
+- **TestRunner Service** supports headless Chrome, resilient retries, and automatic cleanup of `temp-tests`
+- **Test-Automation UI** consumes new settings/integration APIs with encryption-aware forms and error handling
 
-### **Enhanced Portfolio Management** (September-October 2025)
+### **Identity Portal Enhancements (Q4 2025)**
 
-- **Content Type Validation**: Fixed routing issues with invalid content types (e.g., `/portfolio/invalid/view/10`)
-- **Improved Tag Management**: Enhanced tag input with visual feedback, accumulation, and duplicate prevention
-- **Toast Notifications**: Integrated toast notifications for better user feedback
-- **Better Form Handling**: Improved form validation and error handling across all portfolio forms
+- Centralized `shared-i18n` usage with new translation namespaces (navbar, dashboard, admin area)
+- Magic-link password setup emails via MailKit with HTML templates and Data Protection token storage
+- Admin dashboards redesigned with CSS tokens, responsive cards, and improved Admin/User management flows
 
-### **Work Experience & Technologies** (September 2025)
+### **Shared UI & Tokens (Q4 2025)**
 
-- **Technology Tracking**: Added technology field to work experience entities
-- **Extended Database Schema**: Updated resume models to include technology relationships
-- **Achievement Management**: Enhanced work experience with achievement lists and technology stacks
+- `shared-ui-react` Navbar/AuthStatus updated to support userName-aware greetings and consistent theme toggles
+- `shared-tokens` consumed across apps (no Tailwind); new CSS variables for accent, warning, and surface states
+- Portfolio, Dashboard, and User Profile screens refactored to semantic CSS classes using tokens and responsive grids
 
-### **Authentication & Security** (September 2025)
+### **Showcase Enhancements (TaskManagement & SmartOps)**
 
-- **Extended Token Duration**: Increased access token lifetime to 4 hours for better UX
-- **Enhanced Logging**: Improved audit logging for publication and resume operations
-- **Role-Based Access**: Admin controls for cross-user publication management
-
-### **UI/UX Improvements** (September-October 2025)
-
-- **Heading Component**: New flexible Heading component with multiple variants and styling options
-- **Icon Enhancements**: Improved SVG icons with better accessibility and hover states
-- **Responsive Design**: Enhanced responsive behavior across all components
-- **Dark Mode Support**: Consistent dark mode implementation across all new components
+- TaskManagement backend migrated fully to PostgreSQL with JWT auth, global admin roles, and polished web client
+- SmartOperationsDashboard delivers SignalR-powered live data, app switcher SSO, and theme-aware navbar
 
 ---
 

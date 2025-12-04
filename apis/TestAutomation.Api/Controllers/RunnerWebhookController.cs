@@ -144,6 +144,13 @@ public class RunnerWebhookController : ControllerBase
             Guid? testSuiteId = null;
             Guid? fixtureId = null;
 
+            // First, check if TestSuiteId was provided directly
+            if (Guid.TryParse(dto.TestSuiteId, out var tsid))
+            {
+                testSuiteId = tsid;
+                _logger.LogInformation("✅ Using provided TestSuiteId: {TestSuiteId}", testSuiteId);
+            }
+
             if (Guid.TryParse(dto.TestCaseId, out var tcid))
             {
                 testCaseId = tcid;
@@ -160,7 +167,7 @@ public class RunnerWebhookController : ControllerBase
                 if (testCase != null)
                 {
                     testCaseId = testCase.Id;
-                    testSuiteId = testCase.TestSuiteId;
+                    testSuiteId = testCase.TestSuiteId; // Override with matched test case's suite if not already set
                     fixtureId = testCase.TestSuite?.FixtureId;
                     _logger.LogInformation(
                         "✅ Found test case by name: {TestCaseName} -> {TestCaseId}",
@@ -181,9 +188,22 @@ public class RunnerWebhookController : ControllerBase
                 _logger.LogWarning("⚠️ No TestCaseId or TestCaseName provided in the request");
             }
 
+            // If we have testSuiteId but no fixtureId, load the fixture
+            if (testSuiteId.HasValue && !fixtureId.HasValue)
+            {
+                var suite = await _db.TestSuites.FindAsync(testSuiteId.Value);
+                if (suite != null)
+                {
+                    fixtureId = suite.FixtureId;
+                }
+            }
+
             // Parse optional test data set id
             Guid? testDataSetId = null;
-            if (!string.IsNullOrWhiteSpace(dto.TestDataSetId) && Guid.TryParse(dto.TestDataSetId, out var dsid))
+            if (
+                !string.IsNullOrWhiteSpace(dto.TestDataSetId)
+                && Guid.TryParse(dto.TestDataSetId, out var dsid)
+            )
             {
                 testDataSetId = dsid;
             }

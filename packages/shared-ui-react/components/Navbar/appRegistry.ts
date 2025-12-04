@@ -49,6 +49,10 @@ const appUrlConfig = {
   smartops: {
     production: 'https://smartops.asafarim.be',
     development: 'http://smartops.asafarim.local:5178'
+  },
+  studynotes: {
+    production: 'https://studynotes.asafarim.be',
+    development: 'http://studynotes.asafarim.local:5183'
   }
 };
 
@@ -111,6 +115,12 @@ export const useAppRegistry = (): AppInfo[] => {
       name: t('apps.appName.smartops'),
       url: getAppUrl('smartops'),
       description: t('apps.description.smartops')
+    },
+    {
+      id: 'studynotes',
+      name: t('apps.appName.studynotes'),
+      url: getAppUrl('studynotes'),
+      description: t('apps.description.studynotes')
     }
   ];
 };
@@ -165,6 +175,12 @@ export const getAppRegistry = (): AppInfo[] => [
     name: 'SmartOps',
     url: getAppUrl('smartops'),
     description: 'SmartOps features'
+  },
+  {
+    id: 'studynotes',
+    name: 'Study Notes',
+    url: getAppUrl('studynotes'),
+    description: 'Study notes features'
   }
 ];
 
@@ -206,6 +222,7 @@ export const getCurrentAppId = (): string => {
   if (hostname === 'taskmanagement.asafarim.be') return 'taskmanagement';
   if (hostname === 'smartops.asafarim.be') return 'smartops';
   if (hostname === 'testora.asafarim.be') return 'testora';
+  if (hostname === 'studynotes.asafarim.be') return 'studynotes';
 
   // Check for development domains
   if (hostname.startsWith('web.') || hostname.includes('web.asafarim.local')) return 'web';
@@ -216,6 +233,7 @@ export const getCurrentAppId = (): string => {
   if (hostname.startsWith('taskmanagement.') || hostname.includes('taskmanagement.asafarim.local')) return 'taskmanagement';
   if (hostname.startsWith('smartops.') || hostname.includes('smartops.asafarim.local')) return 'smartops';
   if (hostname.startsWith('testora.') || hostname.includes('testora.asafarim.local')) return 'testora';
+  if (hostname.startsWith('studynotes.') || hostname.includes('studynotes.asafarim.local')) return 'studynotes';
 
   // Default fallback
   return '';

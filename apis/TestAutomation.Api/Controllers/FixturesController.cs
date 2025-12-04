@@ -126,14 +126,68 @@ public class FixturesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = "TesterOnly")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var entity = await _db.TestFixtures.FindAsync(id);
-        if (entity == null)
+        var item = await _db.TestFixtures.FirstOrDefaultAsync(x => x.Id == id);
+        if (item == null)
             return NotFound();
-        _db.TestFixtures.Remove(entity);
+
+        _db.TestFixtures.Remove(item);
         await _db.SaveChangesAsync();
         return NoContent();
+    }
+
+    [HttpPost("fix-testcafe-imports")]
+    public async Task<IActionResult> FixTestCafeImports()
+    {
+        var fixtures = await _db.TestFixtures
+            .Where(f => f.SharedImportsContent != null && f.SharedImportsContent.Contains("from 'testcafe'"))
+            .ToListAsync();
+
+        var updatedCount = 0;
+        foreach (var fixture in fixtures)
+        {
+            if (string.IsNullOrEmpty(fixture.SharedImportsContent)) continue;
+
+            var originalContent = fixture.SharedImportsContent;
+            var lines = originalContent.Split('\n');
+            var updatedLines = new List<string>();
+
+            foreach (var line in lines)
+            {
+                var trimmed = line.Trim();
+                if (trimmed.StartsWith("import") && trimmed.Contains("from 'testcafe'"))
+                {
+                    // Remove 't' from TestCafe imports
+                    var updatedLine = line
+                        .Replace(", t }", " }")
+                        .Replace("{ t,", "{")
+                        .Replace("{ t }", "{ }")
+                        .Replace(", t,", ",")
+                        .Replace("t, ", "")
+                        .Replace(" t }", " }")
+                        .Replace("{ t", "{");
+                    
+                    // Clean up empty imports
+                    if (updatedLine.Contains("{ }"))
+                    {
+                        continue; // Skip empty import lines
+                    }
+                    
+                    updatedLines.Add(updatedLine);
+                }
+                else
+                {
+                    updatedLines.Add(line);
+                }
+            }
+
+            fixture.SharedImportsContent = string.Join('\n', updatedLines);
+            updatedCount++;
+        }
+
+        await _db.SaveChangesAsync();
+        
+        return Ok(new { message = $"Updated {updatedCount} fixtures to remove 't' from TestCafe imports" });
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "asafarim-dot-be",
-  "version": "0.7.0",
+  "version": "0.7.2",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
@@ -30,6 +30,8 @@
     "api:ai": "pnpm --filter @asafarim/ai-api api",
     "api:identity": "pnpm --filter @asafarim/identity-api api",
     "api:core": "pnpm --filter @asafarim/core-api api",
+    "api:web": "concurrently -n ai,identity,core -c \"blue,magenta,yellow\" \"pnpm api:ai\" \"pnpm api:identity\" \"pnpm api:core\"",
+    "devWeb": "concurrently -n identity,web,ai,core -c \"blue,magenta,yellow,green\" \"pnpm dev:identity\"  \"pnpm dev:web\" \"pnpm dev:ai\" \"pnpm dev:core\" ",
     "api:tasks": "pnpm --filter @asafarim/taskmanagement-api api",
     "api:smartops": "pnpm --filter @asafarim/smartops-api api",
     "api:testora": "pnpm --filter @asafarim/testora-api api",
@@ -74,7 +76,7 @@
   "author": "ASafariM",
   "email": "asafarim.it@gmail.com",
   "license": "CC BY 4.0",
-  "packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c",
+  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
   "dependencies": {
     "cookie": "^1.0.2",
     "pkill": "^2.0.0",

@@ -1,10 +1,26 @@
-import type { ReactNode, MouseEventHandler, FocusEventHandler, KeyboardEventHandler, CSSProperties } from 'react';
-import './ButtonComponent.css';
+import type {
+  ReactNode,
+  MouseEventHandler,
+  FocusEventHandler,
+  KeyboardEventHandler,
+  CSSProperties,
+} from "react";
+import "./ButtonComponent.css";
 
 export interface ButtonComponentProps {
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'ghost' | 'outline' | 'link' | 'brand';
-  type?: 'button' | 'submit' | 'reset' | undefined;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  variant?:
+    | "primary"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger"
+    | "info"
+    | "ghost"
+    | "outline"
+    | "link"
+    | "brand";
+  type?: "button" | "submit" | "reset" | undefined;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   isLoading?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
@@ -28,43 +44,46 @@ export interface ButtonComponentProps {
   onKeyUp?: KeyboardEventHandler<HTMLElement>;
   id?: string;
   title?: string;
-  'aria-label'?: string;
-  'aria-describedby'?: string;
-  'aria-expanded'?: boolean;
-  'aria-haspopup'?: boolean;
+  "aria-label"?: string;
+  "aria-describedby"?: string;
+  "aria-expanded"?: boolean;
+  "aria-haspopup"?: boolean;
+  "data-testid"?: string;
   role?: string;
   tabIndex?: number;
   style?: CSSProperties;
 }
 
 export const ButtonComponent = ({
-  variant = 'primary',
-  type = 'button',
-  size = 'md',
+  variant = "primary",
+  type = "button",
+  size = "md",
   isLoading = false,
   leftIcon,
   rightIcon,
   fullWidth = false,
   rounded = false,
-  className = '',
+  className = "",
   disabled,
   to,
   href,
   target,
   rel,
-  children, 
+  children,
   ...props
 }: ButtonComponentProps) => {
   const baseClasses = [
-    'btn',
+    "btn",
     `btn--${variant}`,
     `btn--${size}`,
-    fullWidth && 'btn--full-width',
-    rounded && 'btn--rounded',
-    isLoading && 'btn--loading',
-    disabled && 'btn--disabled',
-    className
-  ].filter(Boolean).join(' ');
+    fullWidth && "btn--full-width",
+    rounded && "btn--rounded",
+    isLoading && "btn--loading",
+    disabled && "btn--disabled",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   // Determine if this should render as a link
   // Treat presence of `to` or `href` as a link regardless of visual variant
@@ -96,9 +115,7 @@ export const ButtonComponent = ({
         </span>
       )}
 
-      <span className="btn__content">
-        {children}
-      </span>
+      <span className="btn__content">{children}</span>
 
       {!isLoading && rightIcon && (
         <span className="btn__icon btn__icon--right" aria-hidden="true">
@@ -113,8 +130,8 @@ export const ButtonComponent = ({
     return (
       <a
         href={href}
-        target={target || '_blank'}
-        rel={rel || 'noopener noreferrer'}
+        target={target || "_blank"}
+        rel={rel || "noopener noreferrer"}
         className={baseClasses}
         {...props}
       >
@@ -128,11 +145,7 @@ export const ButtonComponent = ({
     // For now, use regular anchor tag
     // In a real implementation, you'd check if React Router is available
     return (
-      <a
-        href={to}
-        className={baseClasses}
-        {...props}
-      >
+      <a href={to} className={baseClasses} {...props}>
         {buttonContent}
       </a>
     );
@@ -150,4 +163,3 @@ export const ButtonComponent = ({
     </button>
   );
 };
-

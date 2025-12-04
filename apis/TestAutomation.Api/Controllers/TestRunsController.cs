@@ -117,11 +117,11 @@ public class TestRunsController : ControllerBase
                 completedAt = run.CompletedAt,
                 executedById = run.ExecutedById,
                 triggerType = run.TriggerType.ToString(),
-                totalTests = totalTests,
-                passedTests = passedTests,
-                failedTests = failedTests,
-                skippedTests = skippedTests,
-                successRate = successRate,
+                totalTests,
+                passedTests,
+                failedTests,
+                skippedTests,
+                successRate,
             }
         );
     }
@@ -260,7 +260,10 @@ public class TestRunsController : ControllerBase
             return NotFound();
         }
 
-        var query = _db.TestResults.Include(r => r.TestCase).Where(r => r.TestRunId == id);
+        var query = _db
+            .TestResults.Include(r => r.TestCase)
+            .Include(r => r.TestSuite)
+            .Where(r => r.TestRunId == id);
 
         if (!string.IsNullOrEmpty(status))
         {
@@ -273,9 +276,7 @@ public class TestRunsController : ControllerBase
         var results = await query.OrderBy(r => r.RunAt).ToListAsync();
 
         _logger.LogInformation(
-            "✅ Found {Count} test results for TestRunId: {TestRunId}",
-            results.Count,
-            id
+            $"✅ Found {results.Count} test results for TestRunId, TestCaseName, TestSuiteId, TestCaseId: {id}, {results.FirstOrDefault()?.TestCase?.Name}, {results.FirstOrDefault()?.TestSuiteId ?? Guid.Empty}, {results.FirstOrDefault()?.TestCaseId ?? Guid.Empty}"
         );
 
         return Ok(
@@ -309,6 +310,7 @@ public class TestRunsController : ControllerBase
 
         var results = await _db
             .TestResults.Include(r => r.TestCase)
+            .Include(r => r.TestSuite)
             .Where(r => r.TestRunId == id)
             .OrderBy(r => r.RunAt)
             .ToListAsync();
@@ -388,6 +390,7 @@ public class TestRunsController : ControllerBase
 
         var results = await _db
             .TestResults.Include(r => r.TestCase)
+            .Include(r => r.TestSuite)
             .Where(r => r.TestRunId == id)
             .ToListAsync();
 

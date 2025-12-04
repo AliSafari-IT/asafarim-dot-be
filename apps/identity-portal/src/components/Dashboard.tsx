@@ -1,21 +1,34 @@
-import { useState } from 'react';
-import './dashboard.css';
-import { ButtonComponent as Button } from '@asafarim/shared-ui-react';
-import { BLOG_URL, WEB_URL, AI_URL, CORE_URL, openInNewTab, PUBLICATIONS_URL, RESUME_URL, TASKS_URL, SMARTOPS_URL, TESTORA_URL } from '../utils/appUrls';
-import ChangePasswordModal from './ChangePasswordModal';
-import useAuth from '../hooks/useAuth';
+import { useState } from "react";
+import "./dashboard.css";
+import { ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import {
+  BLOG_URL,
+  WEB_URL,
+  AI_URL,
+  CORE_URL,
+  openInNewTab,
+  PUBLICATIONS_URL,
+  RESUME_URL,
+  TASKS_URL,
+  SMARTOPS_URL,
+  TESTORA_URL,
+} from "../utils/appUrls";
+import ChangePasswordModal from "./ChangePasswordModal";
+import useAuth from "../hooks/useAuth";
+import { useTranslation } from "@asafarim/shared-i18n";
 
 export const Dashboard = () => {
   const { user } = useAuth();
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const { t } = useTranslation("identityPortal");
 
-  const roles = (user?.roles || ['Viewer']).join(', ');
+  const roles = (user?.roles || ["Viewer"]).join(", ");
 
   return (
     <div className="dash">
       <header className="dash-header">
         <div className="dash-header-inner">
-          <h1 className="dash-title">Dashboard</h1>
+          <h1 className="dash-title">{t("dashboard.title")}</h1>
           <p className="dash-subtitle">{user?.firstName || user?.email}</p>
         </div>
       </header>
@@ -23,46 +36,67 @@ export const Dashboard = () => {
       <main className="dash-main">
         <section className="dash-grid">
           <article className="card">
-            <h2 className="card-title">Account</h2>
+            <h2 className="card-title">
+              {t("dashboard.user-management.title")}
+            </h2>
             <div className="field">
-              <label>Email</label>
-              <input className="field-input" value={user?.email || ''} readOnly />
+              <label>{t("dashboard.user-management.email")}</label>
+              <input
+                className="field-input"
+                value={user?.email || ""}
+                readOnly
+              />
             </div>
             <div className="field">
-              <label>Username</label>
-              <input className="field-input" value={user?.userName || ''} readOnly />
+              <label>{t("dashboard.user-management.username")}</label>
+              <input
+                className="field-input"
+                value={user?.userName || ""}
+                readOnly
+              />
             </div>
           </article>
 
           <article className="card">
-            <h2 className="card-title">Access</h2>
+            <h2 className="card-title">{t("dashboard.access.title")}</h2>
             <div className="field">
-              <label>Roles</label>
+              <label>{t("dashboard.access.roles")}</label>
               <input className="field-input" value={roles} readOnly />
             </div>
           </article>
         </section>
 
         <section className="card actions">
-          <h2 className="card-title">Actions</h2>
+          <h2 className="card-title">{t("dashboard.actions.title")}</h2>
           <div className="actions-row">
             <Button
-              onClick={() => (window.location.href = (user?.roles || []).some((r: string) => /^(admin|superadmin)$/i.test(r)) ? '/admin/user-profile' : '/me')}
+              onClick={() =>
+                (window.location.href = (user?.roles || []).some((r: string) =>
+                  /^(admin|superadmin)$/i.test(r)
+                )
+                  ? "/admin/user-profile/"
+                  : "/me")
+              }
               variant="success"
             >
-              Edit profile
+              {t("dashboard.actions.editProfile")}
             </Button>
 
             <Button
               onClick={() => setIsPasswordModalOpen(true)}
               variant="warning"
             >
-              Change password
+              {t("dashboard.actions.changePassword")}
             </Button>
 
-            {(user?.roles || []).some((r: string) => /^(admin|superadmin)$/i.test(r)) && (
-              <Button onClick={() => (window.location.href = '/admin/users')} variant="info">
-                Manage users
+            {(user?.roles || []).some((r: string) =>
+              /^(admin|superadmin)$/i.test(r)
+            ) && (
+              <Button
+                onClick={() => (window.location.href = "/admin-area/users")}
+                variant="info"
+              >
+                {t("dashboard.actions.manageUsers")}
               </Button>
             )}
 
@@ -79,7 +113,10 @@ export const Dashboard = () => {
               Core portal
             </Button>
             {/** my publications */}
-            <Button onClick={() => openInNewTab(PUBLICATIONS_URL)} variant="info">
+            <Button
+              onClick={() => openInNewTab(PUBLICATIONS_URL)}
+              variant="info"
+            >
               My publications
             </Button>
             {/** resume */}
@@ -88,22 +125,22 @@ export const Dashboard = () => {
             </Button>
 
             <Button onClick={() => openInNewTab(TASKS_URL)} variant="brand">
-              Tasks
+              Task Management App
             </Button>
             <Button onClick={() => openInNewTab(SMARTOPS_URL)} variant="brand">
               SmartOps
             </Button>
             <Button onClick={() => openInNewTab(TESTORA_URL)} variant="brand">
-              Test Automation
+              E2E Test Automation
             </Button>
           </div>
         </section>
       </main>
-      
+
       {/* Password Change Modal */}
-      <ChangePasswordModal 
-        isOpen={isPasswordModalOpen} 
-        onClose={() => setIsPasswordModalOpen(false)} 
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
       />
     </div>
   );

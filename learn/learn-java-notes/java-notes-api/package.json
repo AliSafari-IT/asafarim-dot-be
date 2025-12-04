@@ -1,0 +1,26 @@
+{
+  "name": "java-notes-api",
+  "version": "1.1.1",
+  "description": "Spring Boot API for Study Notes App",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "prestart": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-8080.ps1",
+    "start": "mvn clean spring-boot:run",
+    "api": "pnpm run start",
+    "app": "concurrently \"pnpm api\" \"cd ../java-notes-ui && pnpm run start\"",
+    "seed": "node seed/seedDb.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "concurrently": "^8.2.0",
+    "kill-port": "^2.0.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.23.0",
+  "devDependencies": {
+    "dotenv": "^16.6.1"
+  }
+}

@@ -14,6 +14,7 @@
   --width-11: 80px;
   --width-12: 40px;
 
+  --width-3xs: 200px;
   --width-2xs: 240px;
   --width-xs: 320px;
   --width-sm: 480px;
@@ -21,6 +22,7 @@
   --width-lg: 768px;
   --width-xl: 1024px;
   --width-2xl: 1200px;
+  --width-3xl: 1440px;
 
   --sidebar-width: 180px;
   --max-width: 1200px;

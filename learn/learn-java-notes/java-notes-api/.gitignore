@@ -1,0 +1,16 @@
+*.original
+target/*
+**/target/*
+**/target/**
+**/target/**/**
+
+docs/*
+**/docs/*
+**/docs/**
+docs/
+uploads/
+
+init.sql
+docker-compose.yml
+application.properties
+application-production.properties

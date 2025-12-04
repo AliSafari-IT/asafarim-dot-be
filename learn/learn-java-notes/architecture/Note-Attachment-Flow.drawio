@@ -1,0 +1,46 @@
+<mxfile host="65bd71144e">
+    <diagram name="Attachment Flow" id="ryui2RS_oiKReY-V4-wd">
+        <mxGraphModel dx="1039" dy="475" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="p0g1poFfIGibula5br4i-1" value="Frontend" style="swimlane;fontSize=14;horizontal=1;" parent="1" vertex="1">
+                    <mxGeometry width="350" height="1000" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-2" value="EditNote.tsx&#10;- Load attachments&#10;- Baseline + working state" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;strokeColor=#2D7600;fontSize=14;fontColor=#ffffff;" parent="p0g1poFfIGibula5br4i-1" vertex="1">
+                    <mxGeometry x="20" y="70" width="300" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-3" value="AttachmentList.tsx&#10;- Toggle isPublic locally" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;strokeColor=#2D7600;fontSize=14;fontColor=#ffffff;" parent="p0g1poFfIGibula5br4i-1" vertex="1">
+                    <mxGeometry x="20" y="200" width="300" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-4" value="Save Changes&#10;- Diff baseline/working" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;strokeColor=#2D7600;fontSize=14;fontColor=#ffffff;" parent="p0g1poFfIGibula5br4i-1" vertex="1">
+                    <mxGeometry x="20" y="310" width="300" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-5" value="notesApi.ts&#10;PUT /api/attachments/{id}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;strokeColor=#2D7600;fontSize=14;fontColor=#ffffff;" parent="p0g1poFfIGibula5br4i-1" vertex="1">
+                    <mxGeometry x="20" y="420" width="300" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-6" value="Backend" style="swimlane;fontSize=14;" parent="1" vertex="1">
+                    <mxGeometry x="350" width="350" height="1000" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-7" value="AttachmentController&#10;- Parse DTO&#10;- Forward to service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontSize=14;fontColor=#ffffff;" parent="p0g1poFfIGibula5br4i-6" vertex="1">
+                    <mxGeometry x="20" y="200" width="300" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-8" value="AttachmentService&#10;- Validate owner&#10;- Ensure note is public&#10;- Persist update" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontSize=14;fontColor=#ffffff;" parent="p0g1poFfIGibula5br4i-6" vertex="1">
+                    <mxGeometry x="20" y="320" width="300" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-9" value="Database" style="swimlane;fontSize=14;" parent="1" vertex="1">
+                    <mxGeometry x="700" width="300" height="1000" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-10" value="PostgreSQL&#10;- Update attachment row" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a20025;strokeColor=#6F0000;fontSize=14;" parent="p0g1poFfIGibula5br4i-9" vertex="1">
+                    <mxGeometry x="20" y="300" width="250" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="p0g1poFfIGibula5br4i-11" style="endArrow=classic;strokeWidth=2;strokeColor=#333;" parent="1" source="p0g1poFfIGibula5br4i-2" target="p0g1poFfIGibula5br4i-3" edge="1"/>
+                <mxCell id="p0g1poFfIGibula5br4i-12" style="endArrow=classic;strokeWidth=2;strokeColor=#333;" parent="1" source="p0g1poFfIGibula5br4i-3" target="p0g1poFfIGibula5br4i-4" edge="1"/>
+                <mxCell id="p0g1poFfIGibula5br4i-13" style="endArrow=classic;strokeWidth=2;strokeColor=#333;" parent="1" source="p0g1poFfIGibula5br4i-4" target="p0g1poFfIGibula5br4i-5" edge="1"/>
+                <mxCell id="p0g1poFfIGibula5br4i-14" style="endArrow=classic;strokeWidth=2;strokeColor=#333;" parent="1" source="p0g1poFfIGibula5br4i-5" target="p0g1poFfIGibula5br4i-7" edge="1"/>
+                <mxCell id="p0g1poFfIGibula5br4i-15" style="endArrow=classic;strokeWidth=2;strokeColor=#333;" parent="1" source="p0g1poFfIGibula5br4i-7" target="p0g1poFfIGibula5br4i-8" edge="1"/>
+                <mxCell id="p0g1poFfIGibula5br4i-16" style="endArrow=classic;strokeWidth=2;strokeColor=#333;" parent="1" source="p0g1poFfIGibula5br4i-8" target="p0g1poFfIGibula5br4i-10" edge="1"/>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

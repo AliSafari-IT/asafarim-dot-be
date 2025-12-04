@@ -1,0 +1,29 @@
+{
+  "name": "@asafarim/restaurant.api",
+  "version": "1.0.0",
+  "description": "Production-ready Restaurant Management System backend built with **Java 21** and **Spring Boot 3.3**.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "prestart": "npx kill-port 8081",
+    "drms": "docker-compose up -d postgres redis kafka",
+    "runit": "mvn spring-boot:run",
+    "start": "pnpm drms && pnpm run runit",
+    "rms": "mvn spring-boot:run",
+    "api": "pnpm run rms && pnpm run runit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "kill-port": "^2.0.1"
+  },
+  "keywords": [
+    "RMS",
+    "Restaurant",
+    "Management",
+    "System"
+  ],
+  "author": "Ali Safari",
+  "license": "ISC"
+}

@@ -52,6 +52,7 @@ export interface NavbarProps {
     isAuthenticated: boolean;
     user?: {
       email?: string;
+      userName?: string;
       name?: string;
       [key: string]: any;
     };
@@ -62,7 +63,7 @@ export interface NavbarProps {
       notSignedIn?: string;
       signIn?: string;
       signOut?: string;
-      welcome?: (email?: string) => string;
+      welcome?: (userName?: string, email?: string) => string;
     };
   };
   /**

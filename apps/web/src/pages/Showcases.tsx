@@ -34,6 +34,14 @@ export default function Showcases() {
         : "http://taskmanagement.asafarim.local:5176/"
     },
     {
+            title: t("showcases.projects.studynotes.title"),
+      description: t("showcases.projects.studynotes.description"),
+      url: isProduction
+        ? "https://studynotes.asafarim.be/"
+        : "http://studynotes.asafarim.local:5183/"
+
+    },
+    {
       title: t("showcases.projects.smartops.title"),
       description: t("showcases.projects.smartops.description"),
       url: isProduction
@@ -74,7 +82,14 @@ export default function Showcases() {
       url: isProduction
         ? "https://blog.asafarim.be/"
         : "http://blog.asafarim.local:3000/"
-    }
+    },
+    {
+      title: t("showcases.projects.studynotes.title"),
+      description: t("showcases.projects.studynotes.description"),
+      url: isProduction
+        ? "https://studynotes.asafarim.be/"
+        : "http://studynotes.asafarim.local:5183/"
+    },
   ];
 
   return (

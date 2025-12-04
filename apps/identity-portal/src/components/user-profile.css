@@ -1,0 +1,153 @@
+.admin-user-profile-container {
+  min-height: 100vh;
+  padding: 2rem clamp(1rem, 3vw, 3rem);
+  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.admin-user-profile-card {
+  width: min(900px, 100%);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-lg, 1rem);
+  box-shadow: var(--shadow-lg, 0 20px 45px rgba(15, 23, 42, 0.15));
+  border: 1px solid var(--color-border);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.admin-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.admin-form-grid-improved {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-md, 0.75rem);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-muted, var(--color-surface));
+}
+
+.admin-form-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.admin-form-select,
+.admin-form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 0.75rem);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-form-select:focus,
+.admin-form-input:focus {
+  outline: none;
+  border-color: var(--color-accent, var(--color-primary));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent, var(--color-primary)) 30%, transparent);
+}
+
+.admin-roles-section {
+  grid-column: 1 / -1;
+}
+
+.admin-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-role-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-md, 0.75rem);
+  border: 1px solid var(--color-border-muted, var(--color-border));
+  background-color: var(--color-warning-100);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-role-checkbox-item:hover {
+  border-color: var(--color-accent, var(--color-primary));
+  transform: translateY(-1px);
+}
+
+.admin-role-checkbox {
+  accent-color: var(--color-primary-500) !important;
+  color: var(--color-primary-500) !important;
+  background-color: var(--color-neutral-50) !important;
+}
+
+.admin-role-checkbox-label {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  text-transform: capitalize;
+}
+
+.admin-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.admin-form-actions .asafarim-button {
+  min-width: 180px;
+}
+
+@media (max-width: 768px) {
+  .admin-user-profile-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .admin-user-profile-card {
+    padding: 1.5rem;
+  }
+
+  .admin-form-group {
+    padding: 1rem;
+  }
+
+  .admin-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-form-actions .asafarim-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-role-checkbox-item,
+  .admin-form-input,
+  .admin-form-select {
+    transition: none;
+  }
+}

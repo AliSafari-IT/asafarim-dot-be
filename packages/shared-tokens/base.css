@@ -1,3 +1,4 @@
+/* /packages/shared-tokens/base.css */
 @import "./styles/main.css";
 
 /* CSS Variables for common use */
@@ -8,12 +9,18 @@
   /* Container Max Width */
   --container-max-width: var(--width-0);
 
+  /* Admin sidebar */
+  --admin-sidebar-width: var();
+
   /* Common spacing - using existing tokens */
+  --gap-0: var(--space-0);
   --gap-xs: var(--space-1);
   --gap-sm: var(--space-2);
   --gap-md: var(--space-4);
   --gap-lg: var(--space-6);
   --gap-xl: var(--space-8);
+  --gap-2xl: var(--space-10);
+  --gap-3xl: var(--space-12);
 
   --spacing-md: var(--space-4);
   --spacing-lg: var(--space-6);
