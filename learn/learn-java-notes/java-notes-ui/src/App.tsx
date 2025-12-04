@@ -20,6 +20,7 @@ import SearchPage from "./pages/SearchPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import UserSettingsPage from "./pages/UserSettingsPage";
+import AccountPage from "./pages/AccountPage";
 import Layout from "./components/Layout";
 import AdminLayout from "./components/AdminLayout";
 import {
@@ -82,6 +83,18 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <EditNote />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Account Page */}
+              <Route
+                path="/account"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <AccountPage />
                     </Layout>
                   </ProtectedRoute>
                 }

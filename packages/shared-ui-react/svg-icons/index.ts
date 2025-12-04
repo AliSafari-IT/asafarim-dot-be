@@ -34,6 +34,15 @@ import PlusIcon from "./PlusIcon";
 import Google from "./Google";
 import ORCID from "./ORCID";
 import Cross from "./Cross";
+import Mail from "./Mail";
+import Calendar from "./Calendar";
+import Drive from "./Drive";
+import Docs from "./Docs";
+import Tasks from "./Tasks";
+import Photos from "./Photos";
+import Settings from "./Settings";
+import Analytics from "./Analytics";
+import Users from "./Users";
 
 export {
     Arrow, Spark,
@@ -41,5 +50,6 @@ export {
     Github, Twitter, Linkedin, StackOverflow, TwitterX, Download, Html,
     MarkDown, Pdf, Email, Contact, Location, Company, Website, Phone,
     LoginArrow, DotsMenu, Info, Delete, Remove, Edit, ArrowLeftIcon,
-    PlusIcon, Google, ORCID, Cross
+    PlusIcon, Google, ORCID, Cross,
+    Mail, Calendar, Drive, Docs, Tasks, Photos, Settings, Analytics, Users
 };

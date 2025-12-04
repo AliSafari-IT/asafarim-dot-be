@@ -9,8 +9,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "kill": "kill-port 5183",
-    "start": "npm run kill && npm run dev",
-    "app": "pnpm i && concurrently \"pnpm start\" \"cd ../java-notes-api && pnpm api\"",
+    "build:shared": "pnpm --filter @asafarim/shared-ui-react build",
+    "start": "pnpm run kill && pnpm run build:shared && pnpm run dev",
+    "app": "pnpm i && concurrently \"pnpm run start\" \"cd ../java-notes-api && pnpm api\"",
     "preview": "vite preview"
   },
   "dependencies": {

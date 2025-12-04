@@ -2,7 +2,15 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  displayName?: string;
+  avatarUrl?: string | null;
   roles: string[];
+  locked?: boolean;
+  lockReason?: string;
+  lockedAt?: string;
+  lastLogin?: string;
+  lastLoginIp?: string;
+  failedLoginAttempts?: number;
 }
 
 export interface AuthContextType {

@@ -31,6 +31,7 @@ const footerLinks = [
   {
     title: "Navigation",
     items: [
+      {label: 'ASafariM', to: isProduction? 'https://asafarim.be': 'http://web.asafarim.local:5175/'},
       { label: "Home", to: "/" },
       {
         label: "About",
