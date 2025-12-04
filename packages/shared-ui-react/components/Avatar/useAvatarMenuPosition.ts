@@ -83,11 +83,11 @@ export function useAvatarMenuPosition(
 
     if (menuLeftIfRightAligned >= 0) {
       // Menu fits when right-aligned to trigger's right edge
-      right = viewportWidth - rect.right;
+      right = viewportWidth - rect.right + spaceRight;
       transformOrigin = 'top right';
     } else if (menuRightIfLeftAligned <= viewportWidth) {
       // Menu fits when left-aligned to trigger's left edge
-      left = rect.left;
+      left = rect.left + spaceLeft;
       transformOrigin = 'top left';
     } else {
       // Center horizontally with padding

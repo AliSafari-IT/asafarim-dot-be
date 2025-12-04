@@ -161,7 +161,7 @@ export function AppLauncherPanel({
       const globalIndex = filteredItems.findIndex((fi) => fi.id === item.id);
       return (
         <AppLauncherItem
-          key={item.id}
+          key={item.id || index}
           ref={(el) => {
             itemRefs.current[globalIndex] = el;
           }}

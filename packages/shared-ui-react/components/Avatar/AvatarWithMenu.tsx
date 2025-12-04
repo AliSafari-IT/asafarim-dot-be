@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Avatar } from './AvatarComponent';
 import { AvatarMenu } from './AvatarMenu';
 import { useAvatarMenuPosition } from './useAvatarMenuPosition';
-import type { AvatarProps, AvatarMenuProps, AvatarMenuSection, User } from './types';
+import type { AvatarProps, AvatarMenuSection, User } from './types';
 import './Avatar.css';
 
 export interface AvatarWithMenuProps extends Omit<AvatarProps, 'onClick'> {
