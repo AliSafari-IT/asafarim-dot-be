@@ -52,6 +52,7 @@ public class AuthController {
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
+                userDetails.getDisplayName(),
                 roles));
     }
 
@@ -82,6 +83,7 @@ public class AuthController {
                     user.getId(),
                     user.getUsername(),
                     user.getEmail(),
+                    user.getDisplayName(),
                     roles));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));

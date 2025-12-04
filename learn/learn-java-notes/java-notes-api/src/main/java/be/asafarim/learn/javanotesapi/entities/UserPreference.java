@@ -25,6 +25,12 @@ public class UserPreference {
     @Column(length = 10)
     private String language = "en";
 
+    @Column(name = "email_notifications")
+    private boolean emailNotifications = true;
+
+    @Column(name = "default_editor", length = 20)
+    private String defaultEditor = "markdown";
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -69,6 +75,18 @@ public class UserPreference {
 
     public String getLanguage() { return language; }
     public void setLanguage(String language) { this.language = language != null ? language : "en"; }
+
+    public boolean isEmailNotifications() { return emailNotifications; }
+    public void setEmailNotifications(boolean emailNotifications) { this.emailNotifications = emailNotifications; }
+
+    public String getDefaultEditor() { return defaultEditor; }
+    public void setDefaultEditor(String defaultEditor) { 
+        if (defaultEditor != null && (defaultEditor.equals("markdown") || defaultEditor.equals("rich") || defaultEditor.equals("code"))) {
+            this.defaultEditor = defaultEditor;
+        } else {
+            this.defaultEditor = "markdown";
+        }
+    }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
