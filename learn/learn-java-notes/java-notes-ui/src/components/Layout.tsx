@@ -4,10 +4,12 @@ import "./Layout.css";
 import { getPublicNoteCount } from "../api/notesApi";
 import { useAuth } from "../contexts/useAuth";
 import {
+  AppLauncher,
+  AvatarWithMenu,
   ButtonComponent as Button,
-  SignIn,
-  SignOut,
+  FooterContainer,
 } from "@asafarim/shared-ui-react";
+import { asafarimApps } from "./data/asafarimApps";
 import TagsSidebar from "./TagsSidebar";
 import { ThemeToggle } from "@asafarim/react-themes";
 
@@ -111,7 +113,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   >
                     🏷️ Tags
                   </Button>
-                  {user?.roles?.includes('ROLE_ADMIN') && (
+                  {user?.roles?.includes("ROLE_ADMIN") && (
                     <Button
                       variant="secondary"
                       size="sm"
@@ -124,22 +126,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </Button>
                   )}
                 </nav>
-
-                <div className="header-user">
-                  <div className="user-info">
-                    <span className="user-avatar">👤</span>
-                    <span className="user-name">{user?.username}</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="xs"
-                    onClick={handleLogout}
-                    title="Logout"
-                    aria-label="Logout"
-                  >
-                    <SignOut title="Logout" />
-                  </Button>
-                </div>
               </>
             )}
             {!isAuthenticated && (
@@ -162,10 +148,52 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 >
                   🔍 Search
                 </Button>
-                <div className="user-info">
-                  <span className="user-avatar">👤</span>
-                  <span className="user-name">Guest</span>
-                </div>
+              </div>
+            )}
+            {/* Right side actions */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--spacing-md)",
+              }}
+            >
+              {/* App Launcher */}
+              <AppLauncher
+                items={asafarimApps}
+                columns={3}
+                showSearch
+                searchPlaceholder="Search apps..."
+                triggerLabel="Open ASafariM apps"
+                panelTitle="ASafariM Apps"
+              />
+
+              {/* Avatar with Menu (authenticated) or Login button (guest) */}
+              {isAuthenticated && user ? (
+                <AvatarWithMenu
+                  user={{
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    displayName: user.displayName || user.username,
+                    avatarUrl: user.avatarUrl,
+                    roles: user.roles,
+                    locked: user.locked,
+                    lockReason: user.lockReason,
+                    lockedAt: user.lockedAt,
+                    lastLogin: user.lastLogin,
+                    lastLoginIp: user.lastLoginIp,
+                    failedLoginAttempts: user.failedLoginAttempts,
+                    isAdmin: () => user.roles?.includes("ROLE_ADMIN") ?? false,
+                  }}
+                  size="md"
+                  bordered
+                  showStatusDot
+                  statusColor={user.locked ? "var(--color-error)" : "var(--color-success)"}
+                  onLogout={handleLogout}
+                  onManageAccount={() => navigate("/account")}
+                />
+              ) : (
                 <Button
                   variant="secondary"
                   size="sm"
@@ -174,14 +202,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   aria-label="Login"
                   data-testid="login-button"
                 >
-                  <SignIn title="Login" />
+                  🔐 Login
                 </Button>
-              </div>
-            )}
-            <ThemeToggle aria-label="theme-toggler" />
+              )}
+
+              <ThemeToggle aria-label="theme-toggler" variant="ghost" />
+            </div>
           </div>
         </header>
-        {(location.pathname === "/" || location.pathname === "/public") ? (
+        {location.pathname === "/" || location.pathname === "/public" ? (
           <div className="layout-with-sidebar">
             <TagsSidebar />
             <main className="layout-main">{children}</main>
@@ -190,6 +219,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <main className="layout-main">{children}</main>
         )}
       </div>
+      {/* {Add common footer section from the package @asafarim/shared-ui-react } */}
+      <FooterContainer key={"asafarim-footer"} />
     </div>
   );
 }
