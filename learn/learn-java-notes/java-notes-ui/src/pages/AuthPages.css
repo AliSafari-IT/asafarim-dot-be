@@ -87,18 +87,18 @@
 .auth-error {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   padding: var(--spacing-md);
-  background: var(--color-danger-50);
-  border: 1px solid var(--color-danger-200);
+  background: var(--color-error-50);
+  border: 1px solid var(--color-error-200);
   border-radius: var(--radius-lg);
-  color: var(--color-danger-700);
+  color: var(--color-error-500);
   font-size: var(--font-size-sm);
   margin-bottom: var(--spacing-lg);
 }
 
 .auth-error-icon {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-2xl);
 }
 
 .auth-submit-btn {
