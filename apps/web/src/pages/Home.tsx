@@ -5,7 +5,7 @@ import Feature from "../components/Feature";
 import './home.css';
 
 export default function Home() {
-  const { t } = useTranslation("web");
+  const { t } = useTranslation('web');
 
   return (
     <section className="section">
@@ -21,6 +21,57 @@ export default function Home() {
                 : "/what-is-building"
             }
           />
+
+          <Feature
+            title={t("home.features.smartops.title")}
+            desc={t("home.features.smartops.description")}
+            href={
+              isProduction
+                ? "https://smartops.asafarim.be"
+                : "http://smartops.asafarim.local:5175"
+            }
+          />
+
+          <Feature
+            title={t("home.features.testora.title")}
+            desc={t("home.features.testora.description")}
+            href={
+              isProduction
+                ? "https://testora.asafarim.be"
+                : "http://testora.asafarim.local:5176"
+            }
+          />
+
+          <Feature
+            title={t("home.features.testoraEngine.title")}
+            desc={t("home.features.testoraEngine.description")}
+            href={
+              isProduction
+                ? "https://testora.asafarim.be/runner"
+                : "http://testora.asafarim.local:5176/runner"
+            }
+          />
+
+          <Feature
+            title={t("home.features.taskManagement.title")}
+            desc={t("home.features.taskManagement.description")}
+            href={
+              isProduction
+                ? "https://taskmanagement.asafarim.be"
+                : "http://taskmanagement.asafarim.local:5177"
+            }
+          />
+
+          <Feature
+            title={t("home.features.studynotes.title")}
+            desc={t("home.features.studynotes.description")}
+            href={
+              isProduction
+                ? "https://studynotes.asafarim.be"
+                : "http://studynotes.asafarim.local:5183"
+            }
+          />
+
           <Feature
             title={t("home.features.ai.title")}
             desc={t("home.features.ai.description")}

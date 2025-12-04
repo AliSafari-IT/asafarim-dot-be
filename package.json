@@ -30,6 +30,8 @@
     "api:ai": "pnpm --filter @asafarim/ai-api api",
     "api:identity": "pnpm --filter @asafarim/identity-api api",
     "api:core": "pnpm --filter @asafarim/core-api api",
+    "api:web": "concurrently -n ai,identity,core -c \"blue,magenta,yellow\" \"pnpm api:ai\" \"pnpm api:identity\" \"pnpm api:core\"",
+    "devWeb": "concurrently -n identity,web,ai,core -c \"blue,magenta,yellow,green\" \"pnpm dev:identity\"  \"pnpm dev:web\" \"pnpm dev:ai\" \"pnpm dev:core\" ",
     "api:tasks": "pnpm --filter @asafarim/taskmanagement-api api",
     "api:smartops": "pnpm --filter @asafarim/smartops-api api",
     "api:testora": "pnpm --filter @asafarim/testora-api api",

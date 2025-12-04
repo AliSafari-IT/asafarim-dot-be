@@ -2,7 +2,6 @@ import React from "react";
 import "./ContentCard.css";
 
 export interface ContentCardProps {
-  key?: string;
   id?: string;
   /**
    * Title of the content card
@@ -116,7 +115,6 @@ export interface ContentCardProps {
 }
 
 const ContentCard = ({
-  key,
   title,
   subtitle,
   meta,
@@ -264,7 +262,7 @@ const ContentCard = ({
 
   // Always render as regular card (no clickable wrapper)
   return (
-    <div key={key ?? title + props.id} className={cardClasses} {...props}>
+    <div key={props.id || title} className={cardClasses} {...props}>
       {cardContent}
     </div>
   );

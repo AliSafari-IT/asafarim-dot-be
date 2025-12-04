@@ -11,6 +11,26 @@
         "title": "What I'm Building Now",
         "description": "A 'What I'm Building Now' feed from GitHub commits"
       },
+      "smartops": {
+        "title": "Real-time device monitoring and analytics",
+        "description": "SmartOps is a web application that provides a dashboard for monitoring and managing smart operations. It is built using React and TypeScript, and it is part of the SmartOps project."
+      },
+      "testora": {
+        "title": "Testora UI",
+        "description": "Testora user interface is built with React and TypeScript, and it is part of the Testora project. It provides a dashboard for monitoring and managing test runs. The backend is built using ASP.NET Core and Entity Framework, PostgreSQL database."
+      },
+      "testoraEngine": {
+        "title": "Testora e2e TestRunner",
+        "description": "TestRunner is a Node.js application that provides a TestCafe engine for running test suites. It is built using Node.js and TypeScript, and it is part of the Testora project. Via SignalR, it can be used to run test suites in real-time."
+      },
+      "taskManagement": {
+        "title": "Task Management",
+        "description": "Task Management is a productivity app to manage personal and team tasks with authentication and dashboards. It is built using React and TypeScript, and it is part of the Task Management project."
+      },
+      "studynotes": {
+        "title": "Java Study Notes",
+        "description": "Full-featured note-taking app with JWT authentication, user accounts, profile management, avatar uploads, password security, session tracking, activity logging, user preferences, note CRUD with tags, search & filtering, data export, and account deletion. Built with React + TypeScript frontend and Spring Boot 3 + Java 21 backend with PostgreSQL."
+      },
       "ai": {
         "title": "AI",
         "description": "AI with clean architecture, typed clients, and SSO"
@@ -172,58 +192,52 @@
   "portfolio": {
     "title": "Portfolio",
     "description": "View my work and projects",
-    "projects": [
-      {
-        "asafarim-dot-be": {
-          "title": "ASafariM Monorepo",
-          "description": "Monorepo powering my public website, dashboards, and internal tooling with shared design tokens and UI kits."
-        }
+    "projects": {
+      "asafarim-dot-be": {
+        "title": "ASafariM Monorepo",
+        "description": "Monorepo powering my public website, dashboards, and internal tooling with shared design tokens and UI kits."
       },
-      {
-        "test-automation-platform": {
-          "title": "Test Automation Platform",
-          "description": "Full E2E automation suite with TestCafe generators, GitHub Actions integration, and real-time reporting."
-        }
+      "asafarim-clean-architecture": {
+        "title": "ASafariM Clean Architecture",
+        "description": "Backend reference implementation showcasing Clean Architecture, PostgreSQL, MediatR, and modular domain boundaries."
       },
-      {
-        "asafarim-clean-architecture": {
-          "title": "ASafariM Clean Architecture",
-          "description": "Backend reference implementation showcasing Clean Architecture, PostgreSQL, MediatR, and modular domain boundaries."
-        },
-        "task-operations-suite": {
-          "title": "Task Operations Suite",
-          "description": "Smart Operations Dashboard for Task Operations with real-time reporting and analytics."
-        },
-        "taskmanagement": {
-          "title": "TaskManagement Suite",
-          "description": "Project and task management platform featuring SSO, permissions, filters, and a responsive React SPA."
-        },
-        "paginated-project-grid": {
-          "title": "Paginated Project Grid",
-          "description": "A React component for paginated project grids with filtering and sorting."
-        },
-        "aquaflow": {
-          "title": "AquaFlow",
-          "description": "Water utility workflow portal with TypeScript micro frontends and API orchestration."
-        },
-        "react-privacy-consent": {
-          "title": "react-privacy-consent",
-          "description": "A React component for handling privacy consent in a user-friendly way."
-        },
-        "toast-kit": {
-          "title": "Toast Kit",
-          "description": "A lightweight, theme-aware toast notification system for React applications with a simple programmatic API."
-        },
-        "tsrdotnet": {
-          "title": "TSRdotNet",
-          "description": "Energy time-series modeling toolkit leveraging R from .NET for predictive analytics."
-        },
-        "angular-project": {
-          "title": "Angular Enterprise Starter",
-          "description": "Enterprise-ready Angular template with Nx, role-based routing, and Syncfusion integrations."
-        }
+      "test-automation-platform": {
+        "title": "Test Automation Platform",
+        "description": "Full E2E automation suite with TestCafe generators, GitHub Actions integration, and real-time reporting."
+      },
+      "task-operations-suite": {
+        "title": "Task Operations Suite",
+        "description": "Smart Operations Dashboard for Task Operations with real-time reporting and analytics."
+      },
+      "taskmanagement": {
+        "title": "TaskManagement Suite",
+        "description": "Project and task management platform featuring SSO, permissions, filters, and a responsive React SPA."
+      },
+      "paginated-project-grid": {
+        "title": "Paginated Project Grid",
+        "description": "A React component for paginated project grids with filtering and sorting."
+      },
+      "aquaflow": {
+        "title": "AquaFlow",
+        "description": "Water utility workflow portal with TypeScript micro frontends and API orchestration."
+      },
+      "react-privacy-consent": {
+        "title": "react-privacy-consent",
+        "description": "A React component for handling privacy consent in a user-friendly way."
+      },
+      "toast-kit": {
+        "title": "Toast Kit",
+        "description": "A lightweight, theme-aware toast notification system for React applications with a simple programmatic API."
+      },
+      "tsrdotnet": {
+        "title": "TSRdotNet",
+        "description": "Energy time-series modeling toolkit leveraging R from .NET for predictive analytics."
+      },
+      "angular-project": {
+        "title": "Angular Enterprise Starter",
+        "description": "Enterprise-ready Angular template with Nx, role-based routing, and Syncfusion integrations."
       }
-    ],
+    },
     "hero": {
       "kicker": "Portfolio",
       "title": "My Work & Contributions",
@@ -290,7 +304,7 @@
           "meta": "Navigation widgets"
         }
       },
-      "viewOnNpm": "View on npm"
+      "viewOnNpm": "View on npm  →"
     }
   },
   "showcases": {
@@ -305,6 +319,10 @@
       "testora-testrunner": {
         "title": "Testora e2e TestRunner",
         "description": "TestRunner is a Node.js application that provides a TestCafe engine for running test suites. It is built using Node.js and TypeScript, and it is part of the Testora project. Via SignalR, it can be used to run test suites in real-time."
+      },
+      "studynotes": {
+        "title": "Java Study Notes",
+        "description": "Full-featured note-taking app with JWT authentication, user accounts, profile management, avatar uploads, password security, session tracking, activity logging, user preferences, note CRUD with tags, search & filtering, data export, and account deletion. Built with React + TypeScript frontend and Spring Boot 3 + Java 21 backend with PostgreSQL."
       },
       "taskManagement": {
         "title": "Task Management",

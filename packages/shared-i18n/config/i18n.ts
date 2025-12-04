@@ -6,10 +6,6 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import enCommon from '../locales/en/common.json';
 import nlCommon from '../locales/nl/common.json';
 
-// Import web app translations
-import enWeb from '../locales/en/web.json';
-import nlWeb from '../locales/nl/web.json';
-
 // Import identity-portal translations
 import enIdentityPortal from '../locales/en/identity-portal.json';
 import nlIdentityPortal from '../locales/nl/identity-portal.json';
@@ -34,28 +30,32 @@ export interface I18nConfig {
 }
 
 export const initI18n = (config?: I18nConfig) => {
-  const {
-    defaultNS = 'common',
-    ns = ['common', 'web', 'identityPortal'],
-    resources = {},
-    supportedLngs,
-    defaultLanguage,
-  } = config || {};
+  const resources = config?.resources;
+  const supportedLngs = config?.supportedLngs;
+  const defaultLanguage = config?.defaultLanguage;
+  const defaultNS = config?.defaultNS;
+  const ns = config?.ns;
+
+  // const {
+  //   defaultNS = 'common',
+  //   ns = ['common', 'identityPortal'],
+  //   resources,
+  //   supportedLngs,
+  //   defaultLanguage,
+  // } = config || {};
 
   // Merge common translations with app-specific resources
-  const mergedResources: Record<string, Record<string, any>> = { ...resources };
+  const mergedResources: Record<string, Record<string, any>> = { ...config?.resources };
 
   mergedResources.en = {
     common: enCommon,
-    web: enWeb,
     identityPortal: enIdentityPortal,
-    ...(resources.en || {}),
+    ...(resources?.en || {}),
   };
   mergedResources.nl = {
     common: nlCommon,
-    web: nlWeb,
     identityPortal: nlIdentityPortal,
-    ...(resources.nl || {}),
+    ...(resources?.nl || {}),
   };
 
   const finalSupportedLngs = supportedLngs ?? Object.keys(mergedResources);

@@ -1,8 +1,23 @@
-# 📘 learn-java-notes App
+# 📘 java-notes-ui of Study Notes App
 
-*A fullstack Java + React TypeScript playground to master Spring Boot, PostgreSQL, and modern frontend patterns.*
+**React 18 + TypeScript + Vite** frontend for the **Study Notes App** — a full-featured note-taking application with authentication and account management.
 
-This project is designed as a **step-by-step learning environment**, gradually evolving from a simple CRUD to a real-world, production-style application with advanced backend and frontend features.
+### Core Features:
+
+* ✅ **Authentication** — Login/register with JWT tokens
+* ✅ **Account Management** — Profile, display name, email, avatar uploads
+* ✅ **Password Management** — Secure password changes
+* ✅ **Account Security** — Session tracking, activity logs, account deletion
+* ✅ **User Preferences** — Theme switching, language selection, notification settings
+* ✅ **Notes CRUD** — Create, read, update, delete personal notes
+* ✅ **Tag System** — Organize notes with tags
+* ✅ **Search & Filtering** — Full-text search, tag filtering
+* ✅ **Sorting** — Multiple sort modes (newest, oldest, A-Z, reading time, word count)
+* ✅ **Metadata Display** — Reading time, word count, creation date
+* ✅ **Data Export** — Download personal data as JSON
+* ✅ **Responsive Design** — Mobile-friendly UI with shared design tokens
+* ✅ **Notifications** — Toast notifications for user actions
+* ✅ **i18n Support** — English and Dutch translations
 
 ---
 
@@ -98,6 +113,57 @@ learn-java-notes/
 
 * React 18 + TypeScript
 * Vite
+* React Router for navigation
+* Axios for API calls
+* Shared UI components from `@asafarim/shared-ui-react`
+* Design tokens from `@asafarim/shared-tokens`
+* i18n support via `@asafarim/shared-i18n`
+
+#### ✔ Authentication Pages
+
+* **Login Page** — JWT-based authentication
+* **Register Page** — User registration with validation
+* **Auth Context** — Global auth state management
+* **Protected Routes** — Route guards for authenticated pages
+
+#### ✔ Account Management Pages
+
+* **Account Page** — Tabbed interface with 5 sections:
+  * **Profile Tab** — Edit display name, email, upload avatar
+  * **Security Tab** — Change password with validation
+  * **Preferences Tab** — Theme, language, notification settings
+  * **Activity Tab** — View account activity logs and sessions
+  * **Danger Zone** — Account deactivation and deletion
+
+* **Features:**
+  * Avatar upload with preview
+  * Display name persistence across re-login
+  * Password change with current password verification
+  * Session management (view active sessions)
+  * Account activity tracking (login attempts, changes)
+  * User preferences storage
+  * Data export as JSON file
+  * Account deletion with confirmation
+  * Toast notifications for all actions
+  * Loading states and error handling
+
+#### ✔ Notes Pages
+
+* **Notes List** — Display all notes with metadata
+* **Create/Edit Note** — Rich text editing
+* **Note Details** — View single note with tags
+* **Tag System** — Filter and organize by tags
+* **Search** — Full-text search with debounce
+* **Sorting** — Multiple sort options
+
+#### ✔ Reusable Components
+
+* **TagInput** — Add/remove tags
+* **TagBadge** — Display tags
+* **Avatar Component** — User avatar display
+* **Notification Toast** — User feedback
+* **Loading Spinner** — Loading states
+* **Error Boundary** — Error handling
 * React Router
 * Axios
 * Shared UI libraries:
