@@ -1,16 +1,23 @@
-# 📘 java-notes-api
+# 📘 java-notes-api of Study Notes App
 
-**Spring Boot 3 + Java 21 REST API** for the *learn-java-notes* fullstack project.
-This backend provides:
+**Spring Boot 3 + Java 21 REST API** for the **Study Notes App** — a full-featured note-taking application.
 
-* CRUD for notes
-* Tag system
-* Search + filtering + sorting
-* Metadata generation
-* PostgreSQL persistence
-* Clean architecture with DTOs + Services
+### Core Features:
 
-It is designed as a **step-by-step learning playground** that evolves into a production-ready backend.
+* ✅ **Authentication** — JWT-based login/register with Spring Security
+* ✅ **User Accounts** — Profile management, display name, email, avatar uploads
+* ✅ **Password Management** — Secure password changes with validation
+* ✅ **Account Security** — Session tracking, activity logging, account deactivation & deletion
+* ✅ **User Preferences** — Theme, language, notifications settings
+* ✅ **CRUD Notes** — Full note management with ownership
+* ✅ **Tag System** — Many-to-many tags with normalization
+* ✅ **Search + Filtering + Sorting** — Full-text search, tag filtering, multiple sort modes
+* ✅ **Metadata** — Auto-calculated reading time, word count
+* ✅ **Data Export** — Export user data as JSON
+* ✅ **PostgreSQL Persistence** — Flyway migrations, clean schema
+* ✅ **Clean Architecture** — DTOs, Services, Repositories, Controllers
+
+This is a **production-ready backend** demonstrating enterprise Java patterns.
 
 ---
 
@@ -116,7 +123,224 @@ Response example:
 
 ## 📚 REST API Overview
 
-### 📝 Notes API
+### � Authentication API
+
+#### ➤ Register
+
+```
+POST /api/auth/signup
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "username": "john_doe",
+  "email": "john@example.com",
+  "password": "SecurePassword123!"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "User registered successfully!"
+}
+```
+
+---
+
+#### ➤ Login
+
+```
+POST /api/auth/signin
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "username": "john_doe",
+  "password": "SecurePassword123!"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "type": "Bearer",
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "username": "john_doe",
+  "email": "john@example.com",
+  "displayName": "John Doe",
+  "roles": ["ROLE_USER"]
+}
+```
+
+---
+
+#### ➤ Get Current User
+
+```
+GET /api/auth/me
+Authorization: Bearer {token}
+```
+
+---
+
+### 👤 Account Management API
+
+#### ➤ Get Profile
+
+```
+GET /api/account/profile
+Authorization: Bearer {token}
+```
+
+---
+
+#### ➤ Update Profile
+
+```
+PUT /api/account/profile
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "displayName": "John Doe",
+  "email": "newemail@example.com"
+}
+```
+
+---
+
+#### ➤ Upload Avatar
+
+```
+POST /api/account/avatar
+Authorization: Bearer {token}
+Content-Type: multipart/form-data
+```
+
+**Form data:** `file` (image file)
+
+---
+
+#### ➤ Change Password
+
+```
+POST /api/account/password
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "currentPassword": "OldPassword123!",
+  "newPassword": "NewPassword456!"
+}
+```
+
+---
+
+#### ➤ Get User Sessions
+
+```
+GET /api/account/sessions
+Authorization: Bearer {token}
+```
+
+---
+
+#### ➤ Get Account Activity
+
+```
+GET /api/account/activity
+Authorization: Bearer {token}
+```
+
+---
+
+#### ➤ Get Preferences
+
+```
+GET /api/account/preferences
+Authorization: Bearer {token}
+```
+
+---
+
+#### ➤ Update Preferences
+
+```
+PUT /api/account/preferences
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "theme": "dark",
+  "language": "en",
+  "emailNotifications": true,
+  "defaultEditor": "markdown"
+}
+```
+
+---
+
+#### ➤ Export User Data
+
+```
+GET /api/account/export/{uuid}
+Authorization: Bearer {token}
+```
+
+**Response:** Base64-encoded JSON data URL for download
+
+---
+
+#### ➤ Deactivate Account
+
+```
+POST /api/account/deactivate
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "password": "CurrentPassword123!"
+}
+```
+
+---
+
+#### ➤ Delete Account
+
+```
+DELETE /api/account/delete
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "password": "CurrentPassword123!"
+}
+```
+
+---
+
+### �📝 Notes API
 
 ### ➤ Get all notes
 

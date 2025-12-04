@@ -11,6 +11,26 @@
         "title": "Wat ik nu aan het bouwen ben",
         "description": "Een feed ‘Wat ik nu bouw’ met GitHub commits"
       },
+      "smartops": {
+        "title": "Real-time device monitoring and analytics",
+        "description": "SmartOps is een webapplicatie die een dashboard biedt voor het monitoren en beheren van slimme processen. Het is gebouwd met React en TypeScript, en maakt deel uit van het SmartOps-project."
+      },
+      "testora": {
+        "title": "Testora UI",
+        "description": "Testora user interface is gemaakt met React en TypeScript, en het is deel van het Testora project. Het biedt een dashboard voor het monitoren en beheren van testuitvoeringen. De backend is gemaakt met ASP.NET Core en Entity Framework, PostgreSQL database."
+      },
+      "testoraEngine": {
+        "title": "Testora e2e TestRunner",
+        "description": "TestRunner is een Node.js-applicatie die een TestCafe engine biedt voor het uitvoeren van test suites. Het is gemaakt met Node.js en TypeScript, en het is deel van het Testora project. Via SignalR, kan het test suites in real-time uitvoeren."
+      },
+      "taskManagement": {
+        "title": "Taakbeheer",
+        "description": "Een productiviteitsapp voor het beheren van persoonlijke en teamtaken met authenticatie en dashboards. Het is gebouwd met React en TypeScript."
+      },
+      "studynotes": {
+        "title": "Java Study Notes",
+        "description": "Volledige notitie-app met JWT-authenticatie, gebruikersaccounts, profielbeheer, avatar-uploads, wachtwoordbeveiliging, sessietracking, activiteitenlogboek, gebruikersvoorkeuren, notitie CRUD met tags, zoeken & filteren, gegevensexport en accountverwijdering. Gebouwd met React + TypeScript frontend en Spring Boot 3 + Java 21 backend met PostgreSQL."
+      },
       "ai": {
         "title": "AI",
         "description": "AI met clean architecture, getypeerde clients en SSO"
@@ -253,7 +273,7 @@
     },
     "featured": {
       "title": "Aanbevolen Werk",
-      "viewOnNpm":"Bezoek →"
+      "viewOnNpm": "Bezoek →"
     },
     "npm": {
       "title": "NPM-pakketten",
@@ -304,8 +324,11 @@
         "title": "Taakbeheer",
         "description": "Een productiviteitsapp voor het beheren van persoonlijke en teamtaken met authenticatie en dashboards."
       },
-      "smartops":
-      {
+      "studynotes": {
+        "title": "Java Study Notes",
+        "description": "Volledige notitie-app met JWT-authenticatie, gebruikersaccounts, profielbeheer, avatar-uploads, wachtwoordbeveiliging, sessietracking, activiteitenlogboek, gebruikersvoorkeuren, notitie CRUD met tags, zoeken & filteren, gegevensexport en accountverwijdering. Gebouwd met React + TypeScript frontend en Spring Boot 3 + Java 21 backend met PostgreSQL."
+      },
+      "smartops": {
         "title": "SmartOps",
         "description": "SmartOps is een webapplicatie die een dashboard biedt voor het monitoren en beheren van slimme processen. De applicatie is gebouwd met React en TypeScript en maakt deel uit van het SmartOps-project."
       },

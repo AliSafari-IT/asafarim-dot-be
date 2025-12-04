@@ -60,9 +60,23 @@ import ExperienceForm from "./pages/admin/resume/ExperienceForm";
 import ExperiencesManagement from "./pages/admin/resume/ExperiencesManagement";
 import SocialLinksManagement from "./pages/admin/resume/SocialLinksManagement";
 import SocialLinkForm from "./pages/admin/resume/SocialLinkForm";
-
+import enWeb from './locales/web-en.json';
+import nlWeb  from './locales/web-nl.json';
 // Initialize i18n before rendering
-initI18n();
+initI18n({
+  defaultNS: 'web',
+  ns: ["web"],
+  supportedLngs: ['en', 'nl'],
+  defaultLanguage: 'en',
+  resources: {
+    en: {
+      web: enWeb
+    },
+    nl: {
+      web: nlWeb
+    }
+  }
+});
 
 const router = createBrowserRouter([
   {
