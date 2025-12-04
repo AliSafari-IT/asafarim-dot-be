@@ -57,7 +57,7 @@ export const Navbar = ({
   auth,
   renderLink = defaultRenderLink,
   renderBrand = defaultRenderBrand,
-}: NavbarProps): React.ReactNode => {
+}: NavbarProps): React.ReactElement | null => {
   const [open, setOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1200
