@@ -65,8 +65,8 @@ export function useAvatarMenuPosition(
     }
 
     // Desktop positioning
-    const spaceRight = viewportWidth - rect.right;
-    const spaceLeft = rect.left;
+    // const spaceRight = viewportWidth - rect.right;
+    // const spaceLeft = rect.left;
     const spaceBelow = viewportHeight - rect.bottom;
     const spaceAbove = rect.top;
 
@@ -83,11 +83,11 @@ export function useAvatarMenuPosition(
 
     if (menuLeftIfRightAligned >= 0) {
       // Menu fits when right-aligned to trigger's right edge
-      right = viewportWidth - rect.right + spaceRight;
+      right = viewportWidth - rect.right;
       transformOrigin = 'top right';
     } else if (menuRightIfLeftAligned <= viewportWidth) {
       // Menu fits when left-aligned to trigger's left edge
-      left = rect.left + spaceLeft;
+      left = rect.left;
       transformOrigin = 'top left';
     } else {
       // Center horizontally with padding
