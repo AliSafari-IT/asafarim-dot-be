@@ -12,6 +12,7 @@ import {
   TASKS_URL,
   SMARTOPS_URL,
   TESTORA_URL,
+  STUDYNOTES_URL,
 } from "../utils/appUrls";
 import ChangePasswordModal from "./ChangePasswordModal";
 import useAuth from "../hooks/useAuth";
@@ -132,6 +133,9 @@ export const Dashboard = () => {
             </Button>
             <Button onClick={() => openInNewTab(TESTORA_URL)} variant="brand">
               E2E Test Automation
+            </Button>
+            <Button onClick={() => openInNewTab(STUDYNOTES_URL)} variant="outline">
+              Java StudyNotes App
             </Button>
           </div>
         </section>

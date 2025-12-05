@@ -18,6 +18,7 @@ export const RESUME_URL = env.VITE_RESUME_URL || (isProd ? 'https://asafarim.be/
 export const TASKS_URL = env.VITE_TASKS_URL || (isProd ? 'https://taskmanagement.asafarim.be/' : 'http://taskmanagement.asafarim.local:5176/');
 export const SMARTOPS_URL = env.VITE_SMARTOPS_URL || (isProd ? 'https://smartops.asafarim.be/' : 'http://smartops.asafarim.local:5178/');
 export const TESTORA_URL = env.VITE_TESTORA_URL || (isProd ? 'https://testora.asafarim.be/' : 'http://testora.asafarim.local:5180/');
+export const STUDYNOTES_URL = env.VITE_STUDYNOTES_URL || (isProd ? 'https://studynotes.asafarim.be/' : 'http://studynotes.asafarim.local:5183/');
 
 export function openInNewTab(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');
