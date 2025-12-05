@@ -70,7 +70,9 @@
     "app:web": "pnpm kill:identity && pnpm kill:core && pnpm kill:web && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:web\"",
     "app:smartops": "pnpm kill:identity && pnpm kill:core && pnpm kill:smartops && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:smartops\" \"pnpm api:smartops\"",
     "app:testora": "pnpm kill:identity && pnpm kill:core && pnpm kill:testora && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:testora\" \"pnpm api:testora\" \"pnpm api:testrunner\"",
-    "app:tasks": "pnpm kill:identity && pnpm kill:core && pnpm kill:tasks && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:tasks\" \"pnpm api:tasks\"",
+    "app:tasks": "pnpm kill:identity && pnpm kill:core && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:tasks\" \"pnpm api:tasks\"",
+    "app:rms": "concurrently \"pnpm dev:rms\" \"pnpm api:rms\"",
+    "app:studynotes": "pnpm kill:identity && pnpm kill:core && pnpm kill:studynotes && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:studynotes\" \"pnpm api:studynotes\"",
     "deploy": "sudo bash -x /var/repos/asafarim-dot-be/scripts/deploy-local.sh",
     "sd": "sudo bash /var/repos/asafarim-dot-be/scripts/selective-deploy.sh"
   },

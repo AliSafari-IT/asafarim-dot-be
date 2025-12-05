@@ -106,6 +106,84 @@ export default function ChatPage() {
     setSidebarOpen(false);
   };
 
+  // Placeholder: Delete session
+  const handleDeleteSession = async (sessionId: string) => {
+    try {
+      await chatService.deleteChatSession(sessionId);
+      await loadSessions();
+      
+      // If deleted session was active, clear it
+      if (currentSession?.id === sessionId) {
+        setCurrentSession(null);
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error("Failed to delete session:", err);
+    }
+  };
+
+  // Edit message
+  const handleEditMessage = async (id: string, newContent: string) => {
+    try {
+      const msg = messages.find(m => m.id === id);
+      if (!msg) return;
+
+      // Optimistic update
+      setMessages(prev => prev.map(m => 
+        m.id === id ? { ...m, content: newContent } : m
+      ));
+      
+      const isUserMsg = msg.role === 'user';
+      
+      if (isUserMsg) {
+        setLoading(true);
+        // Remove subsequent messages optimistically (simulating regeneration start)
+        setMessages(prev => {
+          const index = prev.findIndex(m => m.id === id);
+          if (index !== -1) {
+            return prev.slice(0, index + 1); // Keep up to the edited message
+          }
+          return prev;
+        });
+      }
+
+      const response = await chatService.updateMessage(id, newContent, isUserMsg); // Regenerate if user message
+      
+      if (response && response.messages) {
+        setMessages(response.messages);
+      }
+    } catch (err) {
+      console.error("Failed to update message:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete message
+  const handleDeleteMessage = async (id: string) => {
+    try {
+      // Optimistic update
+      setMessages(prev => {
+        const index = prev.findIndex(m => m.id === id);
+        if (index === -1) return prev;
+        
+        const msg = prev[index];
+        const nextMsg = prev[index + 1];
+        
+        // If deleting user message, also remove subsequent assistant response
+        if (msg.role === 'user' && nextMsg?.role === 'assistant') {
+          return prev.filter(m => m.id !== id && m.id !== nextMsg.id);
+        }
+        
+        return prev.filter(m => m.id !== id);
+      });
+      
+      await chatService.deleteMessage(id);
+    } catch (err) {
+      console.error("Failed to delete message:", err);
+    }
+  };
+
   // Placeholder: Send message
   const sendMessage = async () => {
     const text = prompt.trim();
@@ -195,6 +273,7 @@ export default function ChatPage() {
         currentSessionId={currentSession?.id}
         onSelectSession={selectSession}
         onNewChat={handleNewChat}
+        onDeleteSession={handleDeleteSession}
         onClose={() => setSidebarOpen(false)}
         isOpen={sidebarOpen}
         user={user}
@@ -226,7 +305,12 @@ export default function ChatPage() {
               </div>
             ) : (
               messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
+                <MessageBubble 
+                  key={msg.id} 
+                  message={msg} 
+                  onEdit={handleEditMessage}
+                  onDelete={handleDeleteMessage}
+                />
               ))
             )}
 

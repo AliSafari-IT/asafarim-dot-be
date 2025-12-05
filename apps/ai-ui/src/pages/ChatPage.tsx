@@ -10,6 +10,8 @@ import './ChatPage.css';
  * without layout conflicts
  */
 export default function ChatPage() {
+
+  
   // Override the default layout styles when on the chat page
   useEffect(() => {
     // Add a class to the body to indicate we're on the chat page
