@@ -19,13 +19,12 @@ export default function Chat() {
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
-  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Configure useAuth to use Identity API endpoints
   const authApiBase = isProduction
     ? "/api/auth"
     : "http://identity.asafarim.local:5101/auth";
+
   const {
     isAuthenticated,
     loading: authLoading,
@@ -38,95 +37,43 @@ export default function Chat() {
     logoutEndpoint: "/logout",
   });
 
-  // Toggle sidebar collapse/expand for desktop
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
-
-  // Set initial sidebar state and handle window resize
+  /** Load chat sessions */
   useEffect(() => {
-    // Set initial state based on window width
-    const setInitialState = () => {
-      const isMobile = window.innerWidth < 580;
-      setSidebarCollapsed(isMobile);
-      if (isMobile) {
-        document.body.style.overflow = "";
-      }
-    };
-
-    // Set initial state immediately
-    setInitialState();
-
-    // Handle window resize
-    function handleResize() {
-      const isMobile = window.innerWidth < 580;
-      if (isMobile && sidebarCollapsed) {
-        setSidebarCollapsed(true);
-        document.body.style.overflow = "";
-      }
-    }
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [sidebarCollapsed]);
-
-  // Load chat sessions on component mount
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadChatSessions();
-    }
+    if (isAuthenticated) loadChatSessions();
   }, [isAuthenticated]);
 
   const loadChatSessions = async () => {
     try {
-      setSessionsLoading(true);
-      const sessionsData = await chatService.getChatSessions();
-      setSessions(sessionsData);
-    } catch (error) {
-      console.error("Failed to load chat sessions:", error);
-    } finally {
-      setSessionsLoading(false);
+      const data = await chatService.getChatSessions();
+      setSessions(data);
+    } catch (e) {
+      console.error(e);
     }
   };
 
+  /** Select a chat session */
   const handleSessionSelect = async (session: ChatSessionListItem) => {
     try {
-      setLoading(true);
-      const sessionData = await chatService.getChatSession(session.id);
-      setCurrentSession(sessionData);
-      setMessages(sessionData.messages || []);
-      // On mobile, collapse sidebar after selecting a session
-      if (window.innerWidth < 580) {
-        setSidebarCollapsed(true);
-        document.body.style.overflow = "";
-      }
-    } catch (error) {
-      console.error("Failed to load session:", error);
-      alert("Failed to load chat session. Please try again.");
-    } finally {
-      setLoading(false);
+      const s = await chatService.getChatSession(session.id);
+      setCurrentSession(s);
+      setMessages(s.messages || []);
+      setSidebarOpen(false);
+    } catch (e) {
+      console.error(e);
     }
   };
 
   const handleNewChat = () => {
     setCurrentSession(null);
     setMessages([]);
-
-    // Scroll to bottom to ensure input section is visible at bottom of viewport
-    setTimeout(() => {
-      const inputSection = document.querySelector(".chat-input-section");
-      if (inputSection) {
-        inputSection.scrollIntoView({ behavior: "smooth", block: "end" });
-      }
-    }, 100);
+    setSidebarOpen(false);
   };
 
+  /** Send a prompt */
   const sendMessage = async () => {
     if (!prompt.trim()) return;
-
     setLoading(true);
+
     try {
       const response = await chatService.sendMessage({
         sessionId: currentSession?.id,
@@ -134,187 +81,138 @@ export default function Chat() {
         sessionTitle: !currentSession ? prompt.substring(0, 50) : undefined,
       });
 
-      if (!currentSession) {
-        // New session created
-        setCurrentSession(response.session);
-        setMessages(response.messages);
-      } else {
-        // Existing session updated
-        setMessages(response.messages);
-      }
-
+      setCurrentSession(response.session);
+      setMessages(response.messages);
       setPrompt("");
 
-      // Refresh sessions list
-      await loadChatSessions();
-
-      // Scroll to bottom of chat
-      setTimeout(() => {
-        const chatContainer = document.querySelector(".chat-messages");
-        if (chatContainer) {
-          chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-      }, 100);
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      alert("Failed to send message. Please try again.");
+      loadChatSessions();
+      scrollToBottom();
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const scrollToBottom = () =>
+    setTimeout(() => {
+      const el = document.querySelector(".chat-body");
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 80);
+
+  const handleKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
-  // Render unauthenticated experience
+  /** If not authenticated */
   if (!authLoading && !isAuthenticated) {
     return (
-      <section className="ai-ui-container">
-        <div className="ai-ui-main" style={{ marginLeft: 0, width: "100%" }}>
-          <div className="ai-ui-header">
-            <h1 className="ai-ui-title">AI Chat</h1>
-          </div>
-
-          <div
-            className="chat-messages"
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              display: "flex",
-            }}
-          >
-            <div className="ai-ui-cover-letter">
-              <p>
-                Welcome to your AI-powered chat assistant! Get personalized
-                responses to your questions and engage in meaningful
-                conversations. Sign in to start your experience.
-              </p>
-
-              <div className="ai-ui-buttons">
-                <button className="ai-ui-button" onClick={() => signIn()}>
-                  Sign In to Start
-                </button>
-              </div>
-            </div>
-          </div>
+      <div className="auth-wall">
+        <div className="auth-card">
+          <div className="bot-icon">🤖</div>
+          <h1>AI Assistant</h1>
+          <p>Sign in to start your conversation.</p>
+          <button onClick={() => signIn(isProduction ? window.location.href : "http://ai.asafarim.local:5173/chat")}>Sign In</button>
         </div>
-      </section>
+      </div>
     );
   }
 
-  // Render authenticated experience
   return (
-    <section
-      className={`ai-ui-container ${sidebarCollapsed ? "collapsed" : ""}`}
-    >
-      {/* Sidebar toggle button */}
-      <button
-        className={`ai-ui-sidebar-toggle ${
-          sidebarCollapsed ? "collapsed" : ""
-        }`}
-        onClick={toggleSidebar}
-        aria-label={sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
-      >
-        {sidebarCollapsed ? "→" : "←"}
-      </button>
-
-      {/* Sidebar */}
-      <div className={`ai-ui-sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
-        <div className="sidebar-header">
-          <button
-            className="new-chat-btn"
-            onClick={handleNewChat}
-            disabled={sessionsLoading}
-          >
-            {sessionsLoading ? "⏳" : "+"} New chat
+    <div className="chat-app">
+      {/* SIDEBAR */}
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <div className="sidebar-top">
+          <h3>Chats</h3>
+          <button className="close-btn" onClick={() => setSidebarOpen(false)}>
+            ✕
           </button>
         </div>
-        <ChatSessionList
-          sessions={sessions}
-          onSessionSelect={handleSessionSelect}
-          onSessionsChange={loadChatSessions}
-        />
+
+        <button className="new-chat" onClick={handleNewChat}>
+          + New Chat
+        </button>
+
+        <div className="session-list">
+          <ChatSessionList
+            sessions={sessions}
+            onSessionSelect={handleSessionSelect}
+            onSessionsChange={loadChatSessions}
+          />
+        </div>
+
         {user && (
-          <div className="ai-ui-user-info">
-            <div className="user-avatar">
-              {user.email?.charAt(0).toUpperCase() || "U"}
-            </div>
-            <span className="user-name">{user.email}</span>
+          <div className="user-footer">
+            <div className="avatar">{user.email[0].toUpperCase()}</div>
+            <span>{user.email}</span>
           </div>
         )}
-      </div>
+      </aside>
 
-      {/* Main Content */}
-      <div className="ai-ui-main">
-        <div className="chat-messages-container">
-          <div className="chat-messages">
-            {messages.length === 0 && (
-              <div className="empty-chat-message">
-                <h2>How can I help you today?</h2>
-                <p>Ask me anything and I'll do my best to assist you!</p>
-              </div>
-            )}
+      {/* MAIN AREA */}
+      <main className="chat-main">
+        {/* TOP BAR */}
+        <header className="topbar">
+          <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
+            ☰
+          </button>
+          <h1>AI Assistant</h1>
+        </header>
 
-            {messages.map((message) => (
-              <div key={message.id} className={`chat-message ${message.role}`}>
-                <div className="message-avatar">
-                  {message.role === "user" ? "👤" : "🤖"}
-                </div>
-                <div className="message-content">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {message.content}
-                  </ReactMarkdown>
-                  <div className="message-timestamp">
-                    {new Date(message.createdAt).toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            ))}
+        {/* CHAT BODY */}
+        <div className="chat-body">
+          {messages.length === 0 && (
+            <div className="welcome">
+              <div className="bot-icon-circle">🤖</div>
+              <h2>How can I help?</h2>
+              <p>Ask anything — I'm here to assist.</p>
+            </div>
+          )}
 
-            {loading && (
-              <div className="chat-message assistant">
-                <div className="message-avatar">🤖</div>
-                <div className="message-content loading">
-                  <div className="typing-indicator">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
-                </div>
+          {messages.map((m) => (
+            <div key={m.id} className={`bubble ${m.role}`}>
+              <div className="avatar-mini">
+                {m.role === "user" ? "👤" : "🤖"}
               </div>
-            )}
-
-            <div className="chat-input-section">
-              <div className="chat-input-container">
-                <textarea
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Message AI..."
-                  className="ai-ui-input"
-                  rows={1}
-                  disabled={loading}
-                />
-                <button
-                  onClick={sendMessage}
-                  disabled={loading || !prompt.trim()}
-                  className="send-btn"
-                  title={loading ? "Processing..." : "Send message"}
-                >
-                  {loading ? "⏳" : "➤"}
-                </button>
-              </div>
-              <div className="input-hint">
-                Press Enter to send, Shift+Enter for new line
+              <div className="bubble-content">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {m.content}
+                </ReactMarkdown>
               </div>
             </div>
-          </div>
+          ))}
+
+          {loading && (
+            <div className="bubble assistant">
+              <div className="avatar-mini">🤖</div>
+              <div className="typing">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    </section>
+
+        {/* INPUT AREA */}
+        <div className="input-box">
+          <textarea
+            placeholder="Type a message..."
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKey}
+          ></textarea>
+
+          <button
+            className="send"
+            onClick={sendMessage}
+            disabled={!prompt.trim()}
+          >
+            ➤
+          </button>
+        </div>
+      </main>
+    </div>
   );
 }

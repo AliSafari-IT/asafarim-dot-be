@@ -1,3 +1,5 @@
+/* apps/ai-ui/src/pages/ChatPage.tsx */
+
 import { useEffect } from 'react';
 import Chat from './Chat';
 import './ChatPage.css';

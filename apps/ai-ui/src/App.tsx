@@ -6,7 +6,7 @@ import {
 } from "@asafarim/shared-ui-react";
 import Navbar from "./components/Navbar";
 import { ToastProvider, Toaster } from "@asafarim/toast";
-import ChatPage from "./pages/ChatPage";
+import ChatPage from "./pages/chat/ChatPage";
 import Home from "./pages/Home";
 import JobTools from "./pages/JobTools";
 import ResumeMaker from "./pages/ResumeMaker";
