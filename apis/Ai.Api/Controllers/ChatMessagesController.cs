@@ -41,7 +41,6 @@ namespace Ai.Api.Controllers
 
             // Update content
             message.Content = updateDto.Content;
-
             // If we don't need to regenerate, just save and return
             if (!updateDto.RegenerateResponse || message.Role != "user")
             {
@@ -156,7 +155,6 @@ namespace Ai.Api.Controllers
             }
 
             _context.ChatMessages.Remove(message);
-
             // Update session message count (simplified)
             var session = await _context.ChatSessions.FindAsync(message.SessionId);
             if (session != null)

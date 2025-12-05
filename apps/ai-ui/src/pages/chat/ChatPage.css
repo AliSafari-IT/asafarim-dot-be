@@ -176,6 +176,22 @@ body.asafarim-chat-page .ai-ui-content-wrapper {
   background: var(--asm-color-brand-primary-600);
 }
 
+.session-item-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--radius-md);
+  transition: background 0.15s;
+}
+
+.session-item-wrapper:hover {
+  background: var(--color-surface-muted);
+}
+
+.session-item-wrapper.active {
+  background: var(--color-primary);
+}
+
 .session-item {
   display: flex;
   align-items: center;
