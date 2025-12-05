@@ -1,0 +1,14 @@
+# Environments
+env/
+.venv/
+# Bytecode
+__pycache__/
+*.pyc
+# Jupyter
+.ipynb_checkpoints/
+# Packaging / build
+build/
+dist/
+*.egg-info/
+# VS Code
+.vscode/
