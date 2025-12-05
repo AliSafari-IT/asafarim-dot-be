@@ -1,29 +1,25 @@
-/* ChatPage specific styles */
+/* apps/ai-ui/src/pages/ChatPage.css */
+
+/* ChatPage - Full viewport layout minus navbar */
 .ai-ui-chat-page .ai-ui-theme-layout-content {
   padding: 0 !important;
   max-width: none !important;
   width: 100%;
-  height: calc(100vh - 4rem); /* Adjust for navbar height */
+  height: calc(100vh - 60px); /* Subtract navbar height */
   overflow: hidden;
 }
 
-/* Ensure the chat container takes full height */
-.ai-ui-chat-page .ai-ui-container {
+/* Chat layout takes remaining height */
+.ai-ui-chat-page .chat-layout {
   height: 100%;
 }
 
-/* Fix for the navbar overlap */
-.ai-ui-chat-page .ai-ui-sidebar {
-  top: 4rem; /* Match navbar height */
-  height: calc(100vh - 4rem);
+/* Chat main area fills available space */
+.ai-ui-chat-page .chat-main {
+  height: 100%;
 }
 
-/* Fix for the main content area */
-.ai-ui-chat-page .ai-ui-main {
-  margin-top: 0;
-}
-
-/* Ensure the chat input is properly positioned */
-.ai-ui-chat-page .chat-input-section {
-  bottom: 0;
+/* Unauthenticated container */
+.ai-ui-chat-page .unauth-container {
+  height: 100%;
 }

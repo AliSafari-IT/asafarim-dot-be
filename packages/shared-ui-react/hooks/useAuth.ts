@@ -655,7 +655,10 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
 
   const signIn = useCallback(async (redirectUrl?: string) => {
     console.log('🔑 signIn() called with redirectUrl:', redirectUrl);
-    
+    console.log('🔑 window.location.href:', window.location.href);
+    console.log('🔑 window.location.origin:', window.location.origin);
+    localStorage.setItem("redirectUrl", redirectUrl || window.location.href + "?href=true");
+
     // CRITICAL: Clear logout flag if it's still set from a previous logout
     // This ensures auth checks can proceed after clicking Sign In
     const logoutInProgress = localStorage.getItem('logout_in_progress');
@@ -665,43 +668,41 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
       localStorage.removeItem('logout_timestamp');
     }
     
-    // Use provided redirect URL or current page, but ensure it's a valid URL
-    const currentUrl = redirectUrl || window.location.href;
+    // Use the provided redirect URL directly if it's a full URL
+    // Otherwise fall back to current page
+    let returnUrl = redirectUrl || window.location.href;
+    
+    console.log('🔑 Initial returnUrl:', returnUrl);
 
-    // Validate and sanitize the return URL to prevent infinite loops
-    let returnUrl = currentUrl;
+    // Only process if we need to validate
     try {
-      const url = new URL(currentUrl, window.location.origin);
+      const url = new URL(returnUrl, window.location.origin);
+      console.log('🔑 Parsed URL:', url.href);
+      console.log('🔑 URL port:', url.port);
 
       // Prevent infinite loops by ensuring return URL is not the identity login page
       if (url.hostname.includes('identity.') && url.pathname.includes('/login')) {
         console.warn('Preventing redirect to identity login page to avoid infinite loop');
-        returnUrl = `${url.protocol}//${url.hostname}`;
-      }
-
-      // For AI app, ensure we don't redirect back to a page that immediately requires auth
-      if (url.hostname.includes('ai.') && url.pathname === '/chat') {
-        // Redirect to home page instead of chat to avoid immediate auth requirement
-        returnUrl = `${url.protocol}//${url.hostname}`;
-      }
-
-      // Check if we're already on the login page to prevent loops
-      if (url.hostname.includes('identity.') && url.pathname === '/login') {
-        console.warn('Already on login page, preventing redirect loop');
         return;
       }
+
+      // Use the full href which includes port
+      returnUrl = url.href;
+      console.log('🔑 Final returnUrl:', returnUrl);
+      
     } catch (error) {
       console.error('Invalid return URL:', error);
-      returnUrl = window.location.origin;
+      returnUrl = window.location.href;
     }
 
     const encodedReturnUrl = encodeURIComponent(returnUrl);
     const loginUrl = `${identityLoginUrl}?returnUrl=${encodedReturnUrl}`;
 
     console.log('🔄 Redirecting to login:', loginUrl);
-    console.log('🔄 Return URL:', returnUrl);
+    console.log('🔄 Return URL (decoded):', decodeURIComponent(encodedReturnUrl));
 
     window.location.href = loginUrl;
+    localStorage.removeItem("redirectUrl");
   }, [identityLoginUrl]);
 
   return { isAuthenticated: authenticated, user, token, loading, signOut, signIn, refreshTokenIfNeeded };

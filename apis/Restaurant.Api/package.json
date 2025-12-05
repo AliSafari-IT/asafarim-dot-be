@@ -1,6 +1,6 @@
 {
-  "name": "@asafarim/restaurant.api",
-  "version": "1.0.0",
+  "name": "@asafarim/restaurant-api",
+  "version": "1.1.0",
   "description": "Production-ready Restaurant Management System backend built with **Java 21** and **Spring Boot 3.3**.",
   "main": "index.js",
   "directories": {
