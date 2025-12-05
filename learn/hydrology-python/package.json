@@ -1,0 +1,16 @@
+{
+  "name": "@asafarim/hydrology-lab",
+  "version": "v.0.1",
+  "description": "A python sandbox for hydrology time-series tools, plotting, and simple model evaluation.",
+  "main": "index.py",
+  "scripts": {
+    "rp": "python read_and_plot.py sample_hydrograph.csv",
+    "ed": "python event_detection.py sample_hydrograph.csv 3.0",
+    "ee": "python event_extraction.py sample_hydrograph.csv",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.24.0"
+}

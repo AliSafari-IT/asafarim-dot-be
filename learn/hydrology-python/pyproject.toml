@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hydrograph-lab"
+version = "0.1.0"
+description = "Learning-oriented hydrology toolkit for hydrographs, events, and basic evaluation."
+authors = [
+  { name = "Ali Safari" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pandas",
+  "matplotlib"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hydrograph_lab*"]
+
+[project.scripts]
+hydrograph-lab = "hydrograph_lab.cli:main"
