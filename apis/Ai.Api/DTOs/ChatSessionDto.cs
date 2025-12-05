@@ -46,6 +46,12 @@ namespace Ai.Api.DTOs
         public string? SessionTitle { get; set; } // for new sessions
     }
 
+    public class UpdateChatMessageDto
+    {
+        public string Content { get; set; } = string.Empty;
+        public bool RegenerateResponse { get; set; } = false;
+    }
+
     public class ChatResponseDto
     {
         public Guid SessionId { get; set; }

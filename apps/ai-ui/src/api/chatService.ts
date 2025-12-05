@@ -51,5 +51,18 @@ export const chatService = {
       method: 'POST', 
       body: JSON.stringify(data) 
     });
+  },
+
+  // Update a specific message
+  async updateMessage(id: string, content: string, regenerateResponse = false): Promise<ChatResponseDto | null> {
+    return aiApi<ChatResponseDto | null>(`/chatmessages/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ content, regenerateResponse })
+    });
+  },
+
+  // Delete a specific message
+  async deleteMessage(id: string): Promise<void> {
+    return aiApi<void>(`/chatmessages/${id}`, { method: 'DELETE' });
   }
 };

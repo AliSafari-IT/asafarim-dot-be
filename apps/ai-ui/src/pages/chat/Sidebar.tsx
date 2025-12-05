@@ -7,6 +7,7 @@ interface SidebarProps {
   currentSessionId?: string;
   onSelectSession: (session: ChatSessionListItem) => void;
   onNewChat: () => void;
+  onDeleteSession: (sessionId: string) => void;
   onClose: () => void;
   isOpen: boolean;
   user?: { email: string } | null;
@@ -17,6 +18,7 @@ export default function Sidebar({
   currentSessionId,
   onSelectSession,
   onNewChat,
+  onDeleteSession,
   onClose,
   isOpen,
   user,
@@ -50,14 +52,28 @@ export default function Sidebar({
             <p className="no-sessions">No conversations yet</p>
           ) : (
             sessions.map((s) => (
-              <button
+              <div
                 key={s.id}
-                className={`session-item ${s.id === currentSessionId ? "active" : ""}`}
-                onClick={() => onSelectSession(s)}
+                className={`session-item-wrapper ${s.id === currentSessionId ? "active" : ""}`}
               >
-                <span className="session-icon">💬</span>
-                <span className="session-title">{s.title || "Untitled"}</span>
-              </button>
+                <button
+                  className="session-item"
+                  onClick={() => onSelectSession(s)}
+                >
+                  <span className="session-icon">💬</span>
+                  <span className="session-title">{s.title || "Untitled"}</span>
+                </button>
+                <button 
+                  className="session-delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if(confirm('Delete this chat?')) onDeleteSession(s.id);
+                  }}
+                  title="Delete chat"
+                >
+                  🗑️
+                </button>
+              </div>
             ))
           )}
         </nav>
