@@ -1,6 +1,6 @@
 {
   "name": "@asafarim/hydrology-lab",
-  "version": "v.0.1",
+  "version": "v.2.0",
   "description": "A python sandbox for hydrology time-series tools, plotting, and simple model evaluation.",
   "main": "index.py",
   "scripts": {

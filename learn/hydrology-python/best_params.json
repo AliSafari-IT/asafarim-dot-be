@@ -1,0 +1,13 @@
+{
+  "best_k": 0.001,
+  "metrics": {
+    "NSE": -1.249770202730771,
+    "KGE": -0.2289914849676724,
+    "RMSE": 7.532291539588402,
+    "Bias": -36.30370815670534,
+    "R": 0.3642532675146643,
+    "logNSE": -1.11117937570413
+  },
+  "success": true,
+  "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+}
