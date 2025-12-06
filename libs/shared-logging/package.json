@@ -19,10 +19,20 @@
   ],
   "author": "Asafarim",
   "license": "MIT",
-  "homepage": "https://github.com/AliSafari-IT/asafarim-dot-be/libs/shared-logging",
+  "homepage": "https://github.com/AliSafari-IT/asafarim-dot-be/tree/main-dev/libs/shared-logging",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AliSafari-IT/asafarim-dot-be/libs/shared-logging.git"
+    "url": "https://github.com/AliSafari-IT/asafarim-dot-be/tree/main-dev/libs/shared-logging"
+  },
+  "bugs": {
+    "url": "https://github.com/AliSafari-IT/asafarim-dot-be/issues"
+  },
+  "funding": {
+    "url": "https://github.com/sponsors/AliSafari-IT"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
   },
   "packageManager": "pnpm@10.24.0"
 }
