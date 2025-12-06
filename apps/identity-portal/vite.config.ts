@@ -4,7 +4,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 function getWorkspaceAliases(baseDir: string, scope = '@asafarim') {
-  const packagesDir = path.resolve(baseDir, '../../packages')
+  const packagesDir = path.resolve(baseDir, '../../packages');
+  const libsDir = path.resolve(baseDir, '../../libs');
   const aliases: Record<string, string> = {}
 
   if (!fs.existsSync(packagesDir)) return aliases
@@ -22,6 +23,25 @@ function getWorkspaceAliases(baseDir: string, scope = '@asafarim') {
       // Prefer src if it exists
       const srcPath = path.join(pkgPath, 'src')
       aliases[name] = fs.existsSync(srcPath) ? srcPath : pkgPath
+    }
+  }
+
+  // Scan libs directory
+  if (fs.existsSync(libsDir)) {
+    for (const pkgName of fs.readdirSync(libsDir)) {
+      const pkgPath = path.join(libsDir, pkgName)
+      const pkgJsonPath = path.join(pkgPath, 'package.json')
+
+      if (!fs.existsSync(pkgJsonPath)) continue
+
+      const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'))
+      const name = pkgJson.name
+
+      if (name?.startsWith(scope)) {
+        // Prefer src if it exists
+        const srcPath = path.join(pkgPath, 'src')
+        aliases[name] = fs.existsSync(srcPath) ? srcPath : pkgPath
+      }
     }
   }
 
