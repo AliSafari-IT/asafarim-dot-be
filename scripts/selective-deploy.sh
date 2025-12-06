@@ -686,7 +686,11 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                 # Get package name from package.json
                 pkg_name=$(grep -o '"name": *"[^"]*"' "$project_dir/package.json" | cut -d'"' -f4)
                 
+<<<<<<< HEAD
                 if pnpm deploy --filter "$pkg_name" --prod --legacy "$output_path"; then
+=======
+                if pnpm deploy --filter "$pkg_name" --prod "$output_path"; then
+>>>>>>> 4f22420 (```)
                     print_success "Deployed $pkg_name structure with dependencies"
                     
                     # Ensure dist directory is present (pnpm deploy might exclude it if ignored)
@@ -695,12 +699,15 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                         # We force copy to be sure we have the latest build
                         print_info "Syncing build artifacts..."
                         cp -r "$project_dir/dist" "$output_path/"
+<<<<<<< HEAD
                         
                         # Create a proxy index.js if one doesn't exist at root
                         if [ ! -f "$output_path/index.js" ] && [ -f "$output_path/dist/index.js" ]; then
                             print_info "Creating proxy index.js..."
                             echo "import './dist/index.js';" > "$output_path/index.js"
                         fi
+=======
+>>>>>>> 4f22420 (```)
                     fi
                     
                     # Set proper permissions for Node.js API
