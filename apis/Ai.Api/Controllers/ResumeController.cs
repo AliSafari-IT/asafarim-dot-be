@@ -4,6 +4,7 @@ using Ai.Api.Models;
 using Ai.Api.OpenAI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Logging;
 
 namespace Ai.Api.Controllers;
 
@@ -11,12 +12,10 @@ namespace Ai.Api.Controllers;
 [Route("resume")]
 public sealed class ResumeController : ControllerBase
 {
-    private readonly ILogger<ResumeController> _logger;
     private readonly IOpenAiService _ai;
 
-    public ResumeController(ILogger<ResumeController> logger, IOpenAiService ai)
+    public ResumeController(IOpenAiService ai)
     {
-        _logger = logger;
         _ai = ai;
     }
 
@@ -125,11 +124,9 @@ Detailed CV: {req.DetailedCv ?? "(not provided)"}";
         }
         catch (OpenAiUpstreamException ex)
         {
-            _logger.LogError(
-                ex,
-                "OpenAI upstream error generating resume for {UserId}: {Status}",
-                sub,
-                ex.StatusCode
+            SharedLogger.Error(
+                $"OpenAI upstream error generating resume for {sub}: {ex.StatusCode}",
+                ex
             );
             return StatusCode(
                 ex.StatusCode,
@@ -138,7 +135,7 @@ Detailed CV: {req.DetailedCv ?? "(not provided)"}";
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "OpenAI HTTP error generating resume for {UserId}", sub);
+            SharedLogger.Error($"OpenAI HTTP error generating resume for {sub}", ex);
             return StatusCode(502, new { error = "Upstream OpenAI request failed" });
         }
         catch (OperationCanceledException)
@@ -147,17 +144,14 @@ Detailed CV: {req.DetailedCv ?? "(not provided)"}";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error generating resume for {UserId}", sub);
+            SharedLogger.Error($"Unexpected error generating resume for {sub}", ex);
             return StatusCode(500, new { error = "Unexpected server error" });
         }
 
         // Ensure we return strict JSON: strip fences, extract JSON object, and validate
         var json = ExtractJson(content);
-        _logger.LogInformation(
-            "AI resume generated for {UserId} with {SkillCount} skills. Strict JSON length: {Len}",
-            sub,
-            req.Skills?.Count ?? 0,
-            json?.Length ?? 0
+        SharedLogger.Info(
+            $"AI resume generated for {sub} with {req.Skills?.Count ?? 0} skills. Strict JSON length: {json?.Length ?? 0}"
         );
         return Ok(new { userId = sub, raw = json });
     }

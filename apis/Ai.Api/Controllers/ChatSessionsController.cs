@@ -5,6 +5,7 @@ using Ai.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Logging;
 
 namespace Ai.Api.Controllers
 {
@@ -13,15 +14,10 @@ namespace Ai.Api.Controllers
     public class ChatSessionsController : ControllerBase
     {
         private readonly SharedDbContext _context;
-        private readonly ILogger<ChatSessionsController> _logger;
 
-        public ChatSessionsController(
-            SharedDbContext context,
-            ILogger<ChatSessionsController> logger
-        )
+        public ChatSessionsController(SharedDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
         // GET: chatsessions

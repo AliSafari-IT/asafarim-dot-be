@@ -1,6 +1,6 @@
 {
   "name": "@asafarim/testrunner",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "TestCafe test runner for Test Automation Platform",
   "main": "dist/index.js",
   "scripts": {
@@ -17,6 +17,7 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@microsoft/signalr": "^8.0.7",
+    "@asafarim/shared-logging": "workspace:*",            
     "axios": "^1.6.2",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",

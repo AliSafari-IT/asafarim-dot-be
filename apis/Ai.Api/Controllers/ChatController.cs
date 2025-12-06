@@ -1,11 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Ai.Api.Data;
 using Ai.Api.DTOs;
 using Ai.Api.Models;
 using Ai.Api.OpenAI;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Shared.Logging;
 
 namespace Ai.Api.Controllers
 {
@@ -15,20 +16,17 @@ namespace Ai.Api.Controllers
     {
         private readonly IOpenAiService _openAIService;
         private readonly SharedDbContext _context;
-        private readonly ILogger<ChatController> _logger;
 
-        public ChatController(
-            IOpenAiService openAIService,
-            SharedDbContext context,
-            ILogger<ChatController> logger)
+        public ChatController(IOpenAiService openAIService, SharedDbContext context)
         {
             _openAIService = openAIService;
             _context = context;
-            _logger = logger;
         }
 
         [HttpPost("chat")]
-        public async Task<ActionResult<ChatResponseDto>> SendMessage([FromBody] SendMessageDto request)
+        public async Task<ActionResult<ChatResponseDto>> SendMessage(
+            [FromBody] SendMessageDto request
+        )
         {
             var userId = GetCurrentUserId() ?? "anonymous";
 
@@ -43,10 +41,11 @@ namespace Ai.Api.Controllers
                 {
                     // Existing session
                     var sessions = await _context
-                        .ChatSessions
-                        .Where(s => !s.IsDeleted)
+                        .ChatSessions.Where(s => !s.IsDeleted)
                         .Include(s => s.Messages.OrderBy(m => m.CreatedAt))
-                        .FirstOrDefaultAsync(s => s.Id == request.SessionId.Value && s.UserId == userId && !s.IsDeleted);
+                        .FirstOrDefaultAsync(s =>
+                            s.Id == request.SessionId.Value && s.UserId == userId && !s.IsDeleted
+                        );
 
                     if (sessions == null)
                         return NotFound("Chat session not found");
@@ -57,8 +56,8 @@ namespace Ai.Api.Controllers
                 else
                 {
                     // Create new session
-                    var sessionTitle = !string.IsNullOrEmpty(request.SessionTitle) 
-                        ? request.SessionTitle 
+                    var sessionTitle = !string.IsNullOrEmpty(request.SessionTitle)
+                        ? request.SessionTitle
                         : GenerateSessionTitle(request.Message);
 
                     session = new ChatSession
@@ -66,12 +65,13 @@ namespace Ai.Api.Controllers
                         Id = Guid.NewGuid(),
                         UserId = userId,
                         Title = sessionTitle,
-                        Description = $"Started with: {request.Message.Substring(0, Math.Min(100, request.Message.Length))}...",
+                        Description =
+                            $"Started with: {request.Message.Substring(0, Math.Min(100, request.Message.Length))}...",
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         IsArchived = false,
                         IsDeleted = false,
-                        MessageCount = 0
+                        MessageCount = 0,
                     };
 
                     _context.ChatSessions.Add(session);
@@ -85,7 +85,7 @@ namespace Ai.Api.Controllers
                     UserId = userId,
                     Role = "user",
                     Content = request.Message,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
                 };
 
                 _context.ChatMessages.Add(userMessage);
@@ -111,7 +111,7 @@ namespace Ai.Api.Controllers
                     Content = aiResponse,
                     CreatedAt = DateTime.UtcNow,
                     ModelUsed = "gpt-4o-mini", // You can get this from configuration
-                    ResponseTimeMs = stopwatch.ElapsedMilliseconds
+                    ResponseTimeMs = stopwatch.ElapsedMilliseconds,
                 };
 
                 _context.ChatMessages.Add(aiMessage);
@@ -137,7 +137,7 @@ namespace Ai.Api.Controllers
                         UpdatedAt = session.UpdatedAt,
                         IsArchived = session.IsArchived,
                         LastMessageAt = session.LastMessageAt,
-                        MessageCount = session.MessageCount
+                        MessageCount = session.MessageCount,
                     },
                     Messages = existingMessages
                         .Concat(new[] { userMessage, aiMessage })
@@ -150,16 +150,16 @@ namespace Ai.Api.Controllers
                             CreatedAt = m.CreatedAt,
                             TokensUsed = m.TokensUsed,
                             ModelUsed = m.ModelUsed,
-                            ResponseTimeMs = m.ResponseTimeMs
+                            ResponseTimeMs = m.ResponseTimeMs,
                         })
-                        .ToList()
+                        .ToList(),
                 };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing chat message");
+                SharedLogger.Error("Error processing chat message", ex);
                 return StatusCode(500, "An error occurred while processing your message");
             }
         }

@@ -1,0 +1,28 @@
+{
+  "name": "@asafarim/shared-logging",
+  "description": "A lightweight, environment-agnostic logging utility shared across all ASafariM applications.",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "keywords": [
+    "logging",
+    "shared",
+    "library"
+  ],
+  "author": "Asafarim",
+  "license": "MIT",
+  "homepage": "https://github.com/AliSafari-IT/asafarim-dot-be/libs/shared-logging",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AliSafari-IT/asafarim-dot-be/libs/shared-logging.git"
+  },
+  "packageManager": "pnpm@10.24.0"
+}
