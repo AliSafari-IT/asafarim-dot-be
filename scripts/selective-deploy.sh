@@ -655,6 +655,12 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                         # We force copy to be sure we have the latest build
                         print_info "Syncing build artifacts..."
                         cp -r "$project_dir/dist" "$output_path/"
+                        
+                        # Create a proxy index.js if one doesn't exist at root
+                        if [ ! -f "$output_path/index.js" ] && [ -f "$output_path/dist/index.js" ]; then
+                            print_info "Creating proxy index.js..."
+                            echo "require('./dist/index.js');" > "$output_path/index.js"
+                        fi
                     fi
                     
                     # Set proper permissions for Node.js API
