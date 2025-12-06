@@ -57,6 +57,25 @@ function getWorkspaceAliases(appDir: string, packageJson: unknown): Record<strin
     }
   }
 
+  // Scan libs directory
+  if (fs.existsSync(libsDir)) {
+    for (const pkgName of fs.readdirSync(libsDir)) {
+      const pkgPath = path.join(libsDir, pkgName)
+      const pkgJsonPath = path.join(pkgPath, 'package.json')
+
+      if (!fs.existsSync(pkgJsonPath)) continue
+
+      const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'))
+      const name = pkgJson.name
+
+      if (name?.startsWith(scope)) {
+        // Prefer src if it exists
+        const srcPath = path.join(pkgPath, 'src')
+        aliases[name] = fs.existsSync(srcPath) ? srcPath : pkgPath
+      }
+    }
+  }
+
   return aliases
 }
 
