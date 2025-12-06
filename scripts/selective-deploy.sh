@@ -646,7 +646,7 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                 # Get package name from package.json
                 pkg_name=$(grep -o '"name": *"[^"]*"' "$project_dir/package.json" | cut -d'"' -f4)
                 
-                if pnpm deploy --filter "$pkg_name" --prod "$output_path"; then
+                if pnpm deploy --filter "$pkg_name" --prod --legacy "$output_path"; then
                     print_success "Deployed $pkg_name structure with dependencies"
                     
                     # Ensure dist directory is present (pnpm deploy might exclude it if ignored)
