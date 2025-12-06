@@ -15,7 +15,7 @@
     "kill:smartops": "kill-port 5178",
     "kill:testora": "kill-port 5180 4000 5106",
     "kill:tasks": "kill-port 5176",
-    "dev:shared": " pnpm --filter @asafarim/shared-i18n build && pnpm --filter @asafarim/shared-ui-react build && pnpm --filter @asafarim/helper start",
+    "dev:shared": " pnpm --filter @asafarim/shared-i18n build && pnpm --filter @asafarim/shared-ui-react build && pnpm --filter @asafarim/helper start && pnpm --filter @asafarim/shared-validation build && pnpm --filter @asafarim/shared-logging build",
     "dev:web": "pnpm --filter @asafarim/web start",
     "dev:core": "pnpm --filter @asafarim/core-app start",
     "dev:ai": "pnpm --filter @asafarim/ai-ui start",
