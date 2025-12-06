@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Ai.Api.OpenAI;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Logging;
 
 namespace Ai.Api.Controllers;
 
@@ -9,12 +10,10 @@ namespace Ai.Api.Controllers;
 public sealed class JobToolsController : ControllerBase
 {
     private readonly IOpenAiService _ai;
-    private readonly ILogger<JobToolsController> _logger;
 
-    public JobToolsController(IOpenAiService ai, ILogger<JobToolsController> logger)
+    public JobToolsController(IOpenAiService ai)
     {
         _ai = ai;
-        _logger = logger;
     }
 
     // POST /extract/job
@@ -38,8 +37,8 @@ public sealed class JobToolsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "OpenAI error in ExtractJob");
-            return StatusCode(502, new { error = "OpenAI request failed" });
+            SharedLogger.Error("OpenAI error in ExtractJob", ex);
+            return StatusCode(500, new { error = "Failed to process job description" });
         }
 
         var json = ExtractJson(content);
@@ -97,7 +96,7 @@ Tone: {req.Tone ?? "concise"}";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "OpenAI error in GenerateCoverLetter");
+            SharedLogger.Error("OpenAI error in GenerateCoverLetter", ex);
             return StatusCode(502, new { error = "OpenAI request failed" });
         }
 

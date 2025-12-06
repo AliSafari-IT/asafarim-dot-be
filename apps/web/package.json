@@ -18,6 +18,7 @@
     "@asafarim/react-themes": "workspace:*",
     "@asafarim/shared-i18n": "workspace:*",
     "@asafarim/shared-ui-react": "workspace:*",
+    "@asafarim/shared-logging": "workspace:*",
     "@asafarim/toast": "1.2.0",
     "@emailjs/browser": "^4.4.1",
     "cookie": "0.6.0",

@@ -4,3 +4,4 @@ packages:
   - 'apis/*'
   - 'showcases/*/*'
   - 'learn/*/*'
+  - 'libs/*'
