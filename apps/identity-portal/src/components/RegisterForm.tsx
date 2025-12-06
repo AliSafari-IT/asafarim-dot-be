@@ -3,7 +3,10 @@ import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Arrow, ButtonComponent as Button } from "@asafarim/shared-ui-react";
+import { useFormValidation, registerSchema, getPasswordStrength } from "@asafarim/shared-validation";
+import type { RegisterInput } from "@asafarim/shared-validation";
 import "./auth-layout.css";
+import "./password-strength.css";
 
 // Helper function to provide user-friendly error messages
 function getErrorMessage(error: string | null): { title: string; message: string; action?: string } | null {
@@ -54,15 +57,17 @@ function getErrorMessage(error: string | null): { title: string; message: string
 
 export const RegisterForm = () => {
   const { register, error, clearError, isLoading } = useAuth();
-  const [formData, setFormData] = useState({
+  const { errors, validate, validateField, clearFieldError } = useFormValidation(registerSchema);
+  const [formData, setFormData] = useState<RegisterInput>({
     email: '',
     firstName: '',
     lastName: '',
     password: '',
     confirmPassword: ''
   });
-  
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  // Password strength indicator
+  const [passwordStrength, setPasswordStrength] = useState({ score: 0, feedback: [] as string[] });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -73,46 +78,28 @@ export const RegisterForm = () => {
     
     // Clear any previous errors when user starts typing
     if (error) clearError();
-    
-    // Clear validation error for this field
-    if (validationErrors[name]) {
-      setValidationErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+    clearFieldError(name as keyof RegisterInput);
+
+    // Update password strength if password field changed
+    if (name === 'password') {
+      setPasswordStrength(getPasswordStrength(value));
     }
   };
 
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     
-    // Email validation
-    if (!formData.email) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
+    // Validate field when user leaves it (blur event)
+    // This is better UX than validating on every keystroke
+    if (value) {
+      validateField(name as keyof RegisterInput, value);
     }
-    
-    // Password validation
-    if (!formData.password) {
-      errors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      errors.password = 'Password must be at least 8 characters';
-    }
-    
-    // Confirm password validation
-    if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-    }
-    
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    if (!validate(formData)) {
       return;
     }
     
@@ -210,14 +197,15 @@ export const RegisterForm = () => {
           type="email"
           id="email"
           name="email"
-          className={`form-input ${validationErrors.email ? 'input-error' : ''}`}
+          className={`form-input ${errors.email ? 'input-error' : ''}`}
           value={formData.email}
           onChange={handleChange}
+          onBlur={handleBlur}
           required
           autoFocus
         />
-        {validationErrors.email && (
-          <p className="error-text">{validationErrors.email}</p>
+        {errors.email && (
+          <p className="error-text">{errors.email}</p>
         )}
       </div>
       
@@ -253,13 +241,44 @@ export const RegisterForm = () => {
           type="password"
           id="password"
           name="password"
-          className={`form-input ${validationErrors.password ? 'input-error' : ''}`}
+          className={`form-input ${errors.password ? 'input-error' : ''}`}
           value={formData.password}
           onChange={handleChange}
+          onBlur={handleBlur}
           required
         />
-        {validationErrors.password && (
-          <p className="error-text">{validationErrors.password}</p>
+        {errors.password && (
+          <p className="error-text">{errors.password}</p>
+        )}
+        
+        {/* Password Strength Indicator */}
+        {formData.password && (
+          <div className="password-strength">
+            <div className="password-strength-bar">
+              <div 
+                className={`strength-${passwordStrength.score}`}
+                style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+              />
+            </div>
+            <div className="password-strength-text">
+              {passwordStrength.score === 0 && "Very Weak"}
+              {passwordStrength.score === 1 && "Weak"}
+              {passwordStrength.score === 2 && "Fair"}
+              {passwordStrength.score === 3 && "Good"}
+              {passwordStrength.score === 4 && "Strong"}
+              {passwordStrength.score === 5 && "Very Strong"}
+            </div>
+            {passwordStrength.feedback.length > 0 && (
+              <div className="password-requirements">
+                <small>Missing requirements:</small>
+                <ul>
+                  {passwordStrength.feedback.map((req, index) => (
+                    <li key={index}>{req}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         )}
       </div>
       
@@ -269,13 +288,14 @@ export const RegisterForm = () => {
           type="password"
           id="confirmPassword"
           name="confirmPassword"
-          className={`form-input ${validationErrors.confirmPassword ? 'input-error' : ''}`}
+          className={`form-input ${errors.confirmPassword ? 'input-error' : ''}`}
           value={formData.confirmPassword}
           onChange={handleChange}
+          onBlur={handleBlur}
           required
         />
-        {validationErrors.confirmPassword && (
-          <p className="error-text">{validationErrors.confirmPassword}</p>
+        {errors.confirmPassword && (
+          <p className="error-text">{errors.confirmPassword}</p>
         )}
       </div>
       

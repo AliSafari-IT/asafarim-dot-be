@@ -78,6 +78,7 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
+    "rimraf": "^6.0.1",
     "kill-port": "^2.0.1"
   },
   "keywords": [],
@@ -87,8 +88,7 @@
   "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
   "dependencies": {
     "cookie": "^1.0.2",
-    "pkill": "^2.0.0",
-    "rimraf": "^6.0.1"
+    "pkill": "^2.0.0"
   },
   "pnpm": {
     "overrides": {

@@ -3,6 +3,8 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { Arrow, ButtonComponent as Button, Lock } from "@asafarim/shared-ui-react";
+import { useFormValidation, loginSchema } from "@asafarim/shared-validation";
+import type { LoginInput } from "@asafarim/shared-validation";
 import './LoginForm.css';
 
 // Helper function to provide user-friendly error messages
@@ -79,7 +81,8 @@ function getErrorMessage(error: string | null): { title: string; message: string
 
 export const LoginForm = () => {
   const { login, error, clearError, isLoading } = useAuth();
-  const [formData, setFormData] = useState({
+  const { errors, validate, validateField, clearFieldError } = useFormValidation(loginSchema);
+  const [formData, setFormData] = useState<LoginInput>({
     email: "",
     password: "",
     rememberMe: false,
@@ -94,10 +97,25 @@ export const LoginForm = () => {
 
     // Clear any previous errors when user starts typing
     if (error) clearError();
+    clearFieldError(name as keyof LoginInput);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    // Validate field when user leaves it
+    if (value && name !== 'rememberMe') {
+      validateField(name as keyof LoginInput, value);
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    // Validate form before submission
+    if (!validate(formData)) {
+      return;
+    }
 
     try {
       console.log('📝 Submitting login form...');
@@ -215,13 +233,17 @@ export const LoginForm = () => {
           type="email"
           id="email"
           name="email"
-          className="form-input"
+          className={`form-input ${errors.email ? 'input-error' : ''}`}
           value={formData.email}
           onChange={handleChange}
+          onBlur={handleBlur}
           required
           autoFocus
           autoComplete="username email"
         />
+        {errors.email && (
+          <p className="error-text">{errors.email}</p>
+        )}
       </div>
 
       <div className="form-group">
@@ -237,12 +259,16 @@ export const LoginForm = () => {
           type="password"
           id="password"
           name="password"
-          className="form-input"
+          className={`form-input ${errors.password ? 'input-error' : ''}`}
           value={formData.password}
           onChange={handleChange}
+          onBlur={handleBlur}
           required
           autoComplete="current-password"
         />
+        {errors.password && (
+          <p className="error-text">{errors.password}</p>
+        )}
       </div>
 
       <div className="form-group-checkbox">
