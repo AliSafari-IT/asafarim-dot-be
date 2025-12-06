@@ -637,18 +637,25 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                 
                 # Deploy built files
                 print_info "Deploying $key to $output_path"
-                mkdir -p "$output_path"
                 
-                # Copy dist/build directory
-                if [ -d "dist" ]; then
-                    cp -r dist/* "$output_path/"
-                    cp package.json "$output_path/"
-                    cp package-lock.json "$output_path/" 2>/dev/null || true
-                    cp pnpm-lock.yaml "$output_path/" 2>/dev/null || true
+                # Use pnpm deploy to handle workspace dependencies correctly
+                cd "$REPO_DIR"
+                # Ensure parent directory exists
+                mkdir -p "$(dirname "$output_path")"
+                
+                # Get package name from package.json
+                pkg_name=$(grep -o '"name": *"[^"]*"' "$project_dir/package.json" | cut -d'"' -f4)
+                
+                if pnpm deploy --filter "$pkg_name" --prod "$output_path"; then
+                    print_success "Deployed $pkg_name structure with dependencies"
                     
-                    # Install production dependencies
-                    cd "$output_path"
-                    pnpm install --prod
+                    # Ensure dist directory is present (pnpm deploy might exclude it if ignored)
+                    if [ -d "$project_dir/dist" ]; then
+                        # Check if dist exists in output and matches source
+                        # We force copy to be sure we have the latest build
+                        print_info "Syncing build artifacts..."
+                        cp -r "$project_dir/dist" "$output_path/"
+                    fi
                     
                     # Set proper permissions for Node.js API
                     chown -R www-data:www-data "$output_path"
@@ -666,7 +673,7 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                     
                     print_success "$key deployed successfully"
                 else
-                    print_error "Build directory not found for $key"
+                    print_error "Deployment failed for $key"
                     exit 1
                 fi
             else
