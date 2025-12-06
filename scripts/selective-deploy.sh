@@ -687,10 +687,14 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                 pkg_name=$(grep -o '"name": *"[^"]*"' "$project_dir/package.json" | cut -d'"' -f4)
                 
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if pnpm deploy --filter "$pkg_name" --prod --legacy "$output_path"; then
 =======
                 if pnpm deploy --filter "$pkg_name" --prod "$output_path"; then
 >>>>>>> 4f22420 (```)
+=======
+                if pnpm deploy --filter "$pkg_name" --prod --legacy "$output_path"; then
+>>>>>>> fe3f3a7 (```)
                     print_success "Deployed $pkg_name structure with dependencies"
                     
                     # Ensure dist directory is present (pnpm deploy might exclude it if ignored)
