@@ -20,11 +20,14 @@ SITE_ROOT="$WWW_ROOT/asafarim-dot-be"
 
 # Packages directory
 PACKAGES_DIR="$REPO_DIR/packages"
+LIBS_DIR="$REPO_DIR/libs"
 declare -A PACKAGES=(
     ["shared-ui-react"]="$PACKAGES_DIR/shared-ui-react"
     ["shared-i18n"]="$PACKAGES_DIR/shared-i18n"
     ["react-themes"]="$PACKAGES_DIR/react-themes"
     ["helpers"]="$PACKAGES_DIR/helpers"
+    ["shared-validation"]="$LIBS_DIR/shared-validation"
+    ["shared-logging"]="$LIBS_DIR/shared-logging"
 )
 
 # Frontend apps with their build paths
