@@ -132,12 +132,14 @@
         "namePlaceholder": "John Doe",
         "email": "Email Address",
         "emailPlaceholder": "john@example.com",
+        "subject": "Subject",
         "message": "Your Message",
         "messagePlaceholder": "Tell me about your project, timeline, and any specific requirements...",
         "discussProject": "I want to discuss a project",
         "submit": "Send Message",
         "sending": "Sending...",
-        "success": "Thank you! Your message has been sent. I'll get back to you soon.",
+        "success": "Message sent successfully! I'll get back to you within 24-48 hours.",
+        "error": "Failed to send message. Please try again.",
         "reassurance": "Your message goes directly to me — I respond within 24-48 hours."
       }
     },
