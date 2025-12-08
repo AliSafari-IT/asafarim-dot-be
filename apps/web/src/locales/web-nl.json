@@ -23,7 +23,7 @@
       "achievement": "Belangrijkste Prestatie",
       "liveDemo": "Live Demo",
       "items": {
-        "asafarim-platform": {
+        "asafarim-dot-be": {
           "title": "ASafariM Platform",
           "description": "Een uitgebreide monorepo die meerdere webapplicaties aanstuurt met gedeelde design tokens, authenticatie en microservices-architectuur.",
           "achievement": "10+ apps verenigd met gedeelde authenticatie en consistente UI over alle platforms"
@@ -108,7 +108,7 @@
           "tech": "React, .NET 8, SignalR, PostgreSQL, JWT Authenticatie"
         },
         "studynotes": {
-          "title": "Learn Java Notes",
+          "title": "Java Studie Notities",
           "problem": "Studenten hadden een moderne notitie-app nodig met academische functies zoals citaties en bibliografiebeheer.",
           "solution": "Een rich text editor gecreëerd met bibliografieondersteuning, tagging en exportmogelijkheden met Spring Boot.",
           "result": "Gestroomlijnde academische notities met correct citatiebeheer en meerdere exportformaten.",

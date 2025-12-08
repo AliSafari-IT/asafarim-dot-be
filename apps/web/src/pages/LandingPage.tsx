@@ -355,18 +355,16 @@ export default function LandingPage() {
       <section className="landing-hero">
         <div className="landing-container">
           <div className="landing-hero-content">
-            <h1 className="landing-hero-title">
-              {t('landing.hero.title')}
-            </h1>
+            <h1 className="landing-hero-title">{t("landing.hero.title")}</h1>
             <p className="landing-hero-subtitle">
-              {t('landing.hero.subtitle')}
+              {t("landing.hero.subtitle")}
             </p>
             <div className="landing-hero-cta">
               <ButtonComponent to="#projects" variant="brand">
-                {t('landing.hero.primaryCta')}
+                {t("landing.hero.primaryCta")}
               </ButtonComponent>
               <ButtonComponent to="#contact" variant="secondary">
-                {t('landing.hero.secondaryCta')}
+                {t("landing.hero.secondaryCta")}
               </ButtonComponent>
             </div>
             <div className="landing-hero-social">
@@ -397,28 +395,32 @@ export default function LandingPage() {
           <div className="landing-about-content">
             <div className="landing-about-text">
               <h2 className="landing-section-title">
-                {t('landing.about.title')}
+                {t("landing.about.title")}
               </h2>
-              <p className="landing-about-intro">
-                {t('landing.about.intro')}
-              </p>
+              <p className="landing-about-intro">{t("landing.about.intro")}</p>
               <div className="landing-about-stats">
                 <div className="landing-stat">
                   <span className="landing-stat-value">3+</span>
-                  <span className="landing-stat-label">{t('landing.about.yearsExperience')}</span>
+                  <span className="landing-stat-label">
+                    {t("landing.about.yearsExperience")}
+                  </span>
                 </div>
                 <div className="landing-stat">
                   <span className="landing-stat-value">10+</span>
-                  <span className="landing-stat-label">{t('landing.about.projectsDelivered')}</span>
+                  <span className="landing-stat-label">
+                    {t("landing.about.projectsDelivered")}
+                  </span>
                 </div>
                 <div className="landing-stat">
                   <span className="landing-stat-value">5+</span>
-                  <span className="landing-stat-label">{t('landing.about.techStacks')}</span>
+                  <span className="landing-stat-label">
+                    {t("landing.about.techStacks")}
+                  </span>
                 </div>
               </div>
               <div className="landing-about-location">
                 <Location title="Location" />
-                <span>{t('landing.about.location')}</span>
+                <span>{t("landing.about.location")}</span>
               </div>
             </div>
             <div className="landing-about-avatar">
@@ -437,12 +439,14 @@ export default function LandingPage() {
       <section id="projects" className="landing-section landing-projects">
         <div className="landing-container">
           <header className="landing-section-header">
-            <span className="landing-section-kicker">{t('landing.projects.kicker')}</span>
+            <span className="landing-section-kicker">
+              {t("landing.projects.kicker")}
+            </span>
             <h2 className="landing-section-title">
-              {t('landing.projects.title')}
+              {t("landing.projects.title")}
             </h2>
             <p className="landing-section-subtitle">
-              {t('landing.projects.subtitle')}
+              {t("landing.projects.subtitle")}
             </p>
           </header>
           <div className="landing-projects-grid">
@@ -450,19 +454,22 @@ export default function LandingPage() {
               <article key={project.id} className="landing-project-card">
                 <div className="landing-project-image" />
                 <div className="landing-project-content">
-                  <h3 className="landing-project-title">{project.name}</h3>
+                  <h3 className="landing-project-title">
+                    {t(`landing.projects.items.${project.id}.title`)}
+                  </h3>
                   <p className="landing-project-description">
-                    {project.description}
+                    {t(`landing.projects.items.${project.id}.description`)}
                   </p>
                   <div className="landing-project-tags">
                     {project.tags.map((tag) => (
                       <span key={tag} className="landing-tag">
-                        {tag}
+                        {tag} 
                       </span>
                     ))}
                   </div>
                   <div className="landing-project-achievement">
-                    <strong>{t("landing.projects.achievement")}:</strong> {project.achievements[0]}
+                    <strong>{t("landing.projects.achievement")}:</strong>{" "}
+                    {project.achievements[0]}
                   </div>
                   <div className="landing-project-links">
                     <a
@@ -509,9 +516,9 @@ export default function LandingPage() {
             {services.map((service) => (
               <article key={service.id} className="landing-service-card">
                 <span className="landing-service-icon">{service.icon}</span>
-                <h3 className="landing-service-title">{service.title}</h3>
+                <h3 className="landing-service-title"> {t(`landing.services.items.${service.id}.title`)}</h3>
                 <p className="landing-service-description">
-                  {service.description}
+                  {t(`landing.services.items.${service.id}.description`)}
                 </p>
               </article>
             ))}
@@ -542,25 +549,25 @@ export default function LandingPage() {
                     <span className="landing-case-study-label">
                       {t("landing.caseStudies.problem")}
                     </span>
-                    <p>{study.problem}</p>
+                    <p>{t(`landing.caseStudies.items.${study.id}.problem`)}</p>
                   </div>
                   <div className="landing-case-study-arrow">→</div>
                   <div className="landing-case-study-step">
                     <span className="landing-case-study-label">
                       {t("landing.caseStudies.solution")}
                     </span>
-                    <p>{study.solution}</p>
+                    <p>{t(`landing.caseStudies.items.${study.id}.solution`)}</p>
                   </div>
                   <div className="landing-case-study-arrow">→</div>
                   <div className="landing-case-study-step">
                     <span className="landing-case-study-label">
                       {t("landing.caseStudies.result")}
                     </span>
-                    <p>{study.result}</p>
+                    <p>{t(`landing.caseStudies.items.${study.id}.result`)}</p>
                   </div>
                 </div>
                 <div className="landing-case-study-tech">
-                  <strong>{t("landing.caseStudies.technologies")}:</strong>{" "}
+                  <strong>{t("landing.caseStudies.technologies")}:</strong>
                   {study.technologies}
                 </div>
               </article>
@@ -765,7 +772,8 @@ export default function LandingPage() {
           </div>
           <div className="landing-footer-bottom">
             <p>
-              &copy; {new Date().getFullYear()} Ali Safari. {t("landing.footer.rights")}
+              &copy; {new Date().getFullYear()} Ali Safari.{" "}
+              {t("landing.footer.rights")}
             </p>
           </div>
         </div>

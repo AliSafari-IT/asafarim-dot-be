@@ -23,7 +23,7 @@
       "achievement": "Key Achievement",
       "liveDemo": "Live Demo",
       "items": {
-        "asafarim-platform": {
+        "asafarim-dot-be": {
           "title": "ASafariM Platform",
           "description": "A comprehensive monorepo powering multiple web applications with shared design tokens, authentication, and microservices architecture.",
           "achievement": "Unified 10+ apps with shared authentication and consistent UI across all platforms"
