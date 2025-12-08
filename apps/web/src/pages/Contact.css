@@ -587,6 +587,10 @@
   display: none;
 }
 
+ .web-contact-upload-files .hidden {
+  display: none;
+}
+
 .web-contact-attachment-actions {
   display: flex;
   gap: var(--asm-space-2);
@@ -800,6 +804,10 @@
   .web-contact-form-container,
   .web-contact-info {
     padding: var(--asm-space-6);
+  }
+
+  .web-contact-attachment-header{
+    flex-direction: column;
   }
 
   .web-contact-attachment-header{
