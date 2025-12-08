@@ -94,6 +94,7 @@ export interface ProjectCardProps {
   budget?: number | ProjectBudget;
   isPublic?: boolean;
   relatedProjects?: RelatedProject[];
+  achievements?:string [];
   
   // Database specific
   id?: string;

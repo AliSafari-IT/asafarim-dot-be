@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { initI18n } from "@asafarim/shared-i18n";
 import App from "./App";
 import "./index.css";
-import Home from "./pages/Home";
+//import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Showcases from "./pages/Showcases";
@@ -62,6 +62,7 @@ import SocialLinksManagement from "./pages/admin/resume/SocialLinksManagement";
 import SocialLinkForm from "./pages/admin/resume/SocialLinkForm";
 import enWeb from './locales/web-en.json';
 import nlWeb  from './locales/web-nl.json';
+import LandingPage from "./pages/LandingPage";
 // Initialize i18n before rendering
 initI18n({
   defaultNS: 'web',
@@ -83,7 +84,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <LandingPage /> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
       { path: "showcases", element: <Showcases /> },

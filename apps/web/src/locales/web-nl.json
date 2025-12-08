@@ -1,9 +1,160 @@
 {
+  "landing": {
+    "hero": {
+      "kicker": "Full-Stack Developer",
+      "title": "Hallo, ik ben Ali Safari — Ik Bouw Moderne Weboplossingen",
+      "subtitle": "Full-stack developer gespecialiseerd in React, TypeScript en .NET. Ik creëer schaalbare applicaties, automatiseer workflows en lever productieklare oplossingen.",
+      "primaryCta": "Bekijk Mijn Werk",
+      "secondaryCta": "Neem Contact Op"
+    },
+    "about": {
+      "kicker": "Over Mij",
+      "title": "Digitale Oplossingen Die Ertoe Doen",
+      "intro": "Ik ben Ali Safari, een full-stack developer gevestigd in Hasselt, België. Met 3+ jaar praktijkervaring in React, TypeScript, .NET en microservices-architectuur, specialiseer ik me in het bouwen van schaalbare webapplicaties en automatiseringstools. Mijn achtergrond in wetenschappelijke modellering (PhD in Hydrologische Ingenieurswetenschappen) geeft me een uniek perspectief op data-gedreven probleemoplossing. Ik ben momenteel beschikbaar voor freelanceprojecten en sta klaar om je ideeën tot leven te brengen.",
+      "yearsExperience": "Jaar Ervaring",
+      "projectsDelivered": "Projecten Opgeleverd",
+      "techStacks": "Tech Stacks",
+      "location": "Hasselt, België — Beschikbaar voor Remote Werk"
+    },
+    "projects": {
+      "kicker": "Uitgelichte Projecten",
+      "title": "Echte Oplossingen Die Ik Heb Gebouwd",
+      "subtitle": "Van enterprise platforms tot automatiseringstools — hier zijn enkele van mijn sterkste projecten uit mijn monorepo.",
+      "achievement": "Belangrijkste Prestatie",
+      "liveDemo": "Live Demo",
+      "items": {
+        "asafarim-platform": {
+          "title": "ASafariM Platform",
+          "description": "Een uitgebreide monorepo die meerdere webapplicaties aanstuurt met gedeelde design tokens, authenticatie en microservices-architectuur.",
+          "achievement": "10+ apps verenigd met gedeelde authenticatie en consistente UI over alle platforms"
+        },
+        "smartops": {
+          "title": "Smart Operations Dashboard",
+          "description": "Real-time IoT dashboard voor het monitoren van apparaten en operaties met live data-updates en rolgebaseerde toegangscontrole.",
+          "achievement": "Real-time updates geïmplementeerd met SignalR voor 100+ gelijktijdige verbindingen"
+        },
+        "testora": {
+          "title": "Test Automation Platform",
+          "description": "Volledige E2E test automatiseringssuite met TestCafe generators, GitHub Actions integratie en real-time testrapportage.",
+          "achievement": "80% reductie in handmatige testtijd door geautomatiseerde testgeneratie"
+        },
+        "studynotes": {
+          "title": "Learn Java Notes",
+          "description": "Academische notitie-editor met bibliografiebeheer, gebouwd met Java Spring Boot en React.",
+          "achievement": "Rich text editing geïmplementeerd met citatiebeheer en exportfuncties"
+        },
+        "hydrology": {
+          "title": "Hydrology Python Lab",
+          "description": "Wetenschappelijke modelleringstoolkit voor hydrologische analyse met visuele outputs en dataverwerkingspipelines.",
+          "achievement": "10+ jaar aan milieudata verwerkt voor onderzoekspublicaties"
+        }
+      }
+    },
+    "services": {
+      "kicker": "Wat Ik Aanbied",
+      "title": "Freelance Diensten",
+      "subtitle": "Ik help bedrijven en startups robuuste, schaalbare weboplossingen te bouwen. Zo kan ik je helpen.",
+      "items": {
+        "fullstack": {
+          "title": "Full-Stack Webontwikkeling",
+          "description": "End-to-end webapplicaties met React, TypeScript, .NET en Node.js volgens moderne best practices."
+        },
+        "api": {
+          "title": "API Ontwikkeling & Microservices",
+          "description": "RESTful APIs, GraphQL endpoints en microservices-architectuur met correcte documentatie."
+        },
+        "devops": {
+          "title": "DevOps & Automatisering",
+          "description": "CI/CD pipelines, Linux serverbeheer, systemd services en deployment automatisering."
+        },
+        "testing": {
+          "title": "Test Automatisering",
+          "description": "E2E testing met TestCafe, unit testing en geautomatiseerde testgeneratie voor betrouwbare deployments."
+        },
+        "dashboard": {
+          "title": "Dashboard Ontwikkeling",
+          "description": "Interactieve datavisualisaties, real-time dashboards en business intelligence tools."
+        },
+        "scientific": {
+          "title": "Wetenschappelijke Software",
+          "description": "Python-gebaseerde tools voor data-analyse, modellering en wetenschappelijke computertoepassingen."
+        },
+        "refactor": {
+          "title": "Code Opschoning & Refactoring",
+          "description": "Technische schuld vermindering, prestatieoptimalisatie en codebase modernisering."
+        }
+      }
+    },
+    "caseStudies": {
+      "kicker": "Case Studies",
+      "title": "Problemen Opgelost, Resultaten Geleverd",
+      "problem": "Probleem",
+      "solution": "Oplossing",
+      "result": "Resultaat",
+      "technologies": "Technologieën",
+      "items": {
+        "testora": {
+          "title": "Test Automation Platform",
+          "problem": "Handmatige E2E testing was tijdrovend en foutgevoelig, wat leidde tot vertraagde releases en gemiste bugs.",
+          "solution": "Een platform gebouwd dat TestCafe tests genereert vanuit de UI, integreert met GitHub Actions en real-time rapportage biedt.",
+          "result": "80% reductie in handmatige testtijd, snellere releasecycli en verbeterde testdekking.",
+          "tech": "React, .NET 8, TestCafe, Node.js, PostgreSQL, SignalR"
+        },
+        "smartops": {
+          "title": "SmartOps Dashboard",
+          "problem": "Het operationele team had real-time zichtbaarheid nodig in IoT-apparaten met rolgebaseerde toegangscontrole.",
+          "solution": "Een real-time dashboard ontwikkeld met SignalR voor live updates, RBAC en apparaatbeheerfuncties.",
+          "result": "100+ gelijktijdige gebruikers ondersteund, directe apparaatstatus-updates en verbeterde operationele efficiëntie.",
+          "tech": "React, .NET 8, SignalR, PostgreSQL, JWT Authenticatie"
+        },
+        "studynotes": {
+          "title": "Learn Java Notes",
+          "problem": "Studenten hadden een moderne notitie-app nodig met academische functies zoals citaties en bibliografiebeheer.",
+          "solution": "Een rich text editor gecreëerd met bibliografieondersteuning, tagging en exportmogelijkheden met Spring Boot.",
+          "result": "Gestroomlijnde academische notities met correct citatiebeheer en meerdere exportformaten.",
+          "tech": "Java Spring Boot, React, MySQL, Rich Text Editor"
+        }
+      }
+    },
+    "cv": {
+      "title": "Klaar om Mijn Volledige Achtergrond te Zien?",
+      "subtitle": "Download mijn CV of bekijk mijn volledige resume online met gedetailleerde ervaring, vaardigheden en projectgeschiedenis.",
+      "downloadPdf": "Download CV (PDF)",
+      "viewOnline": "Bekijk Online Resume"
+    },
+    "contact": {
+      "kicker": "Laten We Connecten",
+      "title": "Start een Gesprek",
+      "subtitle": "Heb je een project in gedachten? Ik hoor er graag over. Vul het formulier in en ik neem binnen 24-48 uur contact met je op.",
+      "availability": "Beschikbaar voor freelanceprojecten",
+      "form": {
+        "name": "Je Naam",
+        "namePlaceholder": "Jan Jansen",
+        "email": "E-mailadres",
+        "emailPlaceholder": "jan@voorbeeld.com",
+        "message": "Je Bericht",
+        "messagePlaceholder": "Vertel me over je project, tijdlijn en eventuele specifieke vereisten...",
+        "discussProject": "Ik wil een project bespreken",
+        "submit": "Verstuur Bericht",
+        "sending": "Verzenden...",
+        "success": "Bedankt! Je bericht is verzonden. Ik neem snel contact met je op.",
+        "reassurance": "Je bericht komt rechtstreeks bij mij — ik reageer binnen 24-48 uur."
+      }
+    },
+    "footer": {
+      "tagline": "Full-Stack Developer • België",
+      "about": "Over",
+      "projects": "Projecten",
+      "services": "Diensten",
+      "contact": "Contact",
+      "rights": "Alle rechten voorbehouden."
+    }
+  },
   "home": {
     "hero": {
       "title": "ASafariM • Multi-framework monorepo",
       "subtitle": "Multi-framework frontends (React, Angular, Docusaurus)",
-      "description": ".NET 8+ API’s met clean architecture en getypeerde clients",
+      "description": ".NET 8+ API's met clean architecture en getypeerde clients",
       "tagline": "Gedeelde tokens en UI voor consistente theming"
     },
     "features": {

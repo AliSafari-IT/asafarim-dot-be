@@ -1,4 +1,155 @@
 {
+  "landing": {
+    "hero": {
+      "kicker": "Full-Stack Developer",
+      "title": "Hi, I'm Ali Safari — I Build Modern Web Solutions",
+      "subtitle": "Full-stack developer specializing in React, TypeScript, and .NET. I create scalable applications, automate workflows, and deliver production-ready solutions.",
+      "primaryCta": "View My Work",
+      "secondaryCta": "Get in Touch"
+    },
+    "about": {
+      "kicker": "About Me",
+      "title": "Building Digital Solutions That Matter",
+      "intro": "I'm Ali Safari, a full-stack developer based in Hasselt, Belgium. With 3+ years of hands-on experience in React, TypeScript, .NET, and microservices architecture, I specialize in building scalable web applications and automation tools. My background in scientific modeling (PhD in Engineering Hydrology) gives me a unique perspective on data-driven problem solving. I'm currently available for freelance projects and excited to help bring your ideas to life.",
+      "yearsExperience": "Years Experience",
+      "projectsDelivered": "Projects Delivered",
+      "techStacks": "Tech Stacks",
+      "location": "Hasselt, Belgium — Available for Remote Work"
+    },
+    "projects": {
+      "kicker": "Featured Projects",
+      "title": "Real-World Solutions I've Built",
+      "subtitle": "From enterprise platforms to automation tools — here are some of my strongest projects from my monorepo.",
+      "achievement": "Key Achievement",
+      "liveDemo": "Live Demo",
+      "items": {
+        "asafarim-platform": {
+          "title": "ASafariM Platform",
+          "description": "A comprehensive monorepo powering multiple web applications with shared design tokens, authentication, and microservices architecture.",
+          "achievement": "Unified 10+ apps with shared authentication and consistent UI across all platforms"
+        },
+        "smartops": {
+          "title": "Smart Operations Dashboard",
+          "description": "Real-time IoT dashboard for monitoring devices and operations with live data updates and role-based access control.",
+          "achievement": "Implemented real-time updates with SignalR serving 100+ concurrent connections"
+        },
+        "testora": {
+          "title": "Test Automation Platform",
+          "description": "Full E2E test automation suite with TestCafe generators, GitHub Actions integration, and real-time test reporting.",
+          "achievement": "Reduced manual testing time by 80% with automated test generation"
+        },
+        "studynotes": {
+          "title": "Learn Java Notes",
+          "description": "Academic-style note editor with bibliography management, built with Java Spring Boot and React.",
+          "achievement": "Implemented rich text editing with citation management and export features"
+        },
+        "hydrology": {
+          "title": "Hydrology Python Lab",
+          "description": "Scientific modeling toolkit for hydrological analysis with visual outputs and data processing pipelines.",
+          "achievement": "Processed 10+ years of environmental data for research publications"
+        }
+      }
+    },
+    "services": {
+      "kicker": "What I Offer",
+      "title": "Freelance Services",
+      "subtitle": "I help businesses and startups build robust, scalable web solutions. Here's how I can help you.",
+      "items": {
+        "fullstack": {
+          "title": "Full-Stack Web Development",
+          "description": "End-to-end web applications using React, TypeScript, .NET, and Node.js with modern best practices."
+        },
+        "api": {
+          "title": "API Development & Microservices",
+          "description": "RESTful APIs, GraphQL endpoints, and microservices architecture with proper documentation."
+        },
+        "devops": {
+          "title": "DevOps & Automation",
+          "description": "CI/CD pipelines, Linux server management, systemd services, and deployment automation."
+        },
+        "testing": {
+          "title": "Test Automation",
+          "description": "E2E testing with TestCafe, unit testing, and automated test generation for reliable deployments."
+        },
+        "dashboard": {
+          "title": "Dashboard Development",
+          "description": "Interactive data visualizations, real-time dashboards, and business intelligence tools."
+        },
+        "scientific": {
+          "title": "Scientific Software",
+          "description": "Python-based tools for data analysis, modeling, and scientific computing applications."
+        },
+        "refactor": {
+          "title": "Code Cleanup & Refactoring",
+          "description": "Technical debt reduction, performance optimization, and codebase modernization."
+        }
+      }
+    },
+    "caseStudies": {
+      "kicker": "Case Studies",
+      "title": "Problems Solved, Results Delivered",
+      "problem": "Problem",
+      "solution": "Solution",
+      "result": "Result",
+      "technologies": "Technologies",
+      "items": {
+        "testora": {
+          "title": "Test Automation Platform",
+          "problem": "Manual E2E testing was time-consuming and error-prone, causing delayed releases and missed bugs.",
+          "solution": "Built a platform that generates TestCafe tests from UI, integrates with GitHub Actions, and provides real-time reporting.",
+          "result": "80% reduction in manual testing time, faster release cycles, and improved test coverage.",
+          "tech": "React, .NET 8, TestCafe, Node.js, PostgreSQL, SignalR"
+        },
+        "smartops": {
+          "title": "SmartOps Dashboard",
+          "problem": "Operations team needed real-time visibility into IoT devices with role-based access control.",
+          "solution": "Developed a real-time dashboard with SignalR for live updates, RBAC, and device management features.",
+          "result": "100+ concurrent users supported, instant device status updates, and improved operational efficiency.",
+          "tech": "React, .NET 8, SignalR, PostgreSQL, JWT Authentication"
+        },
+        "studynotes": {
+          "title": "Learn Java Notes",
+          "problem": "Students needed a modern note-taking app with academic features like citations and bibliography management.",
+          "solution": "Created a rich text editor with bibliography support, tagging, and export capabilities using Spring Boot.",
+          "result": "Streamlined academic note-taking with proper citation management and multiple export formats.",
+          "tech": "Java Spring Boot, React, MySQL, Rich Text Editor"
+        }
+      }
+    },
+    "cv": {
+      "title": "Ready to See My Full Background?",
+      "subtitle": "Download my CV or view my complete resume online with detailed experience, skills, and project history.",
+      "downloadPdf": "Download CV (PDF)",
+      "viewOnline": "View Online Resume"
+    },
+    "contact": {
+      "kicker": "Let's Connect",
+      "title": "Start a Conversation",
+      "subtitle": "Have a project in mind? I'd love to hear about it. Fill out the form and I'll get back to you within 24-48 hours.",
+      "availability": "Available for freelance projects",
+      "form": {
+        "name": "Your Name",
+        "namePlaceholder": "John Doe",
+        "email": "Email Address",
+        "emailPlaceholder": "john@example.com",
+        "message": "Your Message",
+        "messagePlaceholder": "Tell me about your project, timeline, and any specific requirements...",
+        "discussProject": "I want to discuss a project",
+        "submit": "Send Message",
+        "sending": "Sending...",
+        "success": "Thank you! Your message has been sent. I'll get back to you soon.",
+        "reassurance": "Your message goes directly to me — I respond within 24-48 hours."
+      }
+    },
+    "footer": {
+      "tagline": "Full-Stack Developer • Belgium",
+      "about": "About",
+      "projects": "Projects",
+      "services": "Services",
+      "contact": "Contact",
+      "rights": "All rights reserved."
+    }
+  },
   "home": {
     "hero": {
       "title": "ASafariM • Multi-framework monorepo",

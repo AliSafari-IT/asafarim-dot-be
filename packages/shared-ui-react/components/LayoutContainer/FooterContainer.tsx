@@ -17,7 +17,7 @@ const socialLinks = [
   },
   {
     name: "LinkedIn",
-    url: "https://linkedin.com/in/ali-safari",
+    url: "https://www.linkedin.com/in/ali-safari-m/",
     icon: <Linkedin stroke="currentColor" />,
   },
   {
