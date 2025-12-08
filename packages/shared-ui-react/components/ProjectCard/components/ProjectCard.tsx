@@ -1,6 +1,6 @@
-import React from 'react';
-import type { ProjectCardProps} from '../types';
-import styles from './ProjectCard.module.css';
+import React from "react";
+import type { ProjectCardProps } from "../types";
+import styles from "./ProjectCard.module.css";
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   // Core properties
@@ -12,8 +12,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   repo,
 
   // Theming and appearance
-  currentTheme = 'light',
-  className = '',
+  currentTheme = "light",
+  className = "",
   showTechStackIcons = false,
   maxDescriptionLength = 150,
   isFeatured = false,
@@ -23,7 +23,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   isLoading = false,
 
   // Status and metadata
-  status = 'active',
+  status = "active",
   lastUpdated,
 
   // Additional properties from DB model
@@ -41,12 +41,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   budget,
   isPublic = true,
   relatedProjects,
+  achievements = [],
 
   // Database specific
   // id,
   // userId,
 }) => {
-  const isDark = currentTheme === 'dark';
+  const isDark = currentTheme === "dark";
 
   // Helper functions
   const getLastUpdated = () => {
@@ -56,42 +57,47 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     if (updatedAt) {
       return new Date(updatedAt).toLocaleDateString();
     }
-    if (createdAt){
-      return  new Date(createdAt).toLocaleDateString();
+    if (createdAt) {
+      return new Date(createdAt).toLocaleDateString();
     }
-    return '';
+    return "";
   };
 
   const getDueDate = () => {
     if (dueDate) {
       return new Date(dueDate).toLocaleDateString();
     }
-    return '';
+    return "";
   };
 
   const getStartDate = () => {
     if (startDate) {
       return new Date(startDate).toLocaleDateString();
     }
-    return '';
+    return "";
   };
 
   const getEndDate = () => {
     if (endDate) {
       return new Date(endDate).toLocaleDateString();
     }
-    return '';
+    return "";
   };
 
   const getBudgetDisplay = () => {
-    if (!budget) return '';
+    if (!budget) return "";
 
-    if (typeof budget === 'number') {
+    if (typeof budget === "number") {
       return `$${budget.toLocaleString()}`;
     }
 
-    if (typeof budget === 'object') {
-      const { amount, currencySymbol = '$', currencyCode, currencyFormatOptions } = budget;
+    if (typeof budget === "object") {
+      const {
+        amount,
+        currencySymbol = "$",
+        currencyCode,
+        currencyFormatOptions,
+      } = budget;
 
       const applyFormatOverrides = (options: Intl.NumberFormatOptions) => {
         if (!currencyFormatOptions) {
@@ -101,11 +107,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         const updated = { ...options };
 
         if (currencyFormatOptions.minimumFractionDigits !== undefined) {
-          updated.minimumFractionDigits = currencyFormatOptions.minimumFractionDigits;
+          updated.minimumFractionDigits =
+            currencyFormatOptions.minimumFractionDigits;
         }
 
         if (currencyFormatOptions.maximumFractionDigits !== undefined) {
-          updated.maximumFractionDigits = currencyFormatOptions.maximumFractionDigits;
+          updated.maximumFractionDigits =
+            currencyFormatOptions.maximumFractionDigits;
         }
 
         if (currencyFormatOptions.useGrouping !== undefined) {
@@ -116,178 +124,206 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       };
 
       if (currencyCode) {
-        const formatter = new Intl.NumberFormat('en-US', applyFormatOverrides({
-          style: 'currency',
-          currency: currencyCode
-        }));
+        const formatter = new Intl.NumberFormat(
+          "en-US",
+          applyFormatOverrides({
+            style: "currency",
+            currency: currencyCode,
+          })
+        );
 
         const parts = formatter.formatToParts(amount);
         if (currencySymbol) {
           return parts
-            .map(part => (part.type === 'currency' ? currencySymbol : part.value))
-            .join('');
+            .map((part) =>
+              part.type === "currency" ? currencySymbol : part.value
+            )
+            .join("");
         }
 
         return formatter.format(amount);
       }
 
-      const numberFormatter = new Intl.NumberFormat('en-US', applyFormatOverrides({
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-        useGrouping: true
-      }));
+      const numberFormatter = new Intl.NumberFormat(
+        "en-US",
+        applyFormatOverrides({
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+          useGrouping: true,
+        })
+      );
 
       return `${currencySymbol}${numberFormatter.format(amount)}`;
     }
 
-    return '';
+    return "";
   };
 
-  const truncatedDescription = maxDescriptionLength && description.length > maxDescriptionLength
-    ? `${description.substring(0, maxDescriptionLength)}...`
-    : description;
+  const truncatedDescription =
+    maxDescriptionLength && description.length > maxDescriptionLength
+      ? `${description.substring(0, maxDescriptionLength)}...`
+      : description;
 
   const getLinkIcon = (type: string) => {
     switch (type) {
-      case 'demo':
-        return '🚀';
-      case 'repo':
-        return '🐙';
-      case 'documentation':
-        return '📁';
+      case "demo":
+        return "🚀";
+      case "repo":
+        return "🐙";
+      case "documentation":
+        return "📁";
       default:
-        return '🔗';
+        return "🔗";
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'Active';
-      case 'archived':
-        return 'Archived';
-      case 'in-progress':
-        return 'In Progress';
-      case 'draft':
-        return 'Draft';
-      case 'completed':
-        return 'Completed';
-      case 'coming-soon':
-        return 'Coming Soon';
-      case 'planning':
-        return 'Planning';
+      case "active":
+        return "Active";
+      case "archived":
+        return "Archived";
+      case "in-progress":
+        return "In Progress";
+      case "draft":
+        return "Draft";
+      case "completed":
+        return "Completed";
+      case "coming-soon":
+        return "Coming Soon";
+      case "planning":
+        return "Planning";
       default:
         return status;
     }
   };
 
+  const getProjectAchievements = (achievements: string[]) => (
+    <ul className={styles.metadataItem}>
+      <span className={styles.metadataLabel}>Achievements:</span>
+      {achievements.map((ach) => (
+        <li className={styles.metadataValue}>{ach}</li>
+      ))}
+    </ul>
+  );
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical':
-        return '#ef4444';
-      case 'high':
-        return '#f59e0b';
-      case 'medium':
-        return '#3b82f6';
-      case 'low':
-        return '#10b981';
+      case "critical":
+        return "#ef4444";
+      case "high":
+        return "#f59e0b";
+      case "medium":
+        return "#3b82f6";
+      case "low":
+        return "#10b981";
       default:
-        return '#6b7280';
+        return "#6b7280";
     }
   };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'web':
-        return '🌐';
-      case 'mobile':
-        return '📱';
-      case 'desktop':
-        return '💻';
-      case 'backend':
-        return '⚙️';
-      case 'frontend':
-        return '🎨';
-      case 'fullstack':
-        return '🔄';
-      case 'database':
-        return '🗄️';
-      case 'devops':
-        return '🐳';
-      case 'design':
-        return '🎨';
-      case 'marketing':
-        return '📢';
-      case 'seo':
-        return '🔍';
-      case 'social':
-        return '📱';
-      case 'content':
-        return '📝';
-      case 'analytics':
-        return '📊';
-      case 'security':
-        return '🔒';
-      case 'testing':
-        return '🧪';
+      case "web":
+        return "🌐";
+      case "mobile":
+        return "📱";
+      case "desktop":
+        return "💻";
+      case "backend":
+        return "⚙️";
+      case "frontend":
+        return "🎨";
+      case "fullstack":
+        return "🔄";
+      case "database":
+        return "🗄️";
+      case "devops":
+        return "🐳";
+      case "design":
+        return "🎨";
+      case "marketing":
+        return "📢";
+      case "seo":
+        return "🔍";
+      case "social":
+        return "📱";
+      case "content":
+        return "📝";
+      case "analytics":
+        return "📊";
+      case "security":
+        return "🔒";
+      case "testing":
+        return "🧪";
       default:
-        return '📁';
+        return "📁";
     }
   };
 
   const cardClasses = [
     styles.card,
-    isDark ? styles.cardDark : '',
-    isFeatured ? (isDark ? styles.featuredDark : styles.featured) : '',
-    isLoading ? styles.loading : '',
-    isPublic === false ? styles.private : '',
-    status === 'archived' ? styles.archived : '',
-    status === 'completed' ? styles.completed : '',
-    status === 'draft' ? styles.draft : '',
-    status === 'in-progress' ? styles.inProgress : '',
-    status === 'coming-soon' ? styles.comingSoon : '',
-    status === 'active' ? styles.active : '',
-    status === 'planning' ? styles.planning : '',
-    className
-  ].filter(Boolean).join(' ');
+    isDark ? styles.cardDark : "",
+    isFeatured ? (isDark ? styles.featuredDark : styles.featured) : "",
+    isLoading ? styles.loading : "",
+    isPublic === false ? styles.private : "",
+    status === "archived" ? styles.archived : "",
+    status === "completed" ? styles.completed : "",
+    status === "draft" ? styles.draft : "",
+    status === "in-progress" ? styles.inProgress : "",
+    status === "coming-soon" ? styles.comingSoon : "",
+    status === "active" ? styles.active : "",
+    status === "planning" ? styles.planning : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   // Loading state
   if (isLoading) {
     return (
-      <div className={cardClasses} style={{ width: '100%' }}>
+      <div className={cardClasses} style={{ width: "100%" }}>
         <div
-          className={`${styles.loadingPlaceholder} ${isDark ? styles.loadingPlaceholderDark : ''}`}
+          className={`${styles.loadingPlaceholder} ${
+            isDark ? styles.loadingPlaceholderDark : ""
+          }`}
           style={{
-            height: '200px',
-            marginBottom: '1rem',
-            width: '100%',
-            display: 'block'
+            height: "200px",
+            marginBottom: "1rem",
+            width: "100%",
+            display: "block",
           }}
         />
         <div
-          className={`${styles.loadingPlaceholder} ${isDark ? styles.loadingPlaceholderDark : ''}`}
+          className={`${styles.loadingPlaceholder} ${
+            isDark ? styles.loadingPlaceholderDark : ""
+          }`}
           style={{
-            height: '1.5rem',
-            marginBottom: '0.75rem',
-            width: '100%',
-            display: 'block'
+            height: "1.5rem",
+            marginBottom: "0.75rem",
+            width: "100%",
+            display: "block",
           }}
         />
         <div
-          className={`${styles.loadingPlaceholder} ${isDark ? styles.loadingPlaceholderDark : ''}`}
+          className={`${styles.loadingPlaceholder} ${
+            isDark ? styles.loadingPlaceholderDark : ""
+          }`}
           style={{
-            height: '3rem',
-            marginBottom: '1rem',
-            width: '100%',
-            display: 'block'
+            height: "3rem",
+            marginBottom: "1rem",
+            width: "100%",
+            display: "block",
           }}
         />
         <div
-          className={`${styles.loadingPlaceholder} ${isDark ? styles.loadingPlaceholderDark : ''}`}
+          className={`${styles.loadingPlaceholder} ${
+            isDark ? styles.loadingPlaceholderDark : ""
+          }`}
           style={{
-            height: '2rem',
-            width: '100%',
-            display: 'block'
+            height: "2rem",
+            width: "100%",
+            display: "block",
           }}
         />
       </div>
@@ -296,21 +332,33 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
   return (
     <div className={cardClasses}>
-      <div onClick={onCardClick} style={{ cursor: onCardClick ? 'pointer' : 'default' }}>
+      <div
+        onClick={onCardClick}
+        style={{ cursor: onCardClick ? "pointer" : "default" }}
+      >
         {/* Image with Status Badge */}
         {image && (
           <div className={styles.imageContainer}>
             <img
-              src={typeof image === 'string' ? image : image.src}
-              alt={typeof image === 'string' ? title : image.alt || title}
+              src={typeof image === "string" ? image : image.src}
+              alt={typeof image === "string" ? title : image.alt || title}
               className={styles.image}
               loading="lazy"
-              width={typeof image === 'object' ? image?.width : undefined}
-              height={typeof image === 'object' ? image?.height : undefined}
+              width={typeof image === "object" ? image?.width : undefined}
+              height={typeof image === "object" ? image?.height : undefined}
             />
             {/* Status Badge positioned relative to image */}
             {status && (
-              <div className={`${styles.status} ${styles[`status${status.charAt(0).toUpperCase() + status.slice(1).replace('-', '')}${isDark ? 'Dark' : ''}`]}`}>
+              <div
+                className={`${styles.status} ${
+                  styles[
+                    `status${
+                      status.charAt(0).toUpperCase() +
+                      status.slice(1).replace("-", "")
+                    }${isDark ? "Dark" : ""}`
+                  ]
+                }`}
+              >
                 {getStatusLabel(status)}
               </div>
             )}
@@ -319,17 +367,26 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
         {/* Status Badge for cards without images */}
         {!image && status && (
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'flex-end', 
-            marginBottom: '1rem',
-            alignItems: 'center'
-          }}>
-            <div 
-              className={`${styles.status} ${styles[`status${status.charAt(0).toUpperCase() + status.slice(1).replace('-', '')}${isDark ? 'Dark' : ''}`]}`}
-              style={{ 
-                position: 'static',
-                margin: '0'
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "1rem",
+              alignItems: "center",
+            }}
+          >
+            <div
+              className={`${styles.status} ${
+                styles[
+                  `status${
+                    status.charAt(0).toUpperCase() +
+                    status.slice(1).replace("-", "")
+                  }${isDark ? "Dark" : ""}`
+                ]
+              }`}
+              style={{
+                position: "static",
+                margin: "0",
               }}
             >
               {getStatusLabel(status)}
@@ -338,12 +395,16 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         )}
 
         {/* Title */}
-        <h3 className={`${styles.title} ${isDark ? styles.titleDark : ''}`}>
+        <h3 className={`${styles.title} ${isDark ? styles.titleDark : ""}`}>
           {title}
         </h3>
 
         {/* Description */}
-        <p className={`${styles.description} ${isDark ? styles.descriptionDark : ''}`}>
+        <p
+          className={`${styles.description} ${
+            isDark ? styles.descriptionDark : ""
+          }`}
+        >
           {truncatedDescription}
         </p>
       </div>
@@ -354,7 +415,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           {techStacks.map((tech, index) => (
             <span
               key={index}
-              className={`${styles.techTag} ${isDark ? styles.techTagDark : ''}`}
+              className={`${styles.techTag} ${
+                isDark ? styles.techTagDark : ""
+              }`}
               style={{ backgroundColor: tech.color }}
             >
               {showTechStackIcons && tech.icon && (
@@ -369,39 +432,51 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       {/* Links */}
       <div className={styles.links}>
         {/* Main links */}
-        {links && links.map((link, index) => (
-          <a
-            key={index}
-            href={link.url}
-            target={link.target || '_blank'}
-            rel="noopener noreferrer"
-            className={`${styles.link} ${styles[`link${(link.type || 'custom').charAt(0).toUpperCase() + (link.type || 'custom').slice(1)}`]} ${isDark && link.type === 'repo' ? styles.linkRepoDark : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              link.onClick?.();
-            }}
-            style={link.style}
-          >
-            <span>{link.icon || getLinkIcon(link.type || 'custom')}</span>
-            {link.label || (link.type || 'custom').charAt(0).toUpperCase() + (link.type || 'custom').slice(1)}
-          </a>
-        ))}
+        {links &&
+          links.map((link, index) => (
+            <a
+              key={index}
+              href={link.url}
+              target={link.target || "_blank"}
+              rel="noopener noreferrer"
+              className={`${styles.link} ${
+                styles[
+                  `link${
+                    (link.type || "custom").charAt(0).toUpperCase() +
+                    (link.type || "custom").slice(1)
+                  }`
+                ]
+              } ${isDark && link.type === "repo" ? styles.linkRepoDark : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                link.onClick?.();
+              }}
+              style={link.style}
+            >
+              <span>{link.icon || getLinkIcon(link.type || "custom")}</span>
+              {link.label ||
+                (link.type || "custom").charAt(0).toUpperCase() +
+                  (link.type || "custom").slice(1)}
+            </a>
+          ))}
 
         {/* Repository link (if separate) */}
         {repo && (
           <a
             href={repo.url}
-            target={repo.target || '_blank'}
+            target={repo.target || "_blank"}
             rel="noopener noreferrer"
-            className={`${styles.link} ${styles.linkRepo} ${isDark ? styles.linkRepoDark : ''}`}
+            className={`${styles.link} ${styles.linkRepo} ${
+              isDark ? styles.linkRepoDark : ""
+            }`}
             onClick={(e) => {
               e.stopPropagation();
               repo.onClick?.();
             }}
             style={repo.style}
           >
-            <span>{repo.icon || getLinkIcon('repo')}</span>
-            {repo.label || 'Repository'}
+            <span>{repo.icon || getLinkIcon("repo")}</span>
+            {repo.label || "Repository"}
           </a>
         )}
       </div>
@@ -422,16 +497,19 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
       )}
 
+      { achievements?.length > 0 &&
+        getProjectAchievements(achievements)}
+
       {/* Tags */}
       {tags && tags.length > 0 && (
         <div className={styles.tagsContainer}>
-          {tags.map((tag, index) => (
+          {tags.map((tag, index) =>
             tag.onClick ? (
               <span
                 key={index}
                 className={styles.tag}
                 onClick={tag.onClick}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
                 {tag.name}
               </span>
@@ -450,12 +528,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 {tag.name}
               </span>
             )
-          ))}
+          )}
         </div>
       )}
 
       {/* Metadata Section */}
-      {(priority || budget || startDate || dueDate || category || createdBy || updatedBy) && (
+      {(priority ||
+        budget ||
+        startDate ||
+        dueDate ||
+        category ||
+        createdBy ||
+        updatedBy) && (
         <div className={styles.metadataSection}>
           {priority && (
             <div className={styles.metadataItem}>
@@ -524,7 +608,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
       {/* Last Updated */}
       {getLastUpdated() && (
-        <div className={`${styles.lastUpdated} ${isDark ? styles.lastUpdatedDark : ''}`}>
+        <div
+          className={`${styles.lastUpdated} ${
+            isDark ? styles.lastUpdatedDark : ""
+          }`}
+        >
           Last updated: {getLastUpdated()}
         </div>
       )}
@@ -539,9 +627,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 key={index}
                 className={styles.relatedProject}
                 onClick={() => {
-                  if (project.description || project.image || project.repo || project.link) {
+                  if (
+                    project.description ||
+                    project.image ||
+                    project.repo ||
+                    project.link
+                  ) {
                     // Create and show dialog
-                    const dialog = document.createElement('div');
+                    const dialog = document.createElement("div");
                     dialog.className = styles.relatedProjectDialog;
 
                     // Build links array from available link properties
@@ -549,31 +642,67 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                     if (project.link) allLinks.push(project.link);
                     if (project.repo) allLinks.push(project.repo);
 
-
                     dialog.innerHTML = `
                       <div class="${styles.dialogOverlay}">
                         <div class="${styles.dialogContent}">
                           <div class="${styles.dialogHeader}">
-                            <h3 class="${styles.dialogTitle}">${project.title}</h3>
-                            <button class="${styles.dialogClose}" onclick="this.closest('.${styles.relatedProjectDialog}').remove()">×</button>
+                            <h3 class="${styles.dialogTitle}">${
+                      project.title
+                    }</h3>
+                            <button class="${
+                              styles.dialogClose
+                            }" onclick="this.closest('.${
+                      styles.relatedProjectDialog
+                    }').remove()">×</button>
                           </div>
                           <div class="${styles.dialogBody}">
                           <div class="${styles.dialogImage}">
-                            <img src="${typeof project.image === 'string' ? project.image : project.image?.src}" alt="${project.title}" />
+                            <img src="${
+                              typeof project.image === "string"
+                                ? project.image
+                                : project.image?.src
+                            }" alt="${project.title}" />
                           </div>
-                            ${project.description ? `<p class="${styles.dialogDescription}">${project.description}</p>` : ''}
-                            ${allLinks.length > 0 ? `
+                            ${
+                              project.description
+                                ? `<p class="${styles.dialogDescription}">${project.description}</p>`
+                                : ""
+                            }
+                            ${
+                              allLinks.length > 0
+                                ? `
                               <div class="${styles.dialogLinks}">
                                 <h4>Links:</h4>
                                 <div class="${styles.dialogLinksList}">
-                                  ${allLinks.map((link: any) => `
-                                    <a href="${link.url}" target="_blank" class="${styles.dialogLink} ${styles[`link${(link.type || 'custom').charAt(0).toUpperCase() + (link.type || 'custom').slice(1)}`]}">
-                                      ${link.icon || ''} ${link.label || link.type || 'Link'}
+                                  ${allLinks
+                                    .map(
+                                      (link: any) => `
+                                    <a href="${
+                                      link.url
+                                    }" target="_blank" class="${
+                                        styles.dialogLink
+                                      } ${
+                                        styles[
+                                          `link${
+                                            (link.type || "custom")
+                                              .charAt(0)
+                                              .toUpperCase() +
+                                            (link.type || "custom").slice(1)
+                                          }`
+                                        ]
+                                      }">
+                                      ${link.icon || ""} ${
+                                        link.label || link.type || "Link"
+                                      }
                                     </a>
-                                  `).join('')}
+                                  `
+                                    )
+                                    .join("")}
                                 </div>
                               </div>
-                            ` : ''}
+                            `
+                                : ""
+                            }
                           </div>
                         </div>
                       </div>
@@ -581,18 +710,30 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                     document.body.appendChild(dialog);
 
                     // Close dialog when clicking overlay
-                    dialog.addEventListener('click', (e) => {
-                      if (e.target === dialog.querySelector(`.${styles.dialogOverlay}`)) {
+                    dialog.addEventListener("click", (e) => {
+                      if (
+                        e.target ===
+                        dialog.querySelector(`.${styles.dialogOverlay}`)
+                      ) {
                         dialog.remove();
                       }
                     });
                   }
                 }}
                 style={{
-                  cursor: (project.description || project.image || project.repo || project.link) ? 'pointer' : 'default'
+                  cursor:
+                    project.description ||
+                    project.image ||
+                    project.repo ||
+                    project.link
+                      ? "pointer"
+                      : "default",
                 }}
               >
-                <span className={styles.relatedProjectTitle}> -► {project.title}</span>
+                <span className={styles.relatedProjectTitle}>
+                  {" "}
+                  -► {project.title}
+                </span>
               </div>
             ))}
           </div>
