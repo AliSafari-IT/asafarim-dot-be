@@ -132,12 +132,14 @@
         "namePlaceholder": "Jan Jansen",
         "email": "E-mailadres",
         "emailPlaceholder": "jan@voorbeeld.com",
+        "subject": "Onderwerp",
         "message": "Je Bericht",
         "messagePlaceholder": "Vertel me over je project, tijdlijn en eventuele specifieke vereisten...",
         "discussProject": "Ik wil een project bespreken",
         "submit": "Verstuur Bericht",
         "sending": "Verzenden...",
-        "success": "Bedankt! Je bericht is verzonden. Ik neem snel contact met je op.",
+        "success": "Bericht succesvol verzonden! Ik neem binnen 24-48 uur contact met je op.",
+        "error": "Bericht kon niet worden verzonden. Probeer het opnieuw.",
         "reassurance": "Je bericht komt rechtstreeks bij mij — ik reageer binnen 24-48 uur."
       }
     },

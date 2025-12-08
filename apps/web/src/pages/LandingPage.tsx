@@ -10,6 +10,7 @@ import {
   useNotifications,
 } from "@asafarim/shared-ui-react";
 import { sendEmail } from "../api/emailService";
+import { useTranslation } from "@asafarim/shared-i18n";
 
 // Types
 interface Project {
@@ -242,6 +243,7 @@ interface FormStatus {
 export default function LandingPage() {
   const { user, token } = useAuth();
   const { addNotification } = useNotifications();
+  const { t } = useTranslation("web");
 
   const [status, setStatus] = useState<FormStatus>({
     submitting: false,
@@ -296,10 +298,7 @@ export default function LandingPage() {
 
       if (emailResponse.success) {
         // Show success notification
-        addNotification(
-          "success",
-          "Message sent successfully! I'll get back to you within 24-48 hours."
-        );
+        addNotification("success", t("landing.contact.form.success"));
 
         setStatus({
           submitting: false,
@@ -357,20 +356,17 @@ export default function LandingPage() {
         <div className="landing-container">
           <div className="landing-hero-content">
             <h1 className="landing-hero-title">
-              Building Modern Web Solutions That Scale
+              {t('landing.hero.title')}
             </h1>
             <p className="landing-hero-subtitle">
-              Full-stack developer specializing in React, TypeScript, and .NET.
-              I create production-ready applications, automate complex
-              workflows, and deliver scalable architectures for startups and
-              enterprises.
+              {t('landing.hero.subtitle')}
             </p>
             <div className="landing-hero-cta">
               <ButtonComponent to="#projects" variant="brand">
-                View My Work
+                {t('landing.hero.primaryCta')}
               </ButtonComponent>
               <ButtonComponent to="#contact" variant="secondary">
-                Get in Touch
+                {t('landing.hero.secondaryCta')}
               </ButtonComponent>
             </div>
             <div className="landing-hero-social">
@@ -401,34 +397,28 @@ export default function LandingPage() {
           <div className="landing-about-content">
             <div className="landing-about-text">
               <h2 className="landing-section-title">
-                Solving Complex Problems with Clean Code
+                {t('landing.about.title')}
               </h2>
               <p className="landing-about-intro">
-                I'm Ali Safari, a full-stack developer based in Hasselt,
-                Belgium. With hands-on experience in React, TypeScript, .NET,
-                and microservices architecture, I build scalable web
-                applications and automation tools. My background in scientific
-                modeling (PhD in Engineering Hydrology) gives me a unique
-                perspective on data-driven problem solving. Currently available
-                for freelance projects.
+                {t('landing.about.intro')}
               </p>
               <div className="landing-about-stats">
                 <div className="landing-stat">
                   <span className="landing-stat-value">3+</span>
-                  <span className="landing-stat-label">Years Experience</span>
+                  <span className="landing-stat-label">{t('landing.about.yearsExperience')}</span>
                 </div>
                 <div className="landing-stat">
                   <span className="landing-stat-value">10+</span>
-                  <span className="landing-stat-label">Projects Delivered</span>
+                  <span className="landing-stat-label">{t('landing.about.projectsDelivered')}</span>
                 </div>
                 <div className="landing-stat">
                   <span className="landing-stat-value">5+</span>
-                  <span className="landing-stat-label">Tech Stacks</span>
+                  <span className="landing-stat-label">{t('landing.about.techStacks')}</span>
                 </div>
               </div>
               <div className="landing-about-location">
                 <Location title="Location" />
-                <span>Hasselt, Belgium — Available for Remote Work</span>
+                <span>{t('landing.about.location')}</span>
               </div>
             </div>
             <div className="landing-about-avatar">
@@ -447,13 +437,12 @@ export default function LandingPage() {
       <section id="projects" className="landing-section landing-projects">
         <div className="landing-container">
           <header className="landing-section-header">
-            <span className="landing-section-kicker">Featured Projects</span>
+            <span className="landing-section-kicker">{t('landing.projects.kicker')}</span>
             <h2 className="landing-section-title">
-              Real-World Solutions I've Built
+              {t('landing.projects.title')}
             </h2>
             <p className="landing-section-subtitle">
-              From enterprise platforms to automation tools—here are some of my
-              strongest projects.
+              {t('landing.projects.subtitle')}
             </p>
           </header>
           <div className="landing-projects-grid">
@@ -473,7 +462,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <div className="landing-project-achievement">
-                    <strong>Key Achievement:</strong> {project.achievements[0]}
+                    <strong>{t("landing.projects.achievement")}:</strong> {project.achievements[0]}
                   </div>
                   <div className="landing-project-links">
                     <a
@@ -491,7 +480,7 @@ export default function LandingPage() {
                         rel="noopener noreferrer"
                         className="landing-project-link landing-project-link-primary"
                       >
-                        Live Demo →
+                        {t("landing.projects.liveDemo")} →
                       </a>
                     )}
                   </div>
@@ -506,11 +495,14 @@ export default function LandingPage() {
       <section id="services" className="landing-section landing-services">
         <div className="landing-container">
           <header className="landing-section-header">
-            <span className="landing-section-kicker">What I Offer</span>
-            <h2 className="landing-section-title">Freelance Services</h2>
+            <span className="landing-section-kicker">
+              {t("landing.services.kicker")}
+            </span>
+            <h2 className="landing-section-title">
+              {t("landing.services.title")}
+            </h2>
             <p className="landing-section-subtitle">
-              I help businesses and startups build robust, scalable web
-              solutions. Here's how I can help you.
+              {t("landing.services.subtitle")}
             </p>
           </header>
           <div className="landing-services-grid">
@@ -534,9 +526,11 @@ export default function LandingPage() {
       >
         <div className="landing-container">
           <header className="landing-section-header">
-            <span className="landing-section-kicker">Case Studies</span>
+            <span className="landing-section-kicker">
+              {t("landing.caseStudies.kicker")}
+            </span>
             <h2 className="landing-section-title">
-              Problems Solved, Results Delivered
+              {t("landing.caseStudies.title")}
             </h2>
           </header>
           <div className="landing-case-studies-grid">
@@ -545,22 +539,29 @@ export default function LandingPage() {
                 <h3 className="landing-case-study-title">{study.title}</h3>
                 <div className="landing-case-study-flow">
                   <div className="landing-case-study-step">
-                    <span className="landing-case-study-label">Problem</span>
+                    <span className="landing-case-study-label">
+                      {t("landing.caseStudies.problem")}
+                    </span>
                     <p>{study.problem}</p>
                   </div>
                   <div className="landing-case-study-arrow">→</div>
                   <div className="landing-case-study-step">
-                    <span className="landing-case-study-label">Solution</span>
+                    <span className="landing-case-study-label">
+                      {t("landing.caseStudies.solution")}
+                    </span>
                     <p>{study.solution}</p>
                   </div>
                   <div className="landing-case-study-arrow">→</div>
                   <div className="landing-case-study-step">
-                    <span className="landing-case-study-label">Result</span>
+                    <span className="landing-case-study-label">
+                      {t("landing.caseStudies.result")}
+                    </span>
                     <p>{study.result}</p>
                   </div>
                 </div>
                 <div className="landing-case-study-tech">
-                  <strong>Technologies:</strong> {study.technologies}
+                  <strong>{t("landing.caseStudies.technologies")}:</strong>{" "}
+                  {study.technologies}
                 </div>
               </article>
             ))}
@@ -573,13 +574,8 @@ export default function LandingPage() {
         <div className="landing-container">
           <div className="landing-cv-card">
             <div className="landing-cv-content">
-              <h2 className="landing-cv-title">
-                Ready to See My Full Background?
-              </h2>
-              <p className="landing-cv-subtitle">
-                Download my CV or view my complete resume online with detailed
-                experience, skills, and project history.
-              </p>
+              <h2 className="landing-cv-title">{t("landing.cv.title")}</h2>
+              <p className="landing-cv-subtitle">{t("landing.cv.subtitle")}</p>
               <div className="landing-cv-skills">
                 {skills.map((skill) => (
                   <span key={skill} className="landing-tag">
@@ -594,13 +590,13 @@ export default function LandingPage() {
                   className="landing-btn landing-btn-primary"
                   target="_blank"
                 >
-                  Download CV (PDF)
+                  {t("landing.cv.downloadPdf")}
                 </a>
                 <a
                   href={ONLINE_CV || "/resume"}
                   className="landing-btn landing-btn-secondary"
                 >
-                  View Online Resume →
+                  {t("landing.cv.viewOnline")} →
                 </a>
               </div>
             </div>
@@ -612,11 +608,14 @@ export default function LandingPage() {
       <section id="contact" className="landing-section landing-contact">
         <div className="landing-container">
           <header className="landing-section-header">
-            <span className="landing-section-kicker">Let's Connect</span>
-            <h2 className="landing-section-title">Start a Conversation</h2>
+            <span className="landing-section-kicker">
+              {t("landing.contact.kicker")}
+            </span>
+            <h2 className="landing-section-title">
+              {t("landing.contact.title")}
+            </h2>
             <p className="landing-section-subtitle">
-              Have a project in mind? I'd love to hear about it. Fill out the
-              form and I'll get back to you within 24-48 hours.
+              {t("landing.contact.subtitle")}
             </p>
           </header>
           <div className="landing-contact-layout">
@@ -626,13 +625,12 @@ export default function LandingPage() {
               )}
               {status.success && (
                 <div className="landing-form-success">
-                  ✅ Message sent successfully! I'll get back to you within
-                  24-48 hours.
+                  ✅ {t("landing.contact.form.success")}
                 </div>
               )}
               <div className="landing-form-group">
                 <label htmlFor="name" className="landing-form-label">
-                  Name
+                  {t("landing.contact.form.name")}
                 </label>
                 <input
                   type="text"
@@ -646,7 +644,7 @@ export default function LandingPage() {
               </div>
               <div className="landing-form-group">
                 <label htmlFor="email" className="landing-form-label">
-                  Email
+                  {t("landing.contact.form.email")}
                 </label>
                 <input
                   type="email"
@@ -660,7 +658,7 @@ export default function LandingPage() {
               </div>
               <div className="landing-form-group">
                 <label htmlFor="subject" className="landing-form-label">
-                  Subject
+                  {t("landing.contact.form.subject")}
                 </label>
                 <input
                   type="text"
@@ -674,7 +672,7 @@ export default function LandingPage() {
               </div>
               <div className="landing-form-group">
                 <label htmlFor="message" className="landing-form-label">
-                  Message
+                  {t("landing.contact.form.message")}
                 </label>
                 <textarea
                   id="message"
@@ -692,10 +690,12 @@ export default function LandingPage() {
                 className="landing-btn landing-btn-primary landing-btn-full"
                 disabled={status.submitting}
               >
-                {status.submitting ? "Sending..." : "Send Message"}
+                {status.submitting
+                  ? t("landing.contact.form.sending")
+                  : t("landing.contact.form.submit")}
               </button>
               <p className="landing-form-reassurance">
-                Your message goes directly to me—I respond within 24-48 hours.
+                {t("landing.contact.form.reassurance")}
               </p>
             </form>
             <aside className="landing-contact-info">
@@ -719,11 +719,11 @@ export default function LandingPage() {
                 >
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                 </svg>
-                <span>Hasselt, Belgium</span>
+                <span>{t("contact.info.location")}</span>
               </div>
               <div className="landing-contact-availability">
                 <span className="landing-availability-dot" />
-                Available for freelance projects
+                {t("landing.contact.availability")}
               </div>
             </aside>
           </div>
@@ -736,13 +736,13 @@ export default function LandingPage() {
           <div className="landing-footer-content">
             <div className="landing-footer-brand">
               <strong>ASafariM</strong>
-              <p>Full-Stack Developer • Belgium</p>
+              <p>{t("landing.footer.tagline")}</p>
             </div>
             <nav className="landing-footer-nav">
-              <a href="#about">About</a>
-              <a href="#projects">Projects</a>
-              <a href="#services">Services</a>
-              <a href="#contact">Contact</a>
+              <a href="#about">{t("landing.footer.about")}</a>
+              <a href="#projects">{t("landing.footer.projects")}</a>
+              <a href="#services">{t("landing.footer.services")}</a>
+              <a href="#contact">{t("landing.footer.contact")}</a>
             </nav>
             <div className="landing-footer-social">
               <Link
@@ -765,7 +765,7 @@ export default function LandingPage() {
           </div>
           <div className="landing-footer-bottom">
             <p>
-              &copy; {new Date().getFullYear()} Ali Safari. All rights reserved.
+              &copy; {new Date().getFullYear()} Ali Safari. {t("landing.footer.rights")}
             </p>
           </div>
         </div>
