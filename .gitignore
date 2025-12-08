@@ -147,3 +147,4 @@ SHARED_IMPORTS_IMPLEMENTATION.md
 SHARED_IMPORTS_QUICK_START.md
 apps/web/tsconfig.app.tsbuildinfo
 docs
+tsconfig.app.tsbuildinfo
