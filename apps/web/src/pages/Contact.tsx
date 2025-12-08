@@ -7,12 +7,18 @@ import {
   type ChangeEvent,
 } from "react";
 import { sendEmail } from "../api/emailService";
-import { ButtonComponent as Button, Eye, EyeOff, useAuth, useNotifications } from "@asafarim/shared-ui-react";
+import {
+  ButtonComponent as Button,
+  Eye,
+  EyeOff,
+  useAuth,
+  useNotifications,
+} from "@asafarim/shared-ui-react";
 import React from "react";
 import { API_BASE_URL } from "../config/api";
 import { apiGet } from "../api/core";
 import { useTranslation } from "@asafarim/shared-i18n";
-import './Contact.css';
+import "./Contact.css";
 
 // Generate a unique reference number for new conversations
 const generateReferenceNumber = (): string => {
@@ -68,7 +74,7 @@ interface FormStatus {
 export default function Contact() {
   const { user, token } = useAuth();
   const { addNotification } = useNotifications();
-  const { t } = useTranslation('web');
+  const { t } = useTranslation("web");
   const [email, setEmail] = useState(user?.email || "");
   const [name, setName] = useState(user?.name || user?.userName || "");
   const [conversations, setConversations] = useState<Conversation[]>();
@@ -82,22 +88,21 @@ export default function Contact() {
     Record<number, boolean>
   >({});
 
-    // ✅ Ref for Project Type input
-    const projectTypeRef = useRef<HTMLInputElement>(null);
+  // ✅ Ref for Project Type input
+  const projectTypeRef = useRef<HTMLInputElement>(null);
 
-    // ✅ Scroll & highlight function
-    const scrollToProjectType = () => {
-      const el = projectTypeRef.current;
-      if (!el) return;
-  
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.focus({ preventScroll: true });
-  
-      // Add a temporary highlight class
-      el.classList.add("web-contact-input-highlight");
-      setTimeout(() => el.classList.remove("web-contact-input-highlight"), 2000);
-    };
-  
+  // ✅ Scroll & highlight function
+  const scrollToProjectType = () => {
+    const el = projectTypeRef.current;
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.focus({ preventScroll: true });
+
+    // Add a temporary highlight class
+    el.classList.add("web-contact-input-highlight");
+    setTimeout(() => el.classList.remove("web-contact-input-highlight"), 2000);
+  };
 
   const fetchConversations = useCallback(async () => {
     if (!user?.id || !token) {
@@ -204,14 +209,14 @@ export default function Contact() {
   };
 
   const handleAddLink = () => {
-    const link = prompt(t('contact.form.attachments.enterUrl'));
+    const link = prompt(t("contact.form.attachments.enterUrl"));
     if (link && isValidUrl(link)) {
       setFormData((prev) => ({
         ...prev,
         links: [...prev.links, link],
       }));
     } else if (link) {
-      addNotification("error", t('contact.form.attachments.invalidUrl'));
+      addNotification("error", t("contact.form.attachments.invalidUrl"));
     }
   };
 
@@ -256,7 +261,7 @@ export default function Contact() {
       error: null,
       success: false,
     });
-  
+
     try {
       const emailResponse = await sendEmail(
         {
@@ -271,24 +276,21 @@ export default function Contact() {
         },
         token
       );
-  
+
       if (emailResponse.success) {
         // Show success notification
-        addNotification(
-          "success",
-          t('contact.form.submit.success')
-        );
-  
+        addNotification("success", t("contact.form.submit.success"));
+
         setStatus({
           submitting: false,
           submitted: true,
           error: null,
           success: true,
         });
-  
+
         // Refresh the conversations list
         await fetchConversations();
-  
+
         // Reset form after successful submission
         setFormData({
           name: name,
@@ -310,11 +312,14 @@ export default function Contact() {
         "error",
         error instanceof Error ? error.message : "An unexpected error occurred"
       );
-  
+
       setStatus({
         submitting: false,
         submitted: true,
-        error: error instanceof Error ? error.message : "An unexpected error occurred",
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
         success: false,
       });
     }
@@ -325,32 +330,34 @@ export default function Contact() {
       <div className="container">
         {/* Hero Section */}
         <div className="web-contact-hero">
-          <h1 className="web-contact-title">
-            {t('contact.hero.title')}
-          </h1>
-          <p className="web-contact-subtitle">
-            {t('contact.hero.subtitle')}
-          </p>
+          <h1 className="web-contact-title">{t("contact.hero.title")}</h1>
+          <p className="web-contact-subtitle">{t("contact.hero.subtitle")}</p>
         </div>
 
         {/* Services Grid */}
         <div className="web-contact-services">
           <div className="web-contact-service-card">
-            <h3 className="web-contact-service-title">{t('contact.services.backend.title')}</h3>
+            <h3 className="web-contact-service-title">
+              {t("contact.services.backend.title")}
+            </h3>
             <p className="web-contact-service-desc">
-              {t('contact.services.backend.description')}
+              {t("contact.services.backend.description")}
             </p>
           </div>
           <div className="web-contact-service-card">
-            <h3 className="web-contact-service-title">{t('contact.services.frontend.title')}</h3>
+            <h3 className="web-contact-service-title">
+              {t("contact.services.frontend.title")}
+            </h3>
             <p className="web-contact-service-desc">
-              {t('contact.services.frontend.description')}
+              {t("contact.services.frontend.description")}
             </p>
           </div>
           <div className="web-contact-service-card">
-            <h3 className="web-contact-service-title">{t('contact.services.fullstack.title')}</h3>
+            <h3 className="web-contact-service-title">
+              {t("contact.services.fullstack.title")}
+            </h3>
             <p className="web-contact-service-desc">
-              {t('contact.services.fullstack.description')}
+              {t("contact.services.fullstack.description")}
             </p>
           </div>
         </div>
@@ -361,8 +368,10 @@ export default function Contact() {
           <div className="web-contact-form-container">
             <h2 className="web-contact-form-title">
               {formData.referenceNumber
-                ? t('contact.form.replyToConversation', { reference: formData.referenceNumber })
-                : t('contact.form.newConversation')}
+                ? t("contact.form.replyToConversation", {
+                    reference: formData.referenceNumber,
+                  })
+                : t("contact.form.newConversation")}
             </h2>
 
             {/* Reference Number Input */}
@@ -372,7 +381,7 @@ export default function Contact() {
                 style={{ position: "relative" }}
               >
                 <label htmlFor="referenceNumber" className="web-contact-label">
-                  {t('contact.form.referenceNumber')}
+                  {t("contact.form.referenceNumber")}
                 </label>
                 <div className="web-contact-reference-input">
                   <input
@@ -397,7 +406,7 @@ export default function Contact() {
                           }));
                         }}
                       >
-                        {t('contact.form.newConversation')}
+                        {t("contact.form.newConversation")}
                       </Button>
                     ) : (
                       <Button
@@ -406,7 +415,7 @@ export default function Contact() {
                           setShowReferenceDropdown(!showReferenceDropdown)
                         }
                       >
-                        {t('contact.form.referencePrevious')}
+                        {t("contact.form.referencePrevious")}
                       </Button>
                     )}
                   </div>
@@ -418,7 +427,7 @@ export default function Contact() {
                   conversations.length > 0 && (
                     <div className="web-contact-reference-dropdown">
                       <div className="web-contact-reference-dropdown-header">
-                        <h4>{t('contact.form.selectConversation')}</h4>
+                        <h4>{t("contact.form.selectConversation")}</h4>
                         <Button
                           variant="danger"
                           size="sm"
@@ -465,7 +474,7 @@ export default function Contact() {
               <div className="web-contact-input-group">
                 <div className="web-contact-field">
                   <label htmlFor="name" className="web-contact-label">
-                    {t('contact.form.name')}
+                    {t("contact.form.name")}
                   </label>
                   <input
                     type="text"
@@ -480,7 +489,7 @@ export default function Contact() {
 
                 <div className="web-contact-field">
                   <label htmlFor="email" className="web-contact-label">
-                    {t('contact.form.email')}
+                    {t("contact.form.email")}
                   </label>
                   <input
                     type="email"
@@ -496,15 +505,15 @@ export default function Contact() {
 
               <div className="web-contact-field">
                 <label htmlFor="subject" className="web-contact-label">
-                  {t('contact.form.projectType')}
+                  {t("contact.form.projectType")}
                 </label>
                 <input
                   type="text"
                   id="subject"
-                  ref={projectTypeRef} 
+                  ref={projectTypeRef}
                   name="subject"
                   className="web-contact-input"
-                  placeholder={t('contact.form.projectTypePlaceholder')}
+                  placeholder={t("contact.form.projectTypePlaceholder")}
                   value={formData.subject}
                   onChange={handleChange}
                   required
@@ -513,14 +522,14 @@ export default function Contact() {
 
               <div className="web-contact-field">
                 <label htmlFor="message" className="web-contact-label">
-                  {t('contact.form.projectDetails')}
+                  {t("contact.form.projectDetails")}
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows={6}
                   className="web-contact-textarea"
-                  placeholder={t('contact.form.projectDetailsPlaceholder')}
+                  placeholder={t("contact.form.projectDetailsPlaceholder")}
                   value={formData.message}
                   onChange={handleChange}
                   required
@@ -530,33 +539,37 @@ export default function Contact() {
               {/* Attachments Section */}
               <div className="web-contact-attachments">
                 <div className="web-contact-attachment-header">
-                  <h3 className="web-contact-label">{t('contact.form.attachments.title')}</h3>
+                  <h3 className="web-contact-label">
+                    {t("contact.form.attachments.title")}
+                  </h3>
                   <div className="web-contact-attachment-actions">
                     <button
                       type="button"
                       className="web-contact-attachment-btn"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      {t('contact.form.attachments.addFile')}
+                      {t("contact.form.attachments.addFile")}
                     </button>
                     <button
                       type="button"
                       className="web-contact-attachment-btn"
                       onClick={handleAddLink}
                     >
-                      {t('contact.form.attachments.addLink')}
+                      {t("contact.form.attachments.addLink")}
                     </button>
                   </div>
                 </div>
-
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  onChange={handleFileUpload}
-                  multiple
-                  accept=".pdf,.doc,.docx,.txt,image/*"
-                />
+                <label htmlFor="web-contact-upload-files" className="web-contact-upload-files hidden">
+                  <input
+                    name="web-contact-upload-files"
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    multiple
+                    accept=".pdf,.doc,.docx,.txt,image/*"
+                  />
+                </label>
 
                 {/* Attachments Preview */}
                 {formData.attachments.length > 0 && (
@@ -617,8 +630,8 @@ export default function Contact() {
                 disabled={status.submitting}
               >
                 {status.submitting
-                  ? t('contact.form.submit.sending')
-                  : t('contact.form.submit.submit')}
+                  ? t("contact.form.submit.sending")
+                  : t("contact.form.submit.submit")}
               </button>
             </form>
           </div>
@@ -627,22 +640,28 @@ export default function Contact() {
           {user && (
             <div className="web-contact-conversations">
               <div className="web-contact-conversations-title">
-                <div>{t('contact.conversations.title')}</div>
+                <div>{t("contact.conversations.title")}</div>
                 <Button
-                variant="outline"
-                onClick={() => setDisplayConversations(!displayConversations)}
-                title={displayConversations ? "Hide Conversations" : "Show Conversations"}
-              >
-                {displayConversations ? <EyeOff /> : <Eye />}
-              </Button>
+                  variant="outline"
+                  onClick={() => setDisplayConversations(!displayConversations)}
+                  title={
+                    displayConversations
+                      ? "Hide Conversations"
+                      : "Show Conversations"
+                  }
+                >
+                  {displayConversations ? <EyeOff /> : <Eye />}
+                </Button>
               </div>
-              
-              {displayConversations && (
-                conversations && conversations?.length > 0 ? (
+
+              {displayConversations &&
+                (conversations && conversations?.length > 0 ? (
                   <div className="web-contact-conversations-list">
                     {conversations.map((conv) => {
-                      const isExpanded = expandedConversations[conv.id] || false;
-                      const refNumber = conv.referenceNumber || `REF-${conv.id}`;  
+                      const isExpanded =
+                        expandedConversations[conv.id] || false;
+                      const refNumber =
+                        conv.referenceNumber || `REF-${conv.id}`;
                       return (
                         <div
                           id={`conversation-${conv.id}`}
@@ -672,7 +691,7 @@ export default function Contact() {
                               {isExpanded ? "▲" : "▼"}
                             </div>
                           </div>
-  
+
                           {isExpanded && (
                             <div className="web-contact-conversation-details">
                               <div className="web-contact-message">
@@ -681,35 +700,51 @@ export default function Contact() {
                                 </p>
                                 {conv.referingToConversation && (
                                   <div className="web-contact-message-reference">
-                                    <strong>{t('contact.conversations.referringTo')} </strong>
-                                    <a 
-                                      href="#" 
+                                    <strong>
+                                      {t("contact.conversations.referringTo")}{" "}
+                                    </strong>
+                                    <a
+                                      href="#"
                                       className="web-contact-reference-link"
                                       onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
                                         // Find the conversation with this reference number
-                                        const referencedConv = conversations?.find(
-                                          c => c.referenceNumber === conv.referingToConversation || 
-                                               `REF-${c.id}` === conv.referingToConversation
-                                        );
-                                        
+                                        const referencedConv =
+                                          conversations?.find(
+                                            (c) =>
+                                              c.referenceNumber ===
+                                                conv.referingToConversation ||
+                                              `REF-${c.id}` ===
+                                                conv.referingToConversation
+                                          );
+
                                         if (referencedConv) {
                                           // Expand the referenced conversation if it's not already expanded
-                                          setExpandedConversations(prev => ({
+                                          setExpandedConversations((prev) => ({
                                             ...prev,
-                                            [referencedConv.id]: true
+                                            [referencedConv.id]: true,
                                           }));
-                                          
+
                                           // Scroll to the referenced conversation
                                           setTimeout(() => {
-                                            const element = document.getElementById(`conversation-${referencedConv.id}`);
+                                            const element =
+                                              document.getElementById(
+                                                `conversation-${referencedConv.id}`
+                                              );
                                             if (element) {
-                                              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                              element.scrollIntoView({
+                                                behavior: "smooth",
+                                                block: "center",
+                                              });
                                               // Add a highlight effect
-                                              element.classList.add('web-contact-conversation-highlight');
+                                              element.classList.add(
+                                                "web-contact-conversation-highlight"
+                                              );
                                               setTimeout(() => {
-                                                element.classList.remove('web-contact-conversation-highlight');
+                                                element.classList.remove(
+                                                  "web-contact-conversation-highlight"
+                                                );
                                               }, 2000);
                                             }
                                           }, 100);
@@ -722,28 +757,36 @@ export default function Contact() {
                                 )}
                                 {conv.links && conv.links.length > 0 && (
                                   <div className="web-contact-message-links">
-                                    <strong>{t('contact.conversations.links')}</strong>
+                                    <strong>
+                                      {t("contact.conversations.links")}
+                                    </strong>
                                     <div className="web-contact-link-list">
-                                      {conv.links.split(',').map((link, index) => (
-                                        <a 
-                                          key={index} 
-                                          href={link.trim()} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                          className="web-contact-link"
-                                        >
-                                          {link.trim()}
-                                        </a>
-                                      ))}
+                                      {conv.links
+                                        .split(",")
+                                        .map((link, index) => (
+                                          <a
+                                            key={index}
+                                            href={link.trim()}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="web-contact-link"
+                                          >
+                                            {link.trim()}
+                                          </a>
+                                        ))}
                                     </div>
                                   </div>
                                 )}
                                 {conv.attachmentPath && (
                                   <div className="web-contact-message-attachments">
-                                    <strong>{t('contact.conversations.attachments')}</strong>
+                                    <strong>
+                                      {t("contact.conversations.attachments")}
+                                    </strong>
                                     <div className="web-contact-attachment-link">
-                                      <span className="web-contact-attachment-icon">📄</span>
-                                      {conv.attachmentPath.split('/').pop()}
+                                      <span className="web-contact-attachment-icon">
+                                        📄
+                                      </span>
+                                      {conv.attachmentPath.split("/").pop()}
                                     </div>
                                   </div>
                                 )}
@@ -756,14 +799,15 @@ export default function Contact() {
                                     setReferringToConversation(refNumber);
                                     setFormData((prev) => ({
                                       ...prev,
-                                      referenceNumber: generateReferenceNumber(),
+                                      referenceNumber:
+                                        generateReferenceNumber(),
                                       referingToConversation: refNumber,
                                       subject: `Re: ${conv.subject}`,
                                     }));
                                     scrollToProjectType();
                                   }}
                                 >
-                                  {t('contact.conversations.reply')}
+                                  {t("contact.conversations.reply")}
                                 </Button>
                               </div>
                             </div>
@@ -773,59 +817,64 @@ export default function Contact() {
                     })}
                   </div>
                 ) : (
-                  <p>{t('contact.conversations.empty')}</p>
-                )
-              )}
+                  <p>{t("contact.conversations.empty")}</p>
+                ))}
             </div>
           )}
           <div className="web-contact-info-wrapper">
             <div className="web-contact-info">
-              <h2 className="web-contact-info-title">{t('contact.info.whyWorkWithMe')}</h2>
+              <h2 className="web-contact-info-title">
+                {t("contact.info.whyWorkWithMe")}
+              </h2>
               <ul className="web-contact-features">
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
                   <p className="web-contact-feature-text">
-                    {t('contact.info.expertise')}
+                    {t("contact.info.expertise")}
                   </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
                   <p className="web-contact-feature-text">
-                    {t('contact.info.scientific')}
+                    {t("contact.info.scientific")}
                   </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
                   <p className="web-contact-feature-text">
-                    {t('contact.info.visualization')}
+                    {t("contact.info.visualization")}
                   </p>
                 </li>
                 <li className="web-contact-feature">
                   <span className="web-contact-feature-icon">✓</span>
                   <p className="web-contact-feature-text">
-                    {t('contact.info.delivery')}
+                    {t("contact.info.delivery")}
                   </p>
                 </li>
               </ul>
             </div>
 
             <div className="web-contact-info">
-              <h2 className="web-contact-info-title">{t('contact.info.contactInfo')}</h2>
+              <h2 className="web-contact-info-title">
+                {t("contact.info.contactInfo")}
+              </h2>
               <div className="web-contact-details">
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Email</h3>
                   <p className="web-contact-detail-value">
-                    {t('contact.info.email')}
+                    {t("contact.info.email")}
                   </p>
                 </div>
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Location</h3>
-                  <p className="web-contact-detail-value">{t('contact.info.location')}</p>
+                  <p className="web-contact-detail-value">
+                    {t("contact.info.location")}
+                  </p>
                 </div>
                 <div className="web-contact-detail">
                   <h3 className="web-contact-detail-label">Availability</h3>
                   <p className="web-contact-detail-value">
-                    {t('contact.info.availability')}
+                    {t("contact.info.availability")}
                   </p>
                 </div>
               </div>

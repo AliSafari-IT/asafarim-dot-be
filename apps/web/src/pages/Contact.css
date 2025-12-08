@@ -577,6 +577,10 @@
   margin-bottom: var(--global-spacing-unit-2x);
 }
 
+ .web-contact-upload-files .hidden {
+  display: none;
+}
+
 .web-contact-attachment-actions {
   display: flex;
   gap: var(--global-spacing-unit);
@@ -788,5 +792,9 @@
   .web-contact-form-container,
   .web-contact-info {
     padding: var(--global-spacing-unit-3x);
+  }
+
+  .web-contact-attachment-header{
+    flex-direction: column;
   }
 }
