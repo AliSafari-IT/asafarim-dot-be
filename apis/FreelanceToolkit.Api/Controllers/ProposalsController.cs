@@ -126,18 +126,26 @@ public class ProposalsController : ControllerBase
     }
 
     /// <summary>
-    /// Send a proposal to client
+    /// Send a proposal to client with optional custom email content
     /// </summary>
     [HttpPost("{id}/send")]
     [ProducesResponseType(typeof(ProposalResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ProposalResponseDto>> Send(Guid id)
+    public async Task<ActionResult<ProposalResponseDto>> Send(
+        Guid id,
+        [FromBody] SendProposalDto? dto = null
+    )
     {
         try
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var proposal = await _proposalService.SendAsync(id, userId);
+            var proposal = await _proposalService.SendAsync(
+                id,
+                userId,
+                dto?.CustomSubject,
+                dto?.CustomBody
+            );
             return Ok(proposal);
         }
         catch (KeyNotFoundException)

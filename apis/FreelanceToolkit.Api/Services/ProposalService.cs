@@ -142,7 +142,12 @@ public class ProposalService : IProposalService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<ProposalResponseDto> SendAsync(Guid id, string userId)
+    public async Task<ProposalResponseDto> SendAsync(
+        Guid id,
+        string userId,
+        string? customSubject = null,
+        string? customBody = null
+    )
     {
         var proposal = await _context
             .Proposals.Include(p => p.Client)
@@ -162,6 +167,8 @@ public class ProposalService : IProposalService
         proposal.Status = ProposalStatus.Sent;
         proposal.SentAt = DateTime.UtcNow;
         proposal.UpdatedAt = DateTime.UtcNow;
+        proposal.DeliveryStatus = EmailDeliveryStatus.Pending;
+        proposal.LastAttemptAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
 
@@ -179,15 +186,35 @@ public class ProposalService : IProposalService
                 pdfBytes.Length
             );
 
-            await _emailService.SendProposalAsync(
-                proposal.ProposalNumber,
-                proposal.Title,
-                proposal.Client.Name,
-                proposal.TotalAmount,
-                proposal.EndDate,
-                pdfBytes,
-                proposal.Client.Email
-            );
+            // Use custom email content if provided, otherwise use default template
+            if (!string.IsNullOrWhiteSpace(customSubject) && !string.IsNullOrWhiteSpace(customBody))
+            {
+                await _emailService.SendCustomEmailAsync(
+                    customSubject,
+                    customBody,
+                    proposal.Client.Email,
+                    proposal.Client.Name,
+                    pdfBytes,
+                    $"Proposal-{proposal.ProposalNumber}.pdf"
+                );
+            }
+            else
+            {
+                await _emailService.SendProposalAsync(
+                    proposal.ProposalNumber,
+                    proposal.Title,
+                    proposal.Client.Name,
+                    proposal.TotalAmount,
+                    proposal.EndDate,
+                    pdfBytes,
+                    proposal.Client.Email
+                );
+            }
+
+            proposal.DeliveryStatus = EmailDeliveryStatus.Sent;
+            proposal.LastAttemptAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
             _logger.LogInformation(
                 "[ProposalService] Email sent successfully for proposal {ProposalId}",
                 id
@@ -195,7 +222,11 @@ public class ProposalService : IProposalService
         }
         catch (Exception ex)
         {
-            // Log the error but don't fail the entire operation
+            proposal.DeliveryStatus = EmailDeliveryStatus.Failed;
+            proposal.LastAttemptAt = DateTime.UtcNow;
+            proposal.RetryCount++;
+            await _context.SaveChangesAsync();
+
             _logger.LogError(
                 ex,
                 "[ProposalService] Failed to send proposal email for proposal {ProposalId}: {ErrorMessage}",

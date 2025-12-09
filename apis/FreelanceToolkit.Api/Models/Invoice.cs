@@ -34,6 +34,9 @@ public class Invoice
     public string? Notes { get; set; }
     public string? PaymentLink { get; set; }
     public DateTime? SentAt { get; set; }
+    public EmailDeliveryStatus? DeliveryStatus { get; set; }
+    public DateTime? LastAttemptAt { get; set; }
+    public int RetryCount { get; set; }
     public DateTime? PaidAt { get; set; }
     public PaymentMethod? PaymentMethod { get; set; }
     public string? TransactionId { get; set; }

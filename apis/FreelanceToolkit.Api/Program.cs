@@ -1,4 +1,5 @@
 using System.Text;
+using FreelanceToolkit.Api.BackgroundServices;
 using FreelanceToolkit.Api.Data;
 using FreelanceToolkit.Api.Services;
 using FreelanceToolkit.Api.Services.Interfaces;
@@ -147,6 +148,13 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmailRetryService, EmailRetryService>();
+
+// Email Retry Configuration
+builder.Services.Configure<EmailRetryConfiguration>(builder.Configuration.GetSection("EmailRetry"));
+
+// Background Services
+builder.Services.AddHostedService<EmailRetryBackgroundService>();
 
 // CORS - Allow frontend origins
 var productionOrigins = new[]

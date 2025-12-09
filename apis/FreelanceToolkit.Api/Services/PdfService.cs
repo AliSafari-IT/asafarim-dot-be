@@ -12,12 +12,10 @@ namespace FreelanceToolkit.Api.Services;
 public class PdfService : IPdfService
 {
     private readonly ApplicationDbContext _context;
-    private readonly IInvoiceService _invoiceService;
 
-    public PdfService(ApplicationDbContext context, IInvoiceService invoiceService)
+    public PdfService(ApplicationDbContext context)
     {
         _context = context;
-        _invoiceService = invoiceService;
 
         // Configure QuestPDF license
         QuestPDF.Settings.License = LicenseType.Community;
@@ -129,7 +127,41 @@ public class PdfService : IPdfService
 
     public async Task<byte[]> GenerateInvoicePdfAsync(Guid invoiceId, string userId)
     {
-        var invoiceDto = await _invoiceService.GetByIdAsync(invoiceId, userId);
+        // Fetch invoice directly from database to avoid circular dependency
+        var invoice = await _context
+            .Invoices.Include(i => i.Client)
+            .Include(i => i.LineItems)
+            .FirstOrDefaultAsync(i => i.Id == invoiceId && i.UserId == userId);
+
+        if (invoice == null)
+            throw new KeyNotFoundException($"Invoice with ID {invoiceId} not found");
+
+        // Map to DTO for consistency
+        var invoiceDto = new InvoiceResponseDto
+        {
+            Id = invoice.Id,
+            InvoiceNumber = invoice.InvoiceNumber,
+            ClientId = invoice.ClientId,
+            ClientName = invoice.Client.Name,
+            IssueDate = invoice.InvoiceDate,
+            DueDate = invoice.DueDate,
+            Status = invoice.Status.ToString(),
+            Subtotal = invoice.SubTotal,
+            TaxPercent = invoice.TaxRate,
+            TaxAmount = invoice.TaxAmount,
+            Total = invoice.Total,
+            Notes = invoice.Notes,
+            CreatedAt = invoice.CreatedAt,
+            PaidAt = invoice.PaidAt,
+            LineItems = invoice
+                .LineItems.Select(li => new InvoiceLineItemDto
+                {
+                    Description = li.Description,
+                    Quantity = li.Quantity,
+                    UnitPrice = li.UnitPrice,
+                })
+                .ToList(),
+        };
 
         var document = Document.Create(container =>
         {

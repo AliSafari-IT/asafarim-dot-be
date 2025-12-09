@@ -15,6 +15,7 @@ public interface IInvoiceService
     Task DeleteAsync(Guid id, string userId);
     Task<InvoiceResponseDto> MarkAsPaidAsync(Guid id, string userId);
     Task<InvoiceResponseDto> MarkAsCancelledAsync(Guid id, string userId);
+    Task<InvoiceResponseDto> SendAsync(Guid id, string userId);
     Task UpdateOverdueStatusesAsync(string userId);
     Task<string> GenerateHtmlAsync(Guid id, string userId);
 }

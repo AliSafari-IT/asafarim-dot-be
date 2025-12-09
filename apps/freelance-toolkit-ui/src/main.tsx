@@ -11,7 +11,7 @@ import { ProposalFormPage } from "./pages/ProposalFormPage";
 import { LoginPage } from "./pages/LoginPage";
 import "./index.css";
 
-const InvoicesPage = () => <div>Invoices Page (Coming Soon)</div>;
+import InvoicesPage from "./pages/InvoicesPage";
 const CalendarPage = () => <div>Calendar Page (Coming Soon)</div>;
 
 createRoot(document.getElementById("root")!).render(

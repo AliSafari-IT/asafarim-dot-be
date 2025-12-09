@@ -65,6 +65,14 @@ export const invoicesApi = {
     },
 
     /**
+     * Send an invoice to client
+     */
+    send: async (id: string): Promise<InvoiceResponseDto> => {
+        const response = await apiClient.post<InvoiceResponseDto>(`/invoices/${id}/send`);
+        return response.data;
+    },
+
+    /**
      * Generate HTML preview of invoice
      */
     getHtml: async (id: string): Promise<string> => {

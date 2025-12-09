@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { proposalsApi, type ProposalResponseDto } from "../api";
 import { formatCurrency, debounce } from "../utils/apiHelpers";
 import { ButtonComponent } from "@asafarim/shared-ui-react";
+import EmailPreviewModal from "../components/EmailPreviewModal";
 import "../styles/pages/proposals.css";
 
 export const ProposalsPage = () => {
@@ -14,6 +15,9 @@ export const ProposalsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [selectedProposal, setSelectedProposal] =
+    useState<ProposalResponseDto | null>(null);
 
   useEffect(() => {
     loadProposals();
@@ -69,17 +73,53 @@ export const ProposalsPage = () => {
     }
   };
 
-  const handleSend = async (id: string) => {
+  const handleOpenPreview = (proposal: ProposalResponseDto) => {
+    setSelectedProposal(proposal);
+    setPreviewModalOpen(true);
+  };
+
+  const handleSendEmail = async (subject: string, body: string) => {
+    if (!selectedProposal) return;
+
     try {
-      setActionLoading(id);
-      const updated = await proposalsApi.send(id);
-      setProposals(proposals.map((p) => (p.id === id ? updated : p)));
+      setActionLoading(selectedProposal.id);
+      const updated = await proposalsApi.send(
+        selectedProposal.id,
+        subject,
+        body
+      );
+      setProposals(
+        proposals.map((p) => (p.id === selectedProposal.id ? updated : p))
+      );
+      setPreviewModalOpen(false);
+      setSelectedProposal(null);
     } catch (err) {
       alert("Failed to send proposal");
       console.error(err);
+      throw err; // Re-throw to let modal handle it
     } finally {
       setActionLoading(null);
     }
+  };
+
+  const getDefaultEmailSubject = (proposal: ProposalResponseDto) => {
+    return `Proposal ${proposal.proposalNumber} - ${proposal.title}`;
+  };
+
+  const getDefaultEmailBody = (proposal: ProposalResponseDto) => {
+    return `Dear ${proposal.clientName},
+
+Please find attached our proposal ${proposal.proposalNumber} for ${
+      proposal.title
+    }.
+
+Project Scope: ${proposal.projectScope || "As discussed"}
+Total Amount: ${formatCurrency(proposal.totalAmount)}
+
+We look forward to working with you on this project.
+
+Best regards,
+Freelance Toolkit`;
   };
 
   const handleDownloadPdf = async (id: string, number: string) => {
@@ -213,7 +253,7 @@ export const ProposalsPage = () => {
               >
                 {proposal.status.toLowerCase() === "draft" && (
                   <button
-                    onClick={() => handleSend(proposal.id)}
+                    onClick={() => handleOpenPreview(proposal)}
                     disabled={actionLoading === proposal.id}
                     className="flt-proposalspage-action-button flt-proposalspage-action-button--send"
                   >
@@ -245,6 +285,22 @@ export const ProposalsPage = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {selectedProposal && (
+        <EmailPreviewModal
+          isOpen={previewModalOpen}
+          onClose={() => {
+            setPreviewModalOpen(false);
+            setSelectedProposal(null);
+          }}
+          onSend={handleSendEmail}
+          defaultSubject={getDefaultEmailSubject(selectedProposal)}
+          defaultBody={getDefaultEmailBody(selectedProposal)}
+          recipientEmail={selectedProposal.clientName} // TODO: Should use actual client email
+          documentType="Proposal"
+          documentNumber={selectedProposal.proposalNumber}
+        />
       )}
     </div>
   );

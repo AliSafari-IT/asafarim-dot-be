@@ -26,6 +26,9 @@ public class CalendarBooking
     public string? MeetingReason { get; set; }
     public string? CancellationReason { get; set; }
     public DateTime? ReminderSentAt { get; set; }
+    public EmailDeliveryStatus? DeliveryStatus { get; set; }
+    public DateTime? LastAttemptAt { get; set; }
+    public int RetryCount { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
