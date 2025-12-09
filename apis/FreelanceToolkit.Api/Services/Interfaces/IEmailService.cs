@@ -11,9 +11,35 @@ public interface IEmailService
         byte[] pdfBytes,
         string recipientEmail
     );
-    Task SendInvoiceAsync(Guid invoiceId, string userId, string recipientEmail);
-    Task SendBookingConfirmationAsync(Guid bookingId, string userId, string recipientEmail);
-    Task SendBookingReminderAsync(Guid bookingId, string userId, string recipientEmail);
+    Task SendInvoiceAsync(
+        string invoiceNumber,
+        string clientName,
+        decimal total,
+        DateTime dueDate,
+        string? notes,
+        byte[] pdfBytes,
+        string recipientEmail
+    );
+    Task SendBookingConfirmationAsync(
+        string title,
+        string clientName,
+        DateTime startTime,
+        DateTime endTime,
+        string? location,
+        string? meetingUrl,
+        string? description,
+        string recipientEmail
+    );
+    Task SendBookingReminderAsync(
+        string title,
+        string clientName,
+        DateTime startTime,
+        int durationMinutes,
+        string? location,
+        string? meetingUrl,
+        string? description,
+        string recipientEmail
+    );
 
     // Auth related emails
     Task SendWelcomeEmailAsync(string email, string name);
@@ -26,5 +52,15 @@ public interface IEmailService
         string htmlBody,
         byte[]? attachment = null,
         string? attachmentName = null
+    );
+
+    // Custom email with plain text body
+    Task SendCustomEmailAsync(
+        string subject,
+        string body,
+        string recipientEmail,
+        string recipientName,
+        byte[] pdfBytes,
+        string pdfFileName
     );
 }

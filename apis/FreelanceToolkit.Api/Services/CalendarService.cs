@@ -11,11 +11,20 @@ public class CalendarService : ICalendarService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<CalendarService> _logger;
 
-    public CalendarService(ApplicationDbContext context, IMapper mapper)
+    public CalendarService(
+        ApplicationDbContext context,
+        IMapper mapper,
+        IEmailService emailService,
+        ILogger<CalendarService> logger
+    )
     {
         _context = context;
         _mapper = mapper;
+        _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task<BookingResponseDto> CreateAsync(CreateBookingDto dto, string userId)
@@ -45,7 +54,60 @@ public class CalendarService : ICalendarService
         _context.CalendarBookings.Add(booking);
         await _context.SaveChangesAsync();
 
-        return await GetByIdAsync(booking.Id, userId);
+        var result = await GetByIdAsync(booking.Id, userId);
+
+        // Send confirmation email if client email is provided
+        if (!string.IsNullOrWhiteSpace(result.ClientEmail))
+        {
+            booking.DeliveryStatus = EmailDeliveryStatus.Pending;
+            booking.LastAttemptAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "[CalendarService] Sending booking confirmation for {BookingId} to {ClientEmail}",
+                booking.Id,
+                result.ClientEmail
+            );
+
+            try
+            {
+                await _emailService.SendBookingConfirmationAsync(
+                    result.Title,
+                    result.ClientName ?? "Client",
+                    result.StartTime,
+                    result.EndTime,
+                    result.Location,
+                    result.MeetingUrl,
+                    result.Description,
+                    result.ClientEmail
+                );
+
+                booking.DeliveryStatus = EmailDeliveryStatus.Sent;
+                booking.LastAttemptAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "[CalendarService] Booking confirmation sent successfully for {BookingId}",
+                    booking.Id
+                );
+            }
+            catch (Exception ex)
+            {
+                booking.DeliveryStatus = EmailDeliveryStatus.Failed;
+                booking.LastAttemptAt = DateTime.UtcNow;
+                booking.RetryCount++;
+                await _context.SaveChangesAsync();
+
+                _logger.LogError(
+                    ex,
+                    "[CalendarService] Failed to send booking confirmation for {BookingId}: {ErrorMessage}",
+                    booking.Id,
+                    ex.Message
+                );
+            }
+        }
+
+        return result;
     }
 
     public async Task<BookingResponseDto> GetByIdAsync(Guid id, string userId)

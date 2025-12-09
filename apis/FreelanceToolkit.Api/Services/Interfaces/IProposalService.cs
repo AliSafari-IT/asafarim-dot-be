@@ -13,7 +13,12 @@ public interface IProposalService
     );
     Task<ProposalResponseDto> UpdateAsync(Guid id, UpdateProposalDto dto, string userId);
     Task DeleteAsync(Guid id, string userId);
-    Task<ProposalResponseDto> SendAsync(Guid id, string userId);
+    Task<ProposalResponseDto> SendAsync(
+        Guid id,
+        string userId,
+        string? customSubject = null,
+        string? customBody = null
+    );
     Task<ProposalResponseDto> AcceptAsync(Guid id, string userId);
     Task<ProposalResponseDto> RejectAsync(Guid id, string userId);
     Task<ProposalResponseDto> CreateVersionAsync(Guid id, string userId);

@@ -12,11 +12,23 @@ public class InvoiceService : IInvoiceService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IEmailService _emailService;
+    private readonly IPdfService _pdfService;
+    private readonly ILogger<InvoiceService> _logger;
 
-    public InvoiceService(ApplicationDbContext context, IMapper mapper)
+    public InvoiceService(
+        ApplicationDbContext context,
+        IMapper mapper,
+        IEmailService emailService,
+        IPdfService pdfService,
+        ILogger<InvoiceService> logger
+    )
     {
         _context = context;
         _mapper = mapper;
+        _emailService = emailService;
+        _pdfService = pdfService;
+        _logger = logger;
     }
 
     public async Task<InvoiceResponseDto> CreateAsync(CreateInvoiceDto dto, string userId)
@@ -169,6 +181,74 @@ public class InvoiceService : IInvoiceService
         invoice.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        return _mapper.Map<InvoiceResponseDto>(invoice);
+    }
+
+    public async Task<InvoiceResponseDto> SendAsync(Guid id, string userId)
+    {
+        var invoice = await _context
+            .Invoices.Include(i => i.Client)
+            .Include(i => i.LineItems)
+            .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+
+        if (invoice == null)
+            throw new KeyNotFoundException($"Invoice with ID {id} not found");
+
+        if (invoice.Status != InvoiceStatus.Draft)
+            throw new InvalidOperationException("Only draft invoices can be sent");
+
+        invoice.Status = InvoiceStatus.Sent;
+        invoice.SentAt = DateTime.UtcNow;
+        invoice.UpdatedAt = DateTime.UtcNow;
+        invoice.DeliveryStatus = EmailDeliveryStatus.Pending;
+        invoice.LastAttemptAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "[InvoiceService] Sending invoice {InvoiceNumber} to client {ClientEmail}",
+            invoice.InvoiceNumber,
+            invoice.Client.Email
+        );
+
+        try
+        {
+            var pdfBytes = await _pdfService.GenerateInvoicePdfAsync(id, userId);
+
+            await _emailService.SendInvoiceAsync(
+                invoice.InvoiceNumber,
+                invoice.Client.Name,
+                invoice.Total,
+                invoice.DueDate,
+                invoice.Notes,
+                pdfBytes,
+                invoice.Client.Email
+            );
+
+            invoice.DeliveryStatus = EmailDeliveryStatus.Sent;
+            invoice.LastAttemptAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "[InvoiceService] Invoice {InvoiceNumber} sent successfully",
+                invoice.InvoiceNumber
+            );
+        }
+        catch (Exception ex)
+        {
+            invoice.DeliveryStatus = EmailDeliveryStatus.Failed;
+            invoice.LastAttemptAt = DateTime.UtcNow;
+            invoice.RetryCount++;
+            await _context.SaveChangesAsync();
+
+            _logger.LogError(
+                ex,
+                "[InvoiceService] Failed to send invoice {InvoiceNumber}: {ErrorMessage}",
+                invoice.InvoiceNumber,
+                ex.Message
+            );
+        }
 
         return _mapper.Map<InvoiceResponseDto>(invoice);
     }

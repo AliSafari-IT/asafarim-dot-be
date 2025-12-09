@@ -24,6 +24,9 @@ public class Proposal
     public ProposalStatus Status { get; set; } = ProposalStatus.Draft;
     public string? PublicLink { get; set; }
     public DateTime? SentAt { get; set; }
+    public EmailDeliveryStatus? DeliveryStatus { get; set; }
+    public DateTime? LastAttemptAt { get; set; }
+    public int RetryCount { get; set; }
     public DateTime? ViewedAt { get; set; }
     public DateTime? AcceptedAt { get; set; }
     public DateTime? RejectedAt { get; set; }

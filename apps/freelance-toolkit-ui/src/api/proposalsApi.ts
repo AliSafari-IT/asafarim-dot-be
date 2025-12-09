@@ -55,10 +55,13 @@ export const proposalsApi = {
     },
 
     /**
-     * Send a proposal to client
+     * Send a proposal to client with optional custom email content
      */
-    send: async (id: string): Promise<ProposalResponseDto> => {
-        const response = await apiClient.post<ProposalResponseDto>(`/proposals/${id}/send`);
+    send: async (id: string, customSubject?: string, customBody?: string): Promise<ProposalResponseDto> => {
+        const response = await apiClient.post<ProposalResponseDto>(
+            `/proposals/${id}/send`,
+            customSubject && customBody ? { customSubject, customBody } : null
+        );
         return response.data;
     },
 

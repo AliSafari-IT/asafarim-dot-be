@@ -170,6 +170,31 @@ public class InvoicesController : ControllerBase
     }
 
     /// <summary>
+    /// Send an invoice to client
+    /// </summary>
+    [HttpPost("{id}/send")]
+    [ProducesResponseType(typeof(InvoiceResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<InvoiceResponseDto>> Send(Guid id)
+    {
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var invoice = await _invoiceService.SendAsync(id, userId);
+            return Ok(invoice);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = $"Invoice with ID {id} not found" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Generate HTML preview of invoice
     /// </summary>
     [HttpGet("{id}/html")]

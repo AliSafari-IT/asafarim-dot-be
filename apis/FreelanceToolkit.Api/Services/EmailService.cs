@@ -9,23 +9,11 @@ namespace FreelanceToolkit.Api.Services;
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
-    private readonly IInvoiceService _invoiceService;
-    private readonly ICalendarService _calendarService;
-    private readonly IPdfService _pdfService;
     private readonly ILogger<EmailService> _logger;
 
-    public EmailService(
-        IConfiguration configuration,
-        IInvoiceService invoiceService,
-        ICalendarService calendarService,
-        IPdfService pdfService,
-        ILogger<EmailService> logger
-    )
+    public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
     {
         _configuration = configuration;
-        _invoiceService = invoiceService;
-        _calendarService = calendarService;
-        _pdfService = pdfService;
         _logger = logger;
     }
 
@@ -76,11 +64,16 @@ public class EmailService : IEmailService
         await SendMimeMessageAsync(message);
     }
 
-    public async Task SendInvoiceAsync(Guid invoiceId, string userId, string recipientEmail)
+    public async Task SendInvoiceAsync(
+        string invoiceNumber,
+        string clientName,
+        decimal total,
+        DateTime dueDate,
+        string? notes,
+        byte[] pdfBytes,
+        string recipientEmail
+    )
     {
-        var invoice = await _invoiceService.GetByIdAsync(invoiceId, userId);
-        var pdfBytes = await _pdfService.GenerateInvoicePdfAsync(invoiceId, userId);
-
         var message = new MimeMessage();
         message.From.Add(
             new MailboxAddress(
@@ -88,8 +81,8 @@ public class EmailService : IEmailService
                 _configuration["Email:FromAddress"] ?? "noreply@example.com"
             )
         );
-        message.To.Add(new MailboxAddress(invoice.ClientName, recipientEmail));
-        message.Subject = $"Invoice {invoice.InvoiceNumber}";
+        message.To.Add(new MailboxAddress(clientName, recipientEmail));
+        message.Subject = $"Invoice {invoiceNumber}";
 
         var bodyBuilder = new BodyBuilder
         {
@@ -97,20 +90,20 @@ public class EmailService : IEmailService
                 $@"
                 <html>
                 <body style='font-family: Arial, sans-serif;'>
-                    <h2>Invoice {invoice.InvoiceNumber}</h2>
-                    <p>Dear {invoice.ClientName},</p>
+                    <h2>Invoice {invoiceNumber}</h2>
+                    <p>Dear {clientName},</p>
                     <p>Please find attached your invoice.</p>
-                    <p><strong>Amount Due:</strong> ${invoice.Total:N2}</p>
-                    <p><strong>Due Date:</strong> {invoice.DueDate:MMMM dd, yyyy}</p>
-                    {(!string.IsNullOrWhiteSpace(invoice.PaymentInstructions) ? $"<h3>Payment Instructions:</h3><p>{invoice.PaymentInstructions}</p>" : "")}
+                    <p><strong>Amount Due:</strong> ${total:N2}</p>
+                    <p><strong>Due Date:</strong> {dueDate:MMMM dd, yyyy}</p>
+                    {(!string.IsNullOrWhiteSpace(notes) ? $"<h3>Notes:</h3><p>{notes}</p>" : "")}
                     <p>Thank you for your business!</p>
-                    <p>Best regards</p>
+                    <p>Best regards,<br/>ASafariM Digital</p>
                 </body>
                 </html>",
         };
 
         bodyBuilder.Attachments.Add(
-            $"Invoice-{invoice.InvoiceNumber}.pdf",
+            $"Invoice-{invoiceNumber}.pdf",
             pdfBytes,
             new ContentType("application", "pdf")
         );
@@ -120,12 +113,17 @@ public class EmailService : IEmailService
     }
 
     public async Task SendBookingConfirmationAsync(
-        Guid bookingId,
-        string userId,
+        string title,
+        string clientName,
+        DateTime startTime,
+        DateTime endTime,
+        string? location,
+        string? meetingUrl,
+        string? description,
         string recipientEmail
     )
     {
-        var booking = await _calendarService.GetByIdAsync(bookingId, userId);
+        var durationMinutes = (int)(endTime - startTime).TotalMinutes;
 
         var message = new MimeMessage();
         message.From.Add(
@@ -134,8 +132,8 @@ public class EmailService : IEmailService
                 _configuration["Email:FromAddress"] ?? "noreply@example.com"
             )
         );
-        message.To.Add(new MailboxAddress(booking.ClientName ?? "Client", recipientEmail));
-        message.Subject = $"Meeting Confirmation: {booking.Title}";
+        message.To.Add(new MailboxAddress(clientName, recipientEmail));
+        message.Subject = $"Meeting Confirmation: {title}";
 
         var bodyBuilder = new BodyBuilder
         {
@@ -144,18 +142,18 @@ public class EmailService : IEmailService
                 <html>
                 <body style='font-family: Arial, sans-serif;'>
                     <h2>Meeting Confirmation</h2>
-                    <p>Dear {booking.ClientName ?? "Client"},</p>
+                    <p>Dear {clientName},</p>
                     <p>This is to confirm your upcoming meeting:</p>
                     <ul>
-                        <li><strong>Title:</strong> {booking.Title}</li>
-                        <li><strong>Date & Time:</strong> {booking.StartTime:MMMM dd, yyyy 'at' h:mm tt}</li>
-                        <li><strong>Duration:</strong> {booking.DurationMinutes} minutes</li>
-                        {(!string.IsNullOrWhiteSpace(booking.Location) ? $"<li><strong>Location:</strong> {booking.Location}</li>" : "")}
-                        {(!string.IsNullOrWhiteSpace(booking.MeetingUrl) ? $"<li><strong>Meeting URL:</strong> <a href='{booking.MeetingUrl}'>{booking.MeetingUrl}</a></li>" : "")}
+                        <li><strong>Title:</strong> {title}</li>
+                        <li><strong>Date & Time:</strong> {startTime:MMMM dd, yyyy 'at' h:mm tt}</li>
+                        <li><strong>Duration:</strong> {durationMinutes} minutes</li>
+                        {(!string.IsNullOrWhiteSpace(location) ? $"<li><strong>Location:</strong> {location}</li>" : "")}
+                        {(!string.IsNullOrWhiteSpace(meetingUrl) ? $"<li><strong>Meeting URL:</strong> <a href='{meetingUrl}'>{meetingUrl}</a></li>" : "")}
                     </ul>
-                    {(!string.IsNullOrWhiteSpace(booking.Description) ? $"<p><strong>Description:</strong><br/>{booking.Description}</p>" : "")}
+                    {(!string.IsNullOrWhiteSpace(description) ? $"<p><strong>Description:</strong><br/>{description}</p>" : "")}
                     <p>Looking forward to meeting with you!</p>
-                    <p>Best regards</p>
+                    <p>Best regards,<br/>ASafariM Digital</p>
                 </body>
                 </html>",
         };
@@ -165,10 +163,17 @@ public class EmailService : IEmailService
         await SendMimeMessageAsync(message);
     }
 
-    public async Task SendBookingReminderAsync(Guid bookingId, string userId, string recipientEmail)
+    public async Task SendBookingReminderAsync(
+        string title,
+        string clientName,
+        DateTime startTime,
+        int durationMinutes,
+        string? location,
+        string? meetingUrl,
+        string? description,
+        string recipientEmail
+    )
     {
-        var booking = await _calendarService.GetByIdAsync(bookingId, userId);
-
         var message = new MimeMessage();
         message.From.Add(
             new MailboxAddress(
@@ -176,8 +181,8 @@ public class EmailService : IEmailService
                 _configuration["Email:FromAddress"] ?? "noreply@example.com"
             )
         );
-        message.To.Add(new MailboxAddress(booking.ClientName ?? "Client", recipientEmail));
-        message.Subject = $"Reminder: {booking.Title} - Tomorrow";
+        message.To.Add(new MailboxAddress(clientName, recipientEmail));
+        message.Subject = $"Reminder: {title} - Tomorrow";
 
         var bodyBuilder = new BodyBuilder
         {
@@ -186,14 +191,14 @@ public class EmailService : IEmailService
                 <html>
                 <body style='font-family: Arial, sans-serif;'>
                     <h2>Meeting Reminder</h2>
-                    <p>Dear {booking.ClientName ?? "Client"},</p>
+                    <p>Dear {clientName},</p>
                     <p>This is a friendly reminder about our upcoming meeting:</p>
                     <ul>
-                        <li><strong>Title:</strong> {booking.Title}</li>
-                        <li><strong>Date & Time:</strong> {booking.StartTime:MMMM dd, yyyy 'at' h:mm tt}</li>
-                        <li><strong>Duration:</strong> {booking.DurationMinutes} minutes</li>
-                        {(!string.IsNullOrWhiteSpace(booking.Location) ? $"<li><strong>Location:</strong> {booking.Location}</li>" : "")}
-                        {(!string.IsNullOrWhiteSpace(booking.MeetingUrl) ? $"<li><strong>Meeting URL:</strong> <a href='{booking.MeetingUrl}'>{booking.MeetingUrl}</a></li>" : "")}
+                        <li><strong>Title:</strong> {title}</li>
+                        <li><strong>Date & Time:</strong> {startTime:MMMM dd, yyyy 'at' h:mm tt}</li>
+                        <li><strong>Duration:</strong> {durationMinutes} minutes</li>
+                        {(!string.IsNullOrWhiteSpace(location) ? $"<li><strong>Location:</strong> {location}</li>" : "")}
+                        {(!string.IsNullOrWhiteSpace(meetingUrl) ? $"<li><strong>Meeting URL:</strong> <a href='{meetingUrl}'>{meetingUrl}</a></li>" : "")}
                     </ul>
                     <p>See you soon!</p>
                     <p>Best regards</p>
@@ -294,6 +299,45 @@ public class EmailService : IEmailService
         {
             bodyBuilder.Attachments.Add(attachmentName, attachment);
         }
+
+        message.Body = bodyBuilder.ToMessageBody();
+
+        await SendMimeMessageAsync(message);
+    }
+
+    public async Task SendCustomEmailAsync(
+        string subject,
+        string body,
+        string recipientEmail,
+        string recipientName,
+        byte[] pdfBytes,
+        string pdfFileName
+    )
+    {
+        var message = new MimeMessage();
+        message.From.Add(
+            new MailboxAddress(
+                _configuration["Email:FromName"] ?? "Freelance Toolkit",
+                _configuration["Email:FromAddress"] ?? "noreply@example.com"
+            )
+        );
+        message.To.Add(new MailboxAddress(recipientName, recipientEmail));
+        message.Subject = subject;
+
+        var bodyBuilder = new BodyBuilder
+        {
+            // Convert plain text body to HTML with line breaks
+            HtmlBody =
+                $@"
+                <html>
+                <body style='font-family: Arial, sans-serif; white-space: pre-wrap;'>
+                    {System.Net.WebUtility.HtmlEncode(body).Replace("\n", "<br>")}
+                </body>
+                </html>",
+        };
+
+        // Attach PDF
+        bodyBuilder.Attachments.Add(pdfFileName, pdfBytes);
 
         message.Body = bodyBuilder.ToMessageBody();
 
