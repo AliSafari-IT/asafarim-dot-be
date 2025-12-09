@@ -1,0 +1,204 @@
+/* Clients Page Styles */
+
+.flt-clientspage-container {
+  padding: 0;
+}
+
+.flt-clientspage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.flt-clientspage-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.flt-clientspage-search-container {
+  margin-bottom: var(--spacing-lg);
+}
+
+.flt-clientspage-search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-3);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-base);
+}
+
+.flt-clientspage-search-input:focus {
+  outline: none;
+  border-color: var(--focus-border-color);
+  box-shadow: 0 0 0 3px var(--focus-color);
+}
+
+.flt-clientspage-loading {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-muted);
+}
+
+.flt-clientspage-error {
+  padding: var(--space-4);
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--error-color);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--error-border-color);
+}
+
+.flt-clientspage-empty {
+  text-align: center;
+  padding: var(--space-12);
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.flt-clientspage-empty-icon {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-4);
+}
+
+.flt-clientspage-empty-title {
+  margin-top: 0;
+  color: var(--color-text);
+}
+
+.flt-clientspage-empty-text {
+  color: var(--text-muted);
+}
+
+.flt-clientspage-empty-button {
+  margin-top: var(--space-4);
+  background-color: var(--color-brand);
+  color: var(--color-primary-inverse);
+  border: none;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: var(--text-base);
+  transition: opacity 0.2s;
+}
+
+.flt-clientspage-empty-button:hover {
+  opacity: 0.9;
+}
+
+.flt-clientspage-table-container {
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.flt-clientspage-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.flt-clientspage-table-header {
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.flt-clientspage-table-header-cell {
+  padding: var(--space-4);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.flt-clientspage-table-header-cell--actions {
+  text-align: right;
+}
+
+.flt-clientspage-table-row {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+}
+
+.flt-clientspage-table-row:hover {
+  background-color: var(--bg-hover-color);
+}
+
+.flt-clientspage-table-cell {
+  padding: var(--space-4);
+}
+
+.flt-clientspage-table-cell--actions {
+  text-align: right;
+}
+
+.flt-clientspage-client-name {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.flt-clientspage-client-company {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-top: var(--space-1);
+}
+
+.flt-clientspage-client-email {
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+
+.flt-clientspage-client-phone {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-top: var(--space-1);
+}
+
+.flt-clientspage-client-activity {
+  font-size: var(--text-sm);
+  display: flex;
+  gap: var(--gap-sm);
+  color: var(--text-muted);
+}
+
+.flt-clientspage-client-revenue {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.flt-clientspage-action-button {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  padding: var(--space-2);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  color: var(--color-text);
+  transition: all 0.2s;
+  font-size: var(--text-base);
+}
+
+.flt-clientspage-action-button:hover {
+  background-color: var(--bg-hover-color);
+  border-color: var(--border-hover-color);
+}
+
+.flt-clientspage-action-button--edit {
+  margin-right: var(--gap-sm);
+}
+
+.flt-clientspage-action-button--delete {
+  color: var(--error-color);
+}
+
+.flt-clientspage-action-button--delete:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: var(--error-border-color);
+}

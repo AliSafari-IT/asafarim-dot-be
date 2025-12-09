@@ -1,0 +1,254 @@
+/* Client Form Page Styles */
+
+.flt-clientform-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.flt-clientform-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  gap: var(--gap-md);
+}
+
+.flt-clientform-back-button {
+  background: none;
+  border: none;
+  font-size: var(--text-2xl);
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.flt-clientform-back-button:hover {
+  color: var(--color-text);
+}
+
+.flt-clientform-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.flt-clientform-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.flt-clientform-error {
+  padding: var(--space-4);
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--error-color);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--error-border-color);
+}
+
+.flt-clientform-section {
+  padding: var(--spacing-lg);
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.flt-clientform-section-title {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.flt-clientform-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-md);
+}
+
+.flt-clientform-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--gap-md);
+}
+
+.flt-clientform-grid-full {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.flt-clientform-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.flt-clientform-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.flt-clientform-label--required::after {
+  content: " *";
+  color: var(--error-color);
+}
+
+.flt-clientform-input {
+  padding: var(--space-3);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-base);
+  transition: border-color 0.2s;
+}
+
+.flt-clientform-input:focus {
+  outline: none;
+  border-color: var(--focus-border-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.flt-clientform-textarea {
+  padding: var(--space-3);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-base);
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.flt-clientform-textarea:focus {
+  outline: none;
+  border-color: var(--focus-border-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.flt-clientform-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-xs);
+  padding: var(--space-2);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  min-height: 44px;
+  align-items: center;
+}
+
+.flt-clientform-tag {
+  background-color: var(--bg-tertiary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--gap-xs);
+  color: var(--color-text);
+}
+
+.flt-clientform-tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: var(--text-base);
+  transition: color 0.2s;
+}
+
+.flt-clientform-tag-remove:hover {
+  color: var(--error-color);
+}
+
+.flt-clientform-tag-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--color-text);
+  flex: 1;
+  min-width: 100px;
+  font-family: inherit;
+  font-size: var(--text-base);
+}
+
+.flt-clientform-tag-input::placeholder {
+  color: var(--text-muted);
+}
+
+.flt-clientform-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--gap-md);
+  margin-top: var(--spacing-md);
+}
+
+.flt-clientform-button {
+  padding: var(--space-3) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  font-family: inherit;
+  font-size: var(--text-base);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.flt-clientform-button--cancel {
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+.flt-clientform-button--cancel:hover {
+  background-color: var(--bg-hover-color);
+  border-color: var(--border-hover-color);
+}
+
+.flt-clientform-button--submit {
+  border: none;
+  background-color: var(--color-brand);
+  color: var(--color-primary-inverse);
+}
+
+.flt-clientform-button--submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.flt-clientform-button--submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.flt-clientform-loading {
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* Field Error Styles */
+
+.flt-clientform-input--error,
+.flt-clientform-textarea--error {
+  border-color: var(--color-error-500, #ef4444) !important;
+  background-color: var(--color-error-50, rgba(239, 68, 68, 0.05)) !important;
+}
+
+.flt-clientform-input--error:focus,
+.flt-clientform-textarea--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.flt-clientform-field-error {
+  color: var(--color-error-700, #b91c1c);
+  font-size: var(--font-size-sm, 0.875rem);
+  margin-top: var(--spacing-xs, 0.25rem);
+}

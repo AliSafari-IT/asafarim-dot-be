@@ -22,3 +22,4 @@ export { User, type UserProps} from './User';
 export * from './PaginatedGrid';
 export * from './ProjectCard';
 export * from './ConfirmDialog';
+export * from './FormErrorBoundary';
