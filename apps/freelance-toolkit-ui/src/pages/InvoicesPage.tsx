@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
+=======
+>>>>>>> 2cbbfa3 (```)
 import { invoicesApi } from "../api/invoicesApi";
 import { FormErrorBoundary } from "@asafarim/shared-ui-react";
 import EmailPreviewModal from "../components/EmailPreviewModal";
@@ -7,13 +10,19 @@ import type { InvoiceResponseDto } from "../types";
 import "../styles/pages/invoices.css";
 
 export default function InvoicesPage() {
+<<<<<<< HEAD
   const navigate = useNavigate();
+=======
+>>>>>>> 2cbbfa3 (```)
   const [invoices, setInvoices] = useState<InvoiceResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState<string | null>(null);
+<<<<<<< HEAD
   const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+=======
+>>>>>>> 2cbbfa3 (```)
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] =
@@ -48,7 +57,11 @@ export default function InvoicesPage() {
       setErrors({});
       setSuccessMessage(null);
 
+<<<<<<< HEAD
       await invoicesApi.send(selectedInvoice.id, subject, body);
+=======
+      await invoicesApi.send(selectedInvoice.id);
+>>>>>>> 2cbbfa3 (```)
 
       setSuccessMessage(
         `Invoice ${selectedInvoice.invoiceNumber} sent successfully!`
@@ -94,7 +107,10 @@ Freelance Toolkit`;
 
   const handleDownloadPdf = async (id: string, invoiceNumber: string) => {
     try {
+<<<<<<< HEAD
       setDownloadingPdf(id);
+=======
+>>>>>>> 2cbbfa3 (```)
       const blob = await invoicesApi.downloadPdf(id);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -106,6 +122,7 @@ Freelance Toolkit`;
       document.body.removeChild(a);
     } catch (error: any) {
       setErrors({ general: "Failed to download PDF" });
+<<<<<<< HEAD
     } finally {
       setDownloadingPdf(null);
     }
@@ -123,6 +140,8 @@ Freelance Toolkit`;
       setErrors({ general: "Failed to delete invoice" });
     } finally {
       setDeletingId(null);
+=======
+>>>>>>> 2cbbfa3 (```)
     }
   };
 
@@ -219,6 +238,7 @@ Freelance Toolkit`;
                           </button>
                         )}
                         <button
+<<<<<<< HEAD
                           className="flt-invoices-btn flt-invoices-btn--view"
                           onClick={() =>
                             window.open(
@@ -236,10 +256,13 @@ Freelance Toolkit`;
                           Edit
                         </button>
                         <button
+=======
+>>>>>>> 2cbbfa3 (```)
                           className="flt-invoices-btn flt-invoices-btn--download"
                           onClick={() =>
                             handleDownloadPdf(invoice.id, invoice.invoiceNumber)
                           }
+<<<<<<< HEAD
                           disabled={downloadingPdf === invoice.id}
                         >
                           {downloadingPdf === invoice.id
@@ -252,6 +275,10 @@ Freelance Toolkit`;
                           disabled={deletingId === invoice.id}
                         >
                           {deletingId === invoice.id ? "Deleting..." : "Delete"}
+=======
+                        >
+                          PDF
+>>>>>>> 2cbbfa3 (```)
                         </button>
                       </div>
                     </td>
