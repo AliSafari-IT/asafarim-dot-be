@@ -1,3 +1,4 @@
+// apps/web/src/pages/LandingPage.tsx
 import { useEffect, useState, type FormEvent } from "react";
 import "./LandingPage.css";
 import { Link } from "react-router-dom";
@@ -463,7 +464,7 @@ export default function LandingPage() {
                   <div className="landing-project-tags">
                     {project.tags.map((tag) => (
                       <span key={tag} className="landing-tag">
-                        {tag} 
+                        {tag}
                       </span>
                     ))}
                   </div>
@@ -516,7 +517,10 @@ export default function LandingPage() {
             {services.map((service) => (
               <article key={service.id} className="landing-service-card">
                 <span className="landing-service-icon">{service.icon}</span>
-                <h3 className="landing-service-title"> {t(`landing.services.items.${service.id}.title`)}</h3>
+                <h3 className="landing-service-title">
+                  {" "}
+                  {t(`landing.services.items.${service.id}.title`)}
+                </h3>
                 <p className="landing-service-description">
                   {t(`landing.services.items.${service.id}.description`)}
                 </p>

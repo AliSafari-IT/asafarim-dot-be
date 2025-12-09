@@ -1,0 +1,23 @@
+{
+  "name": "@asafarim/freelance-toolkit-api",
+  "version": "1.0.0",
+  "description": "Freelance Toolkit Api",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "prestart": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-5107.ps1",
+    "start": "dotnet run watch",
+    "api": "pnpm run start",
+    "app": "concurrently \"pnpm api\" \"cd ../java-notes-ui && pnpm run start\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.0",
+    "kill-port": "^2.0.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^16.6.1"
+  }
+}

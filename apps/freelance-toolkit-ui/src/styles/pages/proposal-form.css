@@ -1,0 +1,286 @@
+/* Proposal Form Page Styles */
+
+.flt-proposalform-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.flt-proposalform-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  gap: var(--gap-md);
+}
+
+.flt-proposalform-back-button {
+  background: none;
+  border: none;
+  font-size: var(--text-2xl);
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0;
+}
+
+.flt-proposalform-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.flt-proposalform-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.flt-proposalform-error {
+  padding: var(--space-4);
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--error-color);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--error-border-color);
+}
+
+.flt-proposalform-section {
+  padding: var(--spacing-lg);
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.flt-proposalform-section-title {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.flt-proposalform-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-md);
+}
+
+.flt-proposalform-grid-full {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.flt-proposalform-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.flt-proposalform-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.flt-proposalform-label--required::after {
+  content: " *";
+  color: var(--error-color);
+}
+
+.flt-proposalform-input,
+.flt-proposalform-select,
+.flt-proposalform-textarea {
+  padding: var(--space-3);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-base);
+}
+
+.flt-proposalform-input:focus,
+.flt-proposalform-select:focus,
+.flt-proposalform-textarea:focus {
+  outline: none;
+  border-color: var(--focus-border-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.flt-proposalform-textarea {
+  resize: vertical;
+}
+
+.flt-proposalform-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  margin-top: var(--spacing-md);
+}
+
+.flt-proposalform-table-header {
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.flt-proposalform-table-header-cell {
+  padding: var(--space-3);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.flt-proposalform-table-row {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.flt-proposalform-table-row:hover {
+  background-color: var(--bg-hover-color);
+}
+
+.flt-proposalform-table-cell {
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.flt-proposalform-table-cell-input {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-primary);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-sm);
+}
+
+.flt-proposalform-table-cell-input:focus {
+  outline: none;
+  border-color: var(--focus-border-color);
+}
+
+.flt-proposalform-add-line-item {
+  margin-top: var(--spacing-md);
+  padding: var(--space-3) var(--spacing-md);
+  border: 1px dashed var(--border-color);
+  background-color: transparent;
+  color: var(--color-brand);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.flt-proposalform-add-line-item:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-color: var(--color-brand);
+}
+
+.flt-proposalform-remove-button {
+  background: none;
+  border: none;
+  color: var(--error-color);
+  cursor: pointer;
+  font-size: var(--text-lg);
+  padding: 0;
+}
+
+.flt-proposalform-totals {
+  padding: var(--spacing-md);
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+  margin-top: var(--spacing-md);
+}
+
+.flt-proposalform-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.flt-proposalform-total-label {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.flt-proposalform-total-value {
+  font-weight: 700;
+  color: var(--color-text);
+  font-size: var(--text-lg);
+}
+
+.flt-proposalform-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--gap-md);
+  margin-top: var(--spacing-md);
+}
+
+.flt-proposalform-button {
+  padding: var(--space-3) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.flt-proposalform-button--cancel {
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+.flt-proposalform-button--cancel:hover {
+  background-color: var(--bg-hover-color);
+}
+
+.flt-proposalform-button--submit {
+  border: none;
+  background-color: var(--color-brand);
+  color: var(--color-primary-inverse);
+}
+
+.flt-proposalform-button--submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.flt-proposalform-button--submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* -----------------------------------------------------------------------------
+   Field Error Styles
+   ----------------------------------------------------------------------------- */
+
+.flt-proposalform-input--error,
+.flt-proposalform-select--error,
+.flt-proposalform-textarea--error {
+  border-color: var(--color-error-500, #ef4444) !important;
+  background-color: var(--color-error-50, rgba(239, 68, 68, 0.05)) !important;
+}
+
+.flt-proposalform-input--error:focus,
+.flt-proposalform-select--error:focus,
+.flt-proposalform-textarea--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.flt-proposalform-field-error {
+  color: var(--color-error-700, #b91c1c);
+  font-size: var(--font-size-sm, 0.875rem);
+  margin-top: var(--spacing-xs, 0.25rem);
+}
+
+.flt-proposalform-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-muted);
+}
+
+.flt-proposalform-line-items {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}

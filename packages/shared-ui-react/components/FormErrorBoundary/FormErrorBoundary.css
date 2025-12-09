@@ -1,0 +1,102 @@
+/* =============================================================================
+   FormErrorBoundary Component Styles
+   Uses ASafariM Design Tokens exclusively - no hardcoded values
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Error Banner Styles
+   ----------------------------------------------------------------------------- */
+
+.form-error-boundary__banner {
+  background: var(--color-error-50);
+  border: 1px solid var(--color-error-500);
+  color: var(--color-error-700);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  opacity: 0;
+  animation: form-error-boundary-fade-in var(--transition-normal) ease-out forwards;
+}
+
+@keyframes form-error-boundary-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-error-boundary__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.form-error-boundary__title {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  margin: 0;
+  color: var(--color-error-700);
+}
+
+.form-error-boundary__list {
+  margin: 0;
+  padding-left: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+}
+
+.form-error-boundary__list li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.form-error-boundary__list li:last-child {
+  margin-bottom: 0;
+}
+
+.form-error-boundary__dismiss {
+  background: transparent;
+  border: none;
+  color: var(--color-error-700);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.form-error-boundary__dismiss:hover {
+  background: var(--color-error-100);
+}
+
+.form-error-boundary__dismiss:focus {
+  outline: 2px solid var(--color-error-500);
+  outline-offset: 2px;
+}
+
+/* -----------------------------------------------------------------------------
+   Field Error Styles (for use in forms)
+   ----------------------------------------------------------------------------- */
+
+.form-field--error input,
+.form-field--error select,
+.form-field--error textarea {
+  border-color: var(--color-error-500) !important;
+  background-color: var(--color-error-50) !important;
+}
+
+.form-field__error-message {
+  color: var(--color-error-700);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+}
