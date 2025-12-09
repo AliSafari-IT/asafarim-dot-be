@@ -464,7 +464,7 @@ export default function LandingPage() {
                   <div className="landing-project-tags">
                     {project.tags.map((tag) => (
                       <span key={tag} className="landing-tag">
-                        {tag} 
+                        {tag}
                       </span>
                     ))}
                   </div>
