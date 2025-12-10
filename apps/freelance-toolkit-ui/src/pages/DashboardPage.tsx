@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { dashboardApi, type DashboardStatsDto } from "../api";
+import { dashboardApi, calendarApi, type DashboardStatsDto } from "../api";
 import { formatCurrency, formatRelativeTime } from "../utils/apiHelpers";
+import { formatDurationCompact } from "../utils/dateUtils";
+import DashboardCard from "../components/DashboardCard";
+import type { BookingResponseDto } from "../types";
 import "../styles/pages/dashboard.css";
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStatsDto | null>(null);
+  const [upcomingBookings, setUpcomingBookings] = useState<
+    BookingResponseDto[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadStats();
+    loadUpcomingBookings();
   }, []);
 
   const loadStats = async () => {
@@ -25,6 +32,15 @@ export const DashboardPage = () => {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadUpcomingBookings = async () => {
+    try {
+      const bookings = await calendarApi.getDashboardUpcoming(5);
+      setUpcomingBookings(bookings);
+    } catch (err) {
+      console.error("Failed to load upcoming bookings:", err);
     }
   };
 
@@ -106,103 +122,106 @@ export const DashboardPage = () => {
       {/* Recent Activity */}
       <div className="flt-dashboard-section">
         {/* Recent Invoices */}
-        <div className="flt-dashboard-activity-list">
-          <h3 className="flt-dashboard-section-title">Recent Invoices</h3>
-          <div>
-            {stats.recentInvoices.length === 0 ? (
-              <div className="flt-dashboard-empty">No recent invoices</div>
-            ) : (
-              stats.recentInvoices.map((invoice) => (
-                <div
-                  key={invoice.id}
-                  onClick={() => navigate(`/invoices/${invoice.id}`)}
-                  className="flt-dashboard-activity-item"
-                >
-                  <div>
-                    <div className="flt-dashboard-activity-title">
-                      {invoice.invoiceNumber}
-                    </div>
-                    <div className="flt-dashboard-activity-description">
-                      {invoice.clientName}
-                    </div>
+        <DashboardCard
+          title="Recent Invoices"
+          icon="📄"
+          action={{ label: "View All", href: "/invoices" }}
+        >
+          {stats.recentInvoices.length === 0 ? (
+            <div className="flt-dashboard-empty">No recent invoices</div>
+          ) : (
+            stats.recentInvoices.map((invoice) => (
+              <div
+                key={invoice.id}
+                onClick={() => navigate(`/invoices/${invoice.id}`)}
+                className="flt-dashboard-activity-item"
+              >
+                <div>
+                  <div className="flt-dashboard-activity-title">
+                    {invoice.invoiceNumber}
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontWeight: 600 }}>
-                      {formatCurrency(invoice.total)}
-                    </div>
-                    <div className="flt-dashboard-activity-time">
-                      {formatRelativeTime(invoice.createdAt)}
-                    </div>
+                  <div className="flt-dashboard-activity-description">
+                    {invoice.clientName}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontWeight: 600 }}>
+                    {formatCurrency(invoice.total)}
+                  </div>
+                  <div className="flt-dashboard-activity-time">
+                    {formatRelativeTime(invoice.createdAt)}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </DashboardCard>
 
         {/* Recent Proposals */}
-        <div className="flt-dashboard-activity-list">
-          <h3 className="flt-dashboard-section-title">Recent Proposals</h3>
-          <div>
-            {stats.recentProposals.length === 0 ? (
-              <div className="flt-dashboard-empty">No recent proposals</div>
-            ) : (
-              stats.recentProposals.map((proposal) => (
-                <div
-                  key={proposal.id}
-                  onClick={() => navigate(`/proposals/${proposal.id}`)}
-                  className="flt-dashboard-activity-item"
-                >
-                  <div>
-                    <div className="flt-dashboard-activity-title">
-                      {proposal.proposalNumber}
-                    </div>
-                    <div className="flt-dashboard-activity-description">
-                      {proposal.clientName}
-                    </div>
+        <DashboardCard
+          title="Recent Proposals"
+          icon="📋"
+          action={{ label: "View All", href: "/proposals" }}
+        >
+          {stats.recentProposals.length === 0 ? (
+            <div className="flt-dashboard-empty">No recent proposals</div>
+          ) : (
+            stats.recentProposals.map((proposal) => (
+              <div
+                key={proposal.id}
+                onClick={() => navigate(`/proposals/${proposal.id}`)}
+                className="flt-dashboard-activity-item"
+              >
+                <div>
+                  <div className="flt-dashboard-activity-title">
+                    {proposal.proposalNumber}
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontWeight: 600 }}>
-                      {formatCurrency(proposal.total)}
-                    </div>
-                    <div className="flt-dashboard-activity-time">
-                      {formatRelativeTime(proposal.createdAt)}
-                    </div>
+                  <div className="flt-dashboard-activity-description">
+                    {proposal.clientName}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontWeight: 600 }}>
+                    {formatCurrency(proposal.total)}
+                  </div>
+                  <div className="flt-dashboard-activity-time">
+                    {formatRelativeTime(proposal.createdAt)}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </DashboardCard>
 
         {/* Upcoming Bookings */}
-        <div className="flt-dashboard-activity-list">
-          <h3 className="flt-dashboard-section-title">Upcoming Bookings</h3>
-          <div>
-            {stats.upcomingBookingsList.length === 0 ? (
-              <div className="flt-dashboard-empty">No upcoming bookings</div>
-            ) : (
-              stats.upcomingBookingsList.map((booking) => (
-                <div
-                  key={booking.id}
-                  onClick={() => navigate(`/calendar`)}
-                  className="flt-dashboard-activity-item"
-                >
-                  <div>
-                    <div className="flt-dashboard-activity-title">
-                      {booking.title}
-                    </div>
-                    <div className="flt-dashboard-activity-description">
-                      {booking.clientName && `${booking.clientName} • `}
-                      {formatRelativeTime(booking.startTime)} •{" "}
-                      {booking.durationMinutes}min
-                    </div>
+        <DashboardCard
+          title="Upcoming Bookings"
+          icon="📅"
+          action={{ label: "View All", href: "/calendar" }}
+        >
+          {upcomingBookings.length === 0 ? (
+            <div className="flt-dashboard-empty">No upcoming bookings</div>
+          ) : (
+            upcomingBookings.map((booking) => (
+              <div
+                key={booking.id}
+                onClick={() => navigate(`/calendar`)}
+                className="flt-dashboard-activity-item"
+              >
+                <div>
+                  <div className="flt-dashboard-activity-title">
+                    {booking.title}
+                  </div>
+                  <div className="flt-dashboard-activity-description">
+                    {booking.clientName && `${booking.clientName} • `}
+                    {formatRelativeTime(booking.startTime)} •{" "}
+                    {formatDurationCompact(booking.durationMinutes)}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
+              </div>
+            ))
+          )}
+        </DashboardCard>
       </div>
     </div>
   );

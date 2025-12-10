@@ -1,0 +1,92 @@
+/* packages/booking-calendar/src/styles/calendar.css */
+:root {
+  --bc-bg: #0b0b10;
+  --bc-surface: #111827;
+  --bc-grid-line: #1f2933;
+  --bc-text: #e5e7eb;
+  --bc-muted: #9ca3af;
+  --bc-accent: #3b82f6;
+  --bc-danger: #ef4444;
+  --bc-success: #22c55e;
+  --bc-warning: #eab308;
+  --bc-border-radius-sm: 4px;
+  --bc-border-radius-md: 8px;
+}
+
+.booking-calendar {
+  background: var(--bc-bg);
+  color: var(--bc-text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.booking-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--bc-surface);
+  border-bottom: 1px solid var(--bc-grid-line);
+}
+
+.booking-calendar-nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid var(--bc-grid-line);
+  color: var(--bc-text);
+  padding: 0.5rem 1rem;
+  border-radius: var(--bc-border-radius-sm);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nav-btn:hover {
+  background: var(--bc-grid-line);
+}
+
+.current-date {
+  margin: 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.booking-calendar-view-switcher {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.booking-calendar-view-switcher button {
+  background: transparent;
+  border: 1px solid var(--bc-grid-line);
+  color: var(--bc-muted);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.booking-calendar-view-switcher button:first-child {
+  border-radius: var(--bc-border-radius-sm) 0 0 var(--bc-border-radius-sm);
+}
+
+.booking-calendar-view-switcher button:last-child {
+  border-radius: 0 var(--bc-border-radius-sm) var(--bc-border-radius-sm) 0;
+}
+
+.booking-calendar-view-switcher button.active {
+  background: var(--bc-accent);
+  color: white;
+  border-color: var(--bc-accent);
+}
+
+.booking-calendar-body {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}

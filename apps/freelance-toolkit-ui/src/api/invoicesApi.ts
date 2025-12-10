@@ -65,10 +65,13 @@ export const invoicesApi = {
     },
 
     /**
-     * Send an invoice to client
+     * Send an invoice to client with optional custom email content
      */
-    send: async (id: string): Promise<InvoiceResponseDto> => {
-        const response = await apiClient.post<InvoiceResponseDto>(`/invoices/${id}/send`);
+    send: async (id: string, customSubject?: string, customBody?: string): Promise<InvoiceResponseDto> => {
+        const response = await apiClient.post<InvoiceResponseDto>(
+            `/invoices/${id}/send`,
+            customSubject && customBody ? { customSubject, customBody } : null
+        );
         return response.data;
     },
 

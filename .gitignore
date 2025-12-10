@@ -17,6 +17,7 @@ backups/**
 #!.yarn/cache
 .pnp.*
 
+.windsurf
 # Ignore node_modules for React
 node_modules/
 

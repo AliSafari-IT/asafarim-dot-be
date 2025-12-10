@@ -10,9 +10,10 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@asafarim/booking-calendar": "workspace:*",
         "@asafarim/shared-ui-react": "workspace:*",
         "@asafarim/shared-tokens": "workspace:*",
-        "@asafarim/react-themes": "workspace:*",        
+        "@asafarim/react-themes": "workspace:*",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.20.0",

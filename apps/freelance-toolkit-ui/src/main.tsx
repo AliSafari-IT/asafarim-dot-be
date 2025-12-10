@@ -10,9 +10,10 @@ import { ProposalsPage } from "./pages/ProposalsPage";
 import { ProposalFormPage } from "./pages/ProposalFormPage";
 import { LoginPage } from "./pages/LoginPage";
 import "./index.css";
+import CalendarPage from "./pages/CalendarPage";
 
 import InvoicesPage from "./pages/InvoicesPage";
-const CalendarPage = () => <div>Calendar Page (Coming Soon)</div>;
+import InvoiceEditorPage from "./pages/InvoiceEditorPage";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -30,6 +31,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="proposals/new" element={<ProposalFormPage />} />
             <Route path="proposals/:id" element={<ProposalFormPage />} />
             <Route path="invoices" element={<InvoicesPage />} />
+            <Route path="invoices/:id" element={<InvoiceEditorPage />} />
             <Route path="calendar" element={<CalendarPage />} />
           </Route>
         </Routes>

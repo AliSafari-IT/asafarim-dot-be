@@ -1,4 +1,5 @@
 using FreelanceToolkit.Api.Services.Interfaces;
+using FreelanceToolkit.Api.Utils;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
@@ -124,6 +125,7 @@ public class EmailService : IEmailService
     )
     {
         var durationMinutes = (int)(endTime - startTime).TotalMinutes;
+        var formattedDuration = DurationFormatter.ToHumanString(durationMinutes);
 
         var message = new MimeMessage();
         message.From.Add(
@@ -147,7 +149,7 @@ public class EmailService : IEmailService
                     <ul>
                         <li><strong>Title:</strong> {title}</li>
                         <li><strong>Date & Time:</strong> {startTime:MMMM dd, yyyy 'at' h:mm tt}</li>
-                        <li><strong>Duration:</strong> {durationMinutes} minutes</li>
+                        <li><strong>Duration:</strong> {formattedDuration}</li>
                         {(!string.IsNullOrWhiteSpace(location) ? $"<li><strong>Location:</strong> {location}</li>" : "")}
                         {(!string.IsNullOrWhiteSpace(meetingUrl) ? $"<li><strong>Meeting URL:</strong> <a href='{meetingUrl}'>{meetingUrl}</a></li>" : "")}
                     </ul>
@@ -174,6 +176,8 @@ public class EmailService : IEmailService
         string recipientEmail
     )
     {
+        var formattedDuration = DurationFormatter.ToHumanString(durationMinutes);
+
         var message = new MimeMessage();
         message.From.Add(
             new MailboxAddress(
@@ -196,7 +200,7 @@ public class EmailService : IEmailService
                     <ul>
                         <li><strong>Title:</strong> {title}</li>
                         <li><strong>Date & Time:</strong> {startTime:MMMM dd, yyyy 'at' h:mm tt}</li>
-                        <li><strong>Duration:</strong> {durationMinutes} minutes</li>
+                        <li><strong>Duration:</strong> {formattedDuration}</li>
                         {(!string.IsNullOrWhiteSpace(location) ? $"<li><strong>Location:</strong> {location}</li>" : "")}
                         {(!string.IsNullOrWhiteSpace(meetingUrl) ? $"<li><strong>Meeting URL:</strong> <a href='{meetingUrl}'>{meetingUrl}</a></li>" : "")}
                     </ul>

@@ -12,7 +12,7 @@ public class CalendarProfile : Profile
         CreateMap<CreateBookingDto, CalendarBooking>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.UserId, opt => opt.Ignore())
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Scheduled"))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => BookingStatus.Pending))
             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
             .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
             .ForMember(dest => dest.Client, opt => opt.Ignore());
@@ -31,6 +31,10 @@ public class CalendarProfile : Profile
             .ForMember(
                 dest => dest.ClientName,
                 opt => opt.MapFrom(src => src.Client != null ? src.Client.Name : null)
+            )
+            .ForMember(
+                dest => dest.ClientEmail,
+                opt => opt.MapFrom(src => src.Client != null ? src.Client.Email : null)
             );
     }
 }
