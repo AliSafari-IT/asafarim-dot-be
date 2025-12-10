@@ -126,9 +126,13 @@ public class EmailService : IEmailService
     {
         var durationMinutes = (int)(endTime - startTime).TotalMinutes;
 <<<<<<< HEAD
+<<<<<<< HEAD
         var formattedDuration = DurationFormatter.ToHumanString(durationMinutes);
 =======
 >>>>>>> 2cbbfa3 (```)
+=======
+        var formattedDuration = DurationFormatter.ToHumanString(durationMinutes);
+>>>>>>> 7d4431a (```)
 
         var message = new MimeMessage();
         message.From.Add(
@@ -153,10 +157,14 @@ public class EmailService : IEmailService
                         <li><strong>Title:</strong> {title}</li>
                         <li><strong>Date & Time:</strong> {startTime:MMMM dd, yyyy 'at' h:mm tt}</li>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <li><strong>Duration:</strong> {formattedDuration}</li>
 =======
                         <li><strong>Duration:</strong> {durationMinutes} minutes</li>
 >>>>>>> 2cbbfa3 (```)
+=======
+                        <li><strong>Duration:</strong> {formattedDuration}</li>
+>>>>>>> 7d4431a (```)
                         {(!string.IsNullOrWhiteSpace(location) ? $"<li><strong>Location:</strong> {location}</li>" : "")}
                         {(!string.IsNullOrWhiteSpace(meetingUrl) ? $"<li><strong>Meeting URL:</strong> <a href='{meetingUrl}'>{meetingUrl}</a></li>" : "")}
                     </ul>
@@ -184,10 +192,15 @@ public class EmailService : IEmailService
     )
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
         var formattedDuration = DurationFormatter.ToHumanString(durationMinutes);
 
 =======
 >>>>>>> 2cbbfa3 (```)
+=======
+        var formattedDuration = DurationFormatter.ToHumanString(durationMinutes);
+
+>>>>>>> 7d4431a (```)
         var message = new MimeMessage();
         message.From.Add(
             new MailboxAddress(
@@ -211,10 +224,14 @@ public class EmailService : IEmailService
                         <li><strong>Title:</strong> {title}</li>
                         <li><strong>Date & Time:</strong> {startTime:MMMM dd, yyyy 'at' h:mm tt}</li>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <li><strong>Duration:</strong> {formattedDuration}</li>
 =======
                         <li><strong>Duration:</strong> {durationMinutes} minutes</li>
 >>>>>>> 2cbbfa3 (```)
+=======
+                        <li><strong>Duration:</strong> {formattedDuration}</li>
+>>>>>>> 7d4431a (```)
                         {(!string.IsNullOrWhiteSpace(location) ? $"<li><strong>Location:</strong> {location}</li>" : "")}
                         {(!string.IsNullOrWhiteSpace(meetingUrl) ? $"<li><strong>Meeting URL:</strong> <a href='{meetingUrl}'>{meetingUrl}</a></li>" : "")}
                     </ul>
