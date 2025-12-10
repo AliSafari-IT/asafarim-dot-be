@@ -1,0 +1,432 @@
+.flt-calendar-container {
+  padding: var(--spacing-lg);
+  max-width: 100%;
+  margin: 0 auto;
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+.flt-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.flt-calendar-header h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.flt-calendar-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.flt-view-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flt-view-btn:hover {
+  background: var(--bg-hover-color);
+  border-color: var(--border-hover-color);
+  color: var(--color-text);
+}
+
+.flt-view-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.flt-calendar-error {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--color-danger);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flt-calendar-error button {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  padding: 0 var(--spacing-sm);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.flt-calendar-error button:hover {
+  opacity: 1;
+}
+
+.flt-calendar-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl);
+  color: var(--color-text-muted);
+  min-height: 400px;
+}
+
+.flt-calendar-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.flt-calendar-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.flt-calendar-upcoming {
+  margin-top: var(--spacing-lg);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.flt-calendar-upcoming-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.flt-calendar-upcoming-title-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.flt-calendar-upcoming h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.flt-calendar-upcoming-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.flt-calendar-noshow-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.flt-calendar-noshow-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.flt-calendar-noshow-toggle:hover {
+  color: var(--color-primary);
+}
+
+.flt-calendar-empty {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--color-neutral-500);
+  background: var(--color-neutral-50);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-neutral-300);
+}
+
+.flt-calendar-booking-card {
+  background: var(--color-neutral-0);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.flt-calendar-booking-card:hover {
+  border-color: var(--color-neutral-300);
+  box-shadow: var(--shadow-md);
+}
+
+.flt-calendar-booking-info {
+  flex: 1;
+}
+
+.flt-calendar-booking-info h4 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-900);
+  margin-bottom: var(--spacing-sm);
+}
+
+.flt-calendar-booking-info p {
+  color: var(--color-neutral-600);
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.flt-calendar-booking-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: flex-end;
+}
+
+.flt-calendar-booking-actions button {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-neutral-300);
+  background: var(--color-neutral-0);
+  color: var(--color-neutral-700);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flt-calendar-booking-actions button:hover {
+  background: var(--color-neutral-100);
+  border-color: var(--color-neutral-400);
+}
+
+/* Bookings List Section */
+.flt-bookings-section {
+  margin-bottom: var(--spacing-lg);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.flt-bookings-filters {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.flt-filter-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.flt-filter-btn:hover {
+  background: var(--bg-hover-color);
+  border-color: var(--border-hover-color);
+  color: var(--color-text);
+}
+
+.flt-filter-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.flt-bookings-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--spacing-sm);
+}
+
+.flt-bookings-empty {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-muted);
+}
+
+.flt-booking-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: var(--color-surface);
+  margin-bottom: var(--spacing-xs);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.flt-booking-item:hover {
+  background: var(--bg-hover-color);
+  border-color: var(--color-border);
+}
+
+.flt-booking-item.status-pending {
+  border-left: 2px solid var(--color-warning);
+}
+
+.flt-booking-item.status-confirmed {
+  border-left: 2px solid var(--color-info);
+}
+
+.flt-booking-item.status-completed {
+  border-left: 2px solid var(--color-success);
+}
+
+.flt-booking-item.status-cancelled {
+  border-left: 2px solid var(--color-danger);
+  opacity: 0.6;
+}
+
+.flt-booking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.flt-booking-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flt-booking-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.flt-booking-time {
+  font-weight: var(--font-weight-medium);
+}
+
+.flt-booking-client {
+  color: var(--color-text-muted);
+}
+
+.flt-booking-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: var(--spacing-xs);
+}
+
+.flt-booking-status {
+  display: flex;
+  align-items: center;
+}
+
+.flt-status-badge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.flt-status-badge.status-pending {
+  background: color-mix(in srgb, var(--color-warning) 15%, transparent);
+  color: var(--color-warning);
+}
+
+.flt-status-badge.status-confirmed {
+  background: color-mix(in srgb, var(--color-info) 15%, transparent);
+  color: var(--color-info);
+}
+
+.flt-status-badge.status-completed {
+  background: color-mix(in srgb, var(--color-success) 15%, transparent);
+  color: var(--color-success);
+}
+
+.flt-status-badge.status-cancelled {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+  color: var(--color-danger);
+}
+
+.flt-booking-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--color-surface);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.flt-action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--color-background);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.flt-action-btn:hover {
+  background: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.flt-action-btn:active {
+  transform: scale(0.95);
+}

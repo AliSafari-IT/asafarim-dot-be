@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { invoicesApi } from "../api/invoicesApi";
-import { FormErrorBoundary } from "@asafarim/shared-ui-react";
+import { ButtonComponent, FormErrorBoundary } from "@asafarim/shared-ui-react";
 import EmailPreviewModal from "../components/EmailPreviewModal";
 import type { InvoiceResponseDto } from "../types";
+import { formatCurrency } from "../utils/apiHelpers";
 import "../styles/pages/invoices.css";
 
 export default function InvoicesPage() {
+  const navigate = useNavigate();
   const [invoices, setInvoices] = useState<InvoiceResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState<string | null>(null);
+  const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] =
@@ -44,7 +49,7 @@ export default function InvoicesPage() {
       setErrors({});
       setSuccessMessage(null);
 
-      await invoicesApi.send(selectedInvoice.id);
+      await invoicesApi.send(selectedInvoice.id, subject, body);
 
       setSuccessMessage(
         `Invoice ${selectedInvoice.invoiceNumber} sent successfully!`
@@ -90,6 +95,7 @@ Freelance Toolkit`;
 
   const handleDownloadPdf = async (id: string, invoiceNumber: string) => {
     try {
+      setDownloadingPdf(id);
       const blob = await invoicesApi.downloadPdf(id);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -101,6 +107,23 @@ Freelance Toolkit`;
       document.body.removeChild(a);
     } catch (error: any) {
       setErrors({ general: "Failed to download PDF" });
+    } finally {
+      setDownloadingPdf(null);
+    }
+  };
+
+  const handleDelete = async (invoice: InvoiceResponseDto) => {
+    if (!window.confirm(`Delete invoice ${invoice.invoiceNumber}?`)) return;
+
+    try {
+      setDeletingId(invoice.id);
+      await invoicesApi.delete(invoice.id);
+      setInvoices(invoices.filter((inv) => inv.id !== invoice.id));
+      setSuccessMessage(`Invoice ${invoice.invoiceNumber} deleted`);
+    } catch (error: any) {
+      setErrors({ general: "Failed to delete invoice" });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -197,12 +220,39 @@ Freelance Toolkit`;
                           </button>
                         )}
                         <button
+                          className="flt-invoices-btn flt-invoices-btn--view"
+                          onClick={() =>
+                            window.open(
+                              `/invoices/${invoice.id}/html`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          View
+                        </button>
+                        <button
+                          className="flt-invoices-btn flt-invoices-btn--edit"
+                          onClick={() => navigate(`/invoices/${invoice.id}`)}
+                        >
+                          Edit
+                        </button>
+                        <button
                           className="flt-invoices-btn flt-invoices-btn--download"
                           onClick={() =>
                             handleDownloadPdf(invoice.id, invoice.invoiceNumber)
                           }
+                          disabled={downloadingPdf === invoice.id}
                         >
-                          PDF
+                          {downloadingPdf === invoice.id
+                            ? "Downloading..."
+                            : "PDF"}
+                        </button>
+                        <button
+                          className="flt-invoices-btn flt-invoices-btn--delete"
+                          onClick={() => handleDelete(invoice)}
+                          disabled={deletingId === invoice.id}
+                        >
+                          {deletingId === invoice.id ? "Deleting..." : "Delete"}
                         </button>
                       </div>
                     </td>

@@ -1,0 +1,49 @@
+{
+    "name": "@asafarim/booking-calendar",
+    "version": "0.1.0",
+    "description": "Google Calendar-style booking UI for FreelanceToolkit.Api",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./styles": "./dist/index.css"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "prepublishOnly": "npm run build"
+    },
+    "peerDependencies": {
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0"
+    },
+    "dependencies": {
+        "date-fns": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.0",
+        "@types/react-dom": "^18.2.0",
+        "@vitejs/plugin-react": "^4.2.0",
+        "typescript": "^5.3.0",
+        "vite": "^5.0.0",
+        "vite-plugin-dts": "^3.7.0"
+    },
+    "keywords": [
+        "calendar",
+        "booking",
+        "scheduler",
+        "react",
+        "typescript",
+        "freelance-toolkit"
+    ],
+    "author": "ASafariM",
+    "license": "MIT"
+}

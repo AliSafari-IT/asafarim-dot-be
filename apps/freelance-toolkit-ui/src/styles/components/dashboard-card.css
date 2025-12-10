@@ -1,0 +1,62 @@
+.flt-dashboard-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.flt-dashboard-card:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+.flt-dashboard-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.flt-dashboard-card-title-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.flt-dashboard-card-icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flt-dashboard-card-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.flt-dashboard-card-action {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.flt-dashboard-card-action:hover {
+  color: var(--color-primary-dark);
+  gap: 4px;
+}
+
+.flt-dashboard-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}

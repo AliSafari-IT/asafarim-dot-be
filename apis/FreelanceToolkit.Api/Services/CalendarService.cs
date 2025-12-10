@@ -40,72 +40,37 @@ public class CalendarService : ICalendarService
                 throw new KeyNotFoundException($"Client with ID {dto.ClientId.Value} not found");
         }
 
-        // Check for overlaps
-        if (await HasOverlapAsync(dto.StartTime, dto.EndTime, userId))
-        {
-            throw new InvalidOperationException("This time slot overlaps with an existing booking");
-        }
+        // Convert to UTC
+        var startTimeUtc = dto.StartTime.ToUniversalTime();
+        var endTimeUtc = dto.EndTime.ToUniversalTime();
 
         var booking = _mapper.Map<CalendarBooking>(dto);
         booking.Id = Guid.NewGuid();
         booking.UserId = userId;
+        booking.StartTime = startTimeUtc;
+        booking.EndTime = endTimeUtc;
         booking.CreatedAt = DateTime.UtcNow;
+
+        // Check for overlaps - allow booking but keep as Pending for review
+        if (await HasOverlapAsync(startTimeUtc, endTimeUtc, userId))
+        {
+            _logger.LogWarning(
+                "[CalendarService] Booking {BookingId} overlaps with existing booking - marked as Pending",
+                booking.Id
+            );
+            // Booking will remain in Pending status for manual review
+        }
 
         _context.CalendarBookings.Add(booking);
         await _context.SaveChangesAsync();
 
         var result = await GetByIdAsync(booking.Id, userId);
 
-        // Send confirmation email if client email is provided
-        if (!string.IsNullOrWhiteSpace(result.ClientEmail))
-        {
-            booking.DeliveryStatus = EmailDeliveryStatus.Pending;
-            booking.LastAttemptAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation(
-                "[CalendarService] Sending booking confirmation for {BookingId} to {ClientEmail}",
-                booking.Id,
-                result.ClientEmail
-            );
-
-            try
-            {
-                await _emailService.SendBookingConfirmationAsync(
-                    result.Title,
-                    result.ClientName ?? "Client",
-                    result.StartTime,
-                    result.EndTime,
-                    result.Location,
-                    result.MeetingUrl,
-                    result.Description,
-                    result.ClientEmail
-                );
-
-                booking.DeliveryStatus = EmailDeliveryStatus.Sent;
-                booking.LastAttemptAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation(
-                    "[CalendarService] Booking confirmation sent successfully for {BookingId}",
-                    booking.Id
-                );
-            }
-            catch (Exception ex)
-            {
-                booking.DeliveryStatus = EmailDeliveryStatus.Failed;
-                booking.LastAttemptAt = DateTime.UtcNow;
-                booking.RetryCount++;
-                await _context.SaveChangesAsync();
-
-                _logger.LogError(
-                    ex,
-                    "[CalendarService] Failed to send booking confirmation for {BookingId}: {ErrorMessage}",
-                    booking.Id,
-                    ex.Message
-                );
-            }
-        }
+        _logger.LogInformation(
+            "[CalendarService] Booking {BookingId} created with status {Status}. Email will be sent manually by user.",
+            booking.Id,
+            booking.Status
+        );
 
         return result;
     }
@@ -126,7 +91,8 @@ public class CalendarService : ICalendarService
         string userId,
         DateTime? startDate = null,
         DateTime? endDate = null,
-        Guid? clientId = null
+        Guid? clientId = null,
+        string status = "All"
     )
     {
         var query = _context.CalendarBookings.Include(b => b.Client).Where(b => b.UserId == userId);
@@ -146,7 +112,52 @@ public class CalendarService : ICalendarService
             query = query.Where(b => b.ClientId == clientId.Value);
         }
 
+        // Apply status filter
+        switch (status?.ToLower())
+        {
+            case "pending":
+                _logger.LogInformation(
+                    "[CalendarService.GetAllAsync] Filtering by status: Pending"
+                );
+                query = query.Where(b => b.Status == BookingStatus.Pending);
+                break;
+            case "confirmed":
+                _logger.LogInformation(
+                    "[CalendarService.GetAllAsync] Filtering by status: Confirmed"
+                );
+                query = query.Where(b => b.Status == BookingStatus.Confirmed);
+                break;
+            case "completed":
+                _logger.LogInformation(
+                    "[CalendarService.GetAllAsync] Filtering by status: Completed"
+                );
+                query = query.Where(b => b.Status == BookingStatus.Completed);
+                break;
+            case "noshow":
+                _logger.LogInformation("[CalendarService.GetAllAsync] Filtering by status: NoShow");
+                query = query.Where(b => b.Status == BookingStatus.NoShow);
+                break;
+            case "cancelled":
+                _logger.LogInformation(
+                    "[CalendarService.GetAllAsync] Filtering by status: Cancelled"
+                );
+                query = query.Where(b => b.Status == BookingStatus.Cancelled);
+                break;
+            case "all":
+            default:
+                _logger.LogInformation(
+                    "[CalendarService.GetAllAsync] Filtering by status: All (excluding Cancelled)"
+                );
+                query = query.Where(b => b.Status != BookingStatus.Cancelled);
+                break;
+        }
+
         var bookings = await query.OrderBy(b => b.StartTime).ToListAsync();
+        _logger.LogInformation(
+            "[CalendarService.GetAllAsync] Returning {Count} bookings for status filter '{Status}'",
+            bookings.Count,
+            status
+        );
 
         return _mapper.Map<List<BookingResponseDto>>(bookings);
     }
@@ -163,7 +174,11 @@ public class CalendarService : ICalendarService
         // Check for overlaps (excluding this booking)
         if (await HasOverlapAsync(dto.StartTime, dto.EndTime, userId, id))
         {
-            throw new InvalidOperationException("This time slot overlaps with an existing booking");
+            _logger.LogWarning(
+                "[CalendarService] Booking {BookingId} updated with overlapping time slot. Status set to Pending for review.",
+                id
+            );
+            booking.Status = BookingStatus.Pending;
         }
 
         _mapper.Map(dto, booking);
@@ -210,7 +225,11 @@ public class CalendarService : ICalendarService
         // Check for overlaps (excluding this booking)
         if (await HasOverlapAsync(newStartTime, newEndTime, userId, id))
         {
-            throw new InvalidOperationException("This time slot overlaps with an existing booking");
+            _logger.LogWarning(
+                "[CalendarService] Booking {BookingId} rescheduled to overlapping time slot. Status set to Pending for review.",
+                id
+            );
+            booking.Status = BookingStatus.Pending;
         }
 
         booking.StartTime = newStartTime;

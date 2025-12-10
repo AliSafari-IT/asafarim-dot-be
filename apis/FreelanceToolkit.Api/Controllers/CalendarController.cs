@@ -12,25 +12,34 @@ namespace FreelanceToolkit.Api.Controllers;
 public class CalendarController : ControllerBase
 {
     private readonly ICalendarService _calendarService;
+    private readonly IEmailService _emailService;
 
-    public CalendarController(ICalendarService calendarService)
+    public CalendarController(ICalendarService calendarService, IEmailService emailService)
     {
         _calendarService = calendarService;
+        _emailService = emailService;
     }
 
     /// <summary>
-    /// Get all bookings with optional date range and client filters
+    /// Get all bookings with optional date range, client filters, and status filter
     /// </summary>
     [HttpGet("bookings")]
     [ProducesResponseType(typeof(List<BookingResponseDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<BookingResponseDto>>> GetAll(
         [FromQuery] DateTime? startDate = null,
         [FromQuery] DateTime? endDate = null,
-        [FromQuery] Guid? clientId = null
+        [FromQuery] Guid? clientId = null,
+        [FromQuery] string status = "All"
     )
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var bookings = await _calendarService.GetAllAsync(userId, startDate, endDate, clientId);
+        var bookings = await _calendarService.GetAllAsync(
+            userId,
+            startDate,
+            endDate,
+            clientId,
+            status
+        );
         return Ok(bookings);
     }
 
@@ -255,6 +264,55 @@ public class CalendarController : ControllerBase
                 EndTime = request.EndTime,
             }
         );
+    }
+
+    /// <summary>
+    /// Send confirmation email for a booking
+    /// </summary>
+    [HttpPost("bookings/{id}/send-confirmation")]
+    [ProducesResponseType(typeof(BookingResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<BookingResponseDto>> SendConfirmation(Guid id)
+    {
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var booking = await _calendarService.GetByIdAsync(id, userId);
+
+            if (string.IsNullOrWhiteSpace(booking.ClientEmail))
+                return BadRequest(new { message = "Booking has no client email address" });
+
+            await _emailService.SendBookingConfirmationAsync(
+                booking.Title,
+                booking.ClientName ?? "Client",
+                booking.StartTime,
+                booking.EndTime,
+                booking.Location,
+                booking.MeetingUrl,
+                booking.Description,
+                booking.ClientEmail
+            );
+
+            return Ok(booking);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = $"Booking with ID {id} not found" });
+        }
+    }
+
+    /// <summary>
+    /// Get upcoming bookings for dashboard (limited)
+    /// </summary>
+    [HttpGet("dashboard/upcoming-bookings")]
+    [ProducesResponseType(typeof(List<BookingResponseDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<BookingResponseDto>>> GetDashboardUpcomingBookings(
+        [FromQuery] int limit = 5
+    )
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var bookings = await _calendarService.GetUpcomingAsync(userId, limit);
+        return Ok(bookings);
     }
 }
 

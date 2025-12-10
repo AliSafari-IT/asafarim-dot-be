@@ -10,7 +10,8 @@ public interface ICalendarService
         string userId,
         DateTime? startDate = null,
         DateTime? endDate = null,
-        Guid? clientId = null
+        Guid? clientId = null,
+        string status = "All"
     );
     Task<BookingResponseDto> UpdateAsync(Guid id, UpdateBookingDto dto, string userId);
     Task DeleteAsync(Guid id, string userId);

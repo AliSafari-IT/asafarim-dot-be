@@ -162,6 +162,7 @@ export interface InvoiceResponseDto {
     invoiceNumber: string;
     clientId: string;
     clientName: string;
+    clientEmail?: string;
     proposalId?: string;
     proposalNumber?: string;
     issueDate: string;
@@ -177,7 +178,16 @@ export interface InvoiceResponseDto {
     paidAt?: string;
     createdAt: string;
     updatedAt?: string;
+    sentAt?: string;
     isOverdue: boolean;
+    deliveryStatus?: string;
+    lastAttemptAt?: string;
+    retryCount?: number;
+}
+
+export interface SendInvoiceDto {
+    customSubject?: string;
+    customBody?: string;
 }
 
 // Calendar Types
@@ -208,6 +218,7 @@ export interface BookingResponseDto {
     id: string;
     clientId?: string;
     clientName?: string;
+    clientEmail?: string;
     title: string;
     description?: string;
     startTime: string;
@@ -219,6 +230,9 @@ export interface BookingResponseDto {
     notes?: string;
     createdAt: string;
     updatedAt?: string;
+    deliveryStatus?: string;
+    lastAttemptAt?: string;
+    retryCount?: number;
 }
 
 export interface RescheduleRequest {

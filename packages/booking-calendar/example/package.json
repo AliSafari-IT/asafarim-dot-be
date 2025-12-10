@@ -1,0 +1,26 @@
+{
+  "name": "booking-calendar-demo",
+  "version": "1.0.0",
+  "description": "Demo app for @asafarim/booking-calendar",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@asafarim/booking-calendar": "file:../",
+    "date-fns": "^3.6.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.2",
+    "@types/react": "^18.3.26",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.2"
+  },
+  "packageManager": "pnpm@10.25.0"
+}
