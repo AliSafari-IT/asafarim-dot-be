@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { invoicesApi } from "../api/invoicesApi";
-import { ButtonComponent, FormErrorBoundary } from "@asafarim/shared-ui-react";
+import { FormErrorBoundary } from "@asafarim/shared-ui-react";
 import EmailPreviewModal from "../components/EmailPreviewModal";
 import type { InvoiceResponseDto } from "../types";
-import { formatCurrency } from "../utils/apiHelpers";
 import "../styles/pages/invoices.css";
 
 export default function InvoicesPage() {

@@ -1,7 +1,7 @@
 {
     "name": "@asafarim/freelance-toolkit-ui",
     "private": true,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -10,7 +10,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@asafarim/booking-calendar": "workspace:*",
+        "@asafarim/booking-calendar": "0.2.0",
         "@asafarim/shared-ui-react": "workspace:*",
         "@asafarim/shared-tokens": "workspace:*",
         "@asafarim/react-themes": "workspace:*",

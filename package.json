@@ -1,6 +1,6 @@
 {
   "name": "asafarim-dot-be",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
@@ -85,7 +85,7 @@
   "author": "ASafariM",
   "email": "asafarim.it@gmail.com",
   "license": "CC BY 4.0",
-  "packageManager": "pnpm@10.25.0+sha512.5e82639027af37cf832061bcc6d639c219634488e0f2baebe785028a793de7b525ffcd3f7ff574f5e9860654e098fe852ba8ac5dd5cefe1767d23a020a92f501",
+  "packageManager": "pnpm@10.24.0",
   "dependencies": {
     "cookie": "^1.0.2",
     "pkill": "^2.0.0"

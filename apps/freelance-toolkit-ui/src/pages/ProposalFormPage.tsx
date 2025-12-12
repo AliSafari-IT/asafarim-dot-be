@@ -5,7 +5,6 @@ import {
   proposalsApi,
   clientsApi,
   type CreateProposalDto,
-  type ProposalResponseDto,
   type ProposalLineItemDto,
   type ClientResponseDto,
 } from "../api";

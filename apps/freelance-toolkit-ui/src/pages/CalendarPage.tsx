@@ -8,8 +8,11 @@ import BookingModal from "../components/BookingModal";
 import EditBookingModal from "../components/EditBookingModal";
 import UpcomingBookingsList from "../components/UpcomingBookingsList";
 import BookingFilterBar from "../components/BookingFilterBar";
+import { BookingCalendar } from "@asafarim/booking-calendar";
 import type { BookingResponseDto } from "../types";
+import "@asafarim/booking-calendar/styles/index.css";
 import "../styles/pages/calendar.css";
+import "../styles/components/calendar-modal.css";
 
 export default function CalendarPage() {
   const [bookings, setBookings] = useState<BookingResponseDto[]>([]);
@@ -22,6 +25,7 @@ export default function CalendarPage() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showCalendarView, setShowCalendarView] = useState(false);
   const [overlappingIds, setOverlappingIds] = useState<Set<string>>(new Set());
   const [filterStatus, setFilterStatus] = useState("All");
 
@@ -85,7 +89,7 @@ export default function CalendarPage() {
     setShowEmailModal(true);
   };
 
-  const handleEmailSend = async (subject: string, body: string) => {
+  const handleEmailSend = async (_subject: string, _body: string) => {
     if (!selectedBooking) return;
     try {
       await calendarApi.sendConfirmation(selectedBooking.id);
@@ -114,6 +118,139 @@ export default function CalendarPage() {
     }
   };
 
+  // Calendar View Handlers
+  const handleCalendarCreate = async (dto: any) => {
+    try {
+      await calendarApi.create(dto);
+      await loadBookings();
+    } catch (err: any) {
+      console.error("Failed to create booking:", err);
+      throw err;
+    }
+  };
+
+  const handleCalendarUpdate = async (id: string, dto: any) => {
+    try {
+      await calendarApi.update(id, dto);
+      await loadBookings();
+    } catch (err: any) {
+      console.error("Failed to update booking:", err);
+      throw err;
+    }
+  };
+
+  const handleCalendarDelete = async (id: string) => {
+    try {
+      await calendarApi.delete(id);
+      await loadBookings();
+    } catch (err: any) {
+      console.error("Failed to delete booking:", err);
+      throw err;
+    }
+  };
+
+  const handleCheckAvailability = async (dto: any) => {
+    try {
+      const response = await calendarApi.checkAvailability(dto);
+      // Convert conflicting bookings from BookingResponseDto to BookingEvent format
+      return {
+        isAvailable: response.isAvailable,
+        conflictingBookings: (response.conflictingBookings || []).map(
+          (booking: any) => {
+            const validStatuses = [
+              "Pending",
+              "Confirmed",
+              "Completed",
+              "NoShow",
+              "Cancelled",
+            ];
+            const status = validStatuses.includes(booking.status)
+              ? (booking.status as
+                  | "Pending"
+                  | "Confirmed"
+                  | "Completed"
+                  | "NoShow"
+                  | "Cancelled")
+              : ("Pending" as const);
+
+            return {
+              id: booking.id,
+              title: booking.title,
+              description: booking.description,
+              startTime: new Date(booking.startTime),
+              endTime: new Date(booking.endTime),
+              durationMinutes: booking.durationMinutes,
+              status,
+              meetingLink: booking.meetingUrl,
+              location: booking.location,
+              clientName: booking.clientName || "",
+              clientEmail: booking.clientEmail || "",
+              deliveryStatus:
+                (booking.deliveryStatus as
+                  | "Pending"
+                  | "Sent"
+                  | "Failed"
+                  | "Retrying") || "Pending",
+              retryCount: booking.retryCount || 0,
+              createdAt: new Date(booking.createdAt),
+              updatedAt: new Date(
+                booking.updatedAt || new Date().toISOString()
+              ),
+            };
+          }
+        ),
+      };
+    } catch (err: any) {
+      console.error("Failed to check availability:", err);
+      throw err;
+    }
+  };
+
+  // Convert BookingResponseDto to BookingEvent format for calendar
+  const convertToCalendarEvents = () => {
+    return bookings.map((booking) => {
+      // Validate and cast status to BookingStatus type
+      const validStatuses = [
+        "Pending",
+        "Confirmed",
+        "Completed",
+        "NoShow",
+        "Cancelled",
+      ];
+      const status = validStatuses.includes(booking.status)
+        ? (booking.status as
+            | "Pending"
+            | "Confirmed"
+            | "Completed"
+            | "NoShow"
+            | "Cancelled")
+        : ("Pending" as const);
+
+      return {
+        id: booking.id,
+        title: booking.title,
+        description: booking.description,
+        startTime: new Date(booking.startTime),
+        endTime: new Date(booking.endTime),
+        durationMinutes: booking.durationMinutes,
+        status,
+        meetingLink: booking.meetingUrl,
+        location: booking.location,
+        clientName: booking.clientName || "",
+        clientEmail: booking.clientEmail || "",
+        deliveryStatus:
+          (booking.deliveryStatus as
+            | "Pending"
+            | "Sent"
+            | "Failed"
+            | "Retrying") || "Pending",
+        retryCount: booking.retryCount || 0,
+        createdAt: new Date(booking.createdAt),
+        updatedAt: new Date(booking.updatedAt || new Date().toISOString()),
+      };
+    });
+  };
+
   const getUpcoming = () => {
     // Show all bookings returned by the backend (already filtered by status)
     // Sort by start time and limit to 10
@@ -131,9 +268,17 @@ export default function CalendarPage() {
     <div className="flt-calendar-container">
       <div className="flt-calendar-header">
         <h2>Calendar</h2>
-        <ButtonComponent variant="primary" onClick={addNewBooking}>
-          + New Booking
-        </ButtonComponent>
+        <div className="flt-calendar-header-actions">
+          <ButtonComponent
+            variant="secondary"
+            onClick={() => setShowCalendarView(true)}
+          >
+            📅 Calendar View
+          </ButtonComponent>
+          <ButtonComponent variant="primary" onClick={addNewBooking}>
+            + New Booking
+          </ButtonComponent>
+        </div>
       </div>
 
       {error && <div className="flt-calendar-error">{error}</div>}
@@ -219,6 +364,35 @@ export default function CalendarPage() {
           loadBookings();
         }}
       />
+
+      {/* Calendar View Modal */}
+      {showCalendarView && (
+        <div
+          className="flt-calendar-modal-overlay"
+          onClick={() => setShowCalendarView(false)}
+        >
+          <div
+            className="flt-calendar-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="flt-calendar-modal-close"
+              onClick={() => setShowCalendarView(false)}
+              aria-label="Close calendar view"
+            >
+              ✕
+            </button>
+            <BookingCalendar
+              bookings={convertToCalendarEvents()}
+              onCreateBooking={handleCalendarCreate}
+              onUpdateBooking={handleCalendarUpdate}
+              onDeleteBooking={handleCalendarDelete}
+              onCheckAvailability={handleCheckAvailability}
+              initialView="month"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,98 @@
+/* Calendar View Modal - Full Screen */
+
+.flt-calendar-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: flt-modal-fade-in 0.2s ease-out;
+  overflow: hidden;
+}
+
+.flt-calendar-modal-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--color-background, #ffffff);
+  overflow: auto;
+  animation: flt-modal-slide-in 0.3s ease-out;
+}
+
+.flt-calendar-modal-close {
+  position: fixed;
+  top: var(--spacing-lg, 24px);
+  right: var(--spacing-lg, 24px);
+  width: 40px;
+  height: 40px;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-text, #1f2937);
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.flt-calendar-modal-close:hover {
+  background: var(--color-error, #ef4444);
+  color: white;
+  border-color: var(--color-error, #ef4444);
+  transform: scale(1.05);
+}
+
+.flt-calendar-modal-close:active {
+  transform: scale(0.95);
+}
+
+/* Animations */
+@keyframes flt-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes flt-modal-slide-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Prevent body scroll when modal is open */
+body:has(.flt-calendar-modal-overlay) {
+  overflow: hidden;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .flt-calendar-modal-close {
+    top: var(--spacing-md, 16px);
+    right: var(--spacing-md, 16px);
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+}
