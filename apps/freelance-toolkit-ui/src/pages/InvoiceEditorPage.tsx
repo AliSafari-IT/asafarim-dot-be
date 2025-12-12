@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { invoicesApi, clientsApi } from "../api";
+import { invoicesApi } from "../api";
 import { ButtonComponent } from "@asafarim/shared-ui-react";
-import type { InvoiceResponseDto, UpdateInvoiceDto, InvoiceLineItemDto, ClientResponseDto } from "../types";
+import type { UpdateInvoiceDto, InvoiceLineItemDto } from "../types";
 import "../styles/pages/invoice-editor.css";
 
 export default function InvoiceEditorPage() {

@@ -248,8 +248,7 @@ export interface AvailabilityRequest {
 
 export interface AvailabilityResponse {
     isAvailable: boolean;
-    startTime: string;
-    endTime: string;
+    conflictingBookings: any[];
 }
 
 // Dashboard Types

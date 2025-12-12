@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   clientsApi,
   type CreateClientDto,
-  type ClientResponseDto,
 } from "../api";
 import "../styles/pages/client-form.css";
 import { FormErrorBoundary } from "@asafarim/shared-ui-react";
