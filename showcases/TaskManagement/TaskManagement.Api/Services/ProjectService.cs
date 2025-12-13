@@ -124,7 +124,11 @@ public class ProjectService : IProjectService
 
             // Temporary workaround: Get all projects and filter in memory
             // This bypasses the EF Core IsPrivate column query issue
-            var allProjects = await _context.Projects.ToListAsync();
+            var allProjects = await _context
+                .Projects
+                .Include(p => p.Tasks)
+                .Include(p => p.Members)
+                .ToListAsync();
             Console.WriteLine($"DEBUG: Got {allProjects.Count} total projects from database");
 
             // Filter to public projects in memory
@@ -271,8 +275,8 @@ public class ProjectService : IProjectService
             IsPrivate = project.IsPrivate,
             CreatedAt = project.CreatedAt,
             UpdatedAt = project.UpdatedAt,
-            TaskCount = project.Tasks.Count,
-            MemberCount = project.Members.Count,
+            TaskCount = project.Tasks?.Count ?? 0,
+            MemberCount = project.Members?.Count ?? 0,
         };
     }
 }

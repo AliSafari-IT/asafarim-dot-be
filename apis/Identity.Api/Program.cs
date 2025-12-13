@@ -9,8 +9,42 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+Console.WriteLine($"[LOG] BaseDirectory = {AppContext.BaseDirectory}");
+var serviceName = "identity-api";
+
+var logRoot = builder.Environment.IsDevelopment()
+    ? Path.Combine(builder.Environment.ContentRootPath, "logs")
+    : Path.Combine("/var/log/asafarim", serviceName);
+
+Directory.CreateDirectory(logRoot);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("System", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Service", serviceName)
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
+    .WriteTo.Console(new RenderedCompactJsonFormatter())
+    .WriteTo.File(
+        // new CompactJsonFormatter(),
+        Path.Combine(logRoot, $"{serviceName}-.log"),
+        rollingInterval: RollingInterval.Hour,
+        retainedFileCountLimit: 24,
+        shared: true
+    )
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+Log.Information("Identity API boot sequence started");
+Log.Information("Identity API starting in {Environment}", builder.Environment.EnvironmentName);
 
 // Configure forwarded headers for reverse proxy
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -25,6 +59,7 @@ builder.Host.ConfigureStructuredLogging();
 
 // Add controllers
 builder.Services.AddControllers();
+Log.Information("Adding controllers");
 
 // Bind JWT options from either "AuthJwt" (preferred) or fallback to "Jwt" for compatibility
 var authSection = builder.Configuration.GetSection("AuthJwt");
@@ -34,6 +69,7 @@ builder.Services.Configure<AuthOptions>(authSection.Exists() ? authSection : jwt
 var authOpts = new AuthOptions();
 authSection.Bind(authOpts);
 jwtFallbackSection.Bind(authOpts); // fallback will override only provided fields
+Log.Information("Binding JWT options");
 
 // Ensure sensible defaults if configuration is missing or partial
 // HMAC-SHA256 requires a sufficiently long symmetric key (>= 256 bits). Enforce a strong fallback.
@@ -50,6 +86,7 @@ if (authOpts.RefreshDays <= 0)
     authOpts.RefreshDays = 7;
 if (string.IsNullOrWhiteSpace(authOpts.CookieDomain))
     authOpts.CookieDomain = ".asafarim.local";
+Log.Information("Setting default JWT options");
 
 // Also enforce defaults for injected options
 builder.Services.PostConfigure<AuthOptions>(opts =>
@@ -67,6 +104,7 @@ builder.Services.PostConfigure<AuthOptions>(opts =>
     if (string.IsNullOrWhiteSpace(opts.CookieDomain))
         opts.CookieDomain = ".asafarim.local";
 });
+Log.Information("Enforcing default JWT options");
 
 // Configure database with connection pooling and retry logic
 builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -90,6 +128,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
         opt.EnableDetailedErrors();
     }
 });
+Log.Information("Configuring database");
 
 // Configure Identity with enhanced security settings
 builder
@@ -119,6 +158,7 @@ builder
     .AddEntityFrameworkStores<AppDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+Log.Information("Configuring Identity");
 
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -168,15 +208,19 @@ builder
             },
         };
     });
+Log.Information("Configuring JWT authentication");
 
 // Register application services
+Log.Information("Registering application services");
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IPasswordSetupTokenService, PasswordSetupTokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHttpClient<ISmartOpsRoleService, SmartOpsRoleService>();
+Log.Information("Registering application services");
 
 // Configure authorization policies
+Log.Information("Configuring authorization policies");
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
@@ -184,6 +228,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 // Get allowed origins from environment or use defaults
+Log.Information("Configuring CORS");
 var corsOriginsEnv = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS");
 var productionOrigins = new[]
 {
@@ -197,7 +242,7 @@ var productionOrigins = new[]
     "https://taskmanagement.asafarim.be",
     "https://smartops.asafarim.be",
     "https://testora.asafarim.be",
-    "https://freelance-toolkit.asafarim.be"
+    "https://freelance-toolkit.asafarim.be",
 };
 
 var developmentOrigins = new[]
@@ -227,7 +272,7 @@ var developmentOrigins = new[]
     "http://taskmanagement.asafarim.local:5176",
     "http://smartops.asafarim.local:5178",
     "http://testora.asafarim.local:5180",
-    "http://freelance-toolkit.asafarim.local:5185"
+    "http://freelance-toolkit.asafarim.local:5185",
 };
 
 // Combine origins based on environment
@@ -237,6 +282,14 @@ var allowedOrigins = builder.Environment.IsProduction()
 
 Console.WriteLine($"[CORS] Environment: {builder.Environment.EnvironmentName}");
 Console.WriteLine($"[CORS] Allowed origins: {string.Join(", ", allowedOrigins)}");
+Log.Information(
+    "Configuring CORS [CORS] Environment: {EnvironmentName}",
+    builder.Environment.EnvironmentName
+);
+Log.Information(
+    "Configuring CORS [CORS] Allowed origins: {AllowedOrigins}",
+    string.Join(", ", allowedOrigins)
+);
 
 builder.Services.AddCors(opt =>
     opt.AddPolicy(
@@ -274,14 +327,26 @@ builder.Services.AddCors(opt =>
         }
     )
 );
+Log.Information("Configuring CORS");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+Log.Information("Configuring Swagger");
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging(opts =>
+{
+    opts.MessageTemplate =
+        "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+});
+Log.Information("Configuring SerilogRequestLogging");
+
 // Use forwarded headers BEFORE any other middleware
+// BEFORE request logging
 app.UseForwardedHeaders();
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseSerilogRequestLogging();
 
 // Apply rate limiting to auth endpoints
 app.UseRateLimiting();
@@ -291,11 +356,17 @@ app.UseCors("app");
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI();
+Log.Information("Configuring Swagger");
+
 app.UseAuthentication();
+Log.Information("Configuring authentication");
+
 app.UseAuthorization();
+Log.Information("Configuring authorization");
 
 // Map controllers
 app.MapControllers();
+Log.Information("Mapping controllers");
 
 // Add health endpoint
 app.MapGet(
@@ -312,6 +383,7 @@ app.MapGet(
             }
         )
 );
+Log.Information("Configuring health endpoint");
 
 // Add a dedicated endpoint for clearing cookies with Clear-Site-Data header
 app.MapGet(
@@ -324,6 +396,12 @@ app.MapGet(
         return Results.Ok(new { cleared = true });
     }
 );
+Log.Information("Configuring clear-cookies endpoint");
 
 // Run the app with automatic migrations
 app.MigrateDatabase<AppDbContext>().Run();
+Log.Information("Running migrations");
+
+// Run the app
+app.Run();
+Log.Information("Application started");

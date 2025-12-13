@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -106,6 +107,24 @@ Console.WriteLine(
 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNullOrEmpty(audience))
 {
     Console.WriteLine("DEBUG: Setting up JWT authentication");
+    // Support both common symmetric key encodings:
+    // 1) Raw UTF8 bytes of the configured string
+    // 2) Base64-decoded bytes (when the configured string is a base64 representation)
+    var signingKeys = new List<SecurityKey> { new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)) };
+    try
+    {
+        var base64Bytes = Convert.FromBase64String(key);
+        // Avoid adding a duplicate key if the bytes happen to match.
+        if (!base64Bytes.SequenceEqual(Encoding.UTF8.GetBytes(key)))
+        {
+            signingKeys.Add(new SymmetricSecurityKey(base64Bytes));
+        }
+    }
+    catch
+    {
+        // Not a valid base64 string - ignore.
+    }
+
     builder
         .Services.AddAuthentication(options =>
         {
@@ -120,9 +139,11 @@ if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNul
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
+                TryAllIssuerSigningKeys = true,
                 ValidIssuer = issuer,
                 ValidAudience = audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                IssuerSigningKeys = signingKeys,
+                ClockSkew = TimeSpan.FromSeconds(30),
             };
 
             // Extract token from cookie if present
@@ -221,6 +242,7 @@ app.MapGet(
     .WithOpenApi();
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("frontend");
 
 // Only use authentication middleware if JWT is configured

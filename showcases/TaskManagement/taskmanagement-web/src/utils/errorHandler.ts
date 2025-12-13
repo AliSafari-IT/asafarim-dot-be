@@ -20,8 +20,8 @@ export async function parseApiError(response: Response): Promise<ApiError> {
   try {
     const data = await response.json();
     // Try to extract error message from API response
-    message = data.message || data.error || data.title || '';
-    details = data.details || data.description || '';
+    message = data.message || data.error || data.detail || data.title || '';
+    details = data.details || data.detail || data.description || '';
   } catch {
     // If response is not JSON, use status text
     message = response.statusText || 'Unknown error';
@@ -55,6 +55,9 @@ function getErrorMessage(status: number, apiMessage: string): string {
     case 422:
       return 'The data you provided is invalid. Please check and try again.';
     case 500:
+      if (apiMessage && apiMessage.length > 0 && apiMessage.length < 200) {
+        return apiMessage;
+      }
       return 'Server error. Please try again later.';
     case 503:
       return 'Service unavailable. Please try again later.';

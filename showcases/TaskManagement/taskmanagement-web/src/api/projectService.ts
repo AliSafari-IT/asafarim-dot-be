@@ -61,7 +61,10 @@ const projectService = {
     const response = await fetch(`${API_BASE_URL}/projects/my-projects`, {
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Failed to fetch projects');
+    if (!response.ok) {
+      const error = await parseApiError(response);
+      throw new Error(error.message);
+    }
     return response.json();
   },
 
@@ -69,7 +72,10 @@ const projectService = {
     const response = await fetch(`${API_BASE_URL}/projects/shared`, {
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Failed to fetch shared projects');
+    if (!response.ok) {
+      const error = await parseApiError(response);
+      throw new Error(error.message);
+    }
     return response.json();
   },
 
@@ -79,7 +85,10 @@ const projectService = {
     console.log("getAllPublicProjects");
     console.log(url);
     console.log(response);
-    if (!response.ok) throw new Error('Failed to fetch public projects');
+    if (!response.ok) {
+      const error = await parseApiError(response);
+      throw new Error(error.message);
+    }
     return response.json();
   },
 

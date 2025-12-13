@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "dotnet watch run --project Identity.Api.csproj",
-    "start": "dotnet run --project Identity.Api.csproj",
+    "start": "npx kill-port 5101 && dotnet run --project Identity.Api.csproj",
     "build": "dotnet build Identity.Api.csproj",
-    "preapi": "kill-port 5101",
+    "preapi": "npx kill-port 5101",
     "api": "dotnet watch run --project Identity.Api.csproj"
   },
   "devDependencies": {
