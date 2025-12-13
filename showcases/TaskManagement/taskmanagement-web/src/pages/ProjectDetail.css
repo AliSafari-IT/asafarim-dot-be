@@ -412,6 +412,23 @@
   -webkit-box-orient: vertical;
 }
 
+.task-desc-preview {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text, #64748b);
+
+  /* allow wrapping */
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+
+  /* optional: clamp to N lines instead of full text */
+display: -webkit-box;
+-webkit-line-clamp: 3;
+overflow: hidden;
+-webkit-box-orient: vertical;
+}
+
 .task-title-cell strong {
   display: block;
   margin-bottom: var(--asm-space-1);
