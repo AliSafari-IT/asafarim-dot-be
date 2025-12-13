@@ -1,8 +1,6 @@
 packages:
  - "packages/*"
- - "packages/*/*"
- - "packages/changelog-timeline/changelog-demo"
- - "packages/booking-calendar/example"
+ - "packages/*/*demo"
  - "apps/*"
  - "apis/*"
  - "showcases/*/*"
