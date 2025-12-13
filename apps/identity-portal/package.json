@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prestart": "npx kill-port 5177 && pnpm install && pnpm --filter @asafarim/shared-i18n build && pnpm --filter @asafarim/shared-ui-react build",
-    "start": "vite --host identity.asafarim.local --port 5177",
+    "start": "npx kill-port 5177 && vite --host identity.asafarim.local --port 5177",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

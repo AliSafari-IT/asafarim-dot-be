@@ -1,6 +1,6 @@
 packages:
  - "packages/*"
- - "packages/*/changelog-demo"
+ - "packages/*/*demo"
  - "apps/*"
  - "apis/*"
  - "showcases/*/*"

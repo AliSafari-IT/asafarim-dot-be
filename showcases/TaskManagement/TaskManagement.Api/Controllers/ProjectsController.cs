@@ -76,7 +76,7 @@ public class ProjectsController : ControllerBase
         {
             Console.WriteLine($"DEBUG: Error in GetMyProjects: {ex.Message}");
             Console.WriteLine($"DEBUG: Stack trace: {ex.StackTrace}");
-            return StatusCode(500, $"Internal server error: {ex.Message}");
+            return Problem(title: "Internal server error", detail: ex.Message, statusCode: 500);
         }
     }
 
@@ -104,7 +104,7 @@ public class ProjectsController : ControllerBase
         {
             Console.WriteLine($"DEBUG: Error in GetSharedProjects: {ex.Message}");
             Console.WriteLine($"DEBUG: Stack trace: {ex.StackTrace}");
-            return StatusCode(500, $"Internal server error: {ex.Message}");
+            return Problem(title: "Internal server error", detail: ex.Message, statusCode: 500);
         }
     }
 
@@ -120,7 +120,7 @@ public class ProjectsController : ControllerBase
         catch (Exception ex)
         {
             Console.WriteLine($"DEBUG: Error in GetPublicProjects: {ex.Message}");
-            return StatusCode(500, $"Internal server error: {ex.Message}");
+            return Problem(title: "Internal server error", detail: ex.Message, statusCode: 500);
         }
     }
 
@@ -150,7 +150,7 @@ public class ProjectsController : ControllerBase
         {
             Console.WriteLine($"DEBUG: Error in CreateProject: {ex.Message}");
             Console.WriteLine($"DEBUG: Stack trace: {ex.StackTrace}");
-            return StatusCode(500, $"Internal server error: {ex.Message}");
+            return Problem(title: "Internal server error", detail: ex.Message, statusCode: 500);
         }
     }
 

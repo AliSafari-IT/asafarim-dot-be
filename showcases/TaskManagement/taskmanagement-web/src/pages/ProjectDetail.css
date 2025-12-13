@@ -381,20 +381,28 @@
   color: var(--color-text, #1e293b);
 }
 
+.task-desc-preview {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text, #64748b);
+
+  /* allow wrapping */
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+
+  /* optional: clamp to N lines instead of full text */
+display: -webkit-box;
+-webkit-line-clamp: 3;
+overflow: hidden;
+}
+
 .task-title-cell strong {
   display: block;
   margin-bottom: 0.25rem;
   color: var(--color-text, #1e293b);
 }
 
-.task-desc-preview {
-  margin: 0;
-  font-size: 0.75rem;
-  color: var(--color-text, #64748b);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 .status-badge {
   padding: 0.25rem 0.75rem;
@@ -531,31 +539,6 @@
 .member-joined {
   font-size: 0.875rem;
   color: var(--color-text, #64748b);
-}
-
-/* Dark theme support */
-[data-theme="dark"] .kanban-column,
-[data-theme="dark"] .column-header,
-[data-theme="dark"] .task-card,
-[data-theme="dark"] .tasks-list,
-[data-theme="dark"] .modal-content {
-  background: var(--color-surface, #1e293b);
-}
-
-[data-theme="dark"] .project-controls {
-  background: var(--color-surface, #1e293b);
-}
-
-[data-theme="dark"] .search-input,
-[data-theme="dark"] .filter-select,
-[data-theme="dark"] .status-select {
-  background: var(--color-background, #0f172a);
-  border-color: var(--color-border, #334155);
-  color: var(--color-text, #f1f5f9);
-}
-
-[data-theme="dark"] .tasks-table thead {
-  background: var(--color-background, #0f172a);
 }
 
 /* Mobile responsiveness */
