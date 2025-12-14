@@ -14,6 +14,8 @@ public class KidCodeDbContext : DbContext
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
     public DbSet<Album> Albums => Set<Album>();
     public DbSet<CharacterAsset> CharacterAssets => Set<CharacterAsset>();
+    public DbSet<GameSession> GameSessions => Set<GameSession>();
+    public DbSet<UserStats> UserStats => Set<UserStats>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -83,6 +85,34 @@ public class KidCodeDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.MediaAssetId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<GameSession>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Mode).HasConversion<string>();
+            entity.Property(e => e.MetadataJson).HasColumnType("jsonb");
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => new { e.UserId, e.Mode });
+            entity.HasIndex(e => e.CreatedAt);
+        });
+
+        modelBuilder.Entity<UserStats>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Username).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Email).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.BadgesJson).HasColumnType("jsonb");
+            entity.Property(e => e.UnlockedLevelsJson).HasColumnType("jsonb");
+            entity.Property(e => e.CompletedChallengesJson).HasColumnType("jsonb");
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasIndex(e => e.TotalScore);
+            entity.HasIndex(e => e.DrawingHighScore);
+            entity.HasIndex(e => e.StoryHighScore);
+            entity.HasIndex(e => e.PuzzleHighScore);
+            entity.HasIndex(e => e.MusicHighScore);
         });
 
         SeedChallenges(modelBuilder);
