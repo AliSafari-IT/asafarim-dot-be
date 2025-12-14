@@ -5,13 +5,16 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 import { ThemeProvider } from "@asafarim/react-themes";
+import Root from "./theme/Root";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThemeProvider defaultMode="auto" persistMode={true}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-    </ThemeProvider>
+    <Root>
+      <ThemeProvider defaultMode="auto" persistMode={true}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
+    </Root>
   </React.StrictMode>
 );

@@ -8,6 +8,7 @@ import "./BlockEditor.css";
 
 interface BlockPaletteProps {
   categories?: BlockCategory[];
+  excludeTypes?: string[];
 }
 
 const categoryLabels: Record<BlockCategory, { label: string; emoji: string }> =
@@ -22,12 +23,18 @@ const categoryLabels: Record<BlockCategory, { label: string; emoji: string }> =
     system: { label: "System", emoji: "⚙️" },
   };
 
-export default function BlockPalette({ categories }: BlockPaletteProps) {
+export default function BlockPalette({
+  categories,
+  excludeTypes = [],
+}: BlockPaletteProps) {
   const addBlock = useStore((state) => state.addBlock);
 
   const filteredDefs = categories
-    ? BLOCK_DEFINITIONS.filter((def) => categories.includes(def.category))
-    : BLOCK_DEFINITIONS;
+    ? BLOCK_DEFINITIONS.filter(
+        (def) =>
+          categories.includes(def.category) && !excludeTypes.includes(def.type)
+      )
+    : BLOCK_DEFINITIONS.filter((def) => !excludeTypes.includes(def.type));
 
   const groupedBlocks = filteredDefs.reduce((acc, def) => {
     if (!acc[def.category]) acc[def.category] = [];

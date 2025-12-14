@@ -24,7 +24,7 @@
 .character-picker label,
 .bg-picker label {
   font-weight: 600;
-  color: var(--kid-text);
+  color: var(--asm-color-neutral-600);
 }
 
 .character-header {
@@ -162,7 +162,8 @@
 
 .bg-btn {
   padding: 8px 16px;
-  background: var(--kid-bg);
+  background: var(--asm-color-neutral-200);
+  color: var(--asm-color-neutral-600);
   border-radius: var(--kid-radius-sm);
   font-weight: 600;
   font-size: 0.9rem;

@@ -146,6 +146,32 @@
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
+.script-block.failed {
+  border: 3px solid #ff4d4f !important;
+  box-shadow: 0 0 20px rgba(255, 77, 79, 0.8), 0 0 40px rgba(255, 77, 79, 0.4) !important;
+  animation: shake-block 0.5s ease-in-out !important;
+}
+
+@keyframes shake-block {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
 .script-block.dragging {
   opacity: 0.65;
 }

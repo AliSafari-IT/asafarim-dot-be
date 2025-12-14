@@ -7,17 +7,113 @@ import "./PuzzleAdventures.css";
 
 type Cell = "wall" | "path" | "start" | "goal";
 type Direction = "up" | "down" | "left" | "right";
+type GridSize = 8 | 10 | 12;
+type Difficulty = "easy" | "medium" | "hard";
 
-const MAZE: Cell[][] = [
-  ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"],
-  ["wall", "start", "path", "path", "wall", "path", "path", "wall"],
-  ["wall", "wall", "wall", "path", "wall", "path", "wall", "wall"],
-  ["wall", "path", "path", "path", "path", "path", "path", "wall"],
-  ["wall", "path", "wall", "wall", "wall", "wall", "path", "wall"],
-  ["wall", "path", "path", "path", "path", "path", "path", "wall"],
-  ["wall", "wall", "wall", "wall", "wall", "path", "goal", "wall"],
-  ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"],
-];
+function generateMaze(size: GridSize, difficulty: Difficulty): Cell[][] {
+  const maze: Cell[][] = Array(size)
+    .fill(null)
+    .map(() => Array(size).fill("wall"));
+
+  const visited = Array(size)
+    .fill(null)
+    .map(() => Array(size).fill(false));
+
+  const directions = [
+    { dx: 0, dy: -2 },
+    { dx: 2, dy: 0 },
+    { dx: 0, dy: 2 },
+    { dx: -2, dy: 0 },
+  ];
+
+  function shuffle<T>(array: T[]): T[] {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function carve(x: number, y: number) {
+    visited[y][x] = true;
+    maze[y][x] = "path";
+
+    const shuffledDirs = shuffle(directions);
+
+    for (const { dx, dy } of shuffledDirs) {
+      const nx = x + dx;
+      const ny = y + dy;
+
+      if (
+        nx > 0 &&
+        nx < size - 1 &&
+        ny > 0 &&
+        ny < size - 1 &&
+        !visited[ny][nx]
+      ) {
+        maze[y + dy / 2][x + dx / 2] = "path";
+        carve(nx, ny);
+      }
+    }
+  }
+
+  carve(1, 1);
+
+  const complexityMap = {
+    easy: 0.15,
+    medium: 0.08,
+    hard: 0.03,
+  };
+
+  const extraPaths = Math.floor(size * size * complexityMap[difficulty]);
+
+  for (let i = 0; i < extraPaths; i++) {
+    const x = Math.floor(Math.random() * (size - 2)) + 1;
+    const y = Math.floor(Math.random() * (size - 2)) + 1;
+    if (maze[y][x] === "wall") {
+      const neighbors = [
+        maze[y - 1]?.[x],
+        maze[y + 1]?.[x],
+        maze[y]?.[x - 1],
+        maze[y]?.[x + 1],
+      ].filter((cell) => cell === "path");
+
+      if (neighbors.length >= 2) {
+        maze[y][x] = "path";
+      }
+    }
+  }
+
+  maze[1][1] = "start";
+
+  // Find a valid path cell for the goal (prefer bottom-right area)
+  let goalPlaced = false;
+
+  // Try to place goal in bottom-right quadrant first
+  for (let y = size - 2; y >= Math.floor(size / 2) && !goalPlaced; y--) {
+    for (let x = size - 2; x >= Math.floor(size / 2) && !goalPlaced; x--) {
+      if (maze[y][x] === "path") {
+        maze[y][x] = "goal";
+        goalPlaced = true;
+      }
+    }
+  }
+
+  // If no path found in bottom-right, search entire maze
+  if (!goalPlaced) {
+    for (let y = size - 2; y > 0 && !goalPlaced; y--) {
+      for (let x = size - 2; x > 0 && !goalPlaced; x--) {
+        if (maze[y][x] === "path" && !(x === 1 && y === 1)) {
+          maze[y][x] = "goal";
+          goalPlaced = true;
+        }
+      }
+    }
+  }
+
+  return maze;
+}
 
 const DIRECTION_MAP: Record<Direction, { dx: number; dy: number }> = {
   up: { dx: 0, dy: -1 },
@@ -41,10 +137,16 @@ const TURN_LEFT: Record<Direction, Direction> = {
 };
 
 export default function PuzzleAdventures() {
+  const [gridSize, setGridSize] = useState<GridSize>(8);
+  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const [maze, setMaze] = useState<Cell[][]>(() => generateMaze(8, "easy"));
   const [playerPos, setPlayerPos] = useState({ x: 1, y: 1 });
   const [direction, setDirection] = useState<Direction>("right");
   const [won, setWon] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [failedCell, setFailedCell] = useState<{ x: number; y: number } | null>(
+    null
+  );
 
   const playerPosRef = useRef(playerPos);
   const directionRef = useRef<Direction>(direction);
@@ -64,17 +166,39 @@ export default function PuzzleAdventures() {
   const stop = useStore((state) => state.stop);
   const showStickerReward = useStore((state) => state.showStickerReward);
   const setActiveMode = useStore((state) => state.setActiveMode);
+  const setFailedBlockIndex = useStore((state) => state.setFailedBlockIndex);
 
   useEffect(() => {
     setActiveMode("puzzle");
   }, [setActiveMode]);
 
-  const resetMaze = useCallback(() => {
+  useEffect(() => {
+    console.log("failedCell state changed:", failedCell);
+  }, [failedCell]);
+
+  useEffect(() => {
+    if (blocks.length === 0) {
+      setFailedCell(null);
+    }
+  }, [blocks.length]);
+
+  const resetMaze = useCallback((preserveFailedCell = false) => {
     setPlayerPos({ x: 1, y: 1 });
     setDirection("right");
     setWon(false);
     setMessage(null);
+    if (!preserveFailedCell) {
+      setFailedCell(null);
+    }
   }, []);
+
+  const handleGenerateMaze = useCallback(() => {
+    const newMaze = generateMaze(gridSize, difficulty);
+    setMaze(newMaze);
+    setFailedCell(null);
+    resetMaze();
+    stop();
+  }, [gridSize, difficulty, resetMaze, stop]);
 
   const executeCurrentBlock = useCallback(() => {
     if (currentStep < 0 || currentStep >= blocks.length) return;
@@ -90,7 +214,22 @@ export default function PuzzleAdventures() {
         const newX = pos.x + dx;
         const newY = pos.y + dy;
 
-        if (MAZE[newY]?.[newX] === "wall") {
+        // Check bounds and walls
+        const isOutOfBounds =
+          newY < 0 || newY >= maze.length || newX < 0 || newX >= maze[0].length;
+        const isWall = !isOutOfBounds && maze[newY][newX] === "wall";
+
+        if (isOutOfBounds || isWall) {
+          console.log("Hit wall/boundary at:", {
+            newX,
+            newY,
+            isOutOfBounds,
+            isWall,
+          });
+          const failedPos = { x: newX, y: newY };
+          console.log("Setting failedCell to:", failedPos);
+          setFailedCell(failedPos);
+          setFailedBlockIndex(currentStep);
           setMessage("Oops! Hit a wall! 🧱");
           stop();
           return;
@@ -98,7 +237,7 @@ export default function PuzzleAdventures() {
 
         setPlayerPos({ x: newX, y: newY });
 
-        if (MAZE[newY][newX] === "goal") {
+        if (maze[newY][newX] === "goal") {
           setWon(true);
           setMessage("You reached the goal! 🎉");
           showStickerReward("maze-master", "You solved the maze!");
@@ -113,7 +252,7 @@ export default function PuzzleAdventures() {
         setDirection((prev) => TURN_LEFT[prev]);
         break;
     }
-  }, [blocks, currentStep, stop, showStickerReward]);
+  }, [blocks, currentStep, maze, stop, showStickerReward]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -139,9 +278,18 @@ export default function PuzzleAdventures() {
     executeCurrentBlock,
   ]);
 
+  const prevIsPlayingRef = useRef(isPlaying);
+
   useEffect(() => {
-    if (!isPlaying) {
-      resetMaze();
+    const wasPlaying = prevIsPlayingRef.current;
+    prevIsPlayingRef.current = isPlaying;
+
+    if (!isPlaying && wasPlaying) {
+      // Just stopped playing - preserve failed cell if it exists
+      resetMaze(true);
+    } else if (isPlaying && !wasPlaying) {
+      // Just started playing - clear failed cell
+      setFailedCell(null);
     }
   }, [isPlaying, resetMaze]);
 
@@ -167,11 +315,14 @@ export default function PuzzleAdventures() {
 
       <div className="studio-layout">
         <aside className="studio-palette">
-          <BlockPalette categories={["motion"]} />
+          <BlockPalette
+            categories={["motion"]}
+            excludeTypes={["penUp", "penDown"]}
+          />
         </aside>
 
         <main className="studio-main">
-          <div className="canvas-container">
+          <div className="puzzle-workspace">
             <div className="maze-container">
               {message && (
                 <div className={`maze-message ${won ? "success" : "error"}`}>
@@ -181,18 +332,22 @@ export default function PuzzleAdventures() {
               <div
                 className="maze-grid"
                 style={{
-                  gridTemplateColumns: `repeat(${MAZE[0].length}, 40px)`,
+                  gridTemplateColumns: `repeat(${maze[0].length}, 1fr)`,
                 }}
               >
-                {MAZE.map((row, y) =>
+                {maze.map((row, y) =>
                   row.map((cell, x) => {
                     const isPlayer = playerPos.x === x && playerPos.y === y;
+                    const isFailed =
+                      failedCell && failedCell.x === x && failedCell.y === y;
                     return (
                       <div
                         key={`${x}-${y}`}
                         className={`maze-cell ${cell} ${
                           isPlayer ? "player" : ""
-                        }`}
+                        } ${isFailed ? "failed" : ""}`}
+                        data-failed={isFailed ? "true" : undefined}
+                        data-pos={`${x},${y}`}
                       >
                         {isPlayer && getDirectionEmoji()}
                         {!isPlayer && cell === "start" && "🚩"}
@@ -201,6 +356,70 @@ export default function PuzzleAdventures() {
                     );
                   })
                 )}
+              </div>
+            </div>
+
+            <div className="maze-controls-panel">
+              <div className="control-section">
+                <h3>⚙️ Settings</h3>
+
+                <div className="control-group">
+                  <label>Grid Size</label>
+                  <div className="button-group">
+                    <button
+                      className={`size-btn ${gridSize === 8 ? "active" : ""}`}
+                      onClick={() => setGridSize(8)}
+                    >
+                      8×8
+                    </button>
+                    <button
+                      className={`size-btn ${gridSize === 10 ? "active" : ""}`}
+                      onClick={() => setGridSize(10)}
+                    >
+                      10×10
+                    </button>
+                    <button
+                      className={`size-btn ${gridSize === 12 ? "active" : ""}`}
+                      onClick={() => setGridSize(12)}
+                    >
+                      12×12
+                    </button>
+                  </div>
+                </div>
+
+                <div className="control-group">
+                  <label>Difficulty</label>
+                  <div className="button-group-vertical">
+                    <button
+                      className={`difficulty-btn easy ${
+                        difficulty === "easy" ? "active" : ""
+                      }`}
+                      onClick={() => setDifficulty("easy")}
+                    >
+                      😊 Easy
+                    </button>
+                    <button
+                      className={`difficulty-btn medium ${
+                        difficulty === "medium" ? "active" : ""
+                      }`}
+                      onClick={() => setDifficulty("medium")}
+                    >
+                      😐 Medium
+                    </button>
+                    <button
+                      className={`difficulty-btn hard ${
+                        difficulty === "hard" ? "active" : ""
+                      }`}
+                      onClick={() => setDifficulty("hard")}
+                    >
+                      😤 Hard
+                    </button>
+                  </div>
+                </div>
+
+                <button className="generate-btn" onClick={handleGenerateMaze}>
+                  🎲 Generate New Maze
+                </button>
               </div>
             </div>
           </div>

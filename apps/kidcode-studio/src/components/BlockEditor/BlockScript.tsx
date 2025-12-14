@@ -9,6 +9,7 @@ export default function BlockScript() {
   const selectedBlockId = useStore((state) => state.editor.selectedBlockId);
   const currentStep = useStore((state) => state.editor.currentStep);
   const isPlaying = useStore((state) => state.editor.isPlaying);
+  const failedBlockIndex = useStore((state) => state.editor.failedBlockIndex);
   const selectBlock = useStore((state) => state.selectBlock);
   const removeBlock = useStore((state) => state.removeBlock);
   const updateBlock = useStore((state) => state.updateBlock);
@@ -87,6 +88,8 @@ export default function BlockScript() {
 
           const isSelected = block.id === selectedBlockId;
           const isActive = isPlaying && index === currentStep;
+          const isFailed =
+            failedBlockIndex !== null && index === failedBlockIndex;
 
           const isDragging = dragIndex === index;
           const isDropTarget =
@@ -97,7 +100,7 @@ export default function BlockScript() {
               key={block.id}
               className={`script-block ${isSelected ? "selected" : ""} ${
                 isActive ? "active" : ""
-              } ${isDragging ? "dragging" : ""} ${
+              } ${isFailed ? "failed" : ""} ${isDragging ? "dragging" : ""} ${
                 isDropTarget ? "drop-target" : ""
               }`}
               style={{ backgroundColor: def.color }}
