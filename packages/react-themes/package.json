@@ -1,6 +1,6 @@
 {
     "name": "@asafarim/react-themes",
-    "version": "1.0.0",
+    "version": "1.6.3",
     "private": true,
     "type": "module",
     "description": "Comprehensive theme management system for React applications with dark/light mode support",

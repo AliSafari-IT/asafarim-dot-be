@@ -1,0 +1,62 @@
+.reward-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.reward-popup {
+  background: linear-gradient(
+    135deg,
+    var(--asm-color-surface),
+    var(--asm-color-surface-muted)
+  );
+  border-radius: 24px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.reward-sparkles {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2rem;
+  animation: sparkle 1s ease-in-out infinite;
+}
+
+.reward-sticker {
+  font-size: 6rem;
+  margin-bottom: 16px;
+  animation: bounce 0.5s ease-in-out infinite;
+}
+
+.reward-title {
+  font-size: 1.5rem;
+  color: var(--kid-primary);
+  margin-bottom: 8px;
+}
+
+.reward-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--kid-text);
+  margin-bottom: 8px;
+}
+
+.reward-message {
+  color: var(--kid-text-light);
+  margin-bottom: 24px;
+}
+
+.reward-popup .btn-primary {
+  font-size: 1.1rem;
+  padding: 14px 32px;
+}

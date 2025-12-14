@@ -1,0 +1,151 @@
+.music-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.studio-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 20px;
+  min-height: calc(100vh - 280px);
+}
+
+.studio-header {
+  text-align: center;
+}
+
+.studio-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  color: var(--kid-text);
+}
+
+.studio-header p {
+  color: var(--kid-text-light);
+}
+
+.studio-palette {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.studio-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.studio-script {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.music-visualizer {
+  width: 100%;
+  max-width: 600px;
+  height: 200px;
+  background: linear-gradient(
+    135deg,
+    var(--asm-color-primary-900) 0%,
+    var(--asm-color-primary-800) 100%
+  );
+  border-radius: var(--kid-radius-sm);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.music-bar {
+  width: 40px;
+  min-height: 20px;
+  background: linear-gradient(
+    180deg,
+    var(--kid-pink) 0%,
+    var(--kid-purple) 100%
+  );
+  border-radius: 4px 4px 0 0;
+  transition: height 0.15s ease;
+}
+
+.music-bar.active {
+  background: linear-gradient(
+    180deg,
+    var(--kid-yellow) 0%,
+    var(--kid-orange) 100%
+  );
+  box-shadow: 0 0 20px var(--kid-yellow);
+}
+
+.piano-keys {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 16px;
+}
+
+.piano-key {
+  width: 60px;
+  height: 120px;
+  background: linear-gradient(
+    180deg,
+    var(--asm-color-surface) 0%,
+    var(--asm-color-surface-muted) 100%
+  );
+  border: 2px solid var(--asm-color-border);
+  border-radius: 0 0 8px 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--kid-text);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 12px;
+  transition: all 0.1s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.piano-key:hover {
+  background: linear-gradient(
+    180deg,
+    var(--asm-color-surface-muted) 0%,
+    var(--asm-color-neutral-200) 100%
+  );
+}
+
+.piano-key:active,
+.piano-key.active {
+  background: linear-gradient(
+    180deg,
+    var(--kid-secondary) 0%,
+    var(--kid-accent) 100%
+  );
+  color: white;
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 992px) {
+  .studio-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-palette,
+  .studio-script {
+    position: static;
+  }
+
+  .studio-main {
+    order: -1;
+  }
+
+  .piano-key {
+    width: 45px;
+    height: 100px;
+  }
+}
