@@ -1,0 +1,258 @@
+.canvas-container {
+  background: var(--kid-surface);
+  border-radius: var(--kid-radius);
+  padding: 24px;
+  box-shadow: var(--kid-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--asm-space-4, 16px);
+  position: relative;
+  min-height: 500px;
+}
+
+.canvas-save-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--asm-space-2, 8px);
+  padding: var(--asm-space-2, 8px) var(--asm-space-4, 16px);
+  border-radius: var(--asm-radius-md, 10px);
+  font-weight: 600;
+  font-size: var(--asm-font-size-sm, 0.875rem);
+  background: linear-gradient(135deg, var(--kid-secondary), var(--kid-accent));
+  color: white;
+  transition: all var(--asm-motion-duration-fast, 120ms)
+    var(--asm-motion-easing-standard);
+}
+
+.canvas-save-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--asm-effect-shadow-md);
+}
+
+.canvas-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.canvas-save-btn.saving {
+  background: var(--kid-orange);
+}
+
+.canvas-save-btn.saved {
+  background: var(--kid-green);
+}
+
+.drawing-canvas {
+  background: var(--asm-color-surface);
+  border-radius: var(--kid-radius-sm);
+  border: 5px solid var(--kid-bg);
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.story-stage {
+  width: 700px;
+  height: 500px;
+  background: linear-gradient(
+    180deg,
+    var(--asm-color-info-200) 0%,
+    var(--asm-color-secondary-300) 100%
+  );
+  border-radius: var(--kid-radius-sm);
+  border: 5px solid var(--kid-bg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.story-stage.forest {
+  background: linear-gradient(
+    180deg,
+    var(--asm-color-info-200) 0%,
+    var(--asm-color-success-700) 60%,
+    var(--asm-color-success-900) 100%
+  );
+}
+
+.story-stage.space {
+  background: linear-gradient(
+    180deg,
+    var(--asm-color-neutral-900) 0%,
+    var(--asm-color-primary-900) 100%
+  );
+}
+
+.story-stage.city {
+  background: linear-gradient(
+    180deg,
+    var(--asm-color-info-200) 0%,
+    var(--asm-color-info-100) 100%
+  );
+}
+
+.character {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 4rem;
+  transition: all 0.3s ease;
+}
+
+.character.image {
+  width: clamp(64px, 10vw, 70px);
+  height: auto;
+  font-size: 0;
+}
+
+.character.walking {
+  animation: walk 0.5s ease-in-out infinite;
+}
+
+.character.jumping {
+  animation: characterJump 0.5s ease-in-out;
+}
+
+.character.waving {
+  animation: wave 0.5s ease-in-out;
+}
+
+@keyframes walk {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+@keyframes characterJump {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-50px);
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-50%) rotate(10deg);
+  }
+  75% {
+    transform: translateX(-50%) rotate(-10deg);
+  }
+}
+
+.speech-bubble {
+  position: absolute;
+  background: var(--asm-color-surface);
+  border-radius: 20px;
+  padding: 12px 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  box-shadow: var(--kid-shadow);
+  max-width: 200px;
+  animation: pop 0.3s ease-out;
+}
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 15px solid var(--asm-color-surface);
+}
+
+.maze-grid {
+  display: grid;
+  gap: 2px;
+  background: var(--asm-color-neutral-800);
+  padding: 2px;
+  border-radius: var(--kid-radius-sm);
+}
+
+.maze-cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: background 0.2s ease;
+}
+
+.maze-cell.wall {
+  background: var(--asm-color-neutral-600);
+}
+
+.maze-cell.path {
+  background: var(--asm-color-neutral-200);
+}
+
+.maze-cell.start {
+  background: var(--kid-green);
+}
+
+.maze-cell.goal {
+  background: var(--kid-yellow);
+}
+
+.maze-cell.player {
+  background: var(--kid-secondary);
+}
+
+.music-visualizer {
+  width: 700px;
+  height: 250px;
+  background: linear-gradient(
+    135deg,
+    var(--asm-color-primary-900) 0%,
+    var(--asm-color-primary-800) 100%
+  );
+  border-radius: var(--kid-radius-sm);
+  border: 5px solid var(--kid-bg);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.music-bar {
+  width: 30px;
+  background: linear-gradient(
+    180deg,
+    var(--kid-pink) 0%,
+    var(--kid-purple) 100%
+  );
+  border-radius: 4px 4px 0 0;
+  transition: height 0.1s ease;
+}
+
+.music-bar.active {
+  animation: musicPulse 0.3s ease-in-out;
+}
+
+@keyframes musicPulse {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.3);
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "@asafarim/kidcode-api",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "start": "npx kill-port 5190 && dotnet run --project KidCode.Api.csproj",
+        "api": "dotnet run --project KidCode.Api.csproj",
+        "build": "dotnet build",
+        "migrate": "dotnet ef migrations add",
+        "db-update": "dotnet ef database update"
+    }
+}

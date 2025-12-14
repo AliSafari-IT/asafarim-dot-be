@@ -26,6 +26,7 @@
     "dev:testora": "pnpm --filter @asafarim/testora-ui start",
     "dev:smartops": "pnpm --filter @asafarim/smartops-web start",
     "dev:rms": "pnpm --filter @asafarim/restaurant-ui start",
+    "dev:kcs": "pnpm --filter @asafarim/kidcode-studio start",
     "dev:studynotes": "pnpm --filter @asafarim/studynotes-ui start",
     "dev": "concurrently -n web,blog,core,ai,identity,tasks,testora,smartops,rms,studynotes -c \"blue,magenta,cyan,green,yellow,orange,red,purple,teal,ultraviolet\" \"pnpm dev:web\" \"pnpm dev:blog\" \"pnpm dev:core\" \"pnpm dev:ai\" \"pnpm dev:identity\" \"pnpm dev:tasks\" \"pnpm dev:testora\" \"pnpm dev:smartops\" \"pnpm dev:rms\" \"pnpm dev:studynotes\"",
     "api:ai": "pnpm --filter @asafarim/ai-api api",

@@ -1,0 +1,125 @@
+.puzzle-adventures {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.studio-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 20px;
+  min-height: calc(100vh - 280px);
+}
+
+.studio-header {
+  text-align: center;
+}
+
+.studio-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  color: var(--kid-text);
+}
+
+.studio-header p {
+  color: var(--kid-text-light);
+}
+
+.studio-palette {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.studio-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.studio-script {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.maze-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.maze-message {
+  padding: 12px 24px;
+  border-radius: var(--kid-radius);
+  font-weight: 700;
+  font-size: 1.1rem;
+  animation: pop 0.3s ease-out;
+}
+
+.maze-message.success {
+  background: linear-gradient(135deg, var(--kid-green), #52c41a);
+  color: white;
+}
+
+.maze-message.error {
+  background: linear-gradient(135deg, var(--kid-orange), #fa8c16);
+  color: white;
+}
+
+.maze-grid {
+  display: grid;
+  gap: 2px;
+  background: #2d3436;
+  padding: 4px;
+  border-radius: var(--kid-radius-sm);
+  box-shadow: var(--kid-shadow);
+}
+
+.maze-cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.maze-cell.wall {
+  background: #636e72;
+}
+
+.maze-cell.path {
+  background: #dfe6e9;
+}
+
+.maze-cell.start {
+  background: var(--kid-green);
+}
+
+.maze-cell.goal {
+  background: var(--kid-yellow);
+}
+
+.maze-cell.player {
+  background: var(--kid-secondary);
+  animation: pulse 0.5s ease-in-out;
+}
+
+@media (max-width: 992px) {
+  .studio-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-palette,
+  .studio-script {
+    position: static;
+  }
+
+  .studio-main {
+    order: -1;
+  }
+}

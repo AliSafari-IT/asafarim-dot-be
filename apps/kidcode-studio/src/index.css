@@ -1,0 +1,129 @@
+:root {
+  --kid-primary: var(--asm-color-primary-500);
+  --kid-secondary: var(--asm-color-secondary-500);
+  --kid-accent: var(--asm-color-info-500);
+  --kid-yellow: var(--asm-color-warning-500);
+  --kid-purple: var(--asm-color-purple-500);
+  --kid-green: var(--asm-color-success-500);
+  --kid-orange: var(--asm-color-warning-600);
+  --kid-pink: var(--asm-color-danger-500);
+  --kid-bg: var(--asm-color-bg);
+  --kid-surface: var(--asm-color-surface);
+  --kid-text: var(--asm-color-text);
+  --kid-text-light: var(--asm-color-text-muted);
+  --kid-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --kid-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --kid-radius: 16px;
+  --kid-radius-sm: 10px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Comic Neue", "Nunito", system-ui, -apple-system, sans-serif;
+  background: var(--kid-bg);
+  color: var(--kid-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--kid-primary), var(--kid-orange));
+  color: white;
+  padding: 14px 28px;
+  border-radius: var(--kid-radius);
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: var(--kid-shadow);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--kid-secondary), var(--kid-accent));
+  color: white;
+  padding: 14px 28px;
+  border-radius: var(--kid-radius);
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: var(--kid-shadow);
+}
+
+.card {
+  background: var(--kid-surface);
+  border-radius: var(--kid-radius);
+  box-shadow: var(--kid-shadow);
+  padding: 24px;
+  border: 2px solid var(--asm-color-border);
+}
+
+.sparkle {
+  animation: sparkle 1s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-bounce {
+  animation: bounce 0.5s ease-in-out;
+}
+
+.animate-pop {
+  animation: pop 0.3s ease-out;
+}
