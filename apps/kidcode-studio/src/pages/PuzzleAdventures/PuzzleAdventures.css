@@ -6,9 +6,9 @@
 
 .studio-layout {
   display: grid;
-  grid-template-columns: 280px 1fr 320px;
+  grid-template-columns: 260px 1fr 300px;
   gap: 20px;
-  min-height: calc(100vh - 280px);
+  min-height: calc(100vh - 200px);
 }
 
 .studio-header {
@@ -23,6 +23,158 @@
 
 .studio-header p {
   color: var(--kid-text-light);
+}
+
+.puzzle-workspace {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.maze-controls-panel {
+  background: linear-gradient(
+    135deg,
+    var(--kid-surface) 0%,
+    var(--kid-bg) 100%
+  );
+  border-radius: var(--kid-radius);
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 2px solid var(--kid-border);
+  min-width: 200px;
+  max-width: 240px;
+}
+
+.control-section h3 {
+  margin: 0 0 16px 0;
+  color: var(--kid-text);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.control-group label {
+  font-weight: 700;
+  color: var(--kid-text);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.button-group-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.size-btn,
+.difficulty-btn {
+  padding: 10px 12px;
+  border: 2px solid var(--kid-border);
+  background: var(--kid-surface);
+  color: var(--kid-text);
+  border-radius: var(--kid-radius-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.size-btn::before,
+.difficulty-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.size-btn:hover::before,
+.difficulty-btn:hover::before {
+  width: 200px;
+  height: 200px;
+}
+
+.size-btn:hover,
+.difficulty-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.size-btn.active {
+  background: linear-gradient(135deg, var(--kid-primary), var(--kid-secondary));
+  color: white;
+  border-color: var(--kid-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.difficulty-btn.easy.active {
+  background: linear-gradient(135deg, #52c41a, var(--kid-green));
+  color: white;
+  border-color: var(--kid-green);
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+}
+
+.difficulty-btn.medium.active {
+  background: linear-gradient(135deg, #faad14, var(--kid-yellow));
+  color: white;
+  border-color: var(--kid-yellow);
+  box-shadow: 0 4px 12px rgba(250, 173, 20, 0.3);
+}
+
+.difficulty-btn.hard.active {
+  background: linear-gradient(135deg, #ff4d4f, var(--kid-orange));
+  color: white;
+  border-color: var(--kid-orange);
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+}
+
+.generate-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #9c27b0, #673ab7);
+  color: white;
+  border: none;
+  border-radius: var(--kid-radius);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+  margin-top: 8px;
+}
+
+.generate-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(156, 39, 176, 0.5);
+  background: linear-gradient(135deg, #ab47bc, #7e57c2);
+}
+
+.generate-btn:active {
+  transform: translateY(-1px);
 }
 
 .studio-palette {
@@ -48,65 +200,225 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  position: relative;
 }
 
 .maze-message {
-  padding: 12px 24px;
+  padding: 14px 28px;
   border-radius: var(--kid-radius);
   font-weight: 700;
   font-size: 1.1rem;
-  animation: pop 0.3s ease-out;
+  animation: slideDown 0.4s ease-out;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.maze-message::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    left: 100%;
+  }
 }
 
 .maze-message.success {
-  background: linear-gradient(135deg, var(--kid-green), #52c41a);
+  background: linear-gradient(135deg, #52c41a, var(--kid-green));
   color: white;
 }
 
 .maze-message.error {
-  background: linear-gradient(135deg, var(--kid-orange), #fa8c16);
+  background: linear-gradient(135deg, #ff4d4f, var(--kid-orange));
   color: white;
 }
 
 .maze-grid {
   display: grid;
-  gap: 2px;
-  background: #2d3436;
-  padding: 4px;
-  border-radius: var(--kid-radius-sm);
-  box-shadow: var(--kid-shadow);
+  gap: 3px;
+  background: linear-gradient(135deg, #1e272e, #2d3436);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  border: 3px solid #34495e;
+  position: relative;
+  max-width: min(600px, 90vw);
+  width: 100%;
+}
+
+.maze-grid::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe);
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1;
+}
+
+.maze-grid:hover::before {
+  opacity: 0.3;
 }
 
 .maze-cell {
-  width: 40px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  transition: all 0.2s ease;
-  border-radius: 4px;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.maze-cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.maze-cell:hover::before {
+  opacity: 1;
 }
 
 .maze-cell.wall {
-  background: #636e72;
+  background: linear-gradient(135deg, #636e72, #4a5568);
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.1);
 }
 
 .maze-cell.path {
-  background: #dfe6e9;
+  background: linear-gradient(135deg, #f7fafc, #e2e8f0);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .maze-cell.start {
-  background: var(--kid-green);
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  animation: glow-green 2s ease-in-out infinite;
 }
 
 .maze-cell.goal {
-  background: var(--kid-yellow);
+  background: linear-gradient(135deg, #faad14, #ffc53d);
+  box-shadow: 0 4px 12px rgba(250, 173, 20, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  animation: glow-yellow 2s ease-in-out infinite;
 }
 
 .maze-cell.player {
-  background: var(--kid-secondary);
-  animation: pulse 0.5s ease-in-out;
+  background: linear-gradient(135deg, var(--kid-secondary), var(--kid-primary));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 20px var(--kid-secondary);
+  animation: pulse-player 0.6s ease-in-out;
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+@keyframes glow-green {
+  0%,
+  100% {
+    box-shadow: 0 4px 12px rgba(82, 196, 26, 0.4),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(82, 196, 26, 0.6),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes glow-yellow {
+  0%,
+  100% {
+    box-shadow: 0 4px 12px rgba(250, 173, 20, 0.4),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(250, 173, 20, 0.6),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes pulse-player {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.maze-cell.failed {
+  border: 4px solid #ff4d4f !important;
+  box-shadow: 0 0 20px rgba(255, 77, 79, 0.8), 0 0 40px rgba(255, 77, 79, 0.4),
+    inset 0 0 10px rgba(255, 77, 79, 0.3) !important;
+  animation: shake-failed 0.5s ease-in-out !important;
+  z-index: 100;
+}
+
+@keyframes shake-failed {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@media (max-width: 1200px) {
+  .studio-layout {
+    grid-template-columns: 240px 1fr 280px;
+  }
 }
 
 @media (max-width: 992px) {
@@ -121,5 +433,90 @@
 
   .studio-main {
     order: -1;
+  }
+
+  .puzzle-workspace {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .maze-controls-panel {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .button-group {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .studio-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .maze-grid {
+    max-width: min(500px, 95vw);
+    padding: 8px;
+    gap: 2px;
+  }
+
+  .maze-cell {
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+    border-radius: 4px;
+  }
+
+  .maze-controls-panel {
+    padding: 16px;
+  }
+
+  .control-section h3 {
+    font-size: 1rem;
+  }
+
+  .generate-btn {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .studio-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .studio-header p {
+    font-size: 0.9rem;
+  }
+
+  .maze-grid {
+    max-width: 95vw;
+    padding: 6px;
+    gap: 2px;
+  }
+
+  .maze-cell {
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    border-radius: 3px;
+  }
+
+  .button-group {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+
+  .size-btn,
+  .difficulty-btn {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+  }
+
+  .control-group label {
+    font-size: 0.75rem;
+  }
+
+  .maze-message {
+    padding: 10px 20px;
+    font-size: 0.95rem;
   }
 }

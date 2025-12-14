@@ -193,6 +193,7 @@
   border: 2px solid var(--asm-color-primary-200);
   border-radius: var(--asm-radius-sm);
   background: var(--kid-surface);
+  color: var(--kid-text);
   font-size: var(--asm-font-size-sm);
 }
 

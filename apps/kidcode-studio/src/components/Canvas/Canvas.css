@@ -56,41 +56,245 @@
 .story-stage {
   width: 700px;
   height: 500px;
-  background: linear-gradient(
-    180deg,
-    var(--asm-color-info-200) 0%,
-    var(--asm-color-secondary-300) 100%
-  );
   border-radius: var(--kid-radius-sm);
   border: 5px solid var(--kid-bg);
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  isolation: isolate;
+}
+
+.story-stage::before,
+.story-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.story-stage > * {
+  position: relative;
+  z-index: 1;
 }
 
 .story-stage.forest {
-  background: linear-gradient(
-    180deg,
-    var(--asm-color-info-200) 0%,
-    var(--asm-color-success-700) 60%,
-    var(--asm-color-success-900) 100%
-  );
+  background: radial-gradient(
+      circle at 85% 15%,
+      #ffd700 0%,
+      #ffa500 8%,
+      transparent 15%
+    ),
+    linear-gradient(180deg, #87ceeb 0%, #98d8e8 40%, #7cb342 70%, #558b2f 100%);
+}
+
+.story-stage.forest::before {
+  background: radial-gradient(
+      ellipse 60px 280px at 12% 50%,
+      #5d4037 0%,
+      #4e342e 100%
+    ),
+    radial-gradient(ellipse 70px 300px at 28% 48%, #6d4c41 0%, #5d4037 100%),
+    radial-gradient(ellipse 55px 260px at 88% 52%, #4e342e 0%, #3e2723 100%),
+    radial-gradient(ellipse 65px 290px at 72% 50%, #5d4037 0%, #4e342e 100%),
+    radial-gradient(
+      circle 180px at 15% 8%,
+      rgba(46, 125, 50, 0.85) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle 200px at 30% 5%,
+      rgba(56, 142, 60, 0.8) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle 160px at 75% 10%,
+      rgba(46, 125, 50, 0.9) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle 190px at 90% 8%,
+      rgba(56, 142, 60, 0.85) 0%,
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 3px,
+      rgba(255, 215, 0, 0.3) 3px,
+      rgba(255, 215, 0, 0.3) 4px,
+      transparent 4px,
+      transparent 25px
+    );
+}
+
+.story-stage.forest::after {
+  inset: auto 0 0 0;
+  height: 25%;
+  background: radial-gradient(circle 8px at 15% 30%, #ff69b4 0%, #ff1493 100%),
+    radial-gradient(circle 6px at 25% 50%, #ffd700 0%, #ffa500 100%),
+    radial-gradient(circle 7px at 82% 40%, #ff69b4 0%, #ff1493 100%),
+    radial-gradient(circle 6px at 92% 55%, #9c27b0 0%, #7b1fa2 100%),
+    linear-gradient(0deg, #4caf50 0%, #66bb6a 40%, #81c784 100%);
 }
 
 .story-stage.space {
-  background: linear-gradient(
-    180deg,
-    var(--asm-color-neutral-900) 0%,
-    var(--asm-color-primary-900) 100%
-  );
+  background: radial-gradient(
+      circle 100px at 15% 25%,
+      #4a148c 0%,
+      #6a1b9a 30%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle 120px at 85% 70%,
+      #1a237e 0%,
+      #283593 30%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle 80px at 50% 80%,
+      #b71c1c 0%,
+      #c62828 30%,
+      transparent 70%
+    ),
+    linear-gradient(180deg, #0d0221 0%, #1a0b2e 50%, #16213e 100%);
+}
+
+.story-stage.space::before {
+  background: radial-gradient(circle 2px at 8% 12%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 15% 25%, #fff 0%, #fff 100%),
+    radial-gradient(circle 2px at 22% 8%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 35% 18%, #fff 0%, #fff 100%),
+    radial-gradient(circle 2px at 42% 32%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 48% 15%, #fff 0%, #fff 100%),
+    radial-gradient(circle 2px at 58% 28%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 65% 8%, #fff 0%, #fff 100%),
+    radial-gradient(circle 2px at 72% 22%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 78% 35%, #fff 0%, #fff 100%),
+    radial-gradient(circle 2px at 85% 15%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 92% 28%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 12% 45%, #fff 0%, #fff 100%),
+    radial-gradient(circle 2px at 25% 58%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 38% 68%, #fff 0%, #fff 100%),
+    radial-gradient(circle 2px at 52% 75%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 68% 82%, #fff 0%, #fff 100%),
+    radial-gradient(circle 2px at 82% 72%, #fff 0%, #fff 100%),
+    radial-gradient(circle 1px at 88% 88%, #fff 0%, #fff 100%),
+    radial-gradient(circle 50px at 90% 20%, #ffd700 0%, #ffa500 100%),
+    radial-gradient(circle 35px at 10% 80%, #64b5f6 0%, #42a5f5 100%);
+  box-shadow: inset 0 0 100px rgba(138, 43, 226, 0.3),
+    inset 0 0 60px rgba(75, 0, 130, 0.2);
+}
+
+.story-stage.space::after {
+  background: radial-gradient(
+      ellipse 200px 100px at 30% 50%,
+      rgba(138, 43, 226, 0.4) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 180px 90px at 70% 30%,
+      rgba(75, 0, 130, 0.3) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle 3px at 20% 15%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      circle 2px at 45% 40%,
+      rgba(255, 255, 255, 0.6) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      circle 3px at 75% 65%,
+      rgba(255, 255, 255, 0.7) 0%,
+      transparent 100%
+    );
 }
 
 .story-stage.city {
-  background: linear-gradient(
-    180deg,
-    var(--asm-color-info-200) 0%,
-    var(--asm-color-info-100) 100%
-  );
+  background: radial-gradient(
+      circle 60px at 10% 10%,
+      #ffa500 0%,
+      #ff8c00 50%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      #ff6b35 0%,
+      #f7931e 15%,
+      #fdb462 30%,
+      #87ceeb 50%,
+      #4a90e2 70%,
+      #2c3e50 100%
+    );
+}
+
+.story-stage.city::before {
+  background: linear-gradient(0deg, #1a1a2e 0%, transparent 35%),
+    repeating-linear-gradient(
+      90deg,
+      #2c3e50 0,
+      #2c3e50 45px,
+      #34495e 45px,
+      #34495e 50px,
+      #2c3e50 50px,
+      #2c3e50 80px,
+      #1a1a2e 80px,
+      #1a1a2e 85px,
+      #2c3e50 85px,
+      #2c3e50 120px,
+      #34495e 120px,
+      #34495e 125px,
+      #2c3e50 125px,
+      #2c3e50 160px,
+      #1a1a2e 160px,
+      #1a1a2e 165px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 12px,
+      rgba(255, 223, 0, 0.7) 12px,
+      rgba(255, 223, 0, 0.7) 14px,
+      transparent 14px,
+      transparent 26px,
+      rgba(255, 223, 0, 0.5) 26px,
+      rgba(255, 223, 0, 0.5) 28px,
+      transparent 28px,
+      transparent 40px,
+      rgba(255, 223, 0, 0.8) 40px,
+      rgba(255, 223, 0, 0.8) 42px
+    );
+  inset: auto 0 0 0;
+  height: 55%;
+  mask-image: linear-gradient(0deg, black 0%, black 70%, transparent 100%);
+}
+
+.story-stage.city::after {
+  inset: auto 0 0 0;
+  height: 20%;
+  background: radial-gradient(
+      ellipse 15px 3px at 15% 40%,
+      #ffd700 0%,
+      transparent 100%
+    ),
+    radial-gradient(ellipse 12px 3px at 35% 50%, #ffa500 0%, transparent 100%),
+    radial-gradient(ellipse 18px 3px at 55% 35%, #ffd700 0%, transparent 100%),
+    radial-gradient(ellipse 14px 3px at 75% 45%, #ffa500 0%, transparent 100%),
+    radial-gradient(ellipse 16px 3px at 90% 38%, #ffd700 0%, transparent 100%),
+    repeating-linear-gradient(
+      90deg,
+      #34495e 0,
+      #34495e 3px,
+      #95a5a6 3px,
+      #95a5a6 6px,
+      #34495e 6px,
+      #34495e 20px
+    ),
+    linear-gradient(0deg, #2c3e50 0%, #34495e 100%);
 }
 
 .character {

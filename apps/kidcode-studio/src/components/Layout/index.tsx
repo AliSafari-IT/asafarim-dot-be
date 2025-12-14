@@ -13,7 +13,7 @@ export default function Layout() {
           <span className="logo-text">KidCode Studio</span>
         </div>
         <NavTabs />
-        <ThemeToggle variant="outline" />
+        <ThemeToggle variant="ghost" />
       </header>
       <main className="layout-main">
         <Outlet />

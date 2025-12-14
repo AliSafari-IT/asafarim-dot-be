@@ -8,6 +8,7 @@ interface EditorState {
     selectedBlockId: string | null;
     isPlaying: boolean;
     currentStep: number;
+    failedBlockIndex: number | null;
     undoStack: Block[][];
     redoStack: Block[][];
 }
@@ -51,6 +52,7 @@ interface AppState {
     play: () => void;
     stop: () => void;
     step: () => void;
+    setFailedBlockIndex: (index: number | null) => void;
 
     showStickerReward: (sticker: string, message: string) => void;
     hideReward: () => void;
@@ -69,6 +71,7 @@ const createEmptyEditor = (): EditorState => ({
     selectedBlockId: null,
     isPlaying: false,
     currentStep: -1,
+    failedBlockIndex: null,
     undoStack: [],
     redoStack: []
 });
@@ -173,7 +176,7 @@ export const useStore = create<AppState>((set, get) => ({
     clearBlocks: () => {
         get().saveToUndo();
         set((state) => {
-            const editor: EditorState = { ...state.editor, blocks: [], selectedBlockId: null, redoStack: [] };
+            const editor: EditorState = { ...state.editor, blocks: [], selectedBlockId: null, failedBlockIndex: null, redoStack: [] };
             return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
         });
     },
@@ -216,7 +219,7 @@ export const useStore = create<AppState>((set, get) => ({
     }),
 
     play: () => set((state) => {
-        const editor: EditorState = { ...state.editor, isPlaying: true, currentStep: 0 };
+        const editor: EditorState = { ...state.editor, isPlaying: true, currentStep: 0, failedBlockIndex: null };
         return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
     }),
 
@@ -231,6 +234,11 @@ export const useStore = create<AppState>((set, get) => ({
             currentStep: state.editor.currentStep + 1,
             isPlaying: state.editor.currentStep + 1 < state.editor.blocks.length
         };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    setFailedBlockIndex: (index) => set((state) => {
+        const editor: EditorState = { ...state.editor, failedBlockIndex: index };
         return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
     }),
 
