@@ -30,6 +30,7 @@ interface AppState {
     editor: EditorState;
     showReward: { sticker: string; message: string } | null;
     selectedCharacterAsset: CharacterAsset | null;
+    earnedStickers: Set<string>;
 
     setCurrentProject: (project: Project | null) => void;
     setProjects: (projects: Project[]) => void;
@@ -54,7 +55,7 @@ interface AppState {
     step: () => void;
     setFailedBlockIndex: (index: number | null) => void;
 
-    showStickerReward: (sticker: string, message: string) => void;
+    showStickerReward: (sticker: string, message: string) => boolean;
     hideReward: () => void;
 
     setSelectedCharacterAsset: (asset: CharacterAsset | null) => void;
@@ -92,6 +93,7 @@ export const useStore = create<AppState>((set, get) => ({
     editor: createEmptyEditor(),
     showReward: null,
     selectedCharacterAsset: null,
+    earnedStickers: new Set<string>(),
 
     setCurrentProject: (project) => set((state) => {
         const mode = project?.mode ?? state.activeMode;
@@ -114,7 +116,10 @@ export const useStore = create<AppState>((set, get) => ({
     }),
 
     setProjects: (projects) => set({ projects }),
-    setProgress: (progress) => set({ progress }),
+    setProgress: (progress) => set({
+        progress,
+        earnedStickers: new Set(progress?.earnedStickers || [])
+    }),
     setChallenges: (challenges) => set({ challenges }),
     setDailyChallenge: (challenge) => set({ dailyChallenge: challenge }),
 
@@ -242,7 +247,19 @@ export const useStore = create<AppState>((set, get) => ({
         return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
     }),
 
-    showStickerReward: (sticker, message) => set({ showReward: { sticker, message } }),
+    showStickerReward: (sticker, message) => {
+        const state = get();
+        if (state.earnedStickers.has(sticker)) {
+            return false;
+        }
+        const newEarnedStickers = new Set(state.earnedStickers);
+        newEarnedStickers.add(sticker);
+        set({
+            showReward: { sticker, message },
+            earnedStickers: newEarnedStickers
+        });
+        return true;
+    },
     hideReward: () => set({ showReward: null }),
 
     setSelectedCharacterAsset: (asset) => set({ selectedCharacterAsset: asset }),

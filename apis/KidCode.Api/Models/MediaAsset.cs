@@ -12,9 +12,12 @@ public class MediaAsset
     public int? Width { get; set; }
     public int? Height { get; set; }
     public double? Duration { get; set; }
+    public string? ScriptJson { get; set; }
     public Guid? AlbumId { get; set; }
+    public Guid? ProjectId { get; set; }
     public string? UserId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Album? Album { get; set; }
+    public Project? Project { get; set; }
 }

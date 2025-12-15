@@ -1,4 +1,12 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5190/api";
+const RAW_API_BASE = import.meta.env.VITE_API_URL || "http://kidcode.asafarim.local:5190/api";
+const API_BASE = RAW_API_BASE.replace(/\/$/, '').endsWith('/api')
+    ? RAW_API_BASE.replace(/\/$/, '')
+    : `${RAW_API_BASE.replace(/\/$/, '')}/api`;
+
+function getAuthHeaders(): HeadersInit {
+    const token = localStorage.getItem('auth_token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export interface CharacterAssetDto {
     id: string;
@@ -22,6 +30,7 @@ export interface UpdateCharacterAssetDto {
 export const characterApi = {
     async listCharacters(): Promise<CharacterAssetDto[]> {
         const response = await fetch(`${API_BASE}/CharacterAssets`, {
+            headers: getAuthHeaders(),
             credentials: "include",
         });
         if (!response.ok) {
@@ -32,6 +41,7 @@ export const characterApi = {
 
     async getCharacter(id: string): Promise<CharacterAssetDto> {
         const response = await fetch(`${API_BASE}/CharacterAssets/${id}`, {
+            headers: getAuthHeaders(),
             credentials: "include",
         });
         if (!response.ok) {
@@ -45,7 +55,7 @@ export const characterApi = {
     ): Promise<CharacterAssetDto> {
         const response = await fetch(`${API_BASE}/CharacterAssets`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...getAuthHeaders() },
             credentials: "include",
             body: JSON.stringify(dto),
         });
@@ -61,7 +71,7 @@ export const characterApi = {
     ): Promise<void> {
         const response = await fetch(`${API_BASE}/CharacterAssets/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...getAuthHeaders() },
             credentials: "include",
             body: JSON.stringify(dto),
         });
@@ -73,6 +83,7 @@ export const characterApi = {
     async deleteCharacter(id: string): Promise<void> {
         const response = await fetch(`${API_BASE}/CharacterAssets/${id}`, {
             method: "DELETE",
+            headers: getAuthHeaders(),
             credentials: "include",
         });
         if (!response.ok) {

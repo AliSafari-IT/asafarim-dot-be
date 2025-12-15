@@ -39,4 +39,14 @@ public class ProgressController : ControllerBase
         var progress = await _progressService.UpdateProgressAsync(GetUserId(), dto);
         return Ok(progress);
     }
+
+    [HttpGet("leaderboard/{mode}")]
+    public async Task<ActionResult<List<LeaderboardEntryDto>>> GetLeaderboard(
+        string mode,
+        [FromQuery] int limit = 10
+    )
+    {
+        var leaderboard = await _progressService.GetLeaderboardAsync(mode, limit);
+        return Ok(leaderboard);
+    }
 }

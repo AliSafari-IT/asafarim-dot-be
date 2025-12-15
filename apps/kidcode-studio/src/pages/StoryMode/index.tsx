@@ -1,14 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
-import { Camera } from "lucide-react";
+import { useState, useEffect, useCallback, type MouseEvent } from "react";
+import { Camera, Check, FolderOpen, Trash2 } from "lucide-react";
+import { useAuth } from "@asafarim/shared-ui-react";
+import { useProgressSync } from "../../hooks/useProgressSync";
 import { useNavigate } from "react-router-dom";
 import BlockPalette from "../../components/BlockEditor/BlockPalette";
 import BlockScript from "../../components/BlockEditor/BlockScript";
 import ControlsBar from "../../components/BlockEditor/ControlsBar";
 import { useStore } from "../../core/state/useStore";
+import { mediaApi, type MediaAssetDto } from "../../services/mediaApi";
 import {
   characterApi,
   type CharacterAssetDto,
 } from "../../services/characterApi";
+import "../../components/Canvas/Canvas.css";
 import "./StoryMode.css";
 
 const CHARACTERS = ["🧒", "👧", "🐱", "🐶", "🦊", "🐻", "🤖", "👽"];
@@ -21,6 +25,13 @@ export default function StoryMode() {
     []
   );
   const [loading, setLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
+    "idle"
+  );
+  const [showLoadModal, setShowLoadModal] = useState(false);
+  const [savedScripts, setSavedScripts] = useState<MediaAssetDto[]>([]);
+  const [loadingScripts, setLoadingScripts] = useState(false);
+  const [loadedMediaId, setLoadedMediaId] = useState<string | null>(null);
   const [background, setBackground] =
     useState<(typeof BACKGROUNDS)[number]>("forest");
   const [position, setPosition] = useState({ x: 50, y: 70 });
@@ -28,12 +39,185 @@ export default function StoryMode() {
   const [speechText, setSpeechText] = useState<string | null>(null);
 
   const blocks = useStore((state) => state.editor.blocks);
+  const setBlocks = useStore((state) => state.setBlocks);
   const isPlaying = useStore((state) => state.editor.isPlaying);
   const currentStep = useStore((state) => state.editor.currentStep);
   const step = useStore((state) => state.step);
   const stop = useStore((state) => state.stop);
   const showStickerReward = useStore((state) => state.showStickerReward);
   const setActiveMode = useStore((state) => state.setActiveMode);
+  const { updateProgress } = useProgressSync();
+
+  const createStoryThumbnail = useCallback(async () => {
+    const width = 700;
+    const height = 500;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    const style = getComputedStyle(document.documentElement);
+    const kidPrimary = style.getPropertyValue("--kid-primary").trim();
+    const kidSecondary = style.getPropertyValue("--kid-secondary").trim();
+    const kidAccent = style.getPropertyValue("--kid-accent").trim();
+    const kidSurface = style.getPropertyValue("--kid-surface").trim();
+    const kidText = style.getPropertyValue("--kid-text").trim();
+
+    const grad = ctx.createLinearGradient(0, 0, 0, height);
+    if (background === "space") {
+      grad.addColorStop(0, kidPrimary || kidSecondary);
+      grad.addColorStop(1, kidAccent || kidSecondary);
+    } else if (background === "city") {
+      grad.addColorStop(0, kidAccent || kidSecondary);
+      grad.addColorStop(1, kidPrimary || kidSecondary);
+    } else {
+      grad.addColorStop(0, kidSecondary || kidPrimary);
+      grad.addColorStop(1, kidAccent || kidPrimary);
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.globalAlpha = 0.75;
+    ctx.fillStyle = kidSurface || kidPrimary || kidSecondary;
+    ctx.fillRect(16, 16, width - 32, 64);
+    ctx.restore();
+
+    ctx.fillStyle = kidText || "#ffffff";
+    ctx.font = "700 28px system-ui";
+    ctx.fillText("Story Script", 32, 58);
+
+    ctx.font = "600 16px system-ui";
+    ctx.fillText(`Blocks: ${blocks.length}`, 32, 90);
+
+    return await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/png")
+    );
+  }, [background, blocks.length]);
+
+  const { user, isAuthenticated } = useAuth();
+
+  const handleLoadScript = useCallback(async () => {
+    setShowLoadModal(true);
+    setLoadingScripts(true);
+    try {
+      const scripts = await mediaApi.listMedia(
+        undefined,
+        "story",
+        isAuthenticated ? true : undefined
+      );
+      setSavedScripts(scripts.filter((s) => s.scriptJson));
+    } catch (error) {
+      console.error("Failed to load story scripts:", error);
+    } finally {
+      setLoadingScripts(false);
+    }
+  }, [isAuthenticated]);
+
+  const handleSelectScript = useCallback(
+    (script: MediaAssetDto) => {
+      if (!script.scriptJson) return;
+      try {
+        const loadedBlocks = JSON.parse(script.scriptJson);
+        setBlocks(loadedBlocks);
+        setLoadedMediaId(script.id);
+        setShowLoadModal(false);
+      } catch (error) {
+        console.error("Failed to parse script:", error);
+      }
+    },
+    [setBlocks]
+  );
+
+  const handleDeleteScript = useCallback(
+    async (scriptId: string, e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      if (!confirm("Delete this story script?")) return;
+
+      try {
+        await mediaApi.deleteMedia(scriptId);
+        setSavedScripts((prev) => prev.filter((s) => s.id !== scriptId));
+        if (loadedMediaId === scriptId) {
+          setLoadedMediaId(null);
+        }
+      } catch (error) {
+        console.error("Failed to delete story script:", error);
+        alert("Failed to delete story. Please try again.");
+      }
+    },
+    [loadedMediaId]
+  );
+
+  const handleSave = useCallback(async () => {
+    if (!loadedMediaId) return;
+    if (blocks.length === 0) return;
+
+    setSaveStatus("saving");
+    try {
+      const blob = await createStoryThumbnail();
+      if (!blob) {
+        setSaveStatus("idle");
+        return;
+      }
+
+      await mediaApi.updateMedia(loadedMediaId, {
+        file: blob,
+        scriptJson: JSON.stringify(blocks),
+      });
+
+      const updated = await mediaApi.listMedia(
+        undefined,
+        "story",
+        isAuthenticated ? true : undefined
+      );
+      setSavedScripts(updated.filter((s) => s.scriptJson));
+
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch (error) {
+      console.error("Failed to save story script:", error);
+      setSaveStatus("idle");
+    }
+  }, [blocks, createStoryThumbnail, loadedMediaId]);
+
+  const handleSaveAs = useCallback(async () => {
+    if (blocks.length === 0) return;
+
+    setSaveStatus("saving");
+    try {
+      const blob = await createStoryThumbnail();
+      if (!blob) {
+        setSaveStatus("idle");
+        return;
+      }
+
+      const title = `Story ${new Date().toLocaleString()}`;
+      const media = await mediaApi.uploadMedia({
+        file: blob,
+        title,
+        source: "story",
+        width: 700,
+        height: 500,
+        scriptJson: JSON.stringify(blocks),
+      });
+
+      setLoadedMediaId(media.id);
+
+      const updated = await mediaApi.listMedia(
+        undefined,
+        "story",
+        isAuthenticated ? true : undefined
+      );
+      setSavedScripts(updated.filter((s) => s.scriptJson));
+
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch (error) {
+      console.error("Failed to save story script:", error);
+      setSaveStatus("idle");
+    }
+  }, [blocks, createStoryThumbnail]);
 
   useEffect(() => {
     setActiveMode("story");
@@ -131,6 +315,7 @@ export default function StoryMode() {
     stop,
     executeCurrentBlock,
     showStickerReward,
+    updateProgress,
   ]);
 
   useEffect(() => {
@@ -250,6 +435,48 @@ export default function StoryMode() {
                 </div>
               )}
             </div>
+            <div className="canvas-actions">
+              <button
+                className="canvas-load-btn"
+                onClick={handleLoadScript}
+                title="Load Saved Script"
+              >
+                <FolderOpen size={18} />
+                Load
+              </button>
+              {loadedMediaId && (
+                <button
+                  className={`canvas-save-btn ${saveStatus}`}
+                  onClick={handleSave}
+                  disabled={saveStatus === "saving" || blocks.length === 0}
+                  title="Save (Update Current)"
+                >
+                  {saveStatus === "saved" ? (
+                    <Check size={18} />
+                  ) : (
+                    <Camera size={18} />
+                  )}
+                  {saveStatus === "idle" && "Save"}
+                  {saveStatus === "saving" && "Saving..."}
+                  {saveStatus === "saved" && "Saved!"}
+                </button>
+              )}
+              <button
+                className={`canvas-save-btn ${saveStatus}`}
+                onClick={handleSaveAs}
+                disabled={saveStatus === "saving" || blocks.length === 0}
+                title="Save As (Create New)"
+              >
+                {saveStatus === "saved" ? (
+                  <Check size={18} />
+                ) : (
+                  <Camera size={18} />
+                )}
+                {saveStatus === "idle" && "Save As"}
+                {saveStatus === "saving" && "Saving..."}
+                {saveStatus === "saved" && "Saved!"}
+              </button>
+            </div>
           </div>
           <ControlsBar />
         </main>
@@ -258,6 +485,78 @@ export default function StoryMode() {
           <BlockScript />
         </aside>
       </div>
+
+      {showLoadModal && (
+        <div className="modal-overlay" onClick={() => setShowLoadModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Load Saved Script</h2>
+            {loadingScripts ? (
+              <p>Loading...</p>
+            ) : savedScripts.length === 0 ? (
+              <p>No saved story scripts found.</p>
+            ) : (
+              <div className="saved-drawings-grid">
+                {savedScripts.map((script) => {
+                  const currentUserId =
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.id ??
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.userId ??
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.sub ??
+                    null;
+
+                  const isOwner =
+                    !!currentUserId && script.userId === currentUserId;
+                  return (
+                    <div
+                      key={script.id}
+                      className="saved-drawing-card"
+                      onClick={() => handleSelectScript(script)}
+                    >
+                      <img
+                        src={mediaApi.getContentUrl(script.id)}
+                        alt={script.title}
+                      />
+                      <p>{script.title}</p>
+                      {isOwner && (
+                        <button
+                          className="delete-drawing-btn"
+                          onClick={(e) => handleDeleteScript(script.id, e)}
+                          title="Delete this story"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <button
+              className="btn-secondary"
+              onClick={() => setShowLoadModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@ using System;
 using KidCode.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KidCode.Api.Migrations
 {
     [DbContext(typeof(KidCodeDbContext))]
-    partial class KidCodeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215104038_AddProjectEnhancements")]
+    partial class AddProjectEnhancements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,7 +108,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3775),
+                            CreatedAt = new DateTime(2025, 12, 15, 10, 40, 33, 634, DateTimeKind.Utc).AddTicks(8851),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Drawing",
@@ -118,7 +121,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3795),
+                            CreatedAt = new DateTime(2025, 12, 15, 10, 40, 33, 634, DateTimeKind.Utc).AddTicks(8873),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Drawing",
@@ -131,7 +134,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3799),
+                            CreatedAt = new DateTime(2025, 12, 15, 10, 40, 33, 634, DateTimeKind.Utc).AddTicks(8880),
                             IsDaily = false,
                             Level = 2,
                             Mode = "Drawing",
@@ -144,7 +147,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3803),
+                            CreatedAt = new DateTime(2025, 12, 15, 10, 40, 33, 634, DateTimeKind.Utc).AddTicks(8886),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Story",
@@ -157,7 +160,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("55555555-5555-5555-5555-555555555555"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3806),
+                            CreatedAt = new DateTime(2025, 12, 15, 10, 40, 33, 634, DateTimeKind.Utc).AddTicks(8891),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Story",
@@ -170,7 +173,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("66666666-6666-6666-6666-666666666666"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3810),
+                            CreatedAt = new DateTime(2025, 12, 15, 10, 40, 33, 634, DateTimeKind.Utc).AddTicks(8896),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Puzzle",
@@ -183,7 +186,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("77777777-7777-7777-7777-777777777777"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3813),
+                            CreatedAt = new DateTime(2025, 12, 15, 10, 40, 33, 634, DateTimeKind.Utc).AddTicks(8901),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Music",
@@ -355,23 +358,7 @@ namespace KidCode.Api.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
-                    b.Property<string>("DrawingProgressJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("EarnedStickersJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MusicProgressJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PuzzleProgressJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("StoryProgressJson")
                         .IsRequired()
                         .HasColumnType("text");
 

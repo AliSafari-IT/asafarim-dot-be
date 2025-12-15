@@ -20,9 +20,12 @@ public class ProjectsController : ControllerBase
     private string? GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
     [HttpGet]
-    public async Task<ActionResult<List<ProjectDto>>> GetProjects()
+    public async Task<ActionResult<List<ProjectDto>>> GetProjects(
+        [FromQuery] string? mode = null,
+        [FromQuery] bool? isDraft = null
+    )
     {
-        var projects = await _projectService.GetUserProjectsAsync(GetUserId());
+        var projects = await _projectService.GetUserProjectsAsync(GetUserId(), mode, isDraft);
         return Ok(projects);
     }
 
@@ -61,5 +64,41 @@ public class ProjectsController : ControllerBase
         if (!deleted)
             return NotFound();
         return NoContent();
+    }
+
+    [HttpPost("{id:guid}/rename")]
+    public async Task<ActionResult<ProjectDto>> RenameProject(
+        Guid id,
+        [FromBody] RenameProjectDto dto
+    )
+    {
+        var project = await _projectService.RenameProjectAsync(id, dto.Title, GetUserId());
+        if (project == null)
+            return NotFound();
+        return Ok(project);
+    }
+
+    [HttpPost("{id:guid}/duplicate")]
+    public async Task<ActionResult<ProjectDto>> DuplicateProject(
+        Guid id,
+        [FromBody] DuplicateProjectDto dto
+    )
+    {
+        var project = await _projectService.DuplicateProjectAsync(id, dto.NewTitle, GetUserId());
+        if (project == null)
+            return NotFound();
+        return Ok(project);
+    }
+
+    [HttpPost("{id:guid}/autosave")]
+    public async Task<ActionResult<ProjectDto>> AutoSaveProject(
+        Guid id,
+        [FromBody] UpdateProjectDto dto
+    )
+    {
+        var project = await _projectService.AutoSaveProjectAsync(id, dto, GetUserId());
+        if (project == null)
+            return NotFound();
+        return Ok(project);
     }
 }

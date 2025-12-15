@@ -12,6 +12,13 @@
   min-height: 500px;
 }
 
+.canvas-actions {
+  display: flex;
+  gap: var(--asm-space-3, 12px);
+  align-items: center;
+}
+
+.canvas-load-btn,
 .canvas-save-btn {
   display: flex;
   align-items: center;
@@ -20,12 +27,20 @@
   border-radius: var(--asm-radius-md, 10px);
   font-weight: 600;
   font-size: var(--asm-font-size-sm, 0.875rem);
-  background: linear-gradient(135deg, var(--kid-secondary), var(--kid-accent));
   color: white;
   transition: all var(--asm-motion-duration-fast, 120ms)
     var(--asm-motion-easing-standard);
 }
 
+.canvas-load-btn {
+  background: linear-gradient(135deg, var(--kid-purple), var(--kid-pink));
+}
+
+.canvas-save-btn {
+  background: linear-gradient(135deg, var(--kid-secondary), var(--kid-accent));
+}
+
+.canvas-load-btn:hover,
 .canvas-save-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: var(--asm-effect-shadow-md);
@@ -42,6 +57,121 @@
 
 .canvas-save-btn.saved {
   background: var(--kid-green);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: var(--kid-surface);
+  border-radius: var(--kid-radius);
+  padding: var(--asm-space-6, 24px);
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--asm-effect-shadow-lg);
+  animation: slideUp 0.3s ease;
+}
+
+.modal-content h2 {
+  margin-bottom: var(--asm-space-4, 16px);
+  color: var(--kid-primary);
+}
+
+.saved-drawings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--asm-space-3, 12px);
+  margin: var(--asm-space-4, 16px) 0;
+}
+
+.saved-drawing-card {
+  cursor: pointer;
+  border-radius: var(--kid-radius-sm);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  background: var(--asm-color-surface);
+  box-shadow: var(--asm-effect-shadow-sm);
+  position: relative;
+}
+
+.saved-drawing-card:hover {
+  transform: scale(1.05);
+  box-shadow: var(--asm-effect-shadow-md);
+}
+
+.saved-drawing-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.saved-drawing-card p {
+  padding: var(--asm-space-2);
+  font-size: var(--asm-font-size-sm);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-drawing-card .delete-btn {
+  position: absolute;
+  top: var(--asm-space-2);
+  right: var(--asm-space-2);
+  background: var(--asm-color-danger-600, var(--kid-pink));
+  color: var(--asm-color-text-inverse);
+  border: none;
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--asm-motion-duration-fast)
+    var(--asm-motion-easing-standard);
+  opacity: 0;
+  z-index: 10;
+}
+
+.saved-drawing-card:hover .delete-btn {
+  opacity: 1;
+}
+
+.saved-drawing-card .delete-btn:hover {
+  background: var(
+    --asm-color-danger-700,
+    var(--asm-color-danger-600, var(--kid-pink))
+  );
+  transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .drawing-canvas {

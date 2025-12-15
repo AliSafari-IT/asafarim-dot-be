@@ -1,9 +1,21 @@
+export interface ModeProgress {
+    level: number;
+    stickers: string[];
+    badges: string[];
+    completedChallenges: string[];
+}
+
 export interface Progress {
     userId: string;
     unlockedLevels: number[];
     badges: string[];
     completedChallenges: string[];
+    earnedStickers: string[];
     totalStickers: number;
+    drawing: ModeProgress;
+    story: ModeProgress;
+    music: ModeProgress;
+    puzzle: ModeProgress;
 }
 
 export interface Challenge {

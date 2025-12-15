@@ -75,12 +75,24 @@ export const storage = {
         const existing = await this.getProgress(userId);
         if (existing) return existing;
 
+        const defaultModeProgress = {
+            level: 1,
+            stickers: [],
+            badges: [],
+            completedChallenges: []
+        };
+
         const newProgress: Progress = {
             userId,
             unlockedLevels: [1],
             badges: [],
             completedChallenges: [],
-            totalStickers: 0
+            earnedStickers: [],
+            totalStickers: 0,
+            drawing: { ...defaultModeProgress },
+            story: { ...defaultModeProgress },
+            music: { ...defaultModeProgress },
+            puzzle: { ...defaultModeProgress }
         };
         await this.saveProgress(newProgress);
         return newProgress;

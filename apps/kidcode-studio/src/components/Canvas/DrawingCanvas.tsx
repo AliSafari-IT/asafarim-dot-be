@@ -1,7 +1,15 @@
-import { useRef, useEffect, useCallback, useState } from "react";
-import { Camera, Check } from "lucide-react";
+import {
+  useRef,
+  useEffect,
+  useCallback,
+  useState,
+  type MouseEvent,
+} from "react";
+import { Camera, Check, FolderOpen, Trash2 } from "lucide-react";
+import { useAuth } from "@asafarim/shared-ui-react";
 import { useStore } from "../../core/state/useStore";
-import { mediaApi } from "../../services/mediaApi";
+import { useProgressSync } from "../../hooks/useProgressSync";
+import { mediaApi, type MediaAssetDto } from "../../services/mediaApi";
 import type { Block } from "../../types/blocks";
 import "./Canvas.css";
 
@@ -31,14 +39,108 @@ export default function DrawingCanvas() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
     "idle"
   );
+  const [showLoadModal, setShowLoadModal] = useState(false);
+  const [savedDrawings, setSavedDrawings] = useState<MediaAssetDto[]>([]);
+  const [loadingDrawings, setLoadingDrawings] = useState(false);
+  const [loadedMediaId, setLoadedMediaId] = useState<string | null>(null);
   const blocks = useStore((state) => state.editor.blocks);
+  const setBlocks = useStore((state) => state.setBlocks);
   const isPlaying = useStore((state) => state.editor.isPlaying);
   const currentStep = useStore((state) => state.editor.currentStep);
   const step = useStore((state) => state.step);
   const stop = useStore((state) => state.stop);
   const showStickerReward = useStore((state) => state.showStickerReward);
+  const { user, isAuthenticated } = useAuth();
+  const { updateProgress } = useProgressSync();
 
-  const handleSaveToAlbum = useCallback(async () => {
+  const handleLoadScript = useCallback(async () => {
+    setShowLoadModal(true);
+    setLoadingDrawings(true);
+    try {
+      const drawings = await mediaApi.listMedia(
+        undefined,
+        "drawing",
+        isAuthenticated ? true : undefined
+      );
+      setSavedDrawings(drawings.filter((d) => d.scriptJson));
+    } catch (error) {
+      console.error("Failed to load drawings:", error);
+    } finally {
+      setLoadingDrawings(false);
+    }
+  }, [isAuthenticated]);
+
+  const handleSelectDrawing = useCallback(
+    (drawing: MediaAssetDto) => {
+      if (drawing.scriptJson) {
+        try {
+          const loadedBlocks = JSON.parse(drawing.scriptJson);
+          setBlocks(loadedBlocks);
+          setLoadedMediaId(drawing.id);
+          setShowLoadModal(false);
+        } catch (error) {
+          console.error("Failed to parse script:", error);
+        }
+      }
+    },
+    [setBlocks]
+  );
+
+  const handleDeleteDrawing = useCallback(
+    async (drawingId: string, e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      if (!confirm("Delete this drawing?")) return;
+
+      try {
+        await mediaApi.deleteMedia(drawingId);
+        setSavedDrawings((prev) => prev.filter((d) => d.id !== drawingId));
+        if (loadedMediaId === drawingId) {
+          setLoadedMediaId(null);
+        }
+      } catch (error) {
+        console.error("Failed to delete drawing:", error);
+        alert("Failed to delete drawing. Please try again.");
+      }
+    },
+    [loadedMediaId]
+  );
+
+  const handleSave = useCallback(async () => {
+    const canvas = canvasRef.current;
+    if (!canvas || !loadedMediaId) return;
+
+    setSaveStatus("saving");
+    try {
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, "image/png");
+      });
+
+      if (!blob) {
+        setSaveStatus("idle");
+        return;
+      }
+
+      await mediaApi.updateMedia(loadedMediaId, {
+        file: blob,
+        scriptJson: JSON.stringify(blocks),
+      });
+
+      const updatedDrawings = await mediaApi.listMedia(
+        undefined,
+        "drawing",
+        isAuthenticated ? true : undefined
+      );
+      setSavedDrawings(updatedDrawings.filter((d) => d.scriptJson));
+
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch (error) {
+      console.error("Failed to save drawing:", error);
+      setSaveStatus("idle");
+    }
+  }, [blocks, loadedMediaId]);
+
+  const handleSaveAs = useCallback(async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -54,13 +156,23 @@ export default function DrawingCanvas() {
       }
 
       const title = `Drawing ${new Date().toLocaleString()}`;
-      await mediaApi.uploadMedia({
+      const newMedia = await mediaApi.uploadMedia({
         file: blob,
         title,
         source: "drawing",
         width: canvas.width,
         height: canvas.height,
+        scriptJson: JSON.stringify(blocks),
       });
+
+      setLoadedMediaId(newMedia.id);
+
+      const updatedDrawings = await mediaApi.listMedia(
+        undefined,
+        "drawing",
+        isAuthenticated ? true : undefined
+      );
+      setSavedDrawings(updatedDrawings.filter((d) => d.scriptJson));
 
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);
@@ -68,7 +180,7 @@ export default function DrawingCanvas() {
       console.error("Failed to save drawing:", error);
       setSaveStatus("idle");
     }
-  }, []);
+  }, [blocks]);
 
   const executeBlocks = useCallback(
     (ctx: CanvasRenderingContext2D, blocksToRun: Block[]) => {
@@ -142,6 +254,39 @@ export default function DrawingCanvas() {
             ctx.closePath();
             ctx.fill();
             break;
+          case "heart":
+            const s = size / 2;
+            const x = turtle.x;
+            const y = turtle.y;
+
+            ctx.beginPath();
+
+            // Bottom point
+            ctx.moveTo(x, y + s * 0.6);
+
+            // Left half
+            ctx.bezierCurveTo(
+              x - s * 0.8,
+              y + s * 0.1,
+              x - s * 0.8,
+              y - s * 0.4,
+              x,
+              y - s * 0.1
+            );
+
+            // Right half
+            ctx.bezierCurveTo(
+              x + s * 0.8,
+              y - s * 0.4,
+              x + s * 0.8,
+              y + s * 0.1,
+              x,
+              y + s * 0.6
+            );
+
+            ctx.closePath();
+            ctx.fill();
+            break;
         }
       };
 
@@ -160,6 +305,9 @@ export default function DrawingCanvas() {
             break;
           case "drawStar":
             drawShape("star", params.size as number);
+            break;
+          case "drawHeart":
+            drawShape("heart", params.size as number);
             break;
           case "moveForward": {
             const steps = params.steps as number;
@@ -229,14 +377,41 @@ export default function DrawingCanvas() {
       const hasRepeat = blocksToRun.some((b) => b.type === "repeatMagic");
 
       if (hasCircle && blocksToRun.length === 1) {
-        showStickerReward("first-circle", "You drew your first circle!");
+        const wasShown = showStickerReward(
+          "first-circle",
+          "You drew your first circle!"
+        );
+        if (wasShown) {
+          updateProgress({
+            mode: "Drawing",
+            addModeSticker: "first-circle",
+          }).catch(() => {});
+        }
       } else if (colorCount >= 3) {
-        showStickerReward("rainbow-artist", "Beautiful colors!");
+        const wasShown = showStickerReward(
+          "rainbow-artist",
+          "Beautiful colors!"
+        );
+        if (wasShown) {
+          updateProgress({
+            mode: "Drawing",
+            addModeSticker: "rainbow-artist",
+          }).catch(() => {});
+        }
       } else if (hasRepeat) {
-        showStickerReward("pattern-power", "Amazing pattern magic!");
+        const wasShown = showStickerReward(
+          "pattern-power",
+          "Amazing pattern magic!"
+        );
+        if (wasShown) {
+          updateProgress({
+            mode: "Drawing",
+            addModeSticker: "pattern-power",
+          }).catch(() => {});
+        }
       }
     },
-    [showStickerReward]
+    [showStickerReward, updateProgress]
   );
 
   useEffect(() => {
@@ -270,17 +445,116 @@ export default function DrawingCanvas() {
         height={400}
         className="drawing-canvas"
       />
-      <button
-        className={`canvas-save-btn ${saveStatus}`}
-        onClick={handleSaveToAlbum}
-        disabled={saveStatus === "saving" || blocks.length === 0}
-        title="Save to Photo Album"
-      >
-        {saveStatus === "saved" ? <Check size={18} /> : <Camera size={18} />}
-        {saveStatus === "idle" && "Save"}
-        {saveStatus === "saving" && "Saving..."}
-        {saveStatus === "saved" && "Saved!"}
-      </button>
+      <div className="canvas-actions">
+        <button
+          className="canvas-load-btn"
+          onClick={handleLoadScript}
+          title="Load Saved Script"
+        >
+          <FolderOpen size={18} />
+          Load
+        </button>
+        {loadedMediaId && (
+          <button
+            className={`canvas-save-btn ${saveStatus}`}
+            onClick={handleSave}
+            disabled={saveStatus === "saving" || blocks.length === 0}
+            title="Save (Update Current)"
+          >
+            {saveStatus === "saved" ? (
+              <Check size={18} />
+            ) : (
+              <Camera size={18} />
+            )}
+            {saveStatus === "idle" && "Save"}
+            {saveStatus === "saving" && "Saving..."}
+            {saveStatus === "saved" && "Saved!"}
+          </button>
+        )}
+        <button
+          className={`canvas-save-btn ${saveStatus}`}
+          onClick={handleSaveAs}
+          disabled={saveStatus === "saving" || blocks.length === 0}
+          title="Save As (Create New)"
+        >
+          {saveStatus === "saved" ? <Check size={18} /> : <Camera size={18} />}
+          {saveStatus === "idle" && "Save As"}
+          {saveStatus === "saving" && "Saving..."}
+          {saveStatus === "saved" && "Saved!"}
+        </button>
+      </div>
+
+      {showLoadModal && (
+        <div className="modal-overlay" onClick={() => setShowLoadModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Load Saved Script</h2>
+            {loadingDrawings ? (
+              <p>Loading...</p>
+            ) : savedDrawings.length === 0 ? (
+              <p>No saved drawings with scripts found.</p>
+            ) : (
+              <div className="saved-drawings-grid">
+                {savedDrawings.map((drawing) => {
+                  const currentUserId =
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.id ??
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.userId ??
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.sub ??
+                    null;
+
+                  const isOwner =
+                    !!currentUserId && drawing.userId === currentUserId;
+                  return (
+                    <div
+                      key={drawing.id}
+                      className="saved-drawing-card"
+                      onClick={() => handleSelectDrawing(drawing)}
+                    >
+                      <img
+                        src={mediaApi.getContentUrl(drawing.id)}
+                        alt={drawing.title}
+                      />
+                      <p>{drawing.title}</p>
+                      {isOwner && (
+                        <button
+                          className="delete-drawing-btn"
+                          onClick={(e) => handleDeleteDrawing(drawing.id, e)}
+                          title="Delete this drawing"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <button
+              className="btn-secondary"
+              onClick={() => setShowLoadModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
