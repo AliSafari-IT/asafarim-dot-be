@@ -18,6 +18,48 @@
   color: var(--kid-text-light);
 }
 
+.mode-toggle {
+  display: flex;
+  gap: var(--asm-space-3, 12px);
+  justify-content: center;
+  margin-top: var(--asm-space-4, 16px);
+  flex-wrap: wrap;
+}
+
+.mode-toggle button {
+  padding: var(--asm-space-2, 8px) var(--asm-space-5, 20px);
+  border: 2px solid var(--asm-color-border);
+  background: var(--kid-bg);
+  border-radius: var(--kid-radius-sm);
+  cursor: pointer;
+  font-size: var(--asm-font-size-md, 1rem);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.mode-toggle button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--kid-shadow);
+}
+
+.mode-toggle button.active {
+  background: var(--kid-primary);
+  color: white;
+  border-color: var(--kid-primary);
+}
+
+.paint-studio-layout {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.paint-studio-main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .studio-layout {
   display: grid;
   grid-template-columns: 260px 1fr 300px;

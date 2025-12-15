@@ -1,3 +1,4 @@
+// FILE: src/pages/PhotoAlbum/PhotoAlbumEnhanced.tsx
 import {
   useState,
   useEffect,
@@ -28,6 +29,7 @@ import {
   type AlbumDto,
   AlbumVisibility,
 } from "../../services/mediaApi";
+import { useAuth } from "@asafarim/shared-ui-react";
 import "./PhotoAlbum.css";
 import { characterApi } from "../../services/characterApi";
 
@@ -56,6 +58,50 @@ export default function PhotoAlbumEnhanced() {
   const [savingCharacter, setSavingCharacter] = useState(false);
   const [draggedMedia, setDraggedMedia] = useState<MediaAssetDto | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user, isAuthenticated } = useAuth();
+
+  const currentUserId =
+    (
+      user as unknown as {
+        id?: string;
+        userId?: string;
+        sub?: string;
+      } | null
+    )?.id ??
+    (
+      user as unknown as {
+        id?: string;
+        userId?: string;
+        sub?: string;
+      } | null
+    )?.userId ??
+    (
+      user as unknown as {
+        id?: string;
+        userId?: string;
+        sub?: string;
+      } | null
+    )?.sub ??
+    null;
+
+  const isAlbumOwner = (album: AlbumDto | null) => {
+    if (!album) return false;
+    if (!currentUserId) return false;
+    return album.userId === currentUserId;
+  };
+
+  const publicOnly = filterMode === "public" || !isAuthenticated;
+  const publicAlbumIds = new Set(
+    albums
+      .filter((a) => a.visibility === AlbumVisibility.Public)
+      .map((a) => a.id)
+  );
+
+  const isMediaOwner = (media: MediaAssetDto | null) => {
+    if (!media) return false;
+    if (!currentUserId) return false;
+    return media.userId === currentUserId;
+  };
 
   async function handleSaveAsCharacter(item: MediaAssetDto) {
     setSavingCharacter(true);
@@ -77,18 +123,49 @@ export default function PhotoAlbumEnhanced() {
 
   useEffect(() => {
     loadData();
-  }, [filterMode]);
+  }, [filterMode, isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+
+    setShowNewAlbum(false);
+    setShowEditAlbum(false);
+
+    if (filterMode === "my-media") {
+      setFilterMode("public");
+    }
+
+    if (selectedAlbum && selectedAlbum.visibility !== AlbumVisibility.Public) {
+      setSelectedAlbum(null);
+      setViewMode("gallery");
+      setMediaItems([]);
+    }
+  }, [isAuthenticated, selectedAlbum, filterMode]);
 
   async function loadData() {
     setError(null);
     try {
       const myMediaOnly = filterMode === "my-media";
+      const visibility = publicOnly ? AlbumVisibility.Public.toString() : undefined;
+
       const [items, albumList] = await Promise.all([
         mediaApi.listMedia(undefined, undefined, myMediaOnly),
-        mediaApi.listAlbums(myMediaOnly),
+        mediaApi.listAlbums(myMediaOnly, visibility),
       ]);
-      setMediaItems(items);
-      setAlbums(albumList);
+
+      if (publicOnly) {
+        const publicIds = new Set(
+          albumList
+            .filter((a) => a.visibility === AlbumVisibility.Public)
+            .map((a) => a.id)
+        );
+
+        setAlbums(albumList.filter((a) => a.visibility === AlbumVisibility.Public));
+        setMediaItems(items.filter((m) => !m.albumId || publicIds.has(m.albumId)));
+      } else {
+        setMediaItems(items);
+        setAlbums(albumList);
+      }
     } catch (err) {
       console.error("Failed to load media:", err);
       setError(err instanceof Error ? err.message : "Failed to load media");
@@ -98,6 +175,15 @@ export default function PhotoAlbumEnhanced() {
   }
 
   async function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
+    if (!isAuthenticated) {
+      setError("Please sign in to upload.");
+      return;
+    }
+    if (selectedAlbum && !isAlbumOwner(selectedAlbum)) {
+      setError("You can only upload to your own album.");
+      return;
+    }
+
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -154,6 +240,16 @@ export default function PhotoAlbumEnhanced() {
   }
 
   async function handleDelete(id: string) {
+    const media = mediaItems.find((m) => m.id === id) ?? null;
+    if (!isAuthenticated) {
+      setError("Please sign in to delete media.");
+      return;
+    }
+    if (!isMediaOwner(media)) {
+      setError("You can only delete your own media.");
+      return;
+    }
+
     if (!confirm("Delete this media? This cannot be undone.")) return;
     try {
       await mediaApi.deleteMedia(id);
@@ -183,6 +279,10 @@ export default function PhotoAlbumEnhanced() {
   }
 
   async function handleCreateAlbum() {
+    if (!isAuthenticated) {
+      setError("Please sign in to create albums.");
+      return;
+    }
     if (!newAlbumName.trim()) return;
     try {
       const album = await mediaApi.createAlbum(
@@ -203,6 +303,10 @@ export default function PhotoAlbumEnhanced() {
 
   async function handleUpdateAlbum() {
     if (!selectedAlbum) return;
+    if (!isAuthenticated || !isAlbumOwner(selectedAlbum)) {
+      setError("You can only edit your own album.");
+      return;
+    }
     try {
       const updated = await mediaApi.updateAlbum(selectedAlbum.id, {
         name: newAlbumName.trim() || undefined,
@@ -221,6 +325,17 @@ export default function PhotoAlbumEnhanced() {
   }
 
   async function handleDeleteAlbum(id: string) {
+    if (!isAuthenticated) {
+      setError("Please sign in to delete albums.");
+      return;
+    }
+
+    const album = albums.find((a) => a.id === id) ?? null;
+    if (!isAlbumOwner(album)) {
+      setError("You can only delete your own albums.");
+      return;
+    }
+
     if (
       !confirm(
         "Delete this album? Media will not be deleted, only removed from the album."
@@ -241,16 +356,23 @@ export default function PhotoAlbumEnhanced() {
   }
 
   async function handleOpenAlbum(album: AlbumDto) {
+    if (!isAuthenticated && album.visibility !== AlbumVisibility.Public) {
+      setError("This album is not public. Please sign in to view it.");
+      return;
+    }
+
     setSelectedAlbum(album);
     setViewMode("album-detail");
     try {
       const items = await mediaApi.listMedia(album.id);
-      setMediaItems(items);
+      if (publicOnly && album.visibility !== AlbumVisibility.Public) {
+        setMediaItems([]);
+      } else {
+        setMediaItems(items);
+      }
     } catch (err) {
       console.error("Failed to load album media:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to load album media"
-      );
+      setError(err instanceof Error ? err.message : "Failed to load album media");
     }
   }
 
@@ -271,12 +393,26 @@ export default function PhotoAlbumEnhanced() {
     e.dataTransfer.dropEffect = "move";
   }
 
-  async function handleDropOnAlbum(
-    e: DragEvent<HTMLDivElement>,
-    album: AlbumDto
-  ) {
+  async function handleDropOnAlbum(e: DragEvent<HTMLDivElement>, album: AlbumDto) {
     e.preventDefault();
     if (!draggedMedia) return;
+
+    if (!isAuthenticated) {
+      setError("Please sign in to move media.");
+      setDraggedMedia(null);
+      return;
+    }
+    if (!isAlbumOwner(album)) {
+      setError("You can only move media into your own albums.");
+      setDraggedMedia(null);
+      return;
+    }
+
+    if (!isMediaOwner(draggedMedia)) {
+      setError("You can only move your own media.");
+      setDraggedMedia(null);
+      return;
+    }
 
     try {
       await mediaApi.addMediaToAlbum(album.id, draggedMedia.id);
@@ -291,6 +427,13 @@ export default function PhotoAlbumEnhanced() {
         )
       );
       setDraggedMedia(null);
+
+      if (publicOnly) {
+        // If we are in public/guest view, removing items that are moved into non-public albums
+        setMediaItems((prev) =>
+          prev.filter((m) => !m.albumId || publicAlbumIds.has(m.albumId))
+        );
+      }
     } catch (err) {
       console.error("Failed to add media to album:", err);
       setError(err instanceof Error ? err.message : "Failed to add to album");
@@ -299,6 +442,10 @@ export default function PhotoAlbumEnhanced() {
 
   async function handleRemoveFromAlbum(mediaId: string) {
     if (!selectedAlbum) return;
+    if (!isAuthenticated || !isAlbumOwner(selectedAlbum)) {
+      setError("You can only remove media from your own album.");
+      return;
+    }
     try {
       await mediaApi.removeMediaFromAlbum(selectedAlbum.id, mediaId);
       setMediaItems((prev) => prev.filter((m) => m.id !== mediaId));
@@ -307,9 +454,7 @@ export default function PhotoAlbumEnhanced() {
       );
     } catch (err) {
       console.error("Failed to remove from album:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to remove from album"
-      );
+      setError(err instanceof Error ? err.message : "Failed to remove from album");
     }
   }
 
@@ -320,12 +465,11 @@ export default function PhotoAlbumEnhanced() {
     const type = getMediaType(item.contentType);
     if (filter !== "all" && type !== filter) return false;
     if (sourceFilter !== "all" && item.source !== sourceFilter) return false;
+    if (publicOnly && item.albumId && !publicAlbumIds.has(item.albumId)) return false;
     return true;
   });
 
-  const sources = [
-    ...new Set(mediaItems.map((m) => m.source).filter(Boolean)),
-  ] as string[];
+  const sources = [...new Set(mediaItems.map((m) => m.source).filter(Boolean))] as string[];
 
   const getVisibilityIcon = (visibility: AlbumVisibility) => {
     switch (visibility) {
@@ -385,20 +529,23 @@ export default function PhotoAlbumEnhanced() {
           )}
         </div>
         <div className="header-actions">
-          {viewMode === "album-detail" && selectedAlbum && (
-            <button
-              className="btn-edit"
-              onClick={() => {
-                setNewAlbumName(selectedAlbum.name);
-                setNewAlbumDesc(selectedAlbum.description || "");
-                setNewAlbumVisibility(selectedAlbum.visibility);
-                setShowEditAlbum(true);
-              }}
-            >
-              <Edit2 size={16} />
-              Edit Album
-            </button>
-          )}
+          {viewMode === "album-detail" &&
+            selectedAlbum &&
+            isAuthenticated &&
+            isAlbumOwner(selectedAlbum) && (
+              <button
+                className="btn-edit"
+                onClick={() => {
+                  setNewAlbumName(selectedAlbum.name);
+                  setNewAlbumDesc(selectedAlbum.description || "");
+                  setNewAlbumVisibility(selectedAlbum.visibility);
+                  setShowEditAlbum(true);
+                }}
+              >
+                <Edit2 size={16} />
+                Edit Album
+              </button>
+            )}
           <input
             ref={fileInputRef}
             type="file"
@@ -407,15 +554,17 @@ export default function PhotoAlbumEnhanced() {
             onChange={handleFileUpload}
             className="file-input"
           />
-          <button
-            className="btn-upload"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-          >
-            <Upload size={18} />
-            {uploading ? "Uploading..." : "Upload"}
-          </button>
-          {viewMode === "gallery" && (
+          {isAuthenticated && (!selectedAlbum || isAlbumOwner(selectedAlbum)) && (
+            <button
+              className="btn-upload"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+            >
+              <Upload size={18} />
+              {uploading ? "Uploading..." : "Upload"}
+            </button>
+          )}
+          {viewMode === "gallery" && isAuthenticated && (
             <button className="btn-album" onClick={() => setShowNewAlbum(true)}>
               <Plus size={18} />
               New Album
@@ -424,7 +573,7 @@ export default function PhotoAlbumEnhanced() {
         </div>
       </header>
 
-      {(showNewAlbum || showEditAlbum) && (
+      {(showNewAlbum || showEditAlbum) && isAuthenticated && (
         <div
           className="album-form-modal"
           onClick={() => {
@@ -452,9 +601,7 @@ export default function PhotoAlbumEnhanced() {
               <div className="visibility-options">
                 <button
                   className={
-                    newAlbumVisibility === AlbumVisibility.Private
-                      ? "active"
-                      : ""
+                    newAlbumVisibility === AlbumVisibility.Private ? "active" : ""
                   }
                   onClick={() => setNewAlbumVisibility(AlbumVisibility.Private)}
                 >
@@ -463,22 +610,16 @@ export default function PhotoAlbumEnhanced() {
                 </button>
                 <button
                   className={
-                    newAlbumVisibility === AlbumVisibility.MembersOnly
-                      ? "active"
-                      : ""
+                    newAlbumVisibility === AlbumVisibility.MembersOnly ? "active" : ""
                   }
-                  onClick={() =>
-                    setNewAlbumVisibility(AlbumVisibility.MembersOnly)
-                  }
+                  onClick={() => setNewAlbumVisibility(AlbumVisibility.MembersOnly)}
                 >
                   <Users size={16} />
                   Members Only
                 </button>
                 <button
                   className={
-                    newAlbumVisibility === AlbumVisibility.Public
-                      ? "active"
-                      : ""
+                    newAlbumVisibility === AlbumVisibility.Public ? "active" : ""
                   }
                   onClick={() => setNewAlbumVisibility(AlbumVisibility.Public)}
                 >
@@ -560,20 +701,20 @@ export default function PhotoAlbumEnhanced() {
                   <span className="album-name">{album.name}</span>
                   <div className="album-meta">
                     {getVisibilityIcon(album.visibility)}
-                    <span className="album-count">
-                      {album.mediaCount} items
-                    </span>
+                    <span className="album-count">{album.mediaCount} items</span>
                   </div>
                 </div>
-                <button
-                  className="album-delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteAlbum(album.id);
-                  }}
-                >
-                  <Trash2 size={14} />
-                </button>
+                {isAuthenticated && isAlbumOwner(album) && (
+                  <button
+                    className="album-delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteAlbum(album.id);
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -595,10 +736,7 @@ export default function PhotoAlbumEnhanced() {
           </div>
           <div className="filter-group">
             <label>Source:</label>
-            <select
-              value={sourceFilter}
-              onChange={(e) => setSourceFilter(e.target.value)}
-            >
+            <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)}>
               <option value="all">All Sources</option>
               {sources.map((src) => (
                 <option key={src} value={src}>
@@ -629,7 +767,7 @@ export default function PhotoAlbumEnhanced() {
                   key={item.id}
                   className={`gallery-item ${type}`}
                   onClick={() => setSelectedItem(item)}
-                  draggable={viewMode === "gallery"}
+                  draggable={viewMode === "gallery" && isAuthenticated && isMediaOwner(item)}
                   onDragStart={(e) => handleDragStart(e, item)}
                 >
                   {type === "image" ? (
@@ -642,9 +780,7 @@ export default function PhotoAlbumEnhanced() {
                     <div className="video-thumb">
                       <VideoIcon size={32} />
                       {item.duration && (
-                        <span className="duration">
-                          {formatDuration(item.duration)}
-                        </span>
+                        <span className="duration">{formatDuration(item.duration)}</span>
                       )}
                     </div>
                   )}
@@ -653,23 +789,22 @@ export default function PhotoAlbumEnhanced() {
                     <span className="item-source">{item.source}</span>
                   </div>
                   <div className="item-type-badge">
-                    {type === "image" ? (
-                      <ImageIcon size={14} />
-                    ) : (
-                      <VideoIcon size={14} />
-                    )}
+                    {type === "image" ? <ImageIcon size={14} /> : <VideoIcon size={14} />}
                   </div>
-                  {viewMode === "album-detail" && (
-                    <button
-                      className="item-remove"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveFromAlbum(item.id);
-                      }}
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
+                  {viewMode === "album-detail" &&
+                    selectedAlbum &&
+                    isAuthenticated &&
+                    isAlbumOwner(selectedAlbum) && (
+                      <button
+                        className="item-remove"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveFromAlbum(item.id);
+                        }}
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
                 </div>
               );
             })}
@@ -679,27 +814,14 @@ export default function PhotoAlbumEnhanced() {
 
       {selectedItem && (
         <div className="lightbox" onClick={() => setSelectedItem(null)}>
-          <div
-            className="lightbox-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="lightbox-close"
-              onClick={() => setSelectedItem(null)}
-            >
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox-close" onClick={() => setSelectedItem(null)}>
               <X size={24} />
             </button>
             {getMediaType(selectedItem.contentType) === "image" ? (
-              <img
-                src={mediaApi.getContentUrl(selectedItem.id)}
-                alt={selectedItem.title}
-              />
+              <img src={mediaApi.getContentUrl(selectedItem.id)} alt={selectedItem.title} />
             ) : (
-              <video
-                src={mediaApi.getContentUrl(selectedItem.id)}
-                controls
-                autoPlay
-              />
+              <video src={mediaApi.getContentUrl(selectedItem.id)} controls autoPlay />
             )}
             <div className="lightbox-info">
               <h3>{selectedItem.title}</h3>
@@ -709,9 +831,7 @@ export default function PhotoAlbumEnhanced() {
                   Size: {selectedItem.width} × {selectedItem.height}
                 </p>
               )}
-              <p>
-                Created: {new Date(selectedItem.createdAt).toLocaleDateString()}
-              </p>
+              <p>Created: {new Date(selectedItem.createdAt).toLocaleDateString()}</p>
               <div className="lightbox-actions">
                 {getMediaType(selectedItem.contentType) === "image" && (
                   <button
@@ -725,12 +845,11 @@ export default function PhotoAlbumEnhanced() {
                 <button onClick={() => handleDownload(selectedItem)}>
                   <Download size={16} /> Download
                 </button>
-                <button
-                  className="btn-delete"
-                  onClick={() => handleDelete(selectedItem.id)}
-                >
-                  <Trash2 size={16} /> Delete
-                </button>
+                {isAuthenticated && isMediaOwner(selectedItem) && (
+                  <button className="btn-delete" onClick={() => handleDelete(selectedItem.id)}>
+                    <Trash2 size={16} /> Delete
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -740,9 +859,7 @@ export default function PhotoAlbumEnhanced() {
   );
 }
 
-function getImageDimensions(
-  file: File
-): Promise<{ width: number; height: number }> {
+function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve({ width: img.width, height: img.height });
