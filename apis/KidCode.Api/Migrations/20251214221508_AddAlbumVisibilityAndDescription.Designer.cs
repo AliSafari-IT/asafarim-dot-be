@@ -3,6 +3,7 @@ using System;
 using KidCode.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KidCode.Api.Migrations
 {
     [DbContext(typeof(KidCodeDbContext))]
-    partial class KidCodeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251214221508_AddAlbumVisibilityAndDescription")]
+    partial class AddAlbumVisibilityAndDescription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,7 +108,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3775),
+                            CreatedAt = new DateTime(2025, 12, 14, 22, 15, 6, 791, DateTimeKind.Utc).AddTicks(1755),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Drawing",
@@ -118,7 +121,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3795),
+                            CreatedAt = new DateTime(2025, 12, 14, 22, 15, 6, 791, DateTimeKind.Utc).AddTicks(1777),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Drawing",
@@ -131,7 +134,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3799),
+                            CreatedAt = new DateTime(2025, 12, 14, 22, 15, 6, 791, DateTimeKind.Utc).AddTicks(1782),
                             IsDaily = false,
                             Level = 2,
                             Mode = "Drawing",
@@ -144,7 +147,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3803),
+                            CreatedAt = new DateTime(2025, 12, 14, 22, 15, 6, 791, DateTimeKind.Utc).AddTicks(1787),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Story",
@@ -157,7 +160,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("55555555-5555-5555-5555-555555555555"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3806),
+                            CreatedAt = new DateTime(2025, 12, 14, 22, 15, 6, 791, DateTimeKind.Utc).AddTicks(1793),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Story",
@@ -170,7 +173,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("66666666-6666-6666-6666-666666666666"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3810),
+                            CreatedAt = new DateTime(2025, 12, 14, 22, 15, 6, 791, DateTimeKind.Utc).AddTicks(1797),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Puzzle",
@@ -183,7 +186,7 @@ namespace KidCode.Api.Migrations
                         new
                         {
                             Id = new Guid("77777777-7777-7777-7777-777777777777"),
-                            CreatedAt = new DateTime(2025, 12, 15, 12, 15, 51, 667, DateTimeKind.Utc).AddTicks(3813),
+                            CreatedAt = new DateTime(2025, 12, 14, 22, 15, 6, 791, DateTimeKind.Utc).AddTicks(1801),
                             IsDaily = false,
                             Level = 1,
                             Mode = "Music",
@@ -306,9 +309,6 @@ namespace KidCode.Api.Migrations
                     b.Property<int?>("Height")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("ProjectId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("ScriptJson")
                         .HasColumnType("text");
 
@@ -334,8 +334,6 @@ namespace KidCode.Api.Migrations
 
                     b.HasIndex("AlbumId");
 
-                    b.HasIndex("ProjectId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("MediaAssets");
@@ -355,23 +353,7 @@ namespace KidCode.Api.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
-                    b.Property<string>("DrawingProgressJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("EarnedStickersJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MusicProgressJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PuzzleProgressJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("StoryProgressJson")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -414,18 +396,9 @@ namespace KidCode.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsDraft")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastAutoSaveAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Mode")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("ModeDataJson")
-                        .HasColumnType("jsonb");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -441,8 +414,6 @@ namespace KidCode.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId", "Mode", "IsDraft");
 
                     b.ToTable("Projects");
                 });
@@ -573,22 +544,10 @@ namespace KidCode.Api.Migrations
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("KidCode.Api.Models.Project", "Project")
-                        .WithMany("MediaAssets")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Album");
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("KidCode.Api.Models.Album", b =>
-                {
-                    b.Navigation("MediaAssets");
-                });
-
-            modelBuilder.Entity("KidCode.Api.Models.Project", b =>
                 {
                     b.Navigation("MediaAssets");
                 });

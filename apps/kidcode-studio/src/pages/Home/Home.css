@@ -122,10 +122,119 @@ section h2 {
   box-shadow: var(--kid-shadow);
 }
 
+.progress-modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.mode-progress {
+  background: var(--kid-bg);
+  padding: 20px;
+  border-radius: var(--kid-radius-sm);
+  border-left: 4px solid var(--kid-primary);
+}
+
+.mode-progress h3 {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: var(--kid-text);
+}
+
+.mode-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
 .progress-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 16px;
+}
+
+.leaderboard-section {
+  background: var(--kid-surface);
+  padding: 24px;
+  border-radius: var(--kid-radius);
+  box-shadow: var(--kid-shadow);
+}
+
+.leaderboard-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.leaderboard {
+  background: var(--kid-bg);
+  padding: 20px;
+  border-radius: var(--kid-radius-sm);
+  border-top: 4px solid var(--kid-primary);
+}
+
+.leaderboard h3 {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: var(--kid-text);
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.placeholder {
+  text-align: center;
+  color: var(--kid-text-light);
+  padding: 20px;
+  font-style: italic;
+}
+
+.leaderboard-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--kid-surface);
+  border-radius: var(--kid-radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.leaderboard-entry:hover {
+  background: linear-gradient(135deg, var(--kid-primary), var(--kid-accent));
+}
+
+.entry-rank {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--kid-primary);
+  min-width: 40px;
+  text-align: center;
+}
+
+.entry-info {
+  flex: 1;
+}
+
+.entry-username {
+  font-weight: 600;
+  color: var(--kid-text);
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+.entry-stats {
+  font-size: 0.8rem;
+  color: var(--kid-text-light);
+}
+
+.entry-score {
+  font-weight: 700;
+  color: var(--kid-accent);
+  min-width: 70px;
+  text-align: right;
 }
 
 .stat {

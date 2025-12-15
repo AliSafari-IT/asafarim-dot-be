@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
+        "prestart": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-5190.ps1",
         "start": "npx kill-port 5190 && dotnet run --project KidCode.Api.csproj",
         "api": "dotnet run --project KidCode.Api.csproj",
         "build": "dotnet build",

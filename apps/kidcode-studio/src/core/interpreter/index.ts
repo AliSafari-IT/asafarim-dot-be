@@ -94,6 +94,14 @@ export function interpretBlocks(blocks: Block[]): ExecutionResult {
                 });
                 break;
 
+            case 'drawHeart':
+                events.push({
+                    type: 'draw',
+                    data: { shape: 'heart', x: context.x, y: context.y, size: params.size, color: context.color },
+                    timestamp
+                });
+                break;
+
             case 'moveForward': {
                 const steps = params.steps as number;
                 const rad = (context.angle * Math.PI) / 180;

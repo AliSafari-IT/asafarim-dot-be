@@ -24,13 +24,45 @@ public class MediaController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<MediaAssetDto>>> GetMedia(
         [FromQuery] Guid? albumId,
-        [FromQuery] string? source
+        [FromQuery] string? source,
+        [FromQuery] bool? myMediaOnly
     )
     {
         var userId = GetUserId();
-        var query = _db
-            .MediaAssets.Where(m => m.UserId == userId || m.UserId == null)
-            .AsQueryable();
+        var query = _db.MediaAssets.AsQueryable();
+
+        // If filtering by album, check album visibility first
+        if (albumId.HasValue)
+        {
+            var album = await _db.Albums.FirstOrDefaultAsync(a => a.Id == albumId.Value);
+            if (album != null)
+            {
+                // Check if user has access to this album
+                var hasAccess =
+                    album.UserId == userId
+                    || album.Visibility == AlbumVisibility.Public
+                    || (
+                        album.Visibility == AlbumVisibility.MembersOnly
+                        && !string.IsNullOrEmpty(userId)
+                    );
+
+                if (!hasAccess)
+                {
+                    return Forbid();
+                }
+            }
+        }
+
+        // Filter by ownership
+        if (myMediaOnly == true)
+        {
+            query = query.Where(m => m.UserId == userId);
+        }
+        else
+        {
+            // Show user's media + public media from others
+            query = query.Where(m => m.UserId == userId || m.UserId == null);
+        }
 
         if (albumId.HasValue)
             query = query.Where(m => m.AlbumId == albumId.Value);
@@ -50,7 +82,9 @@ public class MediaController : ControllerBase
                 m.Width,
                 m.Height,
                 m.Duration,
+                m.ScriptJson,
                 m.AlbumId,
+                m.UserId,
                 m.CreatedAt
             ))
             .ToListAsync();
@@ -74,7 +108,9 @@ public class MediaController : ControllerBase
                 m.Width,
                 m.Height,
                 m.Duration,
+                m.ScriptJson,
                 m.AlbumId,
+                m.UserId,
                 m.CreatedAt
             ))
             .FirstOrDefaultAsync();
@@ -114,6 +150,7 @@ public class MediaController : ControllerBase
         [FromForm] int? width,
         [FromForm] int? height,
         [FromForm] double? duration,
+        [FromForm] string? scriptJson,
         [FromForm] Guid? albumId
     )
     {
@@ -146,6 +183,7 @@ public class MediaController : ControllerBase
             Width = width,
             Height = height,
             Duration = duration,
+            ScriptJson = scriptJson,
             AlbumId = albumId,
             UserId = userId,
             CreatedAt = DateTime.UtcNow,
@@ -164,19 +202,89 @@ public class MediaController : ControllerBase
             asset.Width,
             asset.Height,
             asset.Duration,
+            asset.ScriptJson,
             asset.AlbumId,
+            asset.UserId,
             asset.CreatedAt
         );
 
         return CreatedAtAction(nameof(GetMediaById), new { id = asset.Id }, dto);
     }
 
+    [HttpPut("{id:guid}")]
+    [RequestSizeLimit(10_485_760)]
+    public async Task<ActionResult<MediaAssetDto>> UpdateMedia(
+        Guid id,
+        IFormFile? file,
+        [FromForm] string? title,
+        [FromForm] string? scriptJson
+    )
+    {
+        var userId = GetUserId();
+        var media = await _db.MediaAssets.FirstOrDefaultAsync(m =>
+            m.Id == id && m.UserId == userId
+        );
+
+        if (media == null)
+            return NotFound();
+
+        if (file != null && file.Length > 0)
+        {
+            if (file.Length > _maxFileSize)
+                return BadRequest(
+                    $"File size exceeds maximum allowed size of {_maxFileSize / 1024 / 1024}MB"
+                );
+
+            var allowedTypes = new[] { "image/", "video/" };
+            if (!allowedTypes.Any(t => file.ContentType.StartsWith(t)))
+                return BadRequest("Only image and video files are allowed");
+
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms);
+            media.Content = ms.ToArray();
+            media.ContentType = file.ContentType;
+            media.Size = file.Length;
+            media.FileName = file.FileName;
+        }
+
+        if (!string.IsNullOrEmpty(title))
+            media.Title = title;
+
+        if (scriptJson != null)
+            media.ScriptJson = scriptJson;
+
+        await _db.SaveChangesAsync();
+
+        var dto = new MediaAssetDto(
+            media.Id,
+            media.FileName,
+            media.ContentType,
+            media.Size,
+            media.Title,
+            media.Source,
+            media.Width,
+            media.Height,
+            media.Duration,
+            media.ScriptJson,
+            media.AlbumId,
+            media.UserId,
+            media.CreatedAt
+        );
+
+        return Ok(dto);
+    }
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteMedia(Guid id)
     {
         var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Forbid();
+        }
+
         var media = await _db.MediaAssets.FirstOrDefaultAsync(m =>
-            m.Id == id && (m.UserId == userId || m.UserId == null)
+            m.Id == id && m.UserId == userId
         );
 
         if (media == null)
@@ -190,23 +298,101 @@ public class MediaController : ControllerBase
 
     // Album endpoints
     [HttpGet("albums")]
-    public async Task<ActionResult<List<AlbumDto>>> GetAlbums()
+    public async Task<ActionResult<List<AlbumDto>>> GetAlbums(
+        [FromQuery] bool? myAlbumsOnly,
+        [FromQuery] string? visibility
+    )
     {
         var userId = GetUserId();
-        var albums = await _db
-            .Albums.Where(a => a.UserId == userId || a.UserId == null)
+        var query = _db.Albums.AsQueryable();
+
+        // Filter by ownership
+        if (myAlbumsOnly == true)
+        {
+            query = query.Where(a => a.UserId == userId);
+        }
+        else
+        {
+            // Show user's albums + public albums + members-only (only if authenticated)
+            if (string.IsNullOrEmpty(userId))
+            {
+                // Not authenticated - only show public albums
+                query = query.Where(a => a.Visibility == AlbumVisibility.Public);
+            }
+            else
+            {
+                // Authenticated - show own albums + public + members-only
+                query = query.Where(a =>
+                    a.UserId == userId
+                    || a.Visibility == AlbumVisibility.Public
+                    || a.Visibility == AlbumVisibility.MembersOnly
+                );
+            }
+        }
+
+        // Filter by visibility
+        if (
+            !string.IsNullOrEmpty(visibility)
+            && Enum.TryParse<AlbumVisibility>(visibility, true, out var visibilityEnum)
+        )
+        {
+            query = query.Where(a => a.Visibility == visibilityEnum);
+        }
+
+        var albums = await query
             .OrderByDescending(a => a.UpdatedAt)
             .Select(a => new AlbumDto(
                 a.Id,
                 a.Name,
+                a.Description,
                 a.CoverMediaId,
+                a.CoverMediaId.HasValue ? $"/api/media/{a.CoverMediaId}/content" : null,
+                a.Visibility,
                 a.MediaAssets.Count,
+                a.UserId,
                 a.CreatedAt,
                 a.UpdatedAt
             ))
             .ToListAsync();
 
         return Ok(albums);
+    }
+
+    [HttpGet("albums/{id:guid}")]
+    public async Task<ActionResult<AlbumDto>> GetAlbumById(Guid id)
+    {
+        var userId = GetUserId();
+
+        // Build visibility filter
+        var album = await _db
+            .Albums.Where(a =>
+                a.Id == id
+                && (
+                    a.UserId == userId
+                    || a.Visibility == AlbumVisibility.Public
+                    || (
+                        a.Visibility == AlbumVisibility.MembersOnly && !string.IsNullOrEmpty(userId)
+                    )
+                )
+            )
+            .Select(a => new AlbumDto(
+                a.Id,
+                a.Name,
+                a.Description,
+                a.CoverMediaId,
+                a.CoverMediaId.HasValue ? $"/api/media/{a.CoverMediaId}/content" : null,
+                a.Visibility,
+                a.MediaAssets.Count,
+                a.UserId,
+                a.CreatedAt,
+                a.UpdatedAt
+            ))
+            .FirstOrDefaultAsync();
+
+        if (album == null)
+            return NotFound();
+
+        return Ok(album);
     }
 
     [HttpPost("albums")]
@@ -220,6 +406,8 @@ public class MediaController : ControllerBase
         {
             Id = Guid.NewGuid(),
             Name = dto.Name,
+            Description = dto.Description,
+            Visibility = dto.Visibility,
             UserId = userId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -229,12 +417,59 @@ public class MediaController : ControllerBase
         await _db.SaveChangesAsync();
 
         return CreatedAtAction(
-            nameof(GetAlbums),
+            nameof(GetAlbumById),
+            new { id = album.Id },
             new AlbumDto(
                 album.Id,
                 album.Name,
+                album.Description,
                 album.CoverMediaId,
+                null,
+                album.Visibility,
                 0,
+                album.UserId,
+                album.CreatedAt,
+                album.UpdatedAt
+            )
+        );
+    }
+
+    [HttpPut("albums/{id:guid}")]
+    public async Task<ActionResult<AlbumDto>> UpdateAlbum(Guid id, [FromBody] UpdateAlbumDto dto)
+    {
+        var userId = GetUserId();
+        var album = await _db.Albums.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+
+        if (album == null)
+            return NotFound();
+
+        if (!string.IsNullOrWhiteSpace(dto.Name))
+            album.Name = dto.Name;
+
+        if (dto.Description != null)
+            album.Description = dto.Description;
+
+        if (dto.CoverMediaId.HasValue)
+            album.CoverMediaId = dto.CoverMediaId.Value;
+
+        if (dto.Visibility.HasValue)
+            album.Visibility = dto.Visibility.Value;
+
+        album.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+
+        var mediaCount = await _db.MediaAssets.CountAsync(m => m.AlbumId == album.Id);
+
+        return Ok(
+            new AlbumDto(
+                album.Id,
+                album.Name,
+                album.Description,
+                album.CoverMediaId,
+                album.CoverMediaId.HasValue ? $"/api/media/{album.CoverMediaId}/content" : null,
+                album.Visibility,
+                mediaCount,
+                album.UserId,
                 album.CreatedAt,
                 album.UpdatedAt
             )
@@ -245,14 +480,77 @@ public class MediaController : ControllerBase
     public async Task<IActionResult> DeleteAlbum(Guid id)
     {
         var userId = GetUserId();
-        var album = await _db.Albums.FirstOrDefaultAsync(a =>
-            a.Id == id && (a.UserId == userId || a.UserId == null)
-        );
+        var album = await _db.Albums.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
 
         if (album == null)
             return NotFound();
 
         _db.Albums.Remove(album);
+        await _db.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPost("albums/{id:guid}/media")]
+    public async Task<ActionResult<MediaAssetDto>> AddMediaToAlbum(
+        Guid id,
+        [FromBody] AddMediaToAlbumDto dto
+    )
+    {
+        var userId = GetUserId();
+        var album = await _db.Albums.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+
+        if (album == null)
+            return NotFound("Album not found or you don't have permission");
+
+        var media = await _db.MediaAssets.FirstOrDefaultAsync(m =>
+            m.Id == dto.MediaId && m.UserId == userId
+        );
+
+        if (media == null)
+            return NotFound("Media not found or you don't have permission");
+
+        media.AlbumId = id;
+        album.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+
+        return Ok(
+            new MediaAssetDto(
+                media.Id,
+                media.FileName,
+                media.ContentType,
+                media.Size,
+                media.Title,
+                media.Source,
+                media.Width,
+                media.Height,
+                media.Duration,
+                media.ScriptJson,
+                media.AlbumId,
+                media.UserId,
+                media.CreatedAt
+            )
+        );
+    }
+
+    [HttpDelete("albums/{id:guid}/media/{mediaId:guid}")]
+    public async Task<IActionResult> RemoveMediaFromAlbum(Guid id, Guid mediaId)
+    {
+        var userId = GetUserId();
+        var album = await _db.Albums.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+
+        if (album == null)
+            return NotFound("Album not found or you don't have permission");
+
+        var media = await _db.MediaAssets.FirstOrDefaultAsync(m =>
+            m.Id == mediaId && m.AlbumId == id && m.UserId == userId
+        );
+
+        if (media == null)
+            return NotFound("Media not found in this album");
+
+        media.AlbumId = null;
+        album.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
 
         return NoContent();

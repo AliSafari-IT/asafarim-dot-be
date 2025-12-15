@@ -1,3 +1,5 @@
+using KidCode.Api.Models;
+
 namespace KidCode.Api.DTOs;
 
 public record MediaAssetDto(
@@ -10,7 +12,9 @@ public record MediaAssetDto(
     int? Width,
     int? Height,
     double? Duration,
+    string? ScriptJson,
     Guid? AlbumId,
+    string? UserId,
     DateTime CreatedAt
 );
 
@@ -20,18 +24,32 @@ public record CreateMediaAssetDto(
     int? Width,
     int? Height,
     double? Duration,
+    string? ScriptJson,
     Guid? AlbumId
 );
 
 public record AlbumDto(
     Guid Id,
     string Name,
+    string? Description,
     Guid? CoverMediaId,
+    string? CoverUrl,
+    AlbumVisibility Visibility,
     int MediaCount,
+    string? UserId,
     DateTime CreatedAt,
     DateTime UpdatedAt
 );
 
-public record CreateAlbumDto(string Name);
+public record CreateAlbumDto(string Name, string? Description, AlbumVisibility Visibility);
 
-public record UpdateAlbumDto(string? Name, Guid? CoverMediaId);
+public record UpdateAlbumDto(
+    string? Name,
+    string? Description,
+    Guid? CoverMediaId,
+    AlbumVisibility? Visibility
+);
+
+public record AddMediaToAlbumDto(Guid MediaId);
+
+public record RemoveMediaFromAlbumDto(Guid MediaId);

@@ -27,8 +27,15 @@ public class KidCodeDbContext : DbContext
             entity.Property(e => e.Title).HasMaxLength(255).IsRequired();
             entity.Property(e => e.Mode).HasConversion<string>();
             entity.Property(e => e.BlocksJson).HasColumnType("jsonb");
+            entity.Property(e => e.ModeDataJson).HasColumnType("jsonb");
             entity.Property(e => e.Assets).HasColumnType("jsonb");
             entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => new
+            {
+                e.UserId,
+                e.Mode,
+                e.IsDraft,
+            });
         });
 
         modelBuilder.Entity<Progress>(entity =>
@@ -61,10 +68,16 @@ public class KidCodeDbContext : DbContext
             entity.Property(e => e.Content).HasColumnType("bytea").IsRequired();
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.AlbumId);
+            entity.HasIndex(e => e.ProjectId);
             entity
                 .HasOne(e => e.Album)
                 .WithMany(a => a.MediaAssets)
                 .HasForeignKey(e => e.AlbumId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity
+                .HasOne(e => e.Project)
+                .WithMany(p => p.MediaAssets)
+                .HasForeignKey(e => e.ProjectId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
 

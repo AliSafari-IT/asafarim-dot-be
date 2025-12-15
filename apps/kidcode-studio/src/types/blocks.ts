@@ -68,6 +68,15 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
         params: [{ name: 'size', type: 'number', default: 50, min: 10, max: 200 }]
     },
     {
+        id: 'draw-heart',
+        type: 'drawHeart',
+        category: 'draw',
+        label: 'Draw Heart',
+        color: '#FF6B6B',
+        icon: '❤️',
+        params: [{ name: 'size', type: 'number', default: 50, min: 10, max: 200 }]
+    },
+    {
         id: 'move-forward',
         type: 'moveForward',
         category: 'motion',

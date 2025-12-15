@@ -49,11 +49,13 @@ export interface LeaderboardResponse {
 }
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
+    const token = localStorage.getItem('auth_token');
     const response = await fetch(url, {
         ...options,
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...options.headers,
         },
     });
@@ -89,4 +91,11 @@ export async function getGameHistory(mode?: string, limit: number = 20) {
     const params = new URLSearchParams({ limit: limit.toString() });
     if (mode) params.append('mode', mode);
     return fetchWithAuth(`${API_BASE}/gamesessions?${params}`);
+}
+
+export async function earnSticker(stickerId: string) {
+    return fetchWithAuth(`${API_BASE}/progress/update`, {
+        method: 'POST',
+        body: JSON.stringify({ earnSticker: stickerId }),
+    });
 }

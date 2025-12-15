@@ -40,8 +40,11 @@ builder
         {
             OnMessageReceived = context =>
             {
-                if (context.Request.Cookies.TryGetValue("atk", out var token))
-                    context.Token = token;
+                if (string.IsNullOrEmpty(context.Token))
+                {
+                    if (context.Request.Cookies.TryGetValue("atk", out var token))
+                        context.Token = token;
+                }
                 return Task.CompletedTask;
             },
         };

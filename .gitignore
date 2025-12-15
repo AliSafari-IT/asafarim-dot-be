@@ -154,3 +154,5 @@ SHARED_IMPORTS_QUICK_START.md
 apps/web/tsconfig.app.tsbuildinfo
 docs
 tsconfig.app.tsbuildinfo
+apis/KidCode.Api/GAME_SCORING_IMPLEMENTATION.md
+apis/KidCode.Api/SETUP_GAME_SCORING.md

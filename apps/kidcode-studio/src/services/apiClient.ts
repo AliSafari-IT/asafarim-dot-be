@@ -1,13 +1,22 @@
 import type { Project, CreateProjectDto, UpdateProjectDto } from '../types/project';
 import type { Progress, Challenge } from '../types/progress';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5190/api';
+const RAW_API_BASE = import.meta.env.VITE_API_URL || 'http://kidcode.asafarim.local:5190/api';
+const API_BASE = RAW_API_BASE.replace(/\/$/, '').endsWith('/api')
+    ? RAW_API_BASE.replace(/\/$/, '')
+    : `${RAW_API_BASE.replace(/\/$/, '')}/api`;
+
+function getAuthToken(): string | null {
+    return localStorage.getItem('auth_token');
+}
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const token = getAuthToken();
     const response = await fetch(`${API_BASE}${endpoint}`, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...options?.headers
         },
         credentials: 'include'
@@ -45,9 +54,13 @@ export const api = {
         },
 
         async delete(id: string): Promise<void> {
+            const token = getAuthToken();
             await fetch(`${API_BASE}/projects/${id}`, {
                 method: 'DELETE',
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
             });
         }
     },
@@ -61,12 +74,27 @@ export const api = {
             unlockLevel?: number;
             addBadge?: string;
             completeChallenge?: string;
+            earnSticker?: string;
             addStickers?: number;
+            mode?: string;
+            setModeLevel?: number;
+            addModeSticker?: string;
+            addModeBadge?: string;
+            completeModeChallenge?: string;
         }): Promise<Progress> {
-            return request<Progress>('/progress/update', {
+            const updated = await request<Progress>('/progress/update', {
                 method: 'POST',
                 body: JSON.stringify(data)
             });
+            // Save to local storage immediately
+            if (updated) {
+                localStorage.setItem('progress', JSON.stringify(updated));
+            }
+            return updated;
+        },
+
+        async getLeaderboard(mode: string, limit: number = 10): Promise<any[]> {
+            return request<any[]>(`/progress/leaderboard/${mode}?limit=${limit}`);
         }
     },
 

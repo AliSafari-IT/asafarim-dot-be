@@ -1,8 +1,20 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  type MouseEvent,
+} from "react";
+import { Camera, Check, FolderOpen, Trash2 } from "lucide-react";
 import BlockPalette from "../../components/BlockEditor/BlockPalette";
 import BlockScript from "../../components/BlockEditor/BlockScript";
 import ControlsBar from "../../components/BlockEditor/ControlsBar";
 import { useStore } from "../../core/state/useStore";
+import { mediaApi, type MediaAssetDto } from "../../services/mediaApi";
+import { useAuth } from "../../hooks/useAuth";
+import { useProgressSync } from "../../hooks/useProgressSync";
+import { useNotifications } from "@asafarim/shared-ui-react";
+import "../../components/Canvas/Canvas.css";
 import "./PuzzleAdventures.css";
 
 type Cell = "wall" | "path" | "start" | "goal";
@@ -136,7 +148,21 @@ const TURN_LEFT: Record<Direction, Direction> = {
   right: "up",
 };
 
+function generatePuzzleHash(maze: Cell[][]): string {
+  const mazeString = maze.map((row) => row.join("")).join("");
+  let hash = 0;
+  for (let i = 0; i < mazeString.length; i++) {
+    const char = mazeString.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
 export default function PuzzleAdventures() {
+  const { user, isAuthenticated } = useAuth();
+  const { updateProgress } = useProgressSync();
+  const { addNotification } = useNotifications();
   const [gridSize, setGridSize] = useState<GridSize>(8);
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [maze, setMaze] = useState<Cell[][]>(() => generateMaze(8, "easy"));
@@ -147,9 +173,18 @@ export default function PuzzleAdventures() {
   const [failedCell, setFailedCell] = useState<{ x: number; y: number } | null>(
     null
   );
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
+    "idle"
+  );
+  const [showLoadModal, setShowLoadModal] = useState(false);
+  const [savedScripts, setSavedScripts] = useState<MediaAssetDto[]>([]);
+  const [loadingScripts, setLoadingScripts] = useState(false);
+  const [loadedMediaId, setLoadedMediaId] = useState<string | null>(null);
+  const [currentPuzzleHash, setCurrentPuzzleHash] = useState<string>("");
 
   const playerPosRef = useRef(playerPos);
   const directionRef = useRef<Direction>(direction);
+  const wonRef = useRef(false);
 
   useEffect(() => {
     playerPosRef.current = playerPos;
@@ -160,6 +195,8 @@ export default function PuzzleAdventures() {
   }, [direction]);
 
   const blocks = useStore((state) => state.editor.blocks);
+  const setBlocks = useStore((state) => state.setBlocks);
+  const progress = useStore((state) => state.progress);
   const isPlaying = useStore((state) => state.editor.isPlaying);
   const currentStep = useStore((state) => state.editor.currentStep);
   const step = useStore((state) => state.step);
@@ -168,21 +205,61 @@ export default function PuzzleAdventures() {
   const setActiveMode = useStore((state) => state.setActiveMode);
   const setFailedBlockIndex = useStore((state) => state.setFailedBlockIndex);
 
-  useEffect(() => {
-    setActiveMode("puzzle");
-  }, [setActiveMode]);
+  const createPuzzleThumbnail = useCallback(async () => {
+    const width = 600;
+    const height = 400;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
 
-  useEffect(() => {
-    console.log("failedCell state changed:", failedCell);
-  }, [failedCell]);
+    const style = getComputedStyle(document.documentElement);
+    const kidPrimary = style.getPropertyValue("--kid-primary").trim();
+    const kidSecondary = style.getPropertyValue("--kid-secondary").trim();
+    const kidAccent = style.getPropertyValue("--kid-accent").trim();
+    const kidSurface = style.getPropertyValue("--kid-surface").trim();
+    const kidText = style.getPropertyValue("--kid-text").trim();
 
-  useEffect(() => {
-    if (blocks.length === 0) {
-      setFailedCell(null);
+    const bg = ctx.createLinearGradient(0, 0, width, height);
+    bg.addColorStop(0, kidPrimary || kidSecondary);
+    bg.addColorStop(1, kidAccent || kidSecondary);
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = kidSurface || kidSecondary || kidPrimary;
+    for (let i = 0; i < 8; i++) {
+      ctx.fillRect(60 + i * 60, 90, 44, 44);
     }
-  }, [blocks.length]);
+    for (let i = 0; i < 6; i++) {
+      ctx.fillRect(120 + i * 60, 150, 44, 44);
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = 0.75;
+    ctx.fillStyle = kidSurface || kidPrimary || kidSecondary;
+    ctx.fillRect(16, 16, width - 32, 70);
+    ctx.restore();
+
+    ctx.fillStyle = kidText || "#ffffff";
+    ctx.font = "700 26px system-ui";
+    ctx.fillText("Puzzle Script", 32, 50);
+
+    ctx.font = "600 16px system-ui";
+    ctx.fillText(`Blocks: ${blocks.length}`, 32, 76);
+    ctx.fillText(`Grid: ${gridSize}×${gridSize}`, 180, 76);
+    ctx.fillText(`Difficulty: ${difficulty}`, 330, 76);
+
+    return await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/png")
+    );
+  }, [blocks.length, difficulty, gridSize]);
 
   const resetMaze = useCallback((preserveFailedCell = false) => {
+    wonRef.current = false;
     setPlayerPos({ x: 1, y: 1 });
     setDirection("right");
     setWon(false);
@@ -191,6 +268,176 @@ export default function PuzzleAdventures() {
       setFailedCell(null);
     }
   }, []);
+
+  useEffect(() => {
+    const hash = generatePuzzleHash(maze);
+    setCurrentPuzzleHash(hash);
+  }, [maze]);
+
+  const handleLoadScript = useCallback(async () => {
+    setShowLoadModal(true);
+    setLoadingScripts(true);
+    try {
+      const scripts = await mediaApi.listMedia(
+        undefined,
+        "puzzle",
+        isAuthenticated ? true : undefined
+      );
+      setSavedScripts(scripts.filter((s) => s.scriptJson));
+    } catch (error) {
+      console.error("Failed to load puzzle scripts:", error);
+    } finally {
+      setLoadingScripts(false);
+    }
+  }, [isAuthenticated]);
+
+  const handleSelectScript = useCallback(
+    (script: MediaAssetDto) => {
+      if (!script.scriptJson) return;
+      try {
+        const data = JSON.parse(script.scriptJson);
+
+        if (data.blocks) {
+          setBlocks(data.blocks);
+        }
+
+        if (data.maze) {
+          setMaze(data.maze);
+        }
+
+        if (data.gridSize) {
+          setGridSize(data.gridSize);
+        }
+
+        if (data.difficulty) {
+          setDifficulty(data.difficulty);
+        }
+
+        resetMaze();
+        setLoadedMediaId(script.id);
+        setShowLoadModal(false);
+      } catch (error) {
+        console.error("Failed to parse script:", error);
+      }
+    },
+    [setBlocks, resetMaze]
+  );
+
+  const handleDeleteScript = useCallback(
+    async (scriptId: string, e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      if (!window.confirm("Are you sure you want to delete this puzzle?")) {
+        return;
+      }
+
+      try {
+        await mediaApi.deleteMedia(scriptId);
+        setSavedScripts((prev) => prev.filter((s) => s.id !== scriptId));
+        if (loadedMediaId === scriptId) {
+          setLoadedMediaId(null);
+        }
+      } catch (error) {
+        console.error("Failed to delete puzzle script:", error);
+        alert("Failed to delete puzzle. Please try again.");
+      }
+    },
+    [loadedMediaId]
+  );
+
+  const handleSave = useCallback(async () => {
+    if (!loadedMediaId) return;
+    if (blocks.length === 0) return;
+
+    setSaveStatus("saving");
+    try {
+      const blob = await createPuzzleThumbnail();
+      if (!blob) {
+        setSaveStatus("idle");
+        return;
+      }
+
+      const puzzleData = {
+        blocks,
+        maze,
+        gridSize,
+        difficulty,
+      };
+
+      await mediaApi.updateMedia(loadedMediaId, {
+        file: blob,
+        scriptJson: JSON.stringify(puzzleData),
+      });
+
+      const updated = await mediaApi.listMedia(
+        undefined,
+        "puzzle",
+        isAuthenticated ? true : undefined
+      );
+      setSavedScripts(updated.filter((s) => s.scriptJson));
+
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch (error) {
+      console.error("Failed to save puzzle script:", error);
+      setSaveStatus("idle");
+    }
+  }, [blocks, createPuzzleThumbnail, isAuthenticated, loadedMediaId]);
+
+  const handleSaveAs = useCallback(async () => {
+    if (blocks.length === 0) return;
+
+    setSaveStatus("saving");
+    try {
+      const blob = await createPuzzleThumbnail();
+      if (!blob) {
+        setSaveStatus("idle");
+        return;
+      }
+
+      const title = `Puzzle ${new Date().toLocaleString()}`;
+
+      const puzzleData = {
+        blocks,
+        maze,
+        gridSize,
+        difficulty,
+      };
+
+      const media = await mediaApi.uploadMedia({
+        file: blob,
+        title,
+        source: "puzzle",
+        width: 600,
+        height: 400,
+        scriptJson: JSON.stringify(puzzleData),
+      });
+
+      setLoadedMediaId(media.id);
+
+      const updated = await mediaApi.listMedia(
+        undefined,
+        "puzzle",
+        isAuthenticated ? true : undefined
+      );
+      setSavedScripts(updated.filter((s) => s.scriptJson));
+
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch (error) {
+      console.error("Failed to save puzzle script:", error);
+      setSaveStatus("idle");
+    }
+  }, [blocks, createPuzzleThumbnail, isAuthenticated]);
+
+  useEffect(() => {
+    setActiveMode("puzzle");
+  }, [setActiveMode]);
+
+  useEffect(() => {
+    if (blocks.length === 0) {
+      setFailedCell(null);
+    }
+  }, [blocks.length]);
 
   const handleGenerateMaze = useCallback(() => {
     const newMaze = generateMaze(gridSize, difficulty);
@@ -220,14 +467,7 @@ export default function PuzzleAdventures() {
         const isWall = !isOutOfBounds && maze[newY][newX] === "wall";
 
         if (isOutOfBounds || isWall) {
-          console.log("Hit wall/boundary at:", {
-            newX,
-            newY,
-            isOutOfBounds,
-            isWall,
-          });
           const failedPos = { x: newX, y: newY };
-          console.log("Setting failedCell to:", failedPos);
           setFailedCell(failedPos);
           setFailedBlockIndex(currentStep);
           setMessage("Oops! Hit a wall! 🧱");
@@ -238,9 +478,33 @@ export default function PuzzleAdventures() {
         setPlayerPos({ x: newX, y: newY });
 
         if (maze[newY][newX] === "goal") {
+          const goalMessage = "You reached the goal! 🎉";
+          wonRef.current = true;
           setWon(true);
-          setMessage("You reached the goal! 🎉");
-          showStickerReward("maze-master", "You solved the maze!");
+          setMessage(goalMessage);
+
+          const puzzleStickerId = `puzzle-${currentPuzzleHash}`;
+          const hasSolvedThisPuzzle =
+            progress?.puzzle?.stickers?.includes(puzzleStickerId) ?? false;
+
+          if (!hasSolvedThisPuzzle) {
+            const wasShown = showStickerReward(
+              puzzleStickerId,
+              "You solved the maze!"
+            );
+
+            if (wasShown) {
+              updateProgress({
+                mode: "Puzzle",
+                addModeSticker: puzzleStickerId,
+              }).catch(() => {
+                // best-effort
+              });
+            }
+          } else {
+            addNotification("success", "You solved the puzzle successfully!");
+          }
+
           stop();
         }
         break;
@@ -252,7 +516,16 @@ export default function PuzzleAdventures() {
         setDirection((prev) => TURN_LEFT[prev]);
         break;
     }
-  }, [blocks, currentStep, maze, stop, showStickerReward]);
+  }, [
+    addNotification,
+    blocks,
+    currentStep,
+    maze,
+    progress,
+    stop,
+    showStickerReward,
+    updateProgress,
+  ]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -285,10 +558,11 @@ export default function PuzzleAdventures() {
     prevIsPlayingRef.current = isPlaying;
 
     if (!isPlaying && wasPlaying) {
-      // Just stopped playing - preserve failed cell if it exists
-      resetMaze(true);
+      if (!wonRef.current) {
+        resetMaze(true);
+      }
     } else if (isPlaying && !wasPlaying) {
-      // Just started playing - clear failed cell
+      wonRef.current = false;
       setFailedCell(null);
     }
   }, [isPlaying, resetMaze]);
@@ -423,6 +697,48 @@ export default function PuzzleAdventures() {
               </div>
             </div>
           </div>
+          <div className="canvas-actions">
+            <button
+              className="canvas-load-btn"
+              onClick={handleLoadScript}
+              title="Load Saved Script"
+            >
+              <FolderOpen size={18} />
+              Load
+            </button>
+            {loadedMediaId && (
+              <button
+                className={`canvas-save-btn ${saveStatus}`}
+                onClick={handleSave}
+                disabled={saveStatus === "saving" || blocks.length === 0}
+                title="Save (Update Current)"
+              >
+                {saveStatus === "saved" ? (
+                  <Check size={18} />
+                ) : (
+                  <Camera size={18} />
+                )}
+                {saveStatus === "idle" && "Save"}
+                {saveStatus === "saving" && "Saving..."}
+                {saveStatus === "saved" && "Saved!"}
+              </button>
+            )}
+            <button
+              className={`canvas-save-btn ${saveStatus}`}
+              onClick={handleSaveAs}
+              disabled={saveStatus === "saving" || blocks.length === 0}
+              title="Save As (Create New)"
+            >
+              {saveStatus === "saved" ? (
+                <Check size={18} />
+              ) : (
+                <Camera size={18} />
+              )}
+              {saveStatus === "idle" && "Save As"}
+              {saveStatus === "saving" && "Saving..."}
+              {saveStatus === "saved" && "Saved!"}
+            </button>
+          </div>
           <ControlsBar />
         </main>
 
@@ -430,6 +746,78 @@ export default function PuzzleAdventures() {
           <BlockScript />
         </aside>
       </div>
+
+      {showLoadModal && (
+        <div className="modal-overlay" onClick={() => setShowLoadModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Load Saved Script</h2>
+            {loadingScripts ? (
+              <p>Loading...</p>
+            ) : savedScripts.length === 0 ? (
+              <p>No saved puzzle scripts found.</p>
+            ) : (
+              <div className="saved-drawings-grid">
+                {savedScripts.map((script) => {
+                  const currentUserId =
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.id ??
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.userId ??
+                    (
+                      user as unknown as {
+                        id?: string;
+                        userId?: string;
+                        sub?: string;
+                      } | null
+                    )?.sub ??
+                    null;
+
+                  const isOwner =
+                    !!currentUserId && script.userId === currentUserId;
+                  return (
+                    <div
+                      key={script.id}
+                      className="saved-drawing-card"
+                      onClick={() => handleSelectScript(script)}
+                    >
+                      <img
+                        src={mediaApi.getContentUrl(script.id)}
+                        alt={script.title}
+                      />
+                      <p>{script.title}</p>
+                      {isOwner && (
+                        <button
+                          className="delete-btn"
+                          onClick={(e) => handleDeleteScript(script.id, e)}
+                          title="Delete puzzle"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <button
+              className="btn-secondary"
+              onClick={() => setShowLoadModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

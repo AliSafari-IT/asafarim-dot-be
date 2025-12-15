@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useStore } from "../../core/state/useStore";
 import { storage } from "../../services/storage";
-import type { Project } from "../../types/project";
+import { api } from "../../services/apiClient";
 import "./Home.css";
+import { useAuth } from "@asafarim/shared-ui-react";
 
 const modeEmojis: Record<string, string> = {
   drawing: "🖌️",
@@ -27,16 +28,35 @@ export default function Home() {
   const dailyChallenge = useStore((state) => state.dailyChallenge);
   const setDailyChallenge = useStore((state) => state.setDailyChallenge);
   const [loading, setLoading] = useState(true);
+  const [leaderboards, setLeaderboards] = useState<{
+    drawing: any[];
+    story: any[];
+    music: any[];
+    puzzle: any[];
+  }>({
+    drawing: [],
+    story: [],
+    music: [],
+    puzzle: [],
+  });
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [savedProjects, savedProgress] = await Promise.all([
+        const [savedProjects, apiProgress] = await Promise.all([
           storage.getAllProjects(),
-          storage.getOrCreateProgress("guest"),
+          api.progress.get().catch(() => null),
         ]);
         setProjects(savedProjects);
-        setProgress(savedProgress);
+        if (apiProgress) {
+          setProgress(apiProgress);
+          localStorage.setItem("progress", JSON.stringify(apiProgress));
+        } else {
+          const localProgress = await storage.getOrCreateProgress("guest");
+          setProgress(localProgress);
+          localStorage.setItem("progress", JSON.stringify(localProgress));
+        }
       } catch (error) {
         console.error("Failed to load data:", error);
       } finally {
@@ -45,6 +65,22 @@ export default function Home() {
     }
     loadData();
   }, [setProjects, setProgress, setDailyChallenge]);
+
+  // Refresh progress every 2 seconds to catch updates from other components
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const apiProgress = await api.progress.get().catch(() => null);
+        if (apiProgress) {
+          setProgress(apiProgress);
+          localStorage.setItem("progress", JSON.stringify(apiProgress));
+        }
+      } catch (error) {
+        // Silently fail on refresh
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [setProgress]);
 
   if (loading) {
     return (
@@ -92,29 +128,169 @@ export default function Home() {
         </div>
       </section>
 
-      {progress && (
+      {progress && isAuthenticated && (
         <section className="progress-section">
-          <h2>⭐ Your Progress</h2>
-          <div className="progress-stats">
-            <div className="stat">
-              <span className="stat-value">{progress.totalStickers}</span>
-              <span className="stat-label">Stickers</span>
+          <h2>⭐ Your Progress by Mode</h2>
+          <div className="progress-modes">
+            <div className="mode-progress">
+              <h3>🖌️ Drawing</h3>
+              <div className="mode-stats">
+                <div className="stat">
+                  <span className="stat-value">{progress.drawing.level}</span>
+                  <span className="stat-label">Level</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">{progress.drawing.stickers.length}</span>
+                  <span className="stat-label">Stickers</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">{progress.drawing.badges.length}</span>
+                  <span className="stat-label">Badges</span>
+                </div>
+              </div>
             </div>
-            <div className="stat">
-              <span className="stat-value">{progress.badges.length}</span>
-              <span className="stat-label">Badges</span>
+            <div className="mode-progress">
+              <h3>🎬 Story</h3>
+              <div className="mode-stats">
+                <div className="stat">
+                  <span className="stat-value">{progress.story.level}</span>
+                  <span className="stat-label">Level</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">{progress.story.stickers.length}</span>
+                  <span className="stat-label">Stickers</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">{progress.story.badges.length}</span>
+                  <span className="stat-label">Badges</span>
+                </div>
+              </div>
             </div>
-            <div className="stat">
-              <span className="stat-value">
-                {progress.completedChallenges.length}
-              </span>
-              <span className="stat-label">Challenges</span>
+            <div className="mode-progress">
+              <h3>🎵 Music</h3>
+              <div className="mode-stats">
+                <div className="stat">
+                  <span className="stat-value">{progress.music.level}</span>
+                  <span className="stat-label">Level</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">{progress.music.stickers.length}</span>
+                  <span className="stat-label">Stickers</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">{progress.music.badges.length}</span>
+                  <span className="stat-label">Badges</span>
+                </div>
+              </div>
             </div>
-            <div className="stat">
-              <span className="stat-value">
-                Level {Math.max(...progress.unlockedLevels)}
-              </span>
-              <span className="stat-label">Current Level</span>
+            <div className="mode-progress">
+              <h3>🧩 Puzzle</h3>
+              <div className="mode-stats">
+                <div className="stat">
+                  <span className="stat-value">{progress.puzzle.level}</span>
+                  <span className="stat-label">Level</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">{progress.puzzle.stickers.length}</span>
+                  <span className="stat-label">Stickers</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">{progress.puzzle.badges.length}</span>
+                  <span className="stat-label">Badges</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {!isAuthenticated && (
+        <section className="leaderboard-section">
+          <h2>🏆 Top Creators</h2>
+          <div className="leaderboard-container">
+            <div className="leaderboard">
+              <h3>🖌️ Drawing Masters</h3>
+              <div className="leaderboard-list">
+                {leaderboards.drawing.length > 0 ? (
+                  leaderboards.drawing.map((entry) => (
+                    <div key={entry.userId} className="leaderboard-entry">
+                      <div className="entry-rank">#{entry.rank}</div>
+                      <div className="entry-info">
+                        <div className="entry-username">{entry.username || entry.userId}</div>
+                        <div className="entry-stats">
+                          Level {entry.level} • {entry.totalStarsEarned} ⭐
+                        </div>
+                      </div>
+                      <div className="entry-score">{entry.score} pts</div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="placeholder">No creators yet</p>
+                )}
+              </div>
+            </div>
+            <div className="leaderboard">
+              <h3>🎬 Story Tellers</h3>
+              <div className="leaderboard-list">
+                {leaderboards.story.length > 0 ? (
+                  leaderboards.story.map((entry) => (
+                    <div key={entry.userId} className="leaderboard-entry">
+                      <div className="entry-rank">#{entry.rank}</div>
+                      <div className="entry-info">
+                        <div className="entry-username">{entry.username || entry.userId}</div>
+                        <div className="entry-stats">
+                          Level {entry.level} • {entry.totalStarsEarned} ⭐
+                        </div>
+                      </div>
+                      <div className="entry-score">{entry.score} pts</div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="placeholder">No creators yet</p>
+                )}
+              </div>
+            </div>
+            <div className="leaderboard">
+              <h3>🎵 Music Composers</h3>
+              <div className="leaderboard-list">
+                {leaderboards.music.length > 0 ? (
+                  leaderboards.music.map((entry) => (
+                    <div key={entry.userId} className="leaderboard-entry">
+                      <div className="entry-rank">#{entry.rank}</div>
+                      <div className="entry-info">
+                        <div className="entry-username">{entry.username || entry.userId}</div>
+                        <div className="entry-stats">
+                          Level {entry.level} • {entry.totalStarsEarned} ⭐
+                        </div>
+                      </div>
+                      <div className="entry-score">{entry.score} pts</div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="placeholder">No creators yet</p>
+                )}
+              </div>
+            </div>
+            <div className="leaderboard">
+              <h3>🧩 Puzzle Solvers</h3>
+              <div className="leaderboard-list">
+                {leaderboards.puzzle.length > 0 ? (
+                  leaderboards.puzzle.map((entry) => (
+                    <div key={entry.userId} className="leaderboard-entry">
+                      <div className="entry-rank">#{entry.rank}</div>
+                      <div className="entry-info">
+                        <div className="entry-username">{entry.username || entry.userId}</div>
+                        <div className="entry-stats">
+                          Level {entry.level} • {entry.totalStarsEarned} ⭐
+                        </div>
+                      </div>
+                      <div className="entry-score">{entry.score} pts</div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="placeholder">No creators yet</p>
+                )}
+              </div>
             </div>
           </div>
         </section>

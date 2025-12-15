@@ -4,7 +4,7 @@ import DrawingStudio from "./pages/DrawingStudio";
 import StoryMode from "./pages/StoryMode";
 import PuzzleAdventures from "./pages/PuzzleAdventures";
 import MusicBlocks from "./pages/MusicBlocks";
-import PhotoAlbum from "./pages/PhotoAlbum";
+import PhotoAlbumEnhanced from "./pages/PhotoAlbum/PhotoAlbumEnhanced";
 import Layout from "./components/Layout";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
         <Route path="story" element={<StoryMode />} />
         <Route path="puzzle" element={<PuzzleAdventures />} />
         <Route path="music" element={<MusicBlocks />} />
-        <Route path="photo-album" element={<PhotoAlbum />} />
+        <Route path="photo-album" element={<PhotoAlbumEnhanced />} />
       </Route>
     </Routes>
   );
