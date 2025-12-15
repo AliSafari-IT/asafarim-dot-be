@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, type MouseEvent } from "react";
-import { Camera, Check, FolderOpen, Trash2 } from "lucide-react";
-import { useAuth } from "@asafarim/shared-ui-react";
+import { Camera, Check, FolderOpen, Trash2, ImagePlus, X } from "lucide-react";
+import { useAuth, useNotifications } from "@asafarim/shared-ui-react";
 import { useProgressSync } from "../../hooks/useProgressSync";
 import { useNavigate } from "react-router-dom";
 import BlockPalette from "../../components/BlockEditor/BlockPalette";
@@ -15,11 +15,25 @@ import {
 import "../../components/Canvas/Canvas.css";
 import "./StoryMode.css";
 
+const SETTINGS_ALBUM_NAME = "settings-images";
+const MAX_TOTAL_BACKGROUNDS = 10;
+const DEFAULT_BACKGROUNDS_COUNT = 3;
+const MAX_CUSTOM_BACKGROUNDS =
+  MAX_TOTAL_BACKGROUNDS - DEFAULT_BACKGROUNDS_COUNT;
+
+interface CustomBackground {
+  id: string;
+  url: string;
+  title: string;
+}
+
 const CHARACTERS = ["🧒", "👧", "🐱", "🐶", "🦊", "🐻", "🤖", "👽"];
 const BACKGROUNDS = ["forest", "space", "city"] as const;
+type BackgroundType = (typeof BACKGROUNDS)[number] | string;
 
 export default function StoryMode() {
   const navigate = useNavigate();
+  const { addNotification } = useNotifications();
   const [character, setCharacter] = useState<string | null>(null);
   const [customCharacters, setCustomCharacters] = useState<CharacterAssetDto[]>(
     []
@@ -32,8 +46,15 @@ export default function StoryMode() {
   const [savedScripts, setSavedScripts] = useState<MediaAssetDto[]>([]);
   const [loadingScripts, setLoadingScripts] = useState(false);
   const [loadedMediaId, setLoadedMediaId] = useState<string | null>(null);
-  const [background, setBackground] =
-    useState<(typeof BACKGROUNDS)[number]>("forest");
+  const [background, setBackground] = useState<BackgroundType>("forest");
+  const [customBackgrounds, setCustomBackgrounds] = useState<
+    CustomBackground[]
+  >([]);
+  const [settingsAlbumId, setSettingsAlbumId] = useState<string | null>(null);
+  const [showBackgroundPicker, setShowBackgroundPicker] = useState(false);
+  const [albumImages, setAlbumImages] = useState<MediaAssetDto[]>([]);
+  const [loadingAlbumImages, setLoadingAlbumImages] = useState(false);
+  const [addingBackground, setAddingBackground] = useState(false);
   const [position, setPosition] = useState({ x: 50, y: 70 });
   const [animation, setAnimation] = useState<string | null>(null);
   const [speechText, setSpeechText] = useState<string | null>(null);
@@ -224,6 +245,126 @@ export default function StoryMode() {
   }, [setActiveMode]);
 
   useEffect(() => {
+    loadSettingsAlbum();
+  }, []);
+
+  async function loadSettingsAlbum() {
+    try {
+      const albums = await mediaApi.listAlbums(true);
+      let settingsAlbum = albums.find((a) => a.name === SETTINGS_ALBUM_NAME);
+
+      if (!settingsAlbum) {
+        settingsAlbum = await mediaApi.createAlbum(
+          SETTINGS_ALBUM_NAME,
+          "Stage backgrounds and settings images"
+        );
+      }
+
+      setSettingsAlbumId(settingsAlbum.id);
+
+      const backgrounds = await mediaApi.listMedia(
+        settingsAlbum.id,
+        "story-background"
+      );
+      setCustomBackgrounds(
+        backgrounds.map((b) => ({
+          id: b.id,
+          url: mediaApi.getContentUrl(b.id),
+          title: b.title,
+        }))
+      );
+    } catch (error) {
+      console.error("Failed to load settings album:", error);
+    }
+  }
+
+  const handleOpenBackgroundPicker = useCallback(async () => {
+    setShowBackgroundPicker(true);
+    setLoadingAlbumImages(true);
+    try {
+      const images = await mediaApi.listMedia(undefined, undefined, true);
+      const imageOnly = images.filter(
+        (m) =>
+          m.contentType.startsWith("image/") && m.source !== "story-background"
+      );
+      setAlbumImages(imageOnly);
+    } catch (error) {
+      console.error("Failed to load album images:", error);
+      addNotification("error", "Could not load your images");
+    } finally {
+      setLoadingAlbumImages(false);
+    }
+  }, [addNotification]);
+
+  const handleSelectBackgroundImage = useCallback(
+    async (image: MediaAssetDto) => {
+      if (!settingsAlbumId) return;
+      if (customBackgrounds.length >= MAX_CUSTOM_BACKGROUNDS) {
+        addNotification("warning", "You've reached the maximum stage images!");
+        return;
+      }
+
+      setAddingBackground(true);
+      try {
+        const response = await fetch(mediaApi.getContentUrl(image.id), {
+          credentials: "include",
+        });
+        const blob = await response.blob();
+
+        const newMedia = await mediaApi.uploadMedia({
+          file: blob,
+          title: image.title || "Stage Background",
+          source: "story-background",
+          albumId: settingsAlbumId,
+        });
+
+        const newBackground: CustomBackground = {
+          id: newMedia.id,
+          url: mediaApi.getContentUrl(newMedia.id),
+          title: newMedia.title,
+        };
+
+        setCustomBackgrounds((prev) => [...prev, newBackground]);
+        setBackground(newBackground.url);
+        setShowBackgroundPicker(false);
+        addNotification("success", "Stage image added! 🎨");
+      } catch (error) {
+        console.error("Failed to add background:", error);
+        addNotification("error", "Could not add stage image");
+      } finally {
+        setAddingBackground(false);
+      }
+    },
+    [settingsAlbumId, customBackgrounds.length, addNotification]
+  );
+
+  const handleDeleteCustomBackground = useCallback(
+    async (bg: CustomBackground, e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      try {
+        await mediaApi.deleteMedia(bg.id);
+        setCustomBackgrounds((prev) => prev.filter((b) => b.id !== bg.id));
+
+        if (background === bg.url) {
+          setBackground("forest");
+        }
+
+        addNotification("success", "Stage image removed");
+      } catch (error) {
+        console.error("Failed to delete background:", error);
+        addNotification("error", "Could not remove stage image");
+      }
+    },
+    [background, addNotification]
+  );
+
+  const isCustomBackground = !BACKGROUNDS.includes(
+    background as (typeof BACKGROUNDS)[number]
+  );
+  const canAddMoreBackgrounds =
+    customBackgrounds.length < MAX_CUSTOM_BACKGROUNDS;
+
+  useEffect(() => {
     loadCustomCharacters();
   }, []);
 
@@ -384,7 +525,7 @@ export default function StoryMode() {
           </div>
         </div>
         <div className="bg-picker">
-          <label>Background:</label>
+          <label>Stage:</label>
           <div className="bg-options">
             {BACKGROUNDS.map((bg) => (
               <button
@@ -395,6 +536,39 @@ export default function StoryMode() {
                 {bg === "forest" ? "🌲" : bg === "space" ? "🌌" : "🏙️"} {bg}
               </button>
             ))}
+            {customBackgrounds.map((bg) => (
+              <div key={bg.id} className="custom-bg-wrapper">
+                <button
+                  className={`bg-btn custom-bg-btn ${
+                    background === bg.url ? "active" : ""
+                  }`}
+                  onClick={() => setBackground(bg.url)}
+                  title={bg.title}
+                >
+                  <img src={bg.url} alt={bg.title} />
+                </button>
+                <button
+                  className="custom-bg-delete"
+                  onClick={(e) => handleDeleteCustomBackground(bg, e)}
+                  title="Remove this stage image"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+            <button
+              className="bg-btn add-bg-btn"
+              onClick={handleOpenBackgroundPicker}
+              disabled={!canAddMoreBackgrounds}
+              title={
+                canAddMoreBackgrounds
+                  ? "Add Stage Image"
+                  : "Maximum stage images reached"
+              }
+            >
+              <ImagePlus size={18} />
+              <span className="add-bg-text">Add</span>
+            </button>
           </div>
         </div>
       </div>
@@ -406,7 +580,20 @@ export default function StoryMode() {
 
         <main className="studio-main">
           <div className="canvas-container">
-            <div className={`story-stage ${background}`}>
+            <div
+              className={`story-stage ${
+                isCustomBackground ? "custom" : background
+              }`}
+              style={
+                isCustomBackground
+                  ? {
+                      backgroundImage: `url(${background})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }
+                  : undefined
+              }
+            >
               <div
                 className={`character ${animation || ""} ${
                   character && !CHARACTERS.includes(character) ? "image" : ""
@@ -551,6 +738,74 @@ export default function StoryMode() {
             <button
               className="btn-secondary"
               onClick={() => setShowLoadModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showBackgroundPicker && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowBackgroundPicker(false)}
+        >
+          <div
+            className="modal-content bg-picker-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>🖼️ Pick a Stage Image</h2>
+            <p className="modal-hint">
+              Choose an image from your album to use as a stage background.
+              {!canAddMoreBackgrounds && (
+                <span className="limit-warning">
+                  {" "}
+                  You've reached the maximum of {MAX_CUSTOM_BACKGROUNDS} custom
+                  backgrounds.
+                </span>
+              )}
+            </p>
+            {loadingAlbumImages ? (
+              <div className="loading-state">
+                <span className="loading-spinner">🎨</span>
+                <p>Loading your images...</p>
+              </div>
+            ) : albumImages.length === 0 ? (
+              <div className="empty-state">
+                <span className="empty-icon">📷</span>
+                <p>No images found in your album!</p>
+                <p className="empty-hint">
+                  Upload some images to your Photo Album first.
+                </p>
+              </div>
+            ) : (
+              <div className="bg-picker-grid">
+                {albumImages.map((image) => (
+                  <button
+                    key={image.id}
+                    className="bg-picker-item"
+                    onClick={() => handleSelectBackgroundImage(image)}
+                    disabled={addingBackground || !canAddMoreBackgrounds}
+                  >
+                    <img
+                      src={mediaApi.getContentUrl(image.id)}
+                      alt={image.title}
+                      loading="lazy"
+                    />
+                    <span className="bg-picker-title">{image.title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {addingBackground && (
+              <div className="adding-overlay">
+                <span className="loading-spinner">✨</span>
+                <p>Adding stage image...</p>
+              </div>
+            )}
+            <button
+              className="btn-secondary"
+              onClick={() => setShowBackgroundPicker(false)}
             >
               Cancel
             </button>
