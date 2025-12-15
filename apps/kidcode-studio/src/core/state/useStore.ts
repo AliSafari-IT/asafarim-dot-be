@@ -3,6 +3,22 @@ import type { Block } from '../../types/blocks';
 import type { Project, ProjectMode } from '../../types/project';
 import type { Progress, Challenge } from '../../types/progress';
 
+interface PaintStroke {
+    id: string;
+    points: { x: number; y: number }[];
+    color: string;
+    width: number;
+    brushType: 'pen' | 'crayon' | 'watercolor';
+}
+
+interface PaintStamp {
+    id: string;
+    x: number;
+    y: number;
+    imageUrl: string;
+    size: number;
+}
+
 interface EditorState {
     blocks: Block[];
     selectedBlockId: string | null;
@@ -11,6 +27,14 @@ interface EditorState {
     failedBlockIndex: number | null;
     undoStack: Block[][];
     redoStack: Block[][];
+    paintMode: boolean;
+    paintStrokes: PaintStroke[];
+    paintStamps: PaintStamp[];
+    paintBrushType: 'pen' | 'crayon' | 'watercolor';
+    paintColor: string;
+    paintBrushWidth: number;
+    paintUndoStack: PaintStroke[][];
+    paintRedoStack: PaintStroke[][];
 }
 
 interface CharacterAsset {
@@ -63,6 +87,18 @@ interface AppState {
     setActiveMode: (mode: ProjectMode) => void;
 
     createNewProject: (mode: ProjectMode, title?: string) => Project;
+
+    togglePaintMode: () => void;
+    addPaintStroke: (stroke: PaintStroke) => void;
+    addPaintStamp: (stamp: PaintStamp) => void;
+    setPaintBrushType: (type: 'pen' | 'crayon' | 'watercolor') => void;
+    setPaintColor: (color: string) => void;
+    setPaintBrushWidth: (width: number) => void;
+    clearPaintStrokes: () => void;
+    undoPaintStroke: () => void;
+    redoPaintStroke: () => void;
+    savePaintToUndo: () => void;
+    loadPaintData: (strokes: PaintStroke[], stamps: PaintStamp[]) => void;
 }
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -74,7 +110,15 @@ const createEmptyEditor = (): EditorState => ({
     currentStep: -1,
     failedBlockIndex: null,
     undoStack: [],
-    redoStack: []
+    redoStack: [],
+    paintMode: false,
+    paintStrokes: [],
+    paintStamps: [],
+    paintBrushType: 'pen',
+    paintColor: '#2D3436',
+    paintBrushWidth: 3,
+    paintUndoStack: [],
+    paintRedoStack: []
 });
 
 export const useStore = create<AppState>((set, get) => ({
@@ -301,5 +345,98 @@ export const useStore = create<AppState>((set, get) => ({
             };
         });
         return project;
-    }
+    },
+
+    togglePaintMode: () => set((state) => {
+        const editor: EditorState = { ...state.editor, paintMode: !state.editor.paintMode };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    addPaintStroke: (stroke) => set((state) => {
+        const editor: EditorState = {
+            ...state.editor,
+            paintStrokes: [...state.editor.paintStrokes, stroke],
+            paintRedoStack: []
+        };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    addPaintStamp: (stamp) => set((state) => {
+        const editor: EditorState = {
+            ...state.editor,
+            paintStamps: [...state.editor.paintStamps, stamp]
+        };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    setPaintBrushType: (type) => set((state) => {
+        const editor: EditorState = { ...state.editor, paintBrushType: type };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    setPaintColor: (color) => set((state) => {
+        const editor: EditorState = { ...state.editor, paintColor: color };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    setPaintBrushWidth: (width) => set((state) => {
+        const editor: EditorState = { ...state.editor, paintBrushWidth: width };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    clearPaintStrokes: () => {
+        get().savePaintToUndo();
+        set((state) => {
+            const editor: EditorState = {
+                ...state.editor,
+                paintStrokes: [],
+                paintStamps: [],
+                paintRedoStack: []
+            };
+            return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+        });
+    },
+
+    savePaintToUndo: () => set((state) => {
+        const editor: EditorState = {
+            ...state.editor,
+            paintUndoStack: [...state.editor.paintUndoStack.slice(-19), state.editor.paintStrokes]
+        };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    undoPaintStroke: () => set((state) => {
+        if (state.editor.paintUndoStack.length === 0) return state;
+        const previous = state.editor.paintUndoStack[state.editor.paintUndoStack.length - 1];
+        const editor: EditorState = {
+            ...state.editor,
+            paintStrokes: previous,
+            paintUndoStack: state.editor.paintUndoStack.slice(0, -1),
+            paintRedoStack: [...state.editor.paintRedoStack, state.editor.paintStrokes]
+        };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    redoPaintStroke: () => set((state) => {
+        if (state.editor.paintRedoStack.length === 0) return state;
+        const next = state.editor.paintRedoStack[state.editor.paintRedoStack.length - 1];
+        const editor: EditorState = {
+            ...state.editor,
+            paintStrokes: next,
+            paintUndoStack: [...state.editor.paintUndoStack, state.editor.paintStrokes],
+            paintRedoStack: state.editor.paintRedoStack.slice(0, -1)
+        };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    }),
+
+    loadPaintData: (strokes, stamps) => set((state) => {
+        const editor: EditorState = {
+            ...state.editor,
+            paintStrokes: strokes,
+            paintStamps: stamps,
+            paintUndoStack: [],
+            paintRedoStack: []
+        };
+        return { editor, editorsByMode: { ...state.editorsByMode, [state.activeMode]: editor } };
+    })
 }));
