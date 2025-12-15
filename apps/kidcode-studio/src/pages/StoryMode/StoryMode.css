@@ -181,6 +181,191 @@
   color: white;
 }
 
+.custom-bg-wrapper {
+  position: relative;
+}
+
+.custom-bg-btn {
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+}
+
+.custom-bg-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(var(--kid-radius-sm) - 2px);
+}
+
+.custom-bg-btn.active {
+  box-shadow: 0 0 0 3px var(--kid-accent);
+}
+
+.custom-bg-delete {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--kid-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.15s ease;
+  z-index: 2;
+}
+
+.custom-bg-wrapper:hover .custom-bg-delete {
+  opacity: 1;
+}
+
+.custom-bg-delete:hover {
+  background: var(--kid-orange);
+  transform: scale(1.1);
+}
+
+.add-bg-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--kid-purple), var(--kid-pink));
+  color: white;
+}
+
+.add-bg-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.add-bg-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.add-bg-text {
+  font-size: 0.8rem;
+}
+
+.bg-picker-modal {
+  max-width: 700px;
+  width: 90vw;
+}
+
+.bg-picker-modal h2 {
+  margin-bottom: var(--asm-space-2, 8px);
+}
+
+.modal-hint {
+  color: var(--kid-text-light);
+  font-size: 0.9rem;
+  margin-bottom: var(--asm-space-4, 16px);
+}
+
+.limit-warning {
+  color: var(--kid-orange);
+  font-weight: 600;
+}
+
+.bg-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--asm-space-3, 12px);
+  margin-bottom: var(--asm-space-4, 16px);
+  max-height: 400px;
+  overflow-y: auto;
+  padding: var(--asm-space-2, 8px);
+}
+
+.bg-picker-item {
+  background: var(--kid-bg);
+  border-radius: var(--kid-radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.bg-picker-item:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: var(--kid-shadow);
+}
+
+.bg-picker-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bg-picker-item img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+}
+
+.bg-picker-title {
+  padding: var(--asm-space-2, 8px);
+  font-size: 0.75rem;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--kid-text);
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--asm-space-6, 24px);
+  text-align: center;
+}
+
+.loading-state .loading-spinner,
+.empty-state .empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--asm-space-3, 12px);
+  animation: bounce 1s ease infinite;
+}
+
+.empty-state .empty-hint {
+  color: var(--kid-text-light);
+  font-size: 0.85rem;
+}
+
+.adding-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--kid-radius);
+  z-index: 10;
+}
+
+.adding-overlay .loading-spinner {
+  font-size: 2.5rem;
+  animation: bounce 0.6s ease infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
 .character-image {
   width: 100%;
   height: 100%;
