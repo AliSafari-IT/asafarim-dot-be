@@ -160,11 +160,14 @@ export default function PhotoAlbumEnhanced() {
             .map((a) => a.id)
         );
 
-        setAlbums(albumList.filter((a) => a.visibility === AlbumVisibility.Public));
+        setAlbums([]);
         setMediaItems(items.filter((m) => !m.albumId || publicIds.has(m.albumId)));
       } else {
+        const userSettingsAlbum = albumList.filter(
+          (a) => a.name === "settings-images" && a.userId === currentUserId
+        );
+        setAlbums(userSettingsAlbum);
         setMediaItems(items);
-        setAlbums(albumList);
       }
     } catch (err) {
       console.error("Failed to load media:", err);

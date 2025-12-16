@@ -83,7 +83,7 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
         label: 'Move Forward',
         color: '#4ECDC4',
         icon: '➡️',
-        params: [{ name: 'steps', type: 'number', default: 50, min: 1, max: 300 }]
+        params: [{ name: 'steps', type: 'number', default: 1, min: -12, max: 12 }]
     },
     {
         id: 'turn-right',

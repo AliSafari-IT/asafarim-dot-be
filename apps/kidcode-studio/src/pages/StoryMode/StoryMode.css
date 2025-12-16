@@ -107,6 +107,43 @@
   box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
 }
 
+.custom-char-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-char-delete {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--kid-primary);
+  color: white;
+  border: 2px solid var(--kid-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  z-index: 10;
+}
+
+.custom-char-wrapper:hover .custom-char-delete {
+  opacity: 1;
+}
+
+.custom-char-delete:hover {
+  transform: scale(1.1);
+  background: var(--kid-accent);
+}
+
+.custom-char-delete:active {
+  transform: scale(0.95);
+}
+
 .char-btn.custom {
   width: 50px;
   height: 50px;

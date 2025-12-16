@@ -379,6 +379,29 @@ export default function StoryMode() {
     }
   }
 
+  const handleDeleteCustomCharacter = useCallback(
+    async (customChar: CharacterAssetDto, e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      try {
+        await characterApi.deleteCharacter(customChar.id);
+        setCustomCharacters((prev) =>
+          prev.filter((c) => c.id !== customChar.id)
+        );
+        const imageUrl = characterApi.getCharacterImageUrl(
+          customChar.mediaAssetId
+        );
+        if (character === imageUrl) {
+          setCharacter("🧒");
+        }
+        addNotification("success", "Character removed");
+      } catch (error) {
+        console.error("Failed to delete character:", error);
+        addNotification("error", "Could not remove character");
+      }
+    },
+    [character, addNotification]
+  );
+
   useEffect(() => {
     if (!character) {
       setCharacter("🧒");
@@ -510,16 +533,24 @@ export default function StoryMode() {
                 customChar.mediaAssetId
               );
               return (
-                <button
-                  key={customChar.id}
-                  className={`char-btn custom ${
-                    character === imageUrl ? "active" : ""
-                  }`}
-                  onClick={() => setCharacter(imageUrl)}
-                  title={customChar.name}
-                >
-                  <img src={imageUrl} alt={customChar.name} />
-                </button>
+                <div key={customChar.id} className="custom-char-wrapper">
+                  <button
+                    className={`char-btn custom ${
+                      character === imageUrl ? "active" : ""
+                    }`}
+                    onClick={() => setCharacter(imageUrl)}
+                    title={customChar.name}
+                  >
+                    <img src={imageUrl} alt={customChar.name} />
+                  </button>
+                  <button
+                    className="custom-char-delete"
+                    onClick={(e) => handleDeleteCustomCharacter(customChar, e)}
+                    title="Remove this character"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
               );
             })}
           </div>

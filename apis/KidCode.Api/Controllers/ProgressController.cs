@@ -17,7 +17,11 @@ public class ProgressController : ControllerBase
         _progressService = progressService;
     }
 
-    private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "guest";
+    private string GetUserId()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+        return string.IsNullOrWhiteSpace(userId) ? "guest" : userId;
+    }
 
     [HttpGet]
     public async Task<ActionResult<ProgressDto>> GetProgress()
