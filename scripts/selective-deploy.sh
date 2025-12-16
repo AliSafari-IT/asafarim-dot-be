@@ -26,6 +26,7 @@ declare -A PACKAGES=(
     ["shared-i18n"]="$PACKAGES_DIR/shared-i18n"
     ["react-themes"]="$PACKAGES_DIR/react-themes"
     ["helpers"]="$PACKAGES_DIR/helpers"
+    # ["design-tokens"]="$PACKAGES_DIR/design-tokens"
     ["shared-validation"]="$LIBS_DIR/shared-validation"
     ["shared-logging"]="$LIBS_DIR/shared-logging"
 )
@@ -39,6 +40,7 @@ declare -A FRONTEND_APPS=(
     ["testora-ui"]="apps/test-automation-ui/dist"
     ["blog"]="apps/blog/build"
     ["jobs-ui"]="apps/jobs-ui/dist"
+    ["kidcode-studio"]="apps/kidcode-studio/dist"
     ["taskmanagement-web"]="showcases/TaskManagement/taskmanagement-web/dist"
     ["smartops-web"]="showcases/SmartOperationsDashboard/smartops-web/dist"
     ["studynotes-ui"]="learn/learn-java-notes/java-notes-ui/dist"
@@ -49,6 +51,7 @@ declare -A DotNet_API_PROJECTS=(
     ["Identity.Api"]="apis/Identity.Api/Identity.Api.csproj"
     ["Core.Api"]="apis/Core.Api/Core.Api.csproj"
     ["Ai.Api"]="apis/Ai.Api/Ai.Api.csproj"
+    ["KidCode.Api"]="apis/KidCode.Api/KidCode.Api.csproj"
     ["TestAutomation.Api"]="apis/TestAutomation.Api/TestAutomation.Api.csproj"
     ["TaskManagement.Api"]="showcases/TaskManagement/TaskManagement.Api/TaskManagement.Api.csproj"
     ["SmartOps.Api"]="showcases/SmartOperationsDashboard/SmartOps.Api/SmartOps.Api.csproj"
@@ -73,6 +76,7 @@ declare -A API_OUTPUTS=(
     ["TaskManagement.Api"]="$SITE_ROOT/apis/taskmanagement"
     ["SmartOps.Api"]="$SITE_ROOT/apis/smartops"
     ["StudyNotes.Api"]="$SITE_ROOT/apis/studynotes"
+    ["KidCode.Api"]="$SITE_ROOT/apis/kidcode"
 )
 
 # Systemd services
@@ -85,6 +89,7 @@ declare -A API_SERVICES=(
     ["TaskManagement.Api"]="dotnet-taskmanagement"
     ["SmartOps.Api"]="dotnet-smartops"
     ["StudyNotes.Api"]="java-studynotes"
+    ["KidCode.Api"]="dotnet-kidcode"
 )
 
 #############################################
