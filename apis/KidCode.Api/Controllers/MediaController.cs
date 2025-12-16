@@ -19,7 +19,8 @@ public class MediaController : ControllerBase
         _db = db;
     }
 
-    private string? GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    private string? GetUserId() =>
+        User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
 
     [HttpGet]
     public async Task<ActionResult<List<MediaAssetDto>>> GetMedia(
@@ -37,6 +38,12 @@ public class MediaController : ControllerBase
             var album = await _db.Albums.FirstOrDefaultAsync(a => a.Id == albumId.Value);
             if (album != null)
             {
+                // settings-images albums are ALWAYS private
+                if (album.Name == "settings-images" && album.UserId != userId)
+                {
+                    return Forbid();
+                }
+
                 // Check if user has access to this album
                 var hasAccess =
                     album.UserId == userId
@@ -316,16 +323,18 @@ public class MediaController : ControllerBase
             // Show user's albums + public albums + members-only (only if authenticated)
             if (string.IsNullOrEmpty(userId))
             {
-                // Not authenticated - only show public albums
-                query = query.Where(a => a.Visibility == AlbumVisibility.Public);
+                // Not authenticated - only show public albums, NEVER settings-images
+                query = query.Where(a =>
+                    a.Visibility == AlbumVisibility.Public && a.Name != "settings-images"
+                );
             }
             else
             {
-                // Authenticated - show own albums + public + members-only
+                // Authenticated - show own albums + public (excluding others' settings-images) + members-only
                 query = query.Where(a =>
                     a.UserId == userId
-                    || a.Visibility == AlbumVisibility.Public
-                    || a.Visibility == AlbumVisibility.MembersOnly
+                    || (a.Visibility == AlbumVisibility.Public && a.Name != "settings-images")
+                    || (a.Visibility == AlbumVisibility.MembersOnly && a.Name != "settings-images")
                 );
             }
         }
@@ -355,6 +364,40 @@ public class MediaController : ControllerBase
             ))
             .ToListAsync();
 
+        if (!string.IsNullOrEmpty(userId))
+        {
+            albums = albums
+                .Where(a => !(a.Name == "settings-images" && a.UserId == userId))
+                .ToList();
+
+            var settings = await _db
+                .Albums.Where(a => a.UserId == userId && a.Name == "settings-images")
+                .OrderByDescending(a => a.UpdatedAt)
+                .FirstOrDefaultAsync();
+
+            if (settings != null)
+            {
+                var settingsCount = await _db.MediaAssets.CountAsync(m => m.AlbumId == settings.Id);
+                albums.Insert(
+                    0,
+                    new AlbumDto(
+                        settings.Id,
+                        settings.Name,
+                        settings.Description,
+                        settings.CoverMediaId,
+                        settings.CoverMediaId.HasValue
+                            ? $"/api/media/{settings.CoverMediaId}/content"
+                            : null,
+                        AlbumVisibility.Private,
+                        settingsCount,
+                        settings.UserId,
+                        settings.CreatedAt,
+                        settings.UpdatedAt
+                    )
+                );
+            }
+        }
+
         return Ok(albums);
     }
 
@@ -363,36 +406,42 @@ public class MediaController : ControllerBase
     {
         var userId = GetUserId();
 
-        // Build visibility filter
-        var album = await _db
-            .Albums.Where(a =>
-                a.Id == id
-                && (
-                    a.UserId == userId
-                    || a.Visibility == AlbumVisibility.Public
-                    || (
-                        a.Visibility == AlbumVisibility.MembersOnly && !string.IsNullOrEmpty(userId)
-                    )
-                )
-            )
-            .Select(a => new AlbumDto(
-                a.Id,
-                a.Name,
-                a.Description,
-                a.CoverMediaId,
-                a.CoverMediaId.HasValue ? $"/api/media/{a.CoverMediaId}/content" : null,
-                a.Visibility,
-                a.MediaAssets.Count,
-                a.UserId,
-                a.CreatedAt,
-                a.UpdatedAt
-            ))
-            .FirstOrDefaultAsync();
+        var album = await _db.Albums.FirstOrDefaultAsync(a => a.Id == id);
 
         if (album == null)
             return NotFound();
 
-        return Ok(album);
+        // settings-images albums are ALWAYS private
+        if (album.Name == "settings-images" && album.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        // Check visibility
+        var hasAccess =
+            album.UserId == userId
+            || album.Visibility == AlbumVisibility.Public
+            || (album.Visibility == AlbumVisibility.MembersOnly && !string.IsNullOrEmpty(userId));
+
+        if (!hasAccess)
+            return Forbid();
+
+        var mediaCount = await _db.MediaAssets.CountAsync(m => m.AlbumId == album.Id);
+
+        return Ok(
+            new AlbumDto(
+                album.Id,
+                album.Name,
+                album.Description,
+                album.CoverMediaId,
+                album.CoverMediaId.HasValue ? $"/api/media/{album.CoverMediaId}/content" : null,
+                album.Visibility,
+                mediaCount,
+                album.UserId,
+                album.CreatedAt,
+                album.UpdatedAt
+            )
+        );
     }
 
     [HttpPost("albums")]
@@ -402,12 +451,47 @@ public class MediaController : ControllerBase
             return BadRequest("Album name is required");
 
         var userId = GetUserId();
+
+        if (dto.Name == "settings-images")
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Forbid();
+            }
+
+            var existing = await _db
+                .Albums.Where(a => a.UserId == userId && a.Name == "settings-images")
+                .OrderByDescending(a => a.UpdatedAt)
+                .FirstOrDefaultAsync();
+
+            if (existing != null)
+            {
+                var existingCount = await _db.MediaAssets.CountAsync(m => m.AlbumId == existing.Id);
+                return Ok(
+                    new AlbumDto(
+                        existing.Id,
+                        existing.Name,
+                        existing.Description,
+                        existing.CoverMediaId,
+                        existing.CoverMediaId.HasValue
+                            ? $"/api/media/{existing.CoverMediaId}/content"
+                            : null,
+                        AlbumVisibility.Private,
+                        existingCount,
+                        existing.UserId,
+                        existing.CreatedAt,
+                        existing.UpdatedAt
+                    )
+                );
+            }
+        }
+
         var album = new Album
         {
             Id = Guid.NewGuid(),
             Name = dto.Name,
             Description = dto.Description,
-            Visibility = dto.Visibility,
+            Visibility = dto.Name == "settings-images" ? AlbumVisibility.Private : dto.Visibility,
             UserId = userId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,

@@ -161,6 +161,9 @@ public class ProgressService : IProgressService
     {
         var allProgress = await _db.Progresses.ToListAsync();
 
+        // Get all UserStats for username lookup
+        var userStats = await _db.UserStats.ToDictionaryAsync(u => u.UserId, u => u.Username);
+
         var leaderboardEntries = allProgress
             .Where(p => p.UserId != "guest")
             .Select(p =>
@@ -183,10 +186,16 @@ public class ProgressService : IProgressService
                     if (modeProgress == null)
                         return null;
 
+                    // Try to get username from UserStats, fallback to "Unknown" (never return raw IDs)
+                    var username =
+                        userStats.TryGetValue(p.UserId, out var name) && !string.IsNullOrWhiteSpace(name)
+                            ? name
+                            : "Unknown";
+
                     return new LeaderboardEntryDto
                     {
                         UserId = p.UserId,
-                        Username = p.UserId,
+                        Username = username,
                         Level = modeProgress.Level,
                         Score = modeProgress.Stickers.Count * 10 + modeProgress.Level * 5,
                         TotalStarsEarned = modeProgress.Badges.Count,

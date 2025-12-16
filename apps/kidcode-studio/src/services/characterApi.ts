@@ -14,6 +14,7 @@ export interface CharacterAssetDto {
     mediaAssetId: string;
     description?: string;
     createdAt: string;
+    userId?: string;
 }
 
 export interface CreateCharacterAssetDto {

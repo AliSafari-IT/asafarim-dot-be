@@ -42,6 +42,33 @@ export default function Home() {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
+    let cancelled = false;
+
+    async function loadLeaderboards() {
+      if (isAuthenticated) return;
+
+      try {
+        const [drawing, story, music, puzzle] = await Promise.all([
+          api.progress.getLeaderboard("drawing", 5).catch(() => []),
+          api.progress.getLeaderboard("story", 5).catch(() => []),
+          api.progress.getLeaderboard("music", 5).catch(() => []),
+          api.progress.getLeaderboard("puzzle", 5).catch(() => []),
+        ]);
+
+        if (cancelled) return;
+        setLeaderboards({ drawing, story, music, puzzle });
+      } catch (error) {
+        console.error("Failed to load leaderboards:", error);
+      }
+    }
+
+    loadLeaderboards();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
     async function loadData() {
       try {
         const [savedProjects, apiProgress] = await Promise.all([
@@ -216,7 +243,7 @@ export default function Home() {
                     <div key={entry.userId} className="leaderboard-entry">
                       <div className="entry-rank">#{entry.rank}</div>
                       <div className="entry-info">
-                        <div className="entry-username">{entry.username || entry.userId}</div>
+                        <div className="entry-username">{entry.username}</div>
                         <div className="entry-stats">
                           Level {entry.level} • {entry.totalStarsEarned} ⭐
                         </div>
@@ -237,7 +264,7 @@ export default function Home() {
                     <div key={entry.userId} className="leaderboard-entry">
                       <div className="entry-rank">#{entry.rank}</div>
                       <div className="entry-info">
-                        <div className="entry-username">{entry.username || entry.userId}</div>
+                        <div className="entry-username">{entry.username}</div>
                         <div className="entry-stats">
                           Level {entry.level} • {entry.totalStarsEarned} ⭐
                         </div>
@@ -258,7 +285,7 @@ export default function Home() {
                     <div key={entry.userId} className="leaderboard-entry">
                       <div className="entry-rank">#{entry.rank}</div>
                       <div className="entry-info">
-                        <div className="entry-username">{entry.username || entry.userId}</div>
+                        <div className="entry-username">{entry.username}</div>
                         <div className="entry-stats">
                           Level {entry.level} • {entry.totalStarsEarned} ⭐
                         </div>
@@ -279,7 +306,7 @@ export default function Home() {
                     <div key={entry.userId} className="leaderboard-entry">
                       <div className="entry-rank">#{entry.rank}</div>
                       <div className="entry-info">
-                        <div className="entry-username">{entry.username || entry.userId}</div>
+                        <div className="entry-username">{entry.username}</div>
                         <div className="entry-stats">
                           Level {entry.level} • {entry.totalStarsEarned} ⭐
                         </div>

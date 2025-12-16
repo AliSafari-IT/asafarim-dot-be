@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mini Paint (React + Canvas)</title>
+
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+      }
+      .wrap { width: min(900px, 100%); }
+      .bar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .bar > * { height: 36px; }
+      .btn {
+        padding: 0 12px;
+        cursor: pointer;
+        border: 1px solid #9994;
+        border-radius: 8px;
+        background: #8882;
+      }
+      .btn.active { outline: 2px solid #0ea5e9; }
+      .canvasBox {
+        border: 1px solid #9996;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        touch-action: none;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 520px;
+        background: #fff;
+      }
+      @media (prefers-color-scheme: dark) {
+        .canvasBox { background: #111; }
+        canvas { background: #111; }
+      }
+      label {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+      }
+      input[type="range"] { width: 140px; }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script>
+      const { useRef, useEffect, useState } = React;
+
+      function MiniPaint() {
+        const canvasRef = useRef(null);
+        const ctxRef = useRef(null);
+
+        const [color, setColor] = useState("#0ea5e9");
+        const [size, setSize] = useState(8);
+        const [tool, setTool] = useState("pen"); // pen | rect | fillRect | eraser
+
+        const drawingRef = useRef(false);
+        const lastRef = useRef({ x: 0, y: 0 });
+        const rectStartRef = useRef(null);
+        const snapshotRef = useRef(null);
+        const shiftRef = useRef(false);
+
+        // SVG recording
+        const opsRef = useRef([]); // recorded operations for SVG
+        const bgRef = useRef(null); // optional background color (from "Canvas Fill")
+        const idRef = useRef(1);
+        const activeStrokeRef = useRef(null); // { tool, color, size, points: [{x,y},...] }
+        const lastRectRef = useRef(null); // store last preview rect {x,y,w,h,fill:boolean,color,size}
+
+        const clamp = (n) => Math.max(0, Number.isFinite(n) ? n : 0);
+        const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+        const canvasCssSize = () => {
+          const r = canvasRef.current.getBoundingClientRect();
+          return { w: r.width, h: r.height };
+        };
+
+        const recordOp = (op) => {
+          opsRef.current.push({ id: idRef.current++, ...op });
+        };
+
+        const clearOps = () => {
+          opsRef.current = [];
+          bgRef.current = null;
+        };
+
+        const getBg = () =>
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "#111"
+            : "#fff";
+
+        useEffect(() => {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext("2d", { alpha: false });
+          ctxRef.current = ctx;
+
+          function resize() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+            const old = document.createElement("canvas");
+            old.width = canvas.width;
+            old.height = canvas.height;
+            old.getContext("2d").drawImage(canvas, 0, 0);
+
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(dpr, dpr);
+
+            ctx.fillStyle = getBg();
+            ctx.fillRect(0, 0, rect.width, rect.height);
+
+            if (old.width && old.height) {
+              ctx.drawImage(old, 0, 0, old.width / dpr, old.height / dpr);
+            }
+          }
+
+          resize();
+          window.addEventListener("resize", resize);
+          return () => window.removeEventListener("resize", resize);
+        }, []);
+
+        const setBrush = () => {
+          const ctx = ctxRef.current;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.lineWidth = size;
+          if (tool === "eraser") {
+            ctx.strokeStyle = getBg();
+            ctx.fillStyle = getBg();
+          } else {
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+          }
+        };
+
+        const getPos = (e) => {
+          const r = canvasRef.current.getBoundingClientRect();
+          return { x: e.clientX - r.left, y: e.clientY - r.top };
+        };
+
+        const start = (e) => {
+          e.preventDefault();
+          drawingRef.current = true;
+          setBrush();
+          const p = getPos(e);
+
+          if (tool === "rect" || tool === "fillRect") {
+            rectStartRef.current = p;
+            snapshotRef.current = ctxRef.current.getImageData(
+              0,
+              0,
+              canvasRef.current.width,
+              canvasRef.current.height
+            );
+          } else {
+            lastRef.current = p;
+            const ctx = ctxRef.current;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Start recording stroke
+            activeStrokeRef.current = {
+              type: tool === "eraser" ? "stroke" : "stroke",
+              color: tool === "eraser" ? getBg() : color,
+              width: size,
+              points: [p]
+            };
+          }
+        };
+
+        const move = (e) => {
+          if (!drawingRef.current) return;
+          e.preventDefault();
+          const ctx = ctxRef.current;
+          const p = getPos(e);
+
+          if (tool === "rect" || tool === "fillRect") {
+            ctx.putImageData(snapshotRef.current, 0, 0);
+            setBrush();
+
+            let w = p.x - rectStartRef.current.x;
+            let h = p.y - rectStartRef.current.y;
+
+            if (shiftRef.current) {
+              const s = Math.max(Math.abs(w), Math.abs(h));
+              w = w < 0 ? -s : s;
+              h = h < 0 ? -s : s;
+            }
+
+            if (tool === "rect") {
+              ctx.strokeRect(rectStartRef.current.x, rectStartRef.current.y, w, h);
+              lastRectRef.current = {
+                type: "rect",
+                x: rectStartRef.current.x,
+                y: rectStartRef.current.y,
+                width: w,
+                height: h,
+                color: color,
+                widthPx: size
+              };
+            } else {
+              ctx.fillRect(rectStartRef.current.x, rectStartRef.current.y, w, h);
+              lastRectRef.current = {
+                type: "fillRect",
+                x: rectStartRef.current.x,
+                y: rectStartRef.current.y,
+                width: w,
+                height: h,
+                color: color
+              };
+            }
+          } else {
+            ctx.beginPath();
+            ctx.moveTo(lastRef.current.x, lastRef.current.y);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+            lastRef.current = p;
+
+            // Add point to active stroke
+            if (activeStrokeRef.current) {
+              activeStrokeRef.current.points.push(p);
+            }
+          }
+        };
+
+        const end = () => {
+          drawingRef.current = false;
+          rectStartRef.current = null;
+          snapshotRef.current = null;
+
+          // Record completed stroke
+          if (activeStrokeRef.current && activeStrokeRef.current.points.length > 1) {
+            recordOp(activeStrokeRef.current);
+            activeStrokeRef.current = null;
+          }
+
+          // Record completed rectangle
+          if (lastRectRef.current) {
+            recordOp(lastRectRef.current);
+            lastRectRef.current = null;
+          }
+        };
+
+        const fillCanvas = () => {
+          const ctx = ctxRef.current;
+          const r = canvasRef.current.getBoundingClientRect();
+          ctx.fillStyle = color;
+          ctx.fillRect(0, 0, r.width, r.height);
+
+          bgRef.current = color;
+          recordOp({ type: "bg", color });
+        };
+
+        const clearCanvas = () => {
+          const ctx = ctxRef.current;
+          const r = canvasRef.current.getBoundingClientRect();
+          ctx.fillStyle = getBg();
+          ctx.fillRect(0, 0, r.width, r.height);
+
+          clearOps();
+        };
+
+        const save = () => {
+          const a = document.createElement("a");
+          a.download = "mini-paint.png";
+          a.href = canvasRef.current.toDataURL("image/png");
+          a.click();
+        };
+
+        const exportSvg = () => {
+          const ops = opsRef.current;
+          if (!ops || ops.length === 0) return;
+
+          const r = canvasRef.current.getBoundingClientRect();
+          let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${r.width}" height="${r.height}">`;
+
+          // Background
+          if (bgRef.current) {
+            svg += `<rect width="100%" height="100%" fill="${esc(bgRef.current)}"/>`;
+          }
+
+          // Operations
+          ops.forEach(op => {
+            if (op.type === "stroke" && op.points && op.points.length > 1) {
+              let d = `M ${op.points[0].x.toFixed(1)} ${op.points[0].y.toFixed(1)}`;
+              for (let i = 1; i < op.points.length; i++) {
+                d += ` L ${op.points[i].x.toFixed(1)} ${op.points[i].y.toFixed(1)}`;
+              }
+              svg += `<path d="${d}" stroke="${esc(op.color)}" stroke-width="${op.width}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+            } else if (op.type === "rect") {
+              svg += `<rect x="${op.x.toFixed(1)}" y="${op.y.toFixed(1)}" width="${op.width.toFixed(1)}" height="${op.height.toFixed(1)}" fill="none" stroke="${esc(op.color)}" stroke-width="${op.widthPx}"/>`;
+            } else if (op.type === "fillRect") {
+              svg += `<rect x="${op.x.toFixed(1)}" y="${op.y.toFixed(1)}" width="${op.width.toFixed(1)}" height="${op.height.toFixed(1)}" fill="${esc(op.color)}"/>`;
+            }
+          });
+
+          svg += "</svg>";
+
+          const blob = new Blob([svg], { type: "image/svg+xml" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "mini-paint.svg";
+          a.click();
+          URL.revokeObjectURL(url);
+        };
+
+        useEffect(() => {
+          const down = (e) => e.key === "Shift" && (shiftRef.current = true);
+          const up = (e) => e.key === "Shift" && (shiftRef.current = false);
+          window.addEventListener("keydown", down);
+          window.addEventListener("keyup", up);
+          return () => {
+            window.removeEventListener("keydown", down);
+            window.removeEventListener("keyup", up);
+          };
+        }, []);
+
+        return (
+          React.createElement("div", { className: "wrap" },
+            React.createElement("div", { className: "bar" },
+              React.createElement("label", null, "Color",
+                React.createElement("input", {
+                  type: "color",
+                  value: color,
+                  onChange: e => setColor(e.target.value)
+                })
+              ),
+              React.createElement("label", null, "Size",
+                React.createElement("input", {
+                  type: "range",
+                  min: 1,
+                  max: 40,
+                  value: size,
+                  onChange: e => setSize(+e.target.value)
+                })
+              ),
+              React.createElement("button", { className: "btn", onClick: fillCanvas }, "Canvas Fill"),
+              React.createElement("button", { className: "btn", onClick: clearCanvas }, "Clear"),
+              React.createElement("button", {
+                className: `btn ${tool==="rect"?"active":""}`,
+                onClick: () => setTool(tool==="rect"?"pen":"rect")
+              }, "Rect"),
+              React.createElement("button", {
+                className: `btn ${tool==="fillRect"?"active":""}`,
+                onClick: () => setTool(tool==="fillRect"?"pen":"fillRect")
+              }, "Fill Rect"),
+              React.createElement("button", {
+                className: `btn ${tool==="eraser"?"active":""}`,
+                onClick: () => setTool(tool==="eraser"?"pen":"eraser")
+              }, "Eraser"),
+              React.createElement("button", { className: "btn", onClick: save }, "Save PNG"),
+              React.createElement("button", { className: "btn", onClick: exportSvg }, "Export SVG")
+            ),
+            React.createElement("div", { className: "canvasBox" },
+              React.createElement("canvas", {
+                ref: canvasRef,
+                onPointerDown: start,
+                onPointerMove: move,
+                onPointerUp: end,
+                onPointerLeave: end,
+                onPointerCancel: end
+              })
+            )
+          )
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root"))
+        .render(React.createElement(MiniPaint));
+    </script>
+  </body>
+</html>

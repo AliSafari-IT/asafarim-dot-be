@@ -72,7 +72,7 @@ function generateMaze(size: GridSize, difficulty: Difficulty): Cell[][] {
 
   carve(1, 1);
 
-  const complexityMap = {
+  const complexityMap: Record<Difficulty, number> = {
     easy: 0.15,
     medium: 0.08,
     hard: 0.03,
@@ -159,13 +159,24 @@ function generatePuzzleHash(maze: Cell[][]): string {
   return Math.abs(hash).toString(36);
 }
 
+function toIntSteps(raw: unknown): number {
+  if (typeof raw === "number" && Number.isFinite(raw)) return Math.trunc(raw);
+  if (typeof raw === "string") {
+    const n = Number(raw);
+    if (Number.isFinite(n)) return Math.trunc(n);
+  }
+  return 1;
+}
+
 export default function PuzzleAdventures() {
   const { user, isAuthenticated } = useAuth();
   const { updateProgress } = useProgressSync();
   const { addNotification } = useNotifications();
+
   const [gridSize, setGridSize] = useState<GridSize>(8);
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [maze, setMaze] = useState<Cell[][]>(() => generateMaze(8, "easy"));
+
   const [playerPos, setPlayerPos] = useState({ x: 1, y: 1 });
   const [direction, setDirection] = useState<Direction>("right");
   const [won, setWon] = useState(false);
@@ -173,6 +184,7 @@ export default function PuzzleAdventures() {
   const [failedCell, setFailedCell] = useState<{ x: number; y: number } | null>(
     null
   );
+
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
     "idle"
   );
@@ -182,9 +194,16 @@ export default function PuzzleAdventures() {
   const [loadedMediaId, setLoadedMediaId] = useState<string | null>(null);
   const [currentPuzzleHash, setCurrentPuzzleHash] = useState<string>("");
 
+  // Internal tick used to advance multi-step movement without stepping to next block.
+  const [moveTick, setMoveTick] = useState(0);
+
   const playerPosRef = useRef(playerPos);
   const directionRef = useRef<Direction>(direction);
   const wonRef = useRef(false);
+
+  // Multi-step moveForward execution state (per-block)
+  const remainingStepsRef = useRef(0);
+  const remainingBlockIndexRef = useRef<number | null>(null);
 
   useEffect(() => {
     playerPosRef.current = playerPos;
@@ -201,6 +220,7 @@ export default function PuzzleAdventures() {
   const currentStep = useStore((state) => state.editor.currentStep);
   const step = useStore((state) => state.step);
   const stop = useStore((state) => state.stop);
+  const clearBlocks = useStore((state) => state.clearBlocks);
   const showStickerReward = useStore((state) => state.showStickerReward);
   const setActiveMode = useStore((state) => state.setActiveMode);
   const setFailedBlockIndex = useStore((state) => state.setFailedBlockIndex);
@@ -230,12 +250,8 @@ export default function PuzzleAdventures() {
     ctx.save();
     ctx.globalAlpha = 0.35;
     ctx.fillStyle = kidSurface || kidSecondary || kidPrimary;
-    for (let i = 0; i < 8; i++) {
-      ctx.fillRect(60 + i * 60, 90, 44, 44);
-    }
-    for (let i = 0; i < 6; i++) {
-      ctx.fillRect(120 + i * 60, 150, 44, 44);
-    }
+    for (let i = 0; i < 8; i++) ctx.fillRect(60 + i * 60, 90, 44, 44);
+    for (let i = 0; i < 6; i++) ctx.fillRect(120 + i * 60, 150, 44, 44);
     ctx.restore();
 
     ctx.save();
@@ -260,18 +276,21 @@ export default function PuzzleAdventures() {
 
   const resetMaze = useCallback((preserveFailedCell = false) => {
     wonRef.current = false;
-    setPlayerPos({ x: 1, y: 1 });
+
+    const resetPos = { x: 1, y: 1 };
+    playerPosRef.current = resetPos;
+    setPlayerPos(resetPos);
+
+    directionRef.current = "right";
     setDirection("right");
+
     setWon(false);
     setMessage(null);
-    if (!preserveFailedCell) {
-      setFailedCell(null);
-    }
+    if (!preserveFailedCell) setFailedCell(null);
   }, []);
 
   useEffect(() => {
-    const hash = generatePuzzleHash(maze);
-    setCurrentPuzzleHash(hash);
+    setCurrentPuzzleHash(generatePuzzleHash(maze));
   }, [maze]);
 
   const handleLoadScript = useCallback(async () => {
@@ -297,21 +316,10 @@ export default function PuzzleAdventures() {
       try {
         const data = JSON.parse(script.scriptJson);
 
-        if (data.blocks) {
-          setBlocks(data.blocks);
-        }
-
-        if (data.maze) {
-          setMaze(data.maze);
-        }
-
-        if (data.gridSize) {
-          setGridSize(data.gridSize);
-        }
-
-        if (data.difficulty) {
-          setDifficulty(data.difficulty);
-        }
+        if (data.blocks) setBlocks(data.blocks);
+        if (data.maze) setMaze(data.maze);
+        if (data.gridSize) setGridSize(data.gridSize);
+        if (data.difficulty) setDifficulty(data.difficulty);
 
         resetMaze();
         setLoadedMediaId(script.id);
@@ -320,7 +328,7 @@ export default function PuzzleAdventures() {
         console.error("Failed to parse script:", error);
       }
     },
-    [setBlocks, resetMaze]
+    [resetMaze, setBlocks]
   );
 
   const handleDeleteScript = useCallback(
@@ -333,9 +341,7 @@ export default function PuzzleAdventures() {
       try {
         await mediaApi.deleteMedia(scriptId);
         setSavedScripts((prev) => prev.filter((s) => s.id !== scriptId));
-        if (loadedMediaId === scriptId) {
-          setLoadedMediaId(null);
-        }
+        if (loadedMediaId === scriptId) setLoadedMediaId(null);
       } catch (error) {
         console.error("Failed to delete puzzle script:", error);
         alert("Failed to delete puzzle. Please try again.");
@@ -356,12 +362,7 @@ export default function PuzzleAdventures() {
         return;
       }
 
-      const puzzleData = {
-        blocks,
-        maze,
-        gridSize,
-        difficulty,
-      };
+      const puzzleData = { blocks, maze, gridSize, difficulty };
 
       await mediaApi.updateMedia(loadedMediaId, {
         file: blob,
@@ -381,7 +382,15 @@ export default function PuzzleAdventures() {
       console.error("Failed to save puzzle script:", error);
       setSaveStatus("idle");
     }
-  }, [blocks, createPuzzleThumbnail, isAuthenticated, loadedMediaId]);
+  }, [
+    blocks,
+    createPuzzleThumbnail,
+    difficulty,
+    gridSize,
+    isAuthenticated,
+    loadedMediaId,
+    maze,
+  ]);
 
   const handleSaveAs = useCallback(async () => {
     if (blocks.length === 0) return;
@@ -395,13 +404,7 @@ export default function PuzzleAdventures() {
       }
 
       const title = `Puzzle ${new Date().toLocaleString()}`;
-
-      const puzzleData = {
-        blocks,
-        maze,
-        gridSize,
-        difficulty,
-      };
+      const puzzleData = { blocks, maze, gridSize, difficulty };
 
       const media = await mediaApi.uploadMedia({
         file: blob,
@@ -427,16 +430,14 @@ export default function PuzzleAdventures() {
       console.error("Failed to save puzzle script:", error);
       setSaveStatus("idle");
     }
-  }, [blocks, createPuzzleThumbnail, isAuthenticated]);
+  }, [blocks, createPuzzleThumbnail, difficulty, gridSize, isAuthenticated, maze]);
 
   useEffect(() => {
     setActiveMode("puzzle");
   }, [setActiveMode]);
 
   useEffect(() => {
-    if (blocks.length === 0) {
-      setFailedCell(null);
-    }
+    if (blocks.length === 0) setFailedCell(null);
   }, [blocks.length]);
 
   const handleGenerateMaze = useCallback(() => {
@@ -444,8 +445,9 @@ export default function PuzzleAdventures() {
     setMaze(newMaze);
     setFailedCell(null);
     resetMaze();
+    clearBlocks();
     stop();
-  }, [gridSize, difficulty, resetMaze, stop]);
+  }, [clearBlocks, difficulty, gridSize, resetMaze, stop]);
 
   const executeCurrentBlock = useCallback(() => {
     if (currentStep < 0 || currentStep >= blocks.length) return;
@@ -454,34 +456,81 @@ export default function PuzzleAdventures() {
     const { type } = block;
 
     switch (type) {
-      case "moveForward": {
+      case "moveForward":
+      case "move-forward": {
         const pos = playerPosRef.current;
         const dir = directionRef.current;
         const { dx, dy } = DIRECTION_MAP[dir];
-        const newX = pos.x + dx;
-        const newY = pos.y + dy;
 
-        // Check bounds and walls
-        const isOutOfBounds =
-          newY < 0 || newY >= maze.length || newX < 0 || newX >= maze[0].length;
-        const isWall = !isOutOfBounds && maze[newY][newX] === "wall";
+        const totalStepsRaw = toIntSteps(block.params?.steps);
+        const totalSteps = Math.max(0, totalStepsRaw);
 
-        if (isOutOfBounds || isWall) {
-          const failedPos = { x: newX, y: newY };
-          setFailedCell(failedPos);
-          setFailedBlockIndex(currentStep);
-          setMessage("Oops! Hit a wall! 🧱");
-          stop();
-          return;
+        if (totalSteps === 0) {
+          // No-op; ensure multi-step state for this block is cleared.
+          if (remainingBlockIndexRef.current === currentStep) {
+            remainingBlockIndexRef.current = null;
+            remainingStepsRef.current = 0;
+          }
+          break;
         }
 
-        setPlayerPos({ x: newX, y: newY });
+        // Initialize per-block remaining steps ONCE
+        if (remainingBlockIndexRef.current !== currentStep) {
+          remainingBlockIndexRef.current = currentStep;
+          remainingStepsRef.current = totalSteps;
 
-        if (maze[newY][newX] === "goal") {
-          const goalMessage = "You reached the goal! 🎉";
+          // Validate entire path BEFORE starting movement
+          let checkX = pos.x;
+          let checkY = pos.y;
+          for (let i = 0; i < totalSteps; i++) {
+            checkX += dx;
+            checkY += dy;
+
+            const out =
+              checkY < 0 ||
+              checkY >= maze.length ||
+              checkX < 0 ||
+              checkX >= maze[0].length;
+            const wall = !out && maze[checkY][checkX] === "wall";
+
+            if (out || wall) {
+              const failedPos = { x: checkX, y: checkY };
+              setFailedCell(failedPos);
+              setFailedBlockIndex(currentStep);
+              setMessage("Oops! Hit a wall! 🧱");
+
+              remainingStepsRef.current = 0;
+              remainingBlockIndexRef.current = null;
+              stop();
+              return;
+            }
+          }
+        }
+
+        if (remainingStepsRef.current <= 0) {
+          remainingStepsRef.current = 0;
+          remainingBlockIndexRef.current = null;
+          break;
+        }
+
+        // Move ONE cell per tick (refs are updated immediately so repeated calls progress correctly)
+        const nextX = pos.x + dx;
+        const nextY = pos.y + dy;
+
+        const nextPos = { x: nextX, y: nextY };
+        playerPosRef.current = nextPos;
+        setPlayerPos(nextPos);
+
+        remainingStepsRef.current -= 1;
+
+        // Goal check
+        if (maze[nextY]?.[nextX] === "goal") {
+          remainingStepsRef.current = 0;
+          remainingBlockIndexRef.current = null;
+
           wonRef.current = true;
           setWon(true);
-          setMessage(goalMessage);
+          setMessage("You reached the goal! 🎉");
 
           const puzzleStickerId = `puzzle-${currentPuzzleHash}`;
           const hasSolvedThisPuzzle =
@@ -506,24 +555,46 @@ export default function PuzzleAdventures() {
           }
 
           stop();
+          return;
         }
+
+        // Reset multi-step state when complete
+        if (remainingStepsRef.current <= 0) {
+          remainingStepsRef.current = 0;
+          remainingBlockIndexRef.current = null;
+        }
+
         break;
       }
-      case "turnRight":
-        setDirection((prev) => TURN_RIGHT[prev]);
+
+      case "turnRight": {
+        setDirection((prev) => {
+          const next = TURN_RIGHT[prev];
+          directionRef.current = next;
+          return next;
+        });
         break;
-      case "turnLeft":
-        setDirection((prev) => TURN_LEFT[prev]);
+      }
+
+      case "turnLeft": {
+        setDirection((prev) => {
+          const next = TURN_LEFT[prev];
+          directionRef.current = next;
+          return next;
+        });
         break;
+      }
     }
   }, [
     addNotification,
     blocks,
+    currentPuzzleHash,
     currentStep,
     maze,
     progress,
-    stop,
+    setFailedBlockIndex,
     showStickerReward,
+    stop,
     updateProgress,
   ]);
 
@@ -532,23 +603,39 @@ export default function PuzzleAdventures() {
 
     executeCurrentBlock();
 
-    const timer = setTimeout(() => {
-      if (currentStep < blocks.length - 1 && !won) {
+    const timer = window.setTimeout(() => {
+      const currentBlock = blocks[currentStep];
+      const isMoveForward =
+        currentBlock?.type === "moveForward" ||
+        currentBlock?.type === "move-forward";
+
+      const hasRemainingSteps =
+        isMoveForward &&
+        remainingBlockIndexRef.current === currentStep &&
+        remainingStepsRef.current > 0;
+
+      // If we're still inside the SAME moveForward block, schedule another tick
+      if (hasRemainingSteps) {
+        setMoveTick((t) => t + 1);
+        return;
+      }
+
+      if (currentStep < blocks.length - 1 && !wonRef.current) {
         step();
       } else {
         stop();
       }
     }, 600);
 
-    return () => clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, [
-    isPlaying,
+    blocks,
     currentStep,
-    blocks.length,
+    executeCurrentBlock,
+    isPlaying,
+    moveTick,
     step,
     stop,
-    won,
-    executeCurrentBlock,
   ]);
 
   const prevIsPlayingRef = useRef(isPlaying);
@@ -558,12 +645,16 @@ export default function PuzzleAdventures() {
     prevIsPlayingRef.current = isPlaying;
 
     if (!isPlaying && wasPlaying) {
-      if (!wonRef.current) {
-        resetMaze(true);
-      }
+      // run ended
+      if (!wonRef.current) resetMaze(true);
+      remainingStepsRef.current = 0;
+      remainingBlockIndexRef.current = null;
     } else if (isPlaying && !wasPlaying) {
+      // run started
       wonRef.current = false;
       setFailedCell(null);
+      remainingStepsRef.current = 0;
+      remainingBlockIndexRef.current = null;
     }
   }, [isPlaying, resetMaze]);
 
@@ -603,17 +694,17 @@ export default function PuzzleAdventures() {
                   {message}
                 </div>
               )}
+
               <div
                 className="maze-grid"
-                style={{
-                  gridTemplateColumns: `repeat(${maze[0].length}, 1fr)`,
-                }}
+                style={{ gridTemplateColumns: `repeat(${maze[0].length}, 1fr)` }}
               >
                 {maze.map((row, y) =>
                   row.map((cell, x) => {
                     const isPlayer = playerPos.x === x && playerPos.y === y;
                     const isFailed =
                       failedCell && failedCell.x === x && failedCell.y === y;
+
                     return (
                       <div
                         key={`${x}-${y}`}
@@ -697,6 +788,7 @@ export default function PuzzleAdventures() {
               </div>
             </div>
           </div>
+
           <div className="canvas-actions">
             <button
               className="canvas-load-btn"
@@ -706,6 +798,7 @@ export default function PuzzleAdventures() {
               <FolderOpen size={18} />
               Load
             </button>
+
             {loadedMediaId && (
               <button
                 className={`canvas-save-btn ${saveStatus}`}
@@ -713,32 +806,26 @@ export default function PuzzleAdventures() {
                 disabled={saveStatus === "saving" || blocks.length === 0}
                 title="Save (Update Current)"
               >
-                {saveStatus === "saved" ? (
-                  <Check size={18} />
-                ) : (
-                  <Camera size={18} />
-                )}
+                {saveStatus === "saved" ? <Check size={18} /> : <Camera size={18} />}
                 {saveStatus === "idle" && "Save"}
                 {saveStatus === "saving" && "Saving..."}
                 {saveStatus === "saved" && "Saved!"}
               </button>
             )}
+
             <button
               className={`canvas-save-btn ${saveStatus}`}
               onClick={handleSaveAs}
               disabled={saveStatus === "saving" || blocks.length === 0}
               title="Save As (Create New)"
             >
-              {saveStatus === "saved" ? (
-                <Check size={18} />
-              ) : (
-                <Camera size={18} />
-              )}
+              {saveStatus === "saved" ? <Check size={18} /> : <Camera size={18} />}
               {saveStatus === "idle" && "Save As"}
               {saveStatus === "saving" && "Saving..."}
               {saveStatus === "saved" && "Saved!"}
             </button>
           </div>
+
           <ControlsBar />
         </main>
 
@@ -751,6 +838,7 @@ export default function PuzzleAdventures() {
         <div className="modal-overlay" onClick={() => setShowLoadModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Load Saved Script</h2>
+
             {loadingScripts ? (
               <p>Loading...</p>
             ) : savedScripts.length === 0 ? (
@@ -760,41 +848,27 @@ export default function PuzzleAdventures() {
                 {savedScripts.map((script) => {
                   const currentUserId =
                     (
-                      user as unknown as {
-                        id?: string;
-                        userId?: string;
-                        sub?: string;
-                      } | null
+                      user as unknown as { id?: string; userId?: string; sub?: string } | null
                     )?.id ??
                     (
-                      user as unknown as {
-                        id?: string;
-                        userId?: string;
-                        sub?: string;
-                      } | null
+                      user as unknown as { id?: string; userId?: string; sub?: string } | null
                     )?.userId ??
                     (
-                      user as unknown as {
-                        id?: string;
-                        userId?: string;
-                        sub?: string;
-                      } | null
+                      user as unknown as { id?: string; userId?: string; sub?: string } | null
                     )?.sub ??
                     null;
 
-                  const isOwner =
-                    !!currentUserId && script.userId === currentUserId;
+                  const isOwner = !!currentUserId && script.userId === currentUserId;
+
                   return (
                     <div
                       key={script.id}
                       className="saved-drawing-card"
                       onClick={() => handleSelectScript(script)}
                     >
-                      <img
-                        src={mediaApi.getContentUrl(script.id)}
-                        alt={script.title}
-                      />
+                      <img src={mediaApi.getContentUrl(script.id)} alt={script.title} />
                       <p>{script.title}</p>
+
                       {isOwner && (
                         <button
                           className="delete-btn"
@@ -809,10 +883,8 @@ export default function PuzzleAdventures() {
                 })}
               </div>
             )}
-            <button
-              className="btn-secondary"
-              onClick={() => setShowLoadModal(false)}
-            >
+
+            <button className="btn-secondary" onClick={() => setShowLoadModal(false)}>
               Cancel
             </button>
           </div>
