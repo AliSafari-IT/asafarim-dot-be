@@ -63,7 +63,7 @@
     "app:smartops:build": "pnpm --filter @asafarim/smartops-web build",
     "app:testora:build": "pnpm --filter @asafarim/testora-ui build",
     "app:web:build": "pnpm --filter @asafarim/web build",
-    "app:kc:build": "pnpm --filter @asafarim/kidcode-studio build",
+    "app:kc:build": "pnpm dev:shared && pnpm --filter @asafarim/kidcode-studio build",
     "app:build": "pnpm rm:nm && pnpm i && concurrently \"pnpm app:ai:build\" \"pnpm app:core:build\" \"pnpm app:tasks:build\" \"pnpm app:jobs:build\" \"pnpm app:identity:build\" \"pnpm app:blog:build\" \"pnpm app:smartops:build\" \"pnpm app:testora:build\" \"pnpm app:web:build\" \"pnpm app:kc:build\"",
     "app:identity": "pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\"",
     "app:ai": "pnpm kill:identity && pnpm kill:ai && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:ai\" \"pnpm api:ai\"",

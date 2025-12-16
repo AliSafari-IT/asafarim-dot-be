@@ -38,7 +38,7 @@ export default function StoryMode() {
   const [customCharacters, setCustomCharacters] = useState<CharacterAssetDto[]>(
     []
   );
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
     "idle"
   );
