@@ -22,10 +22,12 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "**/*.json"
+    "locales/**/*.json"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }

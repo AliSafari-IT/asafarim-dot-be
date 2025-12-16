@@ -14,6 +14,10 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   const { language, changeLanguage, isChanging } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
 
+  const languageEntries = Object.entries(LANGUAGE_NAMES) as Array<
+    [SupportedLanguage, string]
+  >;
+
   const handleLanguageChange = async (lang: SupportedLanguage) => {
     if (lang !== language) {
       await changeLanguage(lang);
@@ -46,11 +50,11 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
             <div className="language-dropdown">
               <div className="dropdown-arrow"></div>
               <div className="dropdown-content">
-                {Object.entries(LANGUAGE_NAMES).map(([code, name]) => (
+                {languageEntries.map(([code, name]) => (
                   <button
                     key={code}
                     className={`language-option ${language === code ? 'active' : ''}`}
-                    onClick={() => handleLanguageChange(code as SupportedLanguage)}
+                    onClick={() => handleLanguageChange(code)}
                     disabled={isChanging}
                     title={`Switch to ${name}`}
                   >
@@ -94,7 +98,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
         className="language-select"
         aria-label="Select language"
       >
-        {Object.entries(LANGUAGE_NAMES).map(([code, name]) => (
+        {languageEntries.map(([code, name]) => (
           <option key={code} value={code}>
             {name}
           </option>

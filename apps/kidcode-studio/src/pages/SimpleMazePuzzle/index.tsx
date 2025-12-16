@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useStore } from "../../core/state/useStore";
 import BlockPalette from "../../components/BlockEditor/BlockPalette";
 import BlockScript from "../../components/BlockEditor/BlockScript";
@@ -80,7 +80,6 @@ export default function SimpleMazePuzzle() {
     switch (type) {
       case "moveForward":
       case "move-forward": {
-        const steps = typeof block.params?.steps === "number" ? block.params.steps : 1;
         
         setPlayerPos((prevPos) => {
           const dir = DIRECTION_MAP[direction];
