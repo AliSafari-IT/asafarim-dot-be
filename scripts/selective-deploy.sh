@@ -699,7 +699,7 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
                         # Create a proxy index.js if one doesn't exist at root
                         if [ ! -f "$output_path/index.js" ] && [ -f "$output_path/dist/index.js" ]; then
                             print_info "Creating proxy index.js..."
-                            echo "require('./dist/index.js');" > "$output_path/index.js"
+                            echo "import './dist/index.js';" > "$output_path/index.js"
                         fi
                     fi
                     
