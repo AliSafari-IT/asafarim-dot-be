@@ -2,7 +2,7 @@
 
 /* Main card container */
 .showcase-card {
-  border-radius: var(--global-border-radius-lg, 1rem);
+  border-radius: var(--asm-radius-lg, 1rem);
   border: 1px solid var(--asm-color-border);
   padding: var(--asm-space-6, 1.5rem);
   background-color: var(--asm-color-surface);
@@ -14,11 +14,11 @@
 .showcase-card:hover {
   box-shadow: var(--asm-effect-shadow-md);
   transform: translateY(-2px);
-  border-color: var(--color-primary-200);
+  border-color: var(--asm-color-primary-200);
 }
 
 .rounded-lg {
-  border-radius: var(--global-border-radius-lg, 1rem);
+  border-radius: var(--asm-radius-lg, 1rem);
 }
 
 .border {
@@ -26,7 +26,7 @@
 }
 
 .border-neutral-800 {
-  border-color: var(--color-neutral-800);
+  border-color: var(--asm-color-neutral-800);
 }
 
 .p-5 {
@@ -55,14 +55,14 @@
 .showcase-card__title {
   font-size: var(--asm-font-size-lg, 1.125rem);
   font-weight: var(--asm-font-weight-600, 600);
-  line-height: var(--line-height-tight, 1.25);
-  color: var(--color-brand);
+  line-height: var(--asm-line-height-tight, 1.25);
+  color: var(--asm-color-brand-primary-600);
   margin: 0 0 var(--asm-space-1, 0.25rem);
 }
 
 .showcase-card__subtitle {
   font-size: var(--asm-font-size-sm, 0.875rem);
-  line-height: var(--line-height-normal, 1.5);
+  line-height: var(--asm-line-height-normal, 1.5);
   color: var(--asm-color-text-muted);
   margin: 0;
 }
@@ -73,7 +73,7 @@
 
 .text-lg {
   font-size: var(--asm-font-size-lg, 1.125rem);
-  line-height: var(--line-height-normal, 1.5);
+  line-height: var(--asm-line-height-normal, 1.5);
 }
 
 .font-semibold {
@@ -81,12 +81,12 @@
 }
 
 .text-brand {
-  color: var(--color-brand);
+  color: var(--asm-color-brand-primary-600);
 }
 
 .text-sm {
   font-size: var(--asm-font-size-sm, 0.875rem);
-  line-height: var(--line-height-normal, 1.5);
+  line-height: var(--asm-line-height-normal, 1.5);
 }
 
 .text-secondary {
@@ -104,24 +104,6 @@
 
 .gap-3 {
   gap: var(--asm-space-4, 0.75rem);
-}
-
-/* Dark theme adjustments */
-[data-theme="dark"] .showcase-card {
-  background-color: var(--asm-color-surface);
-  border-color: var(--asm-color-border);
-}
-
-[data-theme="dark"] .showcase-card:hover {
-  border-color: var(--asm-color-brand-primary-700);
-}
-
-[data-theme="dark"] .showcase-card__title {
-  color: var(--color-brand);
-}
-
-[data-theme="dark"] .showcase-card__subtitle {
-  color: var(--asm-color-text-muted);
 }
 
 /* Reduced motion */

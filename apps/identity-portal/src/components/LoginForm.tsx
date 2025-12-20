@@ -272,7 +272,7 @@ export const LoginForm = () => {
       </div>
 
       <div className="form-group-checkbox">
-        <label htmlFor="rememberMe" className="form-label flex items-center gap-sm mb-1">
+        <label htmlFor="rememberMe" className="form-label checkbox-label">
           <input
             type="checkbox"
             id="rememberMe"

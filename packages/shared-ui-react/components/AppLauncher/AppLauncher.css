@@ -398,37 +398,6 @@
 }
 
 /* --------------------------------------------------------------------------
-   Dark Theme Overrides
-   -------------------------------------------------------------------------- */
-
-[data-theme="dark"] .app-launcher-panel {
-  background: var(--asm-color-surface);
-  border-color: var(--asm-color-border);
-}
-
-[data-theme="dark"] .app-launcher-panel__search-input {
-  background: var(--asm-color-bg);
-  border-color: var(--asm-color-border);
-}
-
-[data-theme="dark"] .app-launcher-panel__search-input:focus {
-  border-color: var(--asm-color-brand-primary-600);
-  box-shadow: 0 0 0 2px var(--asm-color-primary-300);
-}
-
-[data-theme="dark"] .app-launcher-panel__content::-webkit-scrollbar-thumb {
-  background: var(--asm-color-neutral-500);
-}
-
-[data-theme="dark"] .app-launcher-panel__content::-webkit-scrollbar-thumb:hover {
-  background: var(--asm-color-neutral-400);
-}
-
-[data-theme="dark"] .app-launcher-panel::before {
-  background: var(--asm-color-neutral-500);
-}
-
-/* --------------------------------------------------------------------------
    Reduced Motion
    -------------------------------------------------------------------------- */
 

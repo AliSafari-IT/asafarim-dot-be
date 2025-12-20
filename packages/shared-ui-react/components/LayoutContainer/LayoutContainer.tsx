@@ -47,7 +47,7 @@ export function LayoutContainer({
   }, [title]);
 
   return (
-    <div className="layout-page-wrapper">
+    <div className="layout-page-wrapper" style={{ fontFamily: "var(--asm-font-family-base)" }}>
       {header}
       {children}
       {footer}

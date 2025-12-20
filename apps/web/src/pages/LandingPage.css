@@ -12,6 +12,7 @@
   background: var(--asm-color-bg);
   color: var(--asm-color-text);
   min-height: 100vh;
+  font-family: var(--asm-font-family-base);
 }
 
 .landing-container {

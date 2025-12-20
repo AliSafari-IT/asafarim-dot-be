@@ -203,18 +203,6 @@
   color: var(--asm-color-brand-primary-700);
 }
 
-/* Explicit dark selectors in case app toggles class or attribute */
-[data-theme="dark"] .nav-root .hamburger,
-.dark .nav-root .hamburger {
-  color: var(--asm-color-text);
-  border-color: var(--asm-color-border);
-}
-
-[data-theme="dark"] .nav-root .hamburger__bar,
-.dark .nav-root .hamburger__bar {
-  background-color: var(--asm-color-text);
-}
-
 /* Explicit light selector (in case the app sets data-theme="light") */
 [data-theme="light"] .nav-root .hamburger {
   color: var(--asm-color-text);
