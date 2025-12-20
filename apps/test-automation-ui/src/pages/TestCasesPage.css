@@ -2,7 +2,7 @@
 .test-cases-container {
   width: 100%;
   margin: 0;
-  padding: var(--space-4);
+  padding: var(--asm-space-4);
 }
 
 /* Header */
@@ -10,55 +10,55 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--asm-space-6);
+  padding-bottom: var(--asm-space-3);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .test-cases-title {
   margin: 0;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-size: var(--font-size-4);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--asm-font-weight-600);
 }
 
 /* Form Styling */
 .test-case-form {
-  margin-bottom: var(--space-6);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--asm-space-6);
+  padding: var(--asm-space-4);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .test-case-form-title {
   margin-top: 0;
-  margin-bottom: var(--space-4);
-  color: var(--color-foreground);
+  margin-bottom: var(--asm-space-4);
+  color: var(--asm-color-text);
   font-size: var(--font-size-3);
 }
 
 .test-case-form-group {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--asm-space-4);
 }
 
 .test-case-form-label {
   display: block;
-  margin-bottom: var(--space-2);
-  color: var(--color-foreground);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--asm-space-2);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-2xl);
+  font-weight: var(--asm-font-weight-500);
 }
 
 .test-case-form-control {
   width: 100%;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-2xl);
-  color: var(--color-foreground);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  padding: var(--asm-space-2) var(--asm-space-3);
+  font-size: var(--asm-font-size-2xl);
+  color: var(--asm-color-text);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -69,22 +69,22 @@ textarea.test-case-form-control {
 
 .test-case-form-control:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+  border-color: var(--asm-color-brand-primary-600);
+  box-shadow: 0 0 0 3px var(--asm-color-primary-100);
 }
 
 /* Steps Container */
 .steps-container {
-  margin-top: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  margin-top: var(--asm-space-4);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
   overflow: hidden;
 }
 
 .step-item {
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
+  padding: var(--asm-space-3);
+  border-bottom: 1px solid var(--asm-color-border);
+  background: var(--asm-color-surface);
 }
 
 .step-item:last-child {
@@ -95,12 +95,12 @@ textarea.test-case-form-control {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--asm-space-2);
 }
 
 .step-number {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-foreground);
+  font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-text);
 }
 
 .test-type-label.steps {
@@ -114,46 +114,46 @@ textarea.test-case-form-control {
 /* Tabs */
 .tabs {
   display: flex;
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--asm-color-border);
+  margin-bottom: var(--asm-space-4);
 }
 
 .tab {
-  padding: var(--space-2) var(--space-4);
+  padding: var(--asm-space-2) var(--asm-space-4);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  margin-right: var(--space-2);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-muted);
+  margin-right: var(--asm-space-2);
+  font-weight: var(--asm-font-weight-500);
+  color: var(--asm-color-text-muted);
 }
 
 .tab.active {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
+  border-bottom-color: var(--asm-color-brand-primary-600);
 }
 
 /* Table Styling */
 .test-cases-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: var(--space-4);
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
+  margin-top: var(--asm-space-4);
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-md);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .test-cases-table th,
 .test-cases-table td {
-  padding: var(--space-3) var(--space-4);
+  padding: var(--asm-space-3) var(--asm-space-4);
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .test-cases-table th {
   background-color: var(--bg-hover-color);
-  color: var(--color-foreground);
-  font-weight: var(--font-weight-semibold);
+  color: var(--asm-color-text);
+  font-weight: var(--asm-font-weight-600);
   text-transform: uppercase;
   font-size: var(--font-size-1);
   letter-spacing: 0.05em;
@@ -174,7 +174,7 @@ textarea.test-case-form-control {
   padding: 2px 8px;
   border-radius: 12px;
   font-size: var(--font-size-1);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--asm-font-weight-500);
 }
 
 .status-active {
@@ -197,12 +197,12 @@ textarea.test-case-form-control {
 
 /* Empty State */
 .empty-state {
-  padding: var(--space-8) var(--space-4);
+  padding: var(--asm-space-8) var(--asm-space-4);
   text-align: center;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  margin-top: var(--space-4);
+  color: var(--asm-color-text-muted);
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-md);
+  margin-top: var(--asm-space-4);
 }
 
 /* Steps Editor */
@@ -246,7 +246,7 @@ textarea.test-case-form-control {
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .test-cases-container {
-    padding: var(--space-2);
+    padding: var(--asm-space-2);
   }
   
   .test-cases-header {
@@ -254,7 +254,7 @@ textarea.test-case-form-control {
     align-items: stretch;
     gap: 0.75rem;
     margin-bottom: 1.5rem;
-    padding-bottom: var(--space-2);
+    padding-bottom: var(--asm-space-2);
   }
   
   .test-cases-title {
@@ -262,28 +262,28 @@ textarea.test-case-form-control {
   }
   
   .test-case-form {
-    padding: var(--space-3);
+    padding: var(--asm-space-3);
     margin-bottom: 1.5rem;
   }
   
   .test-case-form-title {
     font-size: 1rem;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--asm-space-3);
   }
   
   .test-case-form-group {
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--asm-space-3);
   }
   
   .test-case-form-label {
-    font-size: var(--font-size-xs);
-    margin-bottom: var(--space-1);
+    font-size: var(--asm-font-size-xs);
+    margin-bottom: var(--asm-space-1);
   }
   
   .test-case-form-control,
   textarea.test-case-form-control {
     font-size: 16px;
-    padding: var(--space-2);
+    padding: var(--asm-space-2);
   }
   
   textarea.test-case-form-control {
@@ -300,16 +300,16 @@ textarea.test-case-form-control {
   
   .tab {
     white-space: nowrap;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--asm-space-2) var(--asm-space-3);
   }
   
   /* Steps container */
   .steps-container {
-    margin: var(--space-3) 0;
+    margin: var(--asm-space-3) 0;
   }
   
   .step-item {
-    padding: var(--space-3);
+    padding: var(--asm-space-3);
   }
   
   /* Table */
@@ -317,29 +317,29 @@ textarea.test-case-form-control {
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    font-size: var(--font-size-xs);
+    font-size: var(--asm-font-size-xs);
   }
   
   .test-cases-table th,
   .test-cases-table td {
-    padding: var(--space-2) var(--space-2);
+    padding: var(--asm-space-2) var(--asm-space-2);
   }
   
   /* Action buttons - assuming there are form action buttons */
   .action-buttons {
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--asm-space-2);
   }
   
   .button {
     width: 100%;
-    padding: var(--space-2) var(--space-3);
-    font-size: var(--font-size-sm);
+    padding: var(--asm-space-2) var(--asm-space-3);
+    font-size: var(--asm-font-size-sm);
   }
   
   .button + .button {
     margin-left: 0;
-    margin-top: var(--space-2);
+    margin-top: var(--asm-space-2);
   }
   
   /* Status badge adjustments */

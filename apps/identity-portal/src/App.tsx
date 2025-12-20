@@ -125,9 +125,9 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/admin/user-profile" element={<UserProfilePage />} />
+              <Route path="/admin-area/user-profile" element={<UserProfilePage />} />
               <Route
-                path="/admin/user-profile/:id"
+                path="/admin-area/user-profile/:id"
                 element={
                   <ProtectedRoute>
                     <UserProfilePage />

@@ -8,10 +8,10 @@
   overflow-x: hidden;
   background: linear-gradient(
     135deg,
-    var(--color-background) 0%,
-    var(--color-surface) 100%
+    var(--asm-color-bg) 0%,
+    var(--asm-color-surface) 100%
   );
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .auth-header {
@@ -75,7 +75,7 @@
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-weight: 700;
   font-size: 1.125rem;
   transition: all 0.3s ease;
@@ -83,7 +83,7 @@
 
 .auth-logo:hover {
   transform: translateY(-1px);
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
 }
 
 .auth-logo img {
@@ -185,7 +185,7 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 /* Dropdown Container Positioning */
@@ -210,7 +210,7 @@
   border-radius: 12px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-  color: var(--color-foreground) !important;
+  color: var(--asm-color-text) !important;
   font-weight: 500 !important;
   font-size: 0.875rem !important;
   cursor: pointer !important;
@@ -223,7 +223,7 @@
   justify-content: space-between !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
-  color: var(--color-foreground) !important;
+  color: var(--asm-color-text) !important;
 }
 
 [data-theme="dark"] .user-menu-dropdown,
@@ -238,7 +238,7 @@
   border: 1px solid rgba(71, 85, 105, 0.4) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-  color: var(--color-foreground) !important;
+  color: var(--asm-color-text) !important;
 }
 
 .auth-card {
@@ -250,7 +250,7 @@
   border-radius: 1rem;
   background: var(--color-bg);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 8px 32px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
@@ -280,7 +280,7 @@
   height: 3px;
   background: linear-gradient(
     90deg,
-    var(--color-primary),
+    var(--asm-color-brand-primary-600),
     var(--color-primary-dark)
   );
   border-radius: 2px;
@@ -292,7 +292,7 @@
   margin-bottom: 0.75rem;
   background: linear-gradient(
     135deg,
-    var(--color-primary) 0%,
+    var(--asm-color-brand-primary-600) 0%,
     var(--color-primary-dark) 100%
   );
   -webkit-background-clip: text;
@@ -302,7 +302,7 @@
 }
 
 .auth-subtitle {
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
   font-size: 1rem;
   font-weight: 500;
   margin: 0;
@@ -318,7 +318,7 @@
   text-align: center;
   font-size: 0.875rem;
   color: var(--color-foreground-muted);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--asm-color-border);
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(5px);
 }
@@ -373,7 +373,7 @@
 .user-menu-dropdown:focus {
   outline: none;
   ring: 2px;
-  ring-color: var(--color-primary);
+  ring-color: var(--asm-color-brand-primary-600);
   ring-offset: 2px;
 }
 
@@ -648,16 +648,16 @@
   .auth-header,
   .auth-card,
   .auth-footer {
-    background: var(--color-background);
+    background: var(--asm-color-bg);
     backdrop-filter: none;
   }
 
   .auth-card {
-    border: 2px solid var(--color-border);
+    border: 2px solid var(--asm-color-border);
   }
 
   .identity-btn-logout {
-    background: var(--color-error);
-    border: 1px solid var(--color-error);
+    background: var(--asm-color-danger-500);
+    border: 1px solid var(--asm-color-danger-500);
   }
 }

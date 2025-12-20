@@ -11,20 +11,20 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-sm);
+  padding: var(--asm-space-2);
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: var(--asm-radius-full);
   background: transparent;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   cursor: pointer;
-  transition: background var(--global-transition-fast), 
-              color var(--global-transition-fast),
-              transform var(--global-transition-fast);
+  transition: background var(--asm-motion-duration-fast), 
+              color var(--asm-motion-duration-fast),
+              transform var(--asm-motion-duration-fast);
 }
 
 .app-launcher-trigger:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text);
+  background: var(--asm-color-surface-muted);
+  color: var(--asm-color-text);
 }
 
 .app-launcher-trigger:active {
@@ -32,17 +32,17 @@
 }
 
 .app-launcher-trigger:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--asm-color-brand-primary-600);
   outline-offset: 2px;
 }
 
 .app-launcher-trigger--active {
-  background: var(--color-surface-hover);
+  background: var(--asm-color-surface-muted);
 }
 
 .app-launcher-trigger__icon {
-  width: var(--space-5);
-  height: var(--space-5);
+  width: var(--asm-space-5);
+  height: var(--asm-space-5);
 }
 
 /* --------------------------------------------------------------------------
@@ -52,7 +52,7 @@
 .app-launcher-overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--z-navbar-dropdown);
+  z-index: var(--asm-z-dropdown);
   pointer-events: none;
 }
 
@@ -68,16 +68,16 @@
   display: flex;
   flex-direction: column;
   width: 320px;
-  max-height: calc(100vh - var(--spacing-xl));
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--global-shadow-xl);
+  max-height: calc(100vh - var(--asm-space-8));
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-xl);
+  box-shadow: var(--asm-effect-shadow-xl);
   overflow: hidden;
   pointer-events: auto;
 
   /* Animation */
-  animation: app-launcher-panel-enter var(--global-transition-fast) ease-out forwards;
+  animation: app-launcher-panel-enter var(--asm-motion-duration-fast) ease-out forwards;
 }
 
 @keyframes app-launcher-panel-enter {
@@ -105,8 +105,8 @@
    -------------------------------------------------------------------------- */
 
 .app-launcher-panel__header {
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--asm-space-4);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .app-launcher-panel__search {
@@ -117,35 +117,35 @@
 
 .app-launcher-panel__search-icon {
   position: absolute;
-  left: var(--spacing-md);
-  width: var(--space-4);
-  height: var(--space-4);
-  color: var(--color-text-muted);
+  left: var(--asm-space-4);
+  width: var(--asm-space-4);
+  height: var(--asm-space-4);
+  color: var(--asm-color-text-muted);
   pointer-events: none;
 }
 
 .app-launcher-panel__search-input {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  padding-left: var(--space-10);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-background);
-  color: var(--color-text);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
-  transition: border-color var(--global-transition-fast),
-              box-shadow var(--global-transition-fast);
+  padding: var(--asm-space-2) var(--asm-space-4);
+  padding-left: var(--asm-space-10);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
+  background: var(--asm-color-bg);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-sm);
+  line-height: var(--asm-line-height-normal);
+  transition: border-color var(--asm-motion-duration-fast),
+              box-shadow var(--asm-motion-duration-fast);
 }
 
 .app-launcher-panel__search-input::placeholder {
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 .app-launcher-panel__search-input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px var(--color-primary-100);
+  border-color: var(--asm-color-brand-primary-600);
+  box-shadow: 0 0 0 2px var(--asm-color-primary-100);
 }
 
 /* --------------------------------------------------------------------------
@@ -155,7 +155,7 @@
 .app-launcher-panel__content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-md);
+  padding: var(--asm-space-4);
 
   /* Smooth scrolling */
   scroll-behavior: smooth;
@@ -163,7 +163,7 @@
 
   /* Custom scrollbar */
   scrollbar-width: thin;
-  scrollbar-color: var(--color-neutral-300) transparent;
+  scrollbar-color: var(--asm-color-neutral-300) transparent;
 }
 
 .app-launcher-panel__content::-webkit-scrollbar {
@@ -175,12 +175,12 @@
 }
 
 .app-launcher-panel__content::-webkit-scrollbar-thumb {
-  background: var(--color-neutral-300);
-  border-radius: var(--radius-full);
+  background: var(--asm-color-neutral-300);
+  border-radius: var(--asm-radius-full);
 }
 
 .app-launcher-panel__content::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-400);
+  background: var(--asm-color-neutral-400);
 }
 
 /* --------------------------------------------------------------------------
@@ -188,7 +188,7 @@
    -------------------------------------------------------------------------- */
 
 .app-launcher-panel__section {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--asm-space-6);
 }
 
 .app-launcher-panel__section:last-child {
@@ -197,11 +197,11 @@
 
 .app-launcher-panel__section-title {
   margin: 0;
-  margin-bottom: var(--spacing-sm);
-  padding: 0 var(--spacing-xs);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--asm-space-2);
+  padding: 0 var(--asm-space-1);
+  color: var(--asm-color-text-muted);
+  font-size: var(--asm-font-size-xs);
+  font-weight: var(--asm-font-weight-600);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -213,7 +213,7 @@
 .app-launcher-panel__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-xs);
+  gap: var(--asm-space-1);
 }
 
 .app-launcher-panel--cols-4 .app-launcher-panel__grid {
@@ -232,9 +232,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: var(--height-2xs);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  min-height: 12rem;
+  color: var(--asm-color-text-muted);
+  font-size: var(--asm-font-size-sm);
 }
 
 /* --------------------------------------------------------------------------
@@ -246,27 +246,27 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-md) var(--spacing-sm);
+  gap: var(--asm-space-1);
+  padding: var(--asm-space-4) var(--asm-space-2);
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--asm-radius-lg);
   background: transparent;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   text-decoration: none;
   cursor: pointer;
-  transition: background var(--global-transition-fast),
-              transform var(--global-transition-fast);
+  transition: background var(--asm-motion-duration-fast),
+              transform var(--asm-motion-duration-fast);
   position: relative;
   min-width: 0;
 }
 
 .app-launcher-item:hover {
-  background: var(--bg-hover-color);
+  background: var(--asm-color-surface-muted);
   transform: scale(1.02);
 }
 
 .app-launcher-item:active {
-  background: var(--bg-active-color);
+  background: var(--asm-color-surface);
   transform: scale(0.98);
 }
 
@@ -275,12 +275,12 @@
 }
 
 .app-launcher-item:focus-visible {
-  outline: 2px solid var(--color-primary-hover);
+  outline: 2px solid var(--asm-color-brand-primary-600);
   outline-offset: -2px;
 }
 
 .app-launcher-item--focused {
-  background: var(--bg-hover-color);
+  background: var(--asm-color-surface-muted);
 }
 
 /* Item Icon */
@@ -288,9 +288,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--space-10);
-  height: var(--space-10);
-  font-size: var(--font-size-2xl);
+  width: var(--asm-space-10);
+  height: var(--asm-space-10);
+  font-size: var(--asm-font-size-2xl);
   color: inherit;
   flex-shrink: 0;
 }
@@ -308,9 +308,9 @@
 
 /* Item Label */
 .app-launcher-item__label {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-tight);
+  font-size: var(--asm-font-size-xs);
+  font-weight: var(--asm-font-weight-500);
+  line-height: var(--asm-line-height-tight);
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -320,9 +320,9 @@
 
 /* Item Description (optional) */
 .app-launcher-item__description {
-  font-size: calc(var(--font-size-xs) * 0.85);
-  color: var(--color-text-muted);
-  line-height: var(--line-height-tight);
+  font-size: calc(var(--asm-font-size-xs) * 0.85);
+  color: var(--asm-color-text-muted);
+  line-height: var(--asm-line-height-tight);
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -333,14 +333,14 @@
 /* Item Badge (optional) */
 .app-launcher-item__badge {
   position: absolute;
-  top: var(--spacing-xs);
-  right: var(--spacing-xs);
-  padding: 2px var(--spacing-xs);
-  background: var(--color-error);
-  color: var(--color-white);
-  font-size: calc(var(--font-size-xs) * 0.75);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-sm);
+  top: var(--asm-space-1);
+  right: var(--asm-space-1);
+  padding: 2px var(--asm-space-1);
+  background: var(--asm-color-danger-500);
+  color: white;
+  font-size: calc(var(--asm-font-size-xs) * 0.75);
+  font-weight: var(--asm-font-weight-600);
+  border-radius: var(--asm-radius-sm);
   line-height: 1;
 }
 
@@ -358,8 +358,8 @@
     width: 100% !important;
     max-width: none !important;
     max-height: 80vh;
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    animation: app-launcher-slide-up var(--global-transition-fast) ease-out forwards;
+    border-radius: var(--asm-radius-xl) var(--asm-radius-xl) 0 0;
+    animation: app-launcher-slide-up var(--asm-motion-duration-fast) ease-out forwards;
   }
 
   @keyframes app-launcher-slide-up {
@@ -386,14 +386,14 @@
     display: block;
     width: 40px;
     height: 4px;
-    margin: var(--spacing-sm) auto var(--spacing-xs);
-    background: var(--color-neutral-300);
-    border-radius: var(--radius-full);
+    margin: var(--asm-space-2) auto var(--asm-space-1);
+    background: var(--asm-color-neutral-300);
+    border-radius: var(--asm-radius-full);
   }
 
   /* Adjust item padding for touch */
   .app-launcher-item {
-    padding: var(--spacing-lg) var(--spacing-sm);
+    padding: var(--asm-space-6) var(--asm-space-2);
   }
 }
 
@@ -402,30 +402,30 @@
    -------------------------------------------------------------------------- */
 
 [data-theme="dark"] .app-launcher-panel {
-  background: var(--color-surface);
-  border-color: var(--color-border);
+  background: var(--asm-color-surface);
+  border-color: var(--asm-color-border);
 }
 
 [data-theme="dark"] .app-launcher-panel__search-input {
-  background: var(--color-background);
-  border-color: var(--color-border);
+  background: var(--asm-color-bg);
+  border-color: var(--asm-color-border);
 }
 
 [data-theme="dark"] .app-launcher-panel__search-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px var(--color-primary-300);
+  border-color: var(--asm-color-brand-primary-600);
+  box-shadow: 0 0 0 2px var(--asm-color-primary-300);
 }
 
 [data-theme="dark"] .app-launcher-panel__content::-webkit-scrollbar-thumb {
-  background: var(--color-neutral-500);
+  background: var(--asm-color-neutral-500);
 }
 
 [data-theme="dark"] .app-launcher-panel__content::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-400);
+  background: var(--asm-color-neutral-400);
 }
 
 [data-theme="dark"] .app-launcher-panel::before {
-  background: var(--color-neutral-500);
+  background: var(--asm-color-neutral-500);
 }
 
 /* --------------------------------------------------------------------------

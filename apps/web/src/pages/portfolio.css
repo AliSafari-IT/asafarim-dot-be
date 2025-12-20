@@ -1,6 +1,6 @@
 .portfolio-page {
-  background-color: var(--color-background);
-  color: var(--color-text);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
 }
 
 .portfolio-section {
@@ -16,7 +16,7 @@
   font-size: clamp(1.5rem, 2.5vw, 2.4rem);
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .portfolio-grid {
@@ -26,8 +26,8 @@
 }
 
 .portfolio-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
   border-radius: var(--radius-lg, 1rem);
   padding: 2rem 1.5rem;
   text-align: center;
@@ -35,13 +35,13 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  box-shadow: var(--shadow-md, 0 15px 30px rgba(15, 23, 42, 0.08));
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--asm-effect-shadow-md);
+  transition: transform var(--asm-motion-duration-normal) var(--asm-motion-easing-standard), box-shadow var(--asm-motion-duration-normal) var(--asm-motion-easing-standard);
 }
 
 .portfolio-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-lg, 0 25px 45px rgba(15, 23, 42, 0.15));
+  box-shadow: var(--asm-effect-shadow-lg);
 }
 
 .portfolio-card__icon {
@@ -54,13 +54,13 @@
 }
 
 .portfolio-card__description {
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
   font-size: 0.95rem;
 }
 
 .portfolio-card__link {
   font-weight: 600;
-  color: var(--color-accent, var(--color-primary));
+  color: var(--asm-color-brand-primary-500, var(--asm-color-brand-primary-500));
 }
 
 .featured-grid {
@@ -70,16 +70,16 @@
 }
 
 .featured-project {
-  background-color: var(--color-surface);
+  background-color: var(--asm-color-surface);
   border-radius: var(--radius-lg, 1rem);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   overflow: hidden;
-  box-shadow: var(--shadow-md, 0 15px 30px rgba(15, 23, 42, 0.1));
+  box-shadow: var(--asm-effect-shadow-md, 0 15px 30px rgba(15, 23, 42, 0.1));
 }
 
 .featured-media {
   height: 12rem;
-  background: linear-gradient(135deg, var(--color-surface-muted, #f8fafc), var(--color-surface));
+  background: linear-gradient(135deg, var(--asm-color-neutral-100, #f8fafc), var(--asm-color-surface));
 }
 
 .featured-content {
@@ -95,7 +95,7 @@
 }
 
 .featured-description {
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
   line-height: 1.5;
 }
 
@@ -109,19 +109,19 @@
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
   font-size: 0.85rem;
-  background-color: var(--color-surface-muted, var(--color-neutral-100));
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
+  background-color: var(--asm-color-neutral-100, var(--asm-color-neutral-100));
+  color: var(--asm-color-text);
+  border: 1px solid var(--asm-color-border);
 }
 
 .featured-link {
   font-weight: 600;
-  color: var(--color-accent, var(--color-primary));
+  color: var(--asm-color-brand-primary-500, var(--asm-color-brand-primary-500));
 }
 
 .import-notice {
   padding: clamp(2rem, 4vw, 4rem) 0;
-  background-color: color-mix(in srgb, var(--color-surface) 70%, var(--color-background));
+  background-color: color-mix(in srgb, var(--asm-color-surface) 70%, var(--asm-color-bg));
 }
 
 .import-notice__inner {
@@ -132,17 +132,17 @@
   margin: 0 auto;
   margin-top: 1rem;
   max-width: 720px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
   border-radius: var(--radius-lg, 1rem);
   padding: 1.75rem;
-  box-shadow: var(--shadow-sm, 0 10px 25px rgba(15, 23, 42, 0.08));
-  color: var(--color-text-muted);
+  box-shadow: var(--asm-effect-shadow-sm, 0 10px 25px rgba(15, 23, 42, 0.08));
+  color: var(--asm-color-text-muted);
   line-height: 1.6;
 }
 
 .import-card a {
-  color: var(--color-accent, var(--color-primary));
+  color: var(--asm-color-brand-primary-500, var(--asm-color-brand-primary-500));
   font-weight: 600;
 }
 

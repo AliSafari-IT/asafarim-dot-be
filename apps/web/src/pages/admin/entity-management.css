@@ -3,8 +3,8 @@
   width: 100%;
   min-height: 100vh;
   padding: 2rem 1rem;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
   transition: background-color 0.3s ease;
 }
 
@@ -12,7 +12,7 @@
 .entity-actions-bar {
   margin: 1.5rem 0;
   padding: 1rem;
-  background: var(--color-background-alt);
+  background: var(--asm-color-surface);
   border-radius: 0.5rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
@@ -48,8 +48,8 @@
 
 .entity-actions-bar .tooltip-text {
   visibility: hidden;
-  background-color: var(--color-foreground);
-  color: var(--color-background);
+  background-color: var(--asm-color-text);
+  color: var(--asm-color-bg);
   text-align: center;
   border-radius: 0.375rem;
   padding: 0.5rem 0.75rem;
@@ -85,8 +85,8 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
 }
 
 .entity-form-container header {
@@ -95,18 +95,18 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .entity-form-container h1 {
   font-size: 1.875rem;
   font-weight: 700;
-  color: var(--color-brand-900);
+  color: var(--asm-color-text);
   margin: 0;
 }
 
 .entity-form {
-  background: var(--color-background-alt);
+  background: var(--asm-color-surface);
   padding: 2rem;
   border-radius: 0.75rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -120,7 +120,7 @@
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .form-group input,
@@ -128,10 +128,10 @@
 .form-group select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   border-radius: 0.375rem;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
   font-size: 1rem;
   transition: border-color 0.2s ease;
 }
@@ -149,7 +149,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: var(--color-brand-500);
+  border-color: var(--asm-color-brand-primary-500);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -158,36 +158,26 @@
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--asm-color-border);
 }
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-}
-
+/* 
 .btn-primary {
-  background-color: var(--color-brand-600);
-  color: white;
+  background-color: var(--asm-color-brand-primary-600);
+  color: var(--asm-color-text);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--color-brand-700);
+  background-color: var(--asm-color-brand-primary-700);
 }
 
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
+} */
 
 .error-message {
-  background-color: var(--color-destructive);
-  color: white;
+  background-color: var(--asm-color-danger-500);
+  color: var(--asm-color-brand-primary-100);
   padding: 1rem;
   border-radius: 0.375rem;
   margin-bottom: 1rem;
@@ -230,8 +220,8 @@
 
 .btn-remove {
   padding: 0.5rem 1rem;
-  background-color: var(--color-destructive);
-  color: white;
+  background-color: var(--asm-color-danger-500);
+  color: var(--asm-color-text);
   border: none;
   border-radius: 0.375rem;
   cursor: pointer;
@@ -244,10 +234,10 @@
 }
 
 .btn-secondary {
-  background-color: var(--color-muted);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-neutral-400);
+  color: var(--asm-color-text);
   padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   border-radius: 0.375rem;
   cursor: pointer;
   font-size: 0.875rem;
@@ -256,7 +246,7 @@
 }
 
 .btn-secondary:hover {
-  background-color: var(--color-neutral-800);
+  background-color: var(--asm-color-neutral-800);
 }
 
 @media (max-width: 768px) {
@@ -297,14 +287,14 @@
 .entity-management-title {
   font-size: clamp(1.75rem, 5vw, 2.5rem);
   font-weight: 700;
-  color: var(--color-brand-900);
+  color: var(--asm-color-brand-primary-900);
   margin: 0 0 0.5rem 0;
   transition: color 0.3s ease;
 }
 
 .entity-management-subtitle {
   font-size: clamp(1rem, 3vw, 1.125rem);
-  color: var(--color-foreground-muted);
+  color: var(--asm-color-text-muted);
   margin: 0;
   transition: color 0.3s ease;
 }
@@ -318,25 +308,25 @@
 }
 
 .entity-card {
-  background: var(--color-background-alt);
+  background: var(--asm-color-surface);
   border-radius: 1rem;
   padding: clamp(1.5rem, 4vw, 2rem);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--asm-color-border);
 }
 
 .entity-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  border-color: var(--color-brand-500);
+  border-color: var(--asm-color-brand-primary-500);
 }
 
 .entity-card:focus {
   outline: none;
-  border-color: var(--color-brand-600);
-  box-shadow: 0 0 0 3px var(--color-brand-200);
+  border-color: var(--asm-color-brand-primary-600);
+  box-shadow: 0 0 0 3px var(--asm-color-brand-primary-200);
 }
 
 .entity-card-icon {
@@ -349,14 +339,14 @@
 .entity-card-title {
   font-size: clamp(1.25rem, 4vw, 1.5rem);
   font-weight: 600;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   margin: 0 0 0.5rem 0;
   transition: color 0.3s ease;
 }
 
 .entity-card-description {
   font-size: clamp(0.875rem, 2.5vw, 0.95rem);
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   line-height: 1.5;
   margin: 0 0 1.5rem 0;
   min-height: 3rem;
@@ -367,19 +357,19 @@
   display: flex;
   justify-content: flex-end;
   padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--asm-color-border);
   transition: border-color 0.3s ease;
 }
 
 .entity-card-action {
   font-size: clamp(0.875rem, 2.5vw, 0.95rem);
   font-weight: 600;
-  color: var(--color-brand-600);
+  color: var(--asm-color-brand-primary-600);
   transition: color 0.2s ease;
 }
 
 .entity-card:hover .entity-card-action {
-  color: var(--color-brand-700);
+  color: var(--asm-color-brand-primary-700);
 }
 
 /* Entity Table View */
@@ -387,8 +377,8 @@
   width: 100%;
   min-height: 100vh;
   padding: clamp(1rem, 3vw, 2rem) 1rem;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
   transition: background-color 0.3s ease;
 }
 
@@ -398,7 +388,7 @@
 }
 
 .entity-table-header {
-  background: var(--color-brand-50);
+  background: var(--asm-color-brand-primary-50);
   border-radius: 1rem;
   padding: clamp(1.5rem, 4vw, 2rem);
   margin-bottom: 2rem;
@@ -430,21 +420,21 @@
 .entity-table-title {
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
-  color: var(--color-brand-900);
+  color: var(--asm-color-brand-primary-900);
   margin: 0 0 0.25rem 0;
   transition: color 0.3s ease;
 }
 
 .entity-table-subtitle {
   font-size: clamp(0.875rem, 2.5vw, 1rem);
-  color: var(--color-brand-700);
+  color: var(--asm-color-brand-primary-700);
   margin: 0;
   transition: color 0.3s ease;
 }
 
 /* Table Styles */
 .entity-table-wrapper {
-  background: var(--color-background-alt);
+  background: var(--asm-color-surface);
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -459,7 +449,7 @@
 }
 
 .entity-table thead {
-  background-color: var(--color-brand-50);
+  background-color: var(--asm-color-brand-primary-50);
   transition: background-color 0.3s ease;
 }
 
@@ -467,8 +457,8 @@
   padding: clamp(0.75rem, 2vw, 1rem);
   text-align: left;
   font-weight: 600;
-  color: var(--color-brand-900);
-  border-bottom: 2px solid var(--color-brand-200);
+  color: var(--asm-color-brand-primary-900);
+  border-bottom: 2px solid var(--asm-color-brand-primary-200);
   font-size: clamp(0.75rem, 2vw, 0.875rem);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -478,14 +468,14 @@
 
 .entity-table td {
   padding: clamp(0.75rem, 2vw, 1rem);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
   vertical-align: middle;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   transition: all 0.3s ease;
 }
 
 .entity-table tbody tr:hover {
-  background-color: var(--color-brand-50);
+  background-color: var(--asm-color-brand-primary-50);
 }
 
 .entity-table tbody tr:last-child td {
@@ -494,15 +484,15 @@
 
 .record-name {
   font-weight: 500;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   transition: color 0.3s ease;
 }
 
 .user-id-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background-color: var(--color-brand-100);
-  color: var(--color-brand-700);
+  background-color: var(--asm-color-brand-primary-100);
+  color: var(--asm-color-brand-primary-700);
   border-radius: 0.5rem;
   font-size: clamp(0.75rem, 2vw, 0.875rem);
   font-weight: 500;
@@ -533,7 +523,7 @@
 }
 
 .action-button:hover:not(:disabled) {
-  background-color: var(--color-brand-50);
+  background-color: var(--asm-color-brand-primary-50);
 }
 
 .action-button:disabled {
@@ -542,36 +532,36 @@
 }
 
 .action-button.view {
-  color: var(--color-brand-600);
-  border-color: var(--color-brand-200);
+  color: var(--asm-color-brand-primary-600);
+  border-color: var(--asm-color-brand-primary-200);
 }
 
 .action-button.view:hover:not(:disabled) {
-  border-color: var(--color-brand-600);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 .action-button.edit {
-  color: var(--color-brand-600);
-  border-color: var(--color-brand-200);
+  color: var(--asm-color-brand-primary-600);
+  border-color: var(--asm-color-brand-primary-200);
 }
 
 .action-button.edit:hover:not(:disabled) {
-  border-color: var(--color-brand-600);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 .action-button.delete {
-  color: var(--color-error-600);
-  border-color: var(--color-error-200);
+  color: var(--asm-color-danger-600);
+  border-color: var(--asm-color-danger-200);
 }
 
 .action-button.delete:hover:not(:disabled) {
-  background-color: var(--color-error-50);
-  border-color: var(--color-error-600);
+  background-color: var(--asm-color-danger-50);
+  border-color: var(--asm-color-danger-600);
 }
 
 .table-footer {
   padding: clamp(0.75rem, 2vw, 1rem);
-  background: var(--color-background-alt);
+  background: var(--asm-color-surface);
   border-radius: 0 0 1rem 1rem;
   text-align: center;
   transition: background-color 0.3s ease;
@@ -579,7 +569,7 @@
 
 .record-count {
   font-size: clamp(0.75rem, 2vw, 0.875rem);
-  color: var(--color-foreground-muted);
+  color: var(--asm-color-text-muted);
   margin: 0;
   transition: color 0.3s ease;
 }
@@ -596,15 +586,15 @@
 
 .loading-state p {
   margin-top: 1rem;
-  color: var(--color-foreground-muted);
+  color: var(--asm-color-text-muted);
   font-size: clamp(0.875rem, 2.5vw, 1rem);
   transition: color 0.3s ease;
 }
 
 .error-message {
-  background-color: var(--color-error-100);
-  border: 1px solid var(--color-error-300);
-  color: var(--color-error-700);
+  background-color: var(--asm-color-danger-100);
+  border: 1px solid var(--asm-color-danger-300);
+  color: var(--asm-color-danger-700);
   padding: clamp(0.75rem, 2vw, 1rem);
   border-radius: 0.5rem;
   margin-bottom: 1.5rem;
@@ -616,7 +606,7 @@
 .empty-state {
   text-align: center;
   padding: clamp(2rem, 6vw, 4rem) 2rem;
-  background-color: var(--color-background-alt);
+  background-color: var(--asm-color-surface);
   border-radius: 1rem;
   margin-bottom: 2rem;
   transition: background-color 0.3s ease;
@@ -624,7 +614,7 @@
 
 .empty-state-message {
   font-size: clamp(1rem, 3vw, 1.125rem);
-  color: var(--color-accent-900);
+  color: var(--asm-color-text-900);
   margin: 0;
   transition: color 0.3s ease;
 }
@@ -632,11 +622,11 @@
 /* Entity View Styles */
 .entity-view-content {
   padding: clamp(1rem, 3vw, 2rem) 1rem;
-  background-color: var(--color-surface);
+  background-color: var(--asm-color-surface);
   border-radius: 0.5rem;
   margin-bottom: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .entity-view-actions {
@@ -651,14 +641,14 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 /* Entity View Section Styles */
 .entity-view-section {
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .entity-view-section:last-child {
@@ -670,7 +660,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .entity-view-section-content {
@@ -685,15 +675,15 @@
 
 .entity-view-section-content-item-label {
   font-weight: 500;
-  color: var(--color-foreground-muted);
+  color: var(--asm-color-text-muted);
 }
 
 .entity-view-section-content-item-value {
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .entity-view-section-content-item-value code {
-  background-color: var(--color-surface-elevated);
+  background-color: var(--asm-color-surface);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-family: var(--global-font-family-monospace);
@@ -701,27 +691,27 @@
 }
 
 .entity-view-section-content-item-value a {
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-500);
   text-decoration: none;
 }
 
 .entity-view-section-content-item-value a:hover {
   text-decoration: underline;
-  color: var(--color-primary-hover);
+  color: var(--asm-color-brand-primary-600);
 }
 
 /* Resume specific styles */
 .resume-section {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--asm-color-border);
 }
 
 .resume-section-title {
   font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .resume-work-experience-item,
@@ -734,9 +724,9 @@
 .resume-reference-item {
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background-color: var(--color-surface-elevated);
+  background-color: var(--asm-color-surface);
   border-radius: 0.375rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
 }
 
 .resume-work-experience-title,
@@ -750,7 +740,7 @@
   font-weight: 600;
   font-size: 1.125rem;
   margin-bottom: 0.5rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .resume-work-experience-company,
@@ -758,7 +748,7 @@
 .resume-certificate-issuer,
 .resume-reference-relationship {
   font-weight: 500;
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-500);
   margin-bottom: 0.5rem;
 }
 
@@ -766,7 +756,7 @@
 .resume-education-location,
 .resume-reference-contact-info {
   font-size: 0.875rem;
-  color: var(--color-foreground-muted);
+  color: var(--asm-color-text-muted);
   margin-bottom: 0.5rem;
 }
 
@@ -776,7 +766,7 @@
 .resume-award-description {
   margin-top: 0.75rem;
   white-space: pre-wrap;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-size: 0.9375rem;
   line-height: 1.5;
 }
@@ -808,48 +798,6 @@
   }
 }
 
-/* Dark theme adjustments */
-html[data-theme="dark"] .entity-view-content,
-body[data-theme="dark"] .entity-view-content,
-.dark .entity-view-content {
-  background-color: var(--color-brand-100);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-html[data-theme="dark"] .entity-view-section-content-item-value code,
-body[data-theme="dark"] .entity-view-section-content-item-value code,
-.dark .entity-view-section-content-item-value code {
-  background-color: var(--color-brand-200);
-  color: var(--color-foreground);
-}
-
-html[data-theme="dark"] .resume-work-experience-item,
-body[data-theme="dark"] .resume-work-experience-item,
-.dark .resume-work-experience-item,
-html[data-theme="dark"] .resume-education-item,
-body[data-theme="dark"] .resume-education-item,
-.dark .resume-education-item,
-html[data-theme="dark"] .resume-skill-item,
-body[data-theme="dark"] .resume-skill-item,
-.dark .resume-skill-item,
-html[data-theme="dark"] .resume-certificate-item,
-body[data-theme="dark"] .resume-certificate-item,
-.dark .resume-certificate-item,
-html[data-theme="dark"] .resume-project-item,
-body[data-theme="dark"] .resume-project-item,
-.dark .resume-project-item,
-html[data-theme="dark"] .resume-language-item,
-body[data-theme="dark"] .resume-language-item,
-.dark .resume-language-item,
-html[data-theme="dark"] .resume-award-item,
-body[data-theme="dark"] .resume-award-item,
-.dark .resume-award-item,
-html[data-theme="dark"] .resume-reference-item,
-body[data-theme="dark"] .resume-reference-item,
-.dark .resume-reference-item {
-  background-color: var(--color-brand-200);
-  border-color: var(--color-brand-300);
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {

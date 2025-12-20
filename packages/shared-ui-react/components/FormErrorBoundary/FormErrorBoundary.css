@@ -8,18 +8,18 @@
    ----------------------------------------------------------------------------- */
 
 .form-error-boundary__banner {
-  background: var(--color-error-50);
+  background: var(--asm-color-danger-50);
   border: 1px solid var(--color-error-500);
-  color: var(--color-error-700);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+  color: var(--asm-color-danger-700);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-4);
+  margin-bottom: var(--asm-space-6);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
   opacity: 0;
-  animation: form-error-boundary-fade-in var(--transition-normal) ease-out forwards;
+  animation: form-error-boundary-fade-in var(--asm-motion-duration-normal) ease-out forwards;
 }
 
 @keyframes form-error-boundary-fade-in {
@@ -37,24 +37,24 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: var(--asm-space-1);
 }
 
 .form-error-boundary__title {
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-base);
+  font-weight: var(--asm-font-weight-600);
+  font-size: var(--asm-font-size-md);
   margin: 0;
-  color: var(--color-error-700);
+  color: var(--asm-color-danger-700);
 }
 
 .form-error-boundary__list {
   margin: 0;
-  padding-left: var(--spacing-lg);
-  font-size: var(--font-size-sm);
+  padding-left: var(--asm-space-6);
+  font-size: var(--asm-font-size-sm);
 }
 
 .form-error-boundary__list li {
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--asm-space-1);
 }
 
 .form-error-boundary__list li:last-child {
@@ -64,14 +64,14 @@
 .form-error-boundary__dismiss {
   background: transparent;
   border: none;
-  color: var(--color-error-700);
+  color: var(--asm-color-danger-700);
   cursor: pointer;
-  padding: var(--spacing-xs);
-  border-radius: var(--radius-sm);
+  padding: var(--asm-space-1);
+  border-radius: var(--asm-radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--transition-fast);
+  transition: background var(--asm-motion-duration-fast);
   flex-shrink: 0;
 }
 
@@ -92,11 +92,11 @@
 .form-field--error select,
 .form-field--error textarea {
   border-color: var(--color-error-500) !important;
-  background-color: var(--color-error-50) !important;
+  background-color: var(--asm-color-danger-50) !important;
 }
 
 .form-field__error-message {
-  color: var(--color-error-700);
-  font-size: var(--font-size-sm);
-  margin-top: var(--spacing-xs);
+  color: var(--asm-color-danger-700);
+  font-size: var(--asm-font-size-sm);
+  margin-top: var(--asm-space-1);
 }

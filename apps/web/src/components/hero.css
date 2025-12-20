@@ -10,29 +10,12 @@
 
 .hero {
   position: relative;
-  /* Subtle gradient - adapts to theme */
-  background: linear-gradient(
-    135deg,
-    var(--color-neutral-50) 0%,
-    var(--color-background) 45%,
-    var(--color-neutral-50) 100%
-  );
-  /* Generous vertical padding for breathing room */
+  background: var(--asm-color-bg);
   padding: 6rem 0;
   min-height: calc(100vh - 64px);
   display: flex;
   align-items: center;
   overflow: hidden;
-}
-
-/* Dark theme adjustments */
-[data-theme="dark"] .hero {
-  background: linear-gradient(
-    135deg,
-    var(--color-neutral-50) 0%,
-    var(--color-background) 45%,
-    var(--color-neutral-100) 100%
-  );
 }
 
 /* Refined radial glow - adds depth without overwhelming */
@@ -43,31 +26,16 @@
   background-image: 
     radial-gradient(
       circle at 25% 35%,
-      color-mix(in srgb, var(--color-primary) 3%, transparent) 0%,
+      color-mix(in srgb, var(--asm-color-brand-primary-500) 3%, transparent) 0%,
       transparent 45%
     ),
     radial-gradient(
       circle at 75% 65%,
-      color-mix(in srgb, var(--color-primary-muted) 2%, transparent) 0%,
+      color-mix(in srgb, var(--asm-color-brand-primary-500) 2%, transparent) 0%,
       transparent 45%
     );
   pointer-events: none;
   z-index: 0;
-}
-
-/* Dark theme - more prominent glow */
-[data-theme="dark"] .hero::before {
-  background-image: 
-    radial-gradient(
-      circle at 25% 35%,
-      color-mix(in srgb, var(--color-primary) 5%, transparent) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 75% 65%,
-      color-mix(in srgb, var(--color-primary-muted) 4%, transparent) 0%,
-      transparent 45%
-    );
 }
 
 /* Elegant grid pattern - perfectly balanced opacity */
@@ -77,42 +45,22 @@
   inset: 0;
   background-image: 
     linear-gradient(
-      color-mix(in srgb, var(--color-neutral-400) 3%, transparent) 1px,
+      color-mix(in srgb, var(--asm-color-border) 8%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--color-neutral-400) 3%, transparent) 1px,
+      color-mix(in srgb, var(--asm-color-border) 8%, transparent) 1px,
       transparent 1px
     );
   background-size: 56px 56px;
-  /* Centered mask for subtle fade */
   mask-image: radial-gradient(
     ellipse at 50% 50%,
-    rgba(0, 0, 0, 0.18),
+    rgba(0, 0, 0, 0.15),
     transparent 68%
   );
   pointer-events: none;
   z-index: 0;
-}
-
-/* Dark theme - more visible grid */
-[data-theme="dark"] .hero::after {
-  background-image: 
-    linear-gradient(
-      color-mix(in srgb, var(--color-neutral-400) 6%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--color-neutral-400) 6%, transparent) 1px,
-      transparent 1px
-    );
-  mask-image: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(255, 255, 255, 0.12),
-    transparent 68%
-  );
 }
 
 /* ============================================
@@ -176,37 +124,29 @@
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
-  /* Subtle gradient for depth */
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-100) 0%,
-    color-mix(in srgb, var(--color-primary-50) 95%, var(--color-white)) 100%
-  );
-  color: var(--color-primary-700);
+  background: var(--asm-color-surface-muted);
+  color: var(--asm-color-brand-primary-500);
   padding: 0.625rem 1.25rem;
   border-radius: 100px;
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0.015em;
-  border: 1px solid color-mix(in srgb, var(--color-primary-700) 8%, transparent);
-  box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.03),
-    0 0 0 1px color-mix(in srgb, var(--color-primary) 5%, transparent);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--asm-color-border);
+  box-shadow: var(--asm-effect-shadow-sm);
+  transition: all var(--asm-motion-duration-normal) var(--asm-motion-easing-standard);
 }
 
 .hero .hero-badge:hover {
   transform: translateY(-1px);
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.06),
-    0 0 0 1px color-mix(in srgb, var(--color-primary) 8%, transparent);
+  box-shadow: var(--asm-effect-shadow-md);
+  border-color: var(--asm-color-brand-primary-500);
 }
 
 .hero .hero-badge-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-primary-700);
+  background: var(--asm-color-brand-primary-600);
   animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -227,7 +167,7 @@
 
 /* Hero Title - Bold statement with negative tracking */
 .hero .hero-title {
-  color: var(--color-neutral-900);
+  color: var(--asm-color-text);
   font-size: clamp(2.5rem, 5.5vw, 4rem);
   font-weight: 700;
   line-height: 1.1; /* Tighter for large text */
@@ -239,7 +179,7 @@
 
 /* Hero Subtitle - Refined secondary text */
 .hero .hero-subtitle {
-  color: var(--color-neutral-600);
+  color: var(--asm-color-text-muted);
   font-size: clamp(1.125rem, 2.5vw, 1.375rem);
   line-height: 1.7; /* Generous for readability */
   font-weight: 400;
@@ -266,13 +206,12 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-text-muted);
   font-size: 1rem;
   line-height: 1.65;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--asm-motion-duration-normal) var(--asm-motion-easing-standard);
 }
 
-/* Subtle hover lift for interactivity */
 .hero .hero-feature-item:hover {
   transform: translateX(4px);
 }
@@ -284,19 +223,12 @@
   width: 24px;
   height: 24px;
   min-width: 24px;
-  /* Refined gradient */
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-100) 0%,
-    var(--color-primary-200) 100%
-  );
-  color: var(--color-primary-700);
+  background: var(--asm-color-info-50);
+  color: var(--asm-color-info-500);
   border-radius: 50%;
   font-size: 11px;
   font-weight: 700;
-  box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .hero .hero-feature-text {

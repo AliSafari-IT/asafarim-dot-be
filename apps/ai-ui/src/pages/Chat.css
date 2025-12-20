@@ -24,8 +24,8 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 /* SIDEBAR */
 .sidebar {
   width: 260px;
-  background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border-right: 1px solid var(--asm-color-border);
   display: flex;
   flex-direction: column;
   transform: translateX(-260px);
@@ -40,8 +40,8 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 .sidebar-top {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--asm-space-4);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .close-btn {
@@ -52,11 +52,11 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 }
 
 .new-chat {
-  margin: var(--space-4);
-  padding: var(--space-3);
-  width: calc(100% - var(--space-8));
-  border-radius: var(--radius-md);
-  background: var(--color-primary);
+  margin: var(--asm-space-4);
+  padding: var(--asm-space-3);
+  width: calc(100% - var(--asm-space-8));
+  border-radius: var(--asm-radius-md);
+  background: var(--asm-color-brand-primary-600);
   color: var(--color-white);
   border: none;
   font-weight: 500;
@@ -69,11 +69,11 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 }
 
 .user-footer {
-  padding: var(--space-4);
+  padding: var(--asm-space-4);
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  border-top: 1px solid var(--color-border);
+  gap: var(--asm-space-3);
+  border-top: 1px solid var(--asm-color-border);
 }
 
 /* MAIN AREA */
@@ -94,10 +94,10 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 .topbar {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--asm-space-3);
+  padding: var(--asm-space-4);
+  background: var(--asm-color-surface);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .menu-btn {
@@ -118,11 +118,11 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 .chat-body {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-6);
+  padding: var(--asm-space-6);
 }
 
 .welcome {
-  margin-top: var(--space-10);
+  margin-top: var(--asm-space-10);
   text-align: center;
   opacity: 0.75;
 }
@@ -136,29 +136,29 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  margin: 0 auto var(--space-4);
+  margin: 0 auto var(--asm-space-4);
 }
 
 /* MESSAGE BUBBLES */
 .bubble {
   display: flex;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
+  gap: var(--asm-space-3);
+  margin-bottom: var(--asm-space-5);
   max-width: 800px;
 }
 
 .bubble.user .bubble-content {
-  background: var(--color-surface-muted);
+  background: var(--asm-color-surface-muted);
 }
 
 .bubble.assistant .bubble-content {
-  background: var(--color-surface);
+  background: var(--asm-color-surface);
 }
 
 .bubble-content {
-  padding: var(--space-4);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  padding: var(--asm-space-4);
+  border-radius: var(--asm-radius-lg);
+  border: 1px solid var(--asm-color-border);
   flex: 1;
 }
 
@@ -166,13 +166,13 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 .typing {
   display: flex;
   gap: 4px;
-  margin-top: var(--space-3);
+  margin-top: var(--asm-space-3);
 }
 
 .typing span {
   width: 8px;
   height: 8px;
-  background: var(--color-primary);
+  background: var(--asm-color-brand-primary-600);
   border-radius: 50%;
   animation: bounce 1.3s infinite alternate;
 }
@@ -188,18 +188,18 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 /* INPUT BOX */
 .input-box {
   display: flex;
-  padding: var(--space-4);
-  gap: var(--space-3);
-  border-top: 1px solid var(--color-border);
-  background: var(--color-surface);
+  padding: var(--asm-space-4);
+  gap: var(--asm-space-3);
+  border-top: 1px solid var(--asm-color-border);
+  background: var(--asm-color-surface);
 }
 
 .input-box textarea {
   flex: 1;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
+  padding: var(--asm-space-3);
+  border-radius: var(--asm-radius-md);
+  background: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
   resize: none;
   min-height: 42px;
   max-height: 200px;
@@ -209,8 +209,8 @@ body.ai-ui-chat-page .ai-ui-content-wrapper {
 .send {
   width: 48px;
   height: 48px;
-  background: var(--color-primary);
-  border-radius: var(--radius-md);
+  background: var(--asm-color-brand-primary-600);
+  border-radius: var(--asm-radius-md);
   border: none;
   color: var(--color-white);
   cursor: pointer;

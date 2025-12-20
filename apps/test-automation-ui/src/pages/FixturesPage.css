@@ -2,7 +2,7 @@
 .fixtures-container {
   width: 100%;
   margin: 0;
-  padding: var(--space-4);
+  padding: var(--asm-space-4);
 }
 
 /* Header */
@@ -10,62 +10,62 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--asm-space-6);
+  padding-bottom: var(--asm-space-3);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .fixtures-title {
   margin: 0;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-size: var(--font-size-4);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--asm-font-weight-600);
 }
 
 /* Form Styling */
 .fixture-form {
-  margin-bottom: var(--space-6);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--asm-space-6);
+  padding: var(--asm-space-4);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .form-title {
   margin-top: 0;
-  margin-bottom: var(--space-4);
-  color: var(--color-foreground);
+  margin-bottom: var(--asm-space-4);
+  color: var(--asm-color-text);
   font-size: var(--font-size-3);
 }
 
 .form-group {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--asm-space-4);
 }
 
 .form-label {
   display: block;
-  margin-bottom: var(--space-1);
-  color: var(--color-foreground);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--asm-space-1);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-2xl);
+  font-weight: var(--asm-font-weight-500);
 }
 
 .form-control {
   width: 100%;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-2xl);
-  color: var(--color-foreground);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  padding: var(--asm-space-2) var(--asm-space-3);
+  font-size: var(--asm-font-size-2xl);
+  color: var(--asm-color-text);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-control:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+  border-color: var(--asm-color-brand-primary-600);
+  box-shadow: 0 0 0 3px var(--asm-color-primary-100);
 }
 
 textarea.form-control {
@@ -78,29 +78,29 @@ textarea.form-control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-medium);
+  padding: var(--asm-space-2) var(--asm-space-4);
+  font-size: var(--asm-font-size-2xl);
+  font-weight: var(--asm-font-weight-500);
   line-height: 1.5;
-  border-radius: var(--radius-sm);
+  border-radius: var(--asm-radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid transparent;
 }
 
 .button-primary {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
 }
 
 .button-primary:hover {
-  background-color: var(--color-primary-600);
+  background-color: var(--asm-color-brand-primary-600);
 }
 
 .button-secondary {
-  background-color: var(--color-surface);
-  color: var(--color-foreground);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-surface);
+  color: var(--asm-color-text);
+  border-color: var(--asm-color-border);
 }
 
 .button-secondary:hover {
@@ -108,7 +108,7 @@ textarea.form-control {
 }
 
 .button-danger {
-  background-color: var(--color-error);
+  background-color: var(--asm-color-danger-500);
   color: white;
 }
 
@@ -117,31 +117,31 @@ textarea.form-control {
 }
 
 .button + .button {
-  margin-left: var(--space-2);
+  margin-left: var(--asm-space-2);
 }
 
 /* Table Styling */
 .fixtures-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: var(--space-4);
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
+  margin-top: var(--asm-space-4);
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-md);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .fixtures-table th,
 .fixtures-table td {
-  padding: var(--space-3) var(--space-4);
+  padding: var(--asm-space-3) var(--asm-space-4);
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .fixtures-table th {
   background-color: var(--bg-hover-color);
-  color: var(--color-foreground);
-  font-weight: var(--font-weight-semibold);
+  color: var(--asm-color-text);
+  font-weight: var(--asm-font-weight-600);
   text-transform: uppercase;
   font-size: var(--font-size-1);
   letter-spacing: 0.05em;
@@ -158,20 +158,20 @@ textarea.form-control {
 /* Action Buttons */
 .action-buttons {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--asm-space-2);
 }
 
 /* Empty State */
 .empty-state {
-  padding: var(--space-8) var(--space-4);
+  padding: var(--asm-space-8) var(--asm-space-4);
   text-align: center;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .fixtures-container {
-    padding: var(--space-2);
+    padding: var(--asm-space-2);
   }
   
   .fixtures-header {
@@ -179,7 +179,7 @@ textarea.form-control {
     align-items: stretch;
     gap: 0.75rem;
     margin-bottom: 1.5rem;
-    padding-bottom: var(--space-2);
+    padding-bottom: var(--asm-space-2);
   }
   
   .fixtures-title {
@@ -187,28 +187,28 @@ textarea.form-control {
   }
   
   .fixture-form {
-    padding: var(--space-3);
+    padding: var(--asm-space-3);
     margin-bottom: 1.5rem;
   }
   
   .form-title {
     font-size: 1rem;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--asm-space-3);
   }
   
   .form-group {
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--asm-space-3);
   }
   
   .form-label {
-    font-size: var(--font-size-xs);
-    margin-bottom: var(--space-1);
+    font-size: var(--asm-font-size-xs);
+    margin-bottom: var(--asm-space-1);
   }
   
   .form-control,
   textarea.form-control {
     font-size: 16px;
-    padding: var(--space-2);
+    padding: var(--asm-space-2);
   }
   
   textarea.form-control {
@@ -217,39 +217,39 @@ textarea.form-control {
   
   .action-buttons {
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--asm-space-2);
   }
   
   .button {
     width: 100%;
-    padding: var(--space-2) var(--space-3);
-    font-size: var(--font-size-sm);
+    padding: var(--asm-space-2) var(--asm-space-3);
+    font-size: var(--asm-font-size-sm);
   }
   
   .button + .button {
     margin-left: 0;
-    margin-top: var(--space-2);
+    margin-top: var(--asm-space-2);
   }
   
   .fixtures-table {
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    font-size: var(--font-size-xs);
+    font-size: var(--asm-font-size-xs);
   }
   
   .fixtures-table th,
   .fixtures-table td {
-    padding: var(--space-2) var(--space-2);
+    padding: var(--asm-space-2) var(--asm-space-2);
   }
   
   .action-buttons {
     flex-direction: column;
-    gap: var(--space-1);
+    gap: var(--asm-space-1);
   }
   
   .action-buttons .button {
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--font-size-xs);
+    padding: var(--asm-space-1) var(--asm-space-2);
+    font-size: var(--asm-font-size-xs);
   }
 }

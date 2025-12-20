@@ -2,7 +2,7 @@
 .test-data-sets-container {
   width: 100%;
   margin: 0;
-  padding: var(--space-4);
+  padding: var(--asm-space-4);
 }
 
 .test-data-sets-header {
@@ -17,7 +17,7 @@
 .test-data-sets-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   margin: 0;
 }
 
@@ -27,8 +27,8 @@
 }
 
 .test-data-set-form {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -38,7 +38,7 @@
 .test-data-set-form h4 {
   margin-top: 0;
   margin-bottom: 1.25rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-size: 1.25rem;
 }
 
@@ -50,7 +50,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .test-data-set-form-control {
@@ -58,9 +58,9 @@
   padding: 0.625rem 0.75rem;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--color-text);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
+  color: var(--asm-color-text);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
   border-radius: 0.375rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
@@ -73,7 +73,7 @@ textarea.test-data-set-form-control {
 }
 
 .test-data-set-form-control:focus {
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-600);
   outline: 0;
   box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
 }
@@ -87,17 +87,17 @@ textarea.test-data-set-form-control {
 .table-container {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin-top: var(--space-4);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  margin-top: var(--asm-space-4);
+  border-radius: var(--asm-radius-md);
+  border: 1px solid var(--asm-color-border);
 }
 
 .test-data-sets-table {
   min-width: 800px; /* Ensures the table has a minimum width */
   width: 100%;
   border-collapse: collapse;
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
+  background-color: var(--asm-color-surface);
+  border-radius: var(--asm-radius-md);
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
@@ -106,13 +106,13 @@ textarea.test-data-set-form-control {
 .test-data-sets-table td {
   padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .test-data-sets-table th {
   background-color: var(--color-surface-elevated);
   font-weight: 600;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
@@ -123,7 +123,7 @@ textarea.test-data-set-form-control {
 }
 
 .test-data-sets-table tbody tr:hover {
-  background-color: var(--color-surface-hover);
+  background-color: var(--asm-color-surface-muted);
 }
 
 .status-badge {
@@ -138,7 +138,7 @@ textarea.test-data-set-form-control {
 
 .status-badge.active {
   background-color: rgba(var(--color-success-rgb), 0.1);
-  color: var(--color-success);
+  color: var(--asm-color-success-500);
 }
 
 .status-badge.inactive {
@@ -160,23 +160,23 @@ textarea.test-data-set-form-control {
   display: block;
   font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 0.8125rem;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 .empty-state {
   padding: 3rem 1.5rem;
   text-align: center;
-  color: var(--color-text-muted);
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
+  color: var(--asm-color-text-muted);
+  background-color: var(--asm-color-surface);
+  border-radius: var(--asm-radius-md);
   margin-top: 1.5rem;
-  border: 1px dashed var(--color-border);
+  border: 1px dashed var(--asm-color-border);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .test-data-sets-container {
-    padding: var(--space-2);
+    padding: var(--asm-space-2);
   }
   
   .test-data-sets-header {
@@ -198,33 +198,33 @@ textarea.test-data-set-form-control {
   
   .test-data-sets-actions .button {
     width: 100%;
-    padding: var(--space-2) var(--space-3);
-    font-size: var(--font-size-sm);
+    padding: var(--asm-space-2) var(--asm-space-3);
+    font-size: var(--asm-font-size-sm);
   }
   
   .test-data-set-form {
-    padding: var(--space-3);
+    padding: var(--asm-space-3);
     margin-bottom: 1.5rem;
   }
   
   .test-data-set-form h4 {
     font-size: 1rem;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--asm-space-3);
   }
   
   .test-data-set-form-group {
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--asm-space-3);
   }
   
   .test-data-set-form-label {
-    font-size: var(--font-size-xs);
-    margin-bottom: var(--space-1);
+    font-size: var(--asm-font-size-xs);
+    margin-bottom: var(--asm-space-1);
   }
   
   .test-data-set-form-control,
   textarea.test-data-set-form-control {
     font-size: 16px;
-    padding: var(--space-2);
+    padding: var(--asm-space-2);
   }
   
   textarea.test-data-set-form-control {
@@ -233,7 +233,7 @@ textarea.test-data-set-form-control {
   
   .test-data-set-form-actions {
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--asm-space-2);
   }
   
   .test-data-set-form-actions .button {
@@ -242,18 +242,18 @@ textarea.test-data-set-form-control {
   }
   
   .table-container {
-    margin-top: var(--space-4);
+    margin-top: var(--asm-space-4);
     border: none;
   }
   
   .test-data-sets-table {
-    font-size: var(--font-size-xs);
+    font-size: var(--asm-font-size-xs);
     min-width: 600px; /* Smaller minimum width for mobile */
   }
   
   .test-data-sets-table th,
   .test-data-sets-table td {
-    padding: var(--space-2);
+    padding: var(--asm-space-2);
     white-space: nowrap;
   }
   
@@ -262,21 +262,21 @@ textarea.test-data-set-form-control {
   .test-data-sets-table td:first-child {
     position: sticky;
     left: 0;
-    background: var(--color-surface);
+    background: var(--asm-color-surface);
     z-index: 1;
     min-width: 120px;
   }
   
   .actions {
     flex-direction: column;
-    gap: var(--space-1);
+    gap: var(--asm-space-1);
   }
   
   .actions .button {
     width: 100%;
     text-align: center;
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--font-size-xs);
+    padding: var(--asm-space-1) var(--asm-space-2);
+    font-size: var(--asm-font-size-xs);
   }
   
   .json-preview {
@@ -315,7 +315,7 @@ textarea.test-data-set-form-control {
 }
 
 .button-primary {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
 }
 
@@ -324,17 +324,17 @@ textarea.test-data-set-form-control {
 }
 
 .button-secondary {
-  background-color: var(--color-surface);
-  border-color: var(--color-border);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-surface);
+  border-color: var(--asm-color-border);
+  color: var(--asm-color-text);
 }
 
 .button-secondary:hover {
-  background-color: var(--color-surface-hover);
+  background-color: var(--asm-color-surface-muted);
 }
 
 .button-danger {
-  background-color: var(--color-error);
+  background-color: var(--asm-color-danger-500);
   color: white;
 }
 
@@ -353,15 +353,15 @@ textarea.test-data-set-form-control {
 .checkbox-input {
   width: 1.125rem;
   height: 1.125rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   border-radius: 0.25rem;
-  background-color: var(--color-background);
+  background-color: var(--asm-color-bg);
   cursor: pointer;
 }
 
 .checkbox-input:checked {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 /* Loading state */
@@ -369,7 +369,7 @@ textarea.test-data-set-form-control {
   display: flex;
   justify-content: center;
   padding: 2rem;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 /* JSON editor */

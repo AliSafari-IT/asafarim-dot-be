@@ -203,6 +203,14 @@ parse_selection() {
 #############################################
 print_header "Pre-flight Checks"
 
+if [ -z "${NVM_DIR:-}" ]; then
+    export NVM_DIR="$HOME/.nvm"
+fi
+
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    . "$NVM_DIR/nvm.sh"
+fi
+
 need_bin pnpm
 need_bin node
 need_bin rsync
@@ -404,6 +412,8 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
         fi
     done
     
+    built_frontends=()
+
     # Build selected apps
     for idx in "${selected_frontends[@]}"; do
         key="${frontend_keys[$((idx-1))]}"
@@ -419,10 +429,21 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
             print_error "App directory not found: $app_dir"
             exit 1
         fi
+
+        if [ "$key" = "blog" ]; then
+            node_version=$(node -p "process.versions.node")
+            node_major=${node_version%%.*}
+            if [ "${node_major}" -lt 20 ]; then
+                print_warning "Skipping blog: requires Node.js >= 20.0 (found v${node_version})"
+                cd "$REPO_DIR"
+                continue
+            fi
+        fi
         
         cd "$app_dir"
         if pnpm build; then
             print_success "$key built successfully"
+            built_frontends+=("$idx")
         else
             print_error "Failed to build $key"
             exit 1
@@ -434,7 +455,11 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
     print_header "Deploying Frontend Applications"
     mkdir -p "$SITE_ROOT/apps"
     
-    for idx in "${selected_frontends[@]}"; do
+    if [ ${#built_frontends[@]} -eq 0 ]; then
+        print_warning "No frontend apps were built; skipping frontend deployment"
+    fi
+
+    for idx in "${built_frontends[@]}"; do
         key="${frontend_keys[$((idx-1))]}"
         build_path="${FRONTEND_APPS[$key]}"
         source_path="$REPO_DIR/$build_path"
@@ -501,7 +526,15 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
     if [ ${#dotnet_apis[@]} -gt 0 ]; then
         print_info "Restoring NuGet packages for .NET APIs..."
         cd "$REPO_DIR"
-        dotnet restore
+        if [ -f "$REPO_DIR/ASafariM.sln" ]; then
+            dotnet restore "$REPO_DIR/ASafariM.sln"
+        else
+            for idx in "${dotnet_apis[@]}"; do
+                key="${api_keys[$((idx-1))]}"
+                project_path="${DotNet_API_PROJECTS[$key]}"
+                dotnet restore "$REPO_DIR/$project_path"
+            done
+        fi
         print_success "NuGet packages restored"
         
         for idx in "${dotnet_apis[@]}"; do
@@ -510,6 +543,8 @@ if [ ${#selected_apis[@]} -gt 0 ]; then
             output_path="${API_OUTPUTS[$key]}"
             
             print_info "Building $key..."
+
+            dotnet restore "$REPO_DIR/$project_path" >/dev/null
             
             # Verify build succeeds
             if dotnet build "$REPO_DIR/$project_path" -c Release --no-restore; then
@@ -723,7 +758,7 @@ print_success "Selected components have been deployed successfully!"
 
 if [ ${#selected_frontends[@]} -gt 0 ]; then
     echo -e "${GREEN}Deployed frontend apps:${NC}"
-    for idx in "${selected_frontends[@]}"; do
+    for idx in "${built_frontends[@]:-}"; do
         key="${frontend_keys[$((idx-1))]}"
         echo -e "  ✓ ${key}"
     done

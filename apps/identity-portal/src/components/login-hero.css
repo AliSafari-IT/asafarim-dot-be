@@ -14,7 +14,7 @@
   background: linear-gradient(
     135deg,
     var(--color-neutral-50) 0%,
-    var(--color-background) 45%,
+    var(--asm-color-bg) 45%,
     var(--color-neutral-50) 100%
   );
   /* Optimized vertical padding */
@@ -30,8 +30,8 @@
   background: linear-gradient(
     135deg,
     var(--color-neutral-50) 0%,
-    var(--color-background) 45%,
-    var(--color-neutral-100) 100%
+    var(--asm-color-bg) 45%,
+    var(--asm-color-neutral-100) 100%
   );
 }
 
@@ -43,7 +43,7 @@
   background-image: 
     radial-gradient(
       circle at 25% 35%,
-      color-mix(in srgb, var(--color-primary) 3%, transparent) 0%,
+      color-mix(in srgb, var(--asm-color-brand-primary-600) 3%, transparent) 0%,
       transparent 45%
     ),
     radial-gradient(
@@ -60,7 +60,7 @@
   background-image: 
     radial-gradient(
       circle at 25% 35%,
-      color-mix(in srgb, var(--color-primary) 5%, transparent) 0%,
+      color-mix(in srgb, var(--asm-color-brand-primary-600) 5%, transparent) 0%,
       transparent 45%
     ),
     radial-gradient(
@@ -77,12 +77,12 @@
   inset: 0;
   background-image: 
     linear-gradient(
-      color-mix(in srgb, var(--color-neutral-400) 3%, transparent) 1px,
+      color-mix(in srgb, var(--asm-color-neutral-400) 3%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--color-neutral-400) 3%, transparent) 1px,
+      color-mix(in srgb, var(--asm-color-neutral-400) 3%, transparent) 1px,
       transparent 1px
     );
   background-size: 56px 56px;
@@ -100,12 +100,12 @@
 [data-theme="dark"] .login-hero::after {
   background-image: 
     linear-gradient(
-      color-mix(in srgb, var(--color-neutral-400) 6%, transparent) 1px,
+      color-mix(in srgb, var(--asm-color-neutral-400) 6%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--color-neutral-400) 6%, transparent) 1px,
+      color-mix(in srgb, var(--asm-color-neutral-400) 6%, transparent) 1px,
       transparent 1px
     );
   mask-image: radial-gradient(
@@ -198,19 +198,19 @@
   /* Subtle gradient for depth */
   background: linear-gradient(
     135deg,
-    var(--color-primary-100) 0%,
-    color-mix(in srgb, var(--color-primary-50) 95%, var(--color-white)) 100%
+    var(--asm-color-primary-100) 0%,
+    color-mix(in srgb, var(--asm-color-primary-50) 95%, var(--color-white)) 100%
   );
-  color: var(--color-primary-700);
+  color: var(--asm-color-brand-primary-700);
   padding: 0.625rem 1.25rem;
   border-radius: 100px;
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0.015em;
-  border: 1px solid color-mix(in srgb, var(--color-primary-700) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--asm-color-brand-primary-700) 8%, transparent);
   box-shadow: 
     0 1px 2px rgba(0, 0, 0, 0.03),
-    0 0 0 1px color-mix(in srgb, var(--color-primary) 5%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--asm-color-brand-primary-600) 5%, transparent);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -218,14 +218,14 @@
   transform: translateY(-1px);
   box-shadow: 
     0 2px 4px rgba(0, 0, 0, 0.06),
-    0 0 0 1px color-mix(in srgb, var(--color-primary) 8%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--asm-color-brand-primary-600) 8%, transparent);
 }
 
 .login-hero .hero-badge-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-primary-700);
+  background: var(--asm-color-brand-primary-700);
   animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -259,7 +259,7 @@
 
 /* Hero Subtitle - Refined secondary text */
 .login-hero .hero-subtitle {
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
   font-size: clamp(1.0625rem, 2.2vw, 1.25rem);
   line-height: 1.7; /* Generous for readability */
   font-weight: 400;
@@ -285,7 +285,7 @@
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
   font-size: 0.9375rem;
   line-height: 1.65;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -306,10 +306,10 @@
   /* Refined gradient */
   background: linear-gradient(
     135deg,
-    var(--color-primary-100) 0%,
-    var(--color-primary-200) 100%
+    var(--asm-color-primary-100) 0%,
+    var(--asm-color-primary-200) 100%
   );
-  color: var(--color-primary-700);
+  color: var(--asm-color-brand-primary-700);
   border-radius: 50%;
   font-size: 11px;
   font-weight: 700;
@@ -342,12 +342,12 @@
 .login-hero-media {
   /* Light theme: pure white card for maximum contrast */
   background: var(--color-white);
-  border: 1px solid color-mix(in srgb, var(--color-neutral-400) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--asm-color-neutral-400) 10%, transparent);
   border-radius: 20px; /* More pronounced for premium feel */
   padding: 2rem 2rem; /* Compact internal spacing */
   /* Multi-layer shadow for depth */
   box-shadow: 
-    0 0 0 1px color-mix(in srgb, var(--color-neutral-400) 5%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--asm-color-neutral-400) 5%, transparent),
     0 2px 4px rgba(0, 0, 0, 0.02),
     0 8px 16px rgba(0, 0, 0, 0.04),
     0 24px 48px rgba(0, 0, 0, 0.04);
@@ -359,10 +359,10 @@
 
 /* Dark theme - elevated card with stronger shadows */
 [data-theme="dark"] .login-hero-media {
-  background: var(--color-surface);
-  border: 1px solid color-mix(in srgb, var(--color-neutral-400) 15%, transparent);
+  background: var(--asm-color-surface);
+  border: 1px solid color-mix(in srgb, var(--asm-color-neutral-400) 15%, transparent);
   box-shadow: 
-    0 0 0 1px color-mix(in srgb, var(--color-neutral-400) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--asm-color-neutral-400) 8%, transparent),
     0 2px 4px rgba(0, 0, 0, 0.1),
     0 8px 16px rgba(0, 0, 0, 0.15),
     0 24px 48px rgba(0, 0, 0, 0.2);
@@ -371,7 +371,7 @@
 /* Elegant hover lift */
 .login-hero-media:hover {
   box-shadow: 
-    0 0 0 1px color-mix(in srgb, var(--color-neutral-400) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--asm-color-neutral-400) 8%, transparent),
     0 4px 8px rgba(0, 0, 0, 0.03),
     0 12px 24px rgba(0, 0, 0, 0.06),
     0 32px 64px rgba(0, 0, 0, 0.06);

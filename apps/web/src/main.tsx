@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./index.css";
 import { initI18n } from "@asafarim/shared-i18n";
 import App from "./App";
-import "./index.css";
 //import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";

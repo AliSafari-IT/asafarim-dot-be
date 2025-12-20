@@ -1,30 +1,30 @@
 .flt-dashboard-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
+  padding: var(--asm-space-6);
+  box-shadow: var(--asm-effect-shadow-sm);
   transition: all 0.2s ease;
 }
 
 .flt-dashboard-card:hover {
   border-color: var(--color-primary-light);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .flt-dashboard-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--asm-space-4);
+  padding-bottom: var(--asm-space-4);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .flt-dashboard-card-title-section {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--asm-space-2);
 }
 
 .flt-dashboard-card-icon {
@@ -36,15 +36,15 @@
 
 .flt-dashboard-card-title {
   margin: 0;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
+  font-size: var(--asm-font-size-lg);
+  font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-text);
 }
 
 .flt-dashboard-card-action {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
+  font-size: var(--asm-font-size-sm);
+  font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-brand-primary-600);
   text-decoration: none;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -58,5 +58,5 @@
 .flt-dashboard-card-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
 }

@@ -1,15 +1,15 @@
 .analytics-dashboard {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--spacing-lg);
-  color: var(--color-foreground);
+  padding: var(--asm-space-6);
+  color: var(--asm-color-text);
 }
 
 .analytics-dashboard h2 {
-  margin: 0 0 var(--spacing-xl) 0;
-  font-size: var(--global-font-size-2xl);
+  margin: 0 0 var(--asm-space-8) 0;
+  font-size: var(--asm-font-size-2xl);
   font-weight: var(--global-font-weight-bold);
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   text-align: center;
 }
 
@@ -17,34 +17,34 @@
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
+  gap: var(--asm-space-6);
   margin-bottom: var(--spacing-2xl);
 }
 
 .metric-card {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-lg);
-  padding: var(--spacing-xl);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
+  padding: var(--asm-space-8);
   text-align: center;
-  box-shadow: var(--global-shadow-md);
-  transition: all var(--global-transition-fast) ease;
+  box-shadow: var(--asm-effect-shadow-md);
+  transition: all var(--asm-motion-duration-fast) ease;
 }
 
 .metric-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--global-shadow-lg);
+  box-shadow: var(--asm-effect-shadow-lg);
 }
 
 .metric-value {
   font-size: var(--global-font-size-3xl);
   font-weight: var(--global-font-weight-bold);
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-sm);
+  color: var(--asm-color-brand-primary-600);
+  margin-bottom: var(--asm-space-2);
 }
 
 .metric-label {
-  font-size: var(--global-font-size-sm);
+  font-size: var(--asm-font-size-sm);
   color: var(--color-foreground-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -53,53 +53,53 @@
 
 /* Stats Section */
 .stats-section {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-lg);
-  padding: var(--spacing-xl);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
+  padding: var(--asm-space-8);
   margin-bottom: var(--spacing-2xl);
 }
 
 .stats-section h3 {
-  margin: 0 0 var(--spacing-lg) 0;
-  font-size: var(--global-font-size-xl);
+  margin: 0 0 var(--asm-space-6) 0;
+  font-size: var(--asm-font-size-xl);
   font-weight: var(--global-font-weight-semibold);
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
 }
 
 .stat-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-md);
+  padding: var(--asm-space-4);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
 }
 
 .stat-label {
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-weight: var(--global-font-weight-medium);
 }
 
 .stat-value {
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-weight: var(--global-font-weight-semibold);
-  font-size: var(--global-font-size-md);
+  font-size: var(--asm-font-size-md);
 }
 
 /* Companies Section */
 .companies-section {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-lg);
-  padding: var(--spacing-xl);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
+  padding: var(--asm-space-8);
   margin-bottom: var(--spacing-2xl);
 }
 
@@ -107,7 +107,7 @@
   margin: 0 0 20px 0;
   font-size: 20px;
   font-weight: 600;
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
 }
 
 .companies-list {
@@ -121,19 +121,19 @@
   align-items: center;
   gap: 16px;
   padding: 12px 16px;
-  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
-  border: 1px solid var(--card-border-color, var(--color-border));
+  background-color: var(--card-row-bg, var(--card-bg, var(--asm-color-bg)));
+  border: 1px solid var(--card-border-color, var(--asm-color-border));
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .company-item:hover {
   transform: translateX(4px);
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 .company-rank {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
   width: 24px;
   height: 24px;
@@ -146,14 +146,14 @@
 }
 
 .company-name {
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
   font-weight: 500;
 }
 
 /* Insights Section */
 .insights-section {
-  background-color: var(--card-bg, var(--color-background));
-  border: 1px solid var(--card-border-color, var(--color-border));
+  background-color: var(--card-bg, var(--asm-color-bg));
+  border: 1px solid var(--card-border-color, var(--asm-color-border));
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 32px;
@@ -163,7 +163,7 @@
   margin: 0 0 20px 0;
   font-size: 20px;
   font-weight: 600;
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
 }
 
 .insights-list {
@@ -172,8 +172,8 @@
 }
 
 .insight-card {
-  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
-  border: 1px solid var(--card-border-color, var(--color-border));
+  background-color: var(--card-row-bg, var(--card-bg, var(--asm-color-bg)));
+  border: 1px solid var(--card-border-color, var(--asm-color-border));
   border-radius: 8px;
   padding: 20px;
   transition: all 0.2s ease;
@@ -193,13 +193,13 @@
 
 .insight-header h4 {
   margin: 0;
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
   font-size: 18px;
   font-weight: 600;
 }
 
 .insight-status {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
@@ -227,7 +227,7 @@
 }
 
 .metric strong {
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
 }
 
 .recommended-action {
@@ -235,14 +235,14 @@
   border: 1px solid rgba(var(--color-primary-rgb, 59, 130, 246), 0.2);
   border-radius: 6px;
   padding: 12px;
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
   font-size: 14px;
 }
 
 /* Progress Section */
 .progress-section {
-  background-color: var(--card-bg, var(--color-background));
-  border: 1px solid var(--card-border-color, var(--color-border));
+  background-color: var(--card-bg, var(--asm-color-bg));
+  border: 1px solid var(--card-border-color, var(--asm-color-border));
   border-radius: 12px;
   padding: 24px;
 }
@@ -251,7 +251,7 @@
   margin: 0 0 20px 0;
   font-size: 20px;
   font-weight: 600;
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
 }
 
 .progress-bars {
@@ -267,21 +267,21 @@
 
 .progress-label {
   min-width: 120px;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   font-weight: 500;
 }
 
 .progress-bar {
   flex: 1;
   height: 8px;
-  background-color: var(--card-border-color, var(--color-border));
+  background-color: var(--card-border-color, var(--asm-color-border));
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -293,7 +293,7 @@
 .progress-text {
   min-width: 60px;
   text-align: right;
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
   font-weight: 600;
   font-size: 14px;
 }
@@ -303,8 +303,8 @@
 .error {
   text-align: center;
   padding: 40px;
-  background-color: var(--card-bg, var(--color-background));
-  border: 1px solid var(--card-border-color, var(--color-border));
+  background-color: var(--card-bg, var(--asm-color-bg));
+  border: 1px solid var(--card-border-color, var(--asm-color-border));
   border-radius: 12px;
   margin-top: 20px;
 }

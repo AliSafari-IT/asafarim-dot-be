@@ -59,7 +59,7 @@ section.what-is-building {
 
 .what-is-building .stat-label {
   font-size: .85rem;
-  color: var(--color-accent-700);
+  color: var(--asm-color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 600;
@@ -68,11 +68,11 @@ section.what-is-building {
 .what-is-building .stat-value {
   font-size: .85rem;
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .what-is-building .stat-value a {
-  color: var(--color-text);
+  color: var(--asm-color-text);
   text-decoration: none;
   transition: all 0.2s ease;
   display: inline-flex;
@@ -103,7 +103,7 @@ section.what-is-building {
   display: flex;
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   border-radius: var(--radius-lg);
   padding: 0.25rem;
 }
@@ -112,7 +112,7 @@ section.what-is-building {
   padding: 0.5rem 1rem;
   background: transparent;
   border: none;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
   cursor: pointer;
   border-radius: var(--radius-md);
   font-size: 0.95rem;
@@ -121,13 +121,13 @@ section.what-is-building {
 }
 
 .what-is-building .toggle-btn:hover {
-  color: var(--color-text);
+  color: var(--asm-color-text);
   background: rgba(255, 255, 255, 0.05);
 }
 
 .what-is-building .toggle-btn.active {
-  background: var(--color-primary);
-  color: var(--color-text);
+  background: var(--asm-color-brand-primary-500);
+  color: var(--asm-color-text);
 }
 
 /* Table styling */
@@ -135,7 +135,7 @@ section.what-is-building {
   overflow-x: auto;
   margin-bottom: var(--spacing-lg);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
 }
 
 .what-is-building .updates-table {
@@ -146,14 +146,14 @@ section.what-is-building {
 
 .what-is-building .updates-table thead {
   background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .what-is-building .updates-table th {
   padding: var(--spacing-md);
   text-align: left;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-size: 0.95rem;
   user-select: none;
 }
@@ -176,7 +176,7 @@ section.what-is-building {
 .what-is-building .updates-table td {
   padding: var(--spacing-md);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-size: 0.95rem;
 }
 
@@ -195,7 +195,7 @@ section.what-is-building {
 }
 
 .what-is-building .date-cell {
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
   white-space: nowrap;
   font-size: 0.9rem;
 }
@@ -207,7 +207,7 @@ section.what-is-building {
 .what-is-building .link-btn {
   background: transparent;
   border: none;
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-500);
   cursor: pointer;
   font-size: 1.1rem;
   padding: 0.25rem 0.5rem;
@@ -222,36 +222,36 @@ section.what-is-building {
 
 /* Build cards with improved dark mode */
 .what-is-building .build-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   transition: all 0.3s ease;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .what-is-building .build-card:hover {
   transform: translateY(-4px);
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
+  border-color: var(--asm-color-brand-primary-500);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .what-is-building .card-top h3 {
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: var(--spacing-xs);
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .what-is-building .card-top span {
   font-size: 0.9rem;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 /* Buttons with improved dark mode visibility */
 .what-is-building button {
-  background-color: var(--color-primary);
-  color: var(--color-text);
+  background-color: var(--asm-color-brand-primary-500);
+  color: var(--asm-color-text);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--radius-md);
@@ -261,7 +261,7 @@ section.what-is-building {
 }
 
 .what-is-building button:hover {
-  background-color: var(--color-primary-dark);
+  background-color: var(--asm-color-brand-primary-600);
   transform: translateY(-2px);
 }
 
@@ -269,10 +269,10 @@ section.what-is-building {
 .what-is-building .empty-state {
   text-align: center;
   padding: var(--spacing-xl);
-  background: var(--color-surface);
-  border: 2px dashed var(--color-border);
+  background: var(--asm-color-surface);
+  border: 2px dashed var(--asm-color-border);
   border-radius: var(--radius-xl);
-  color: var(--color-text);
+  color: var(--asm-color-text);
   margin: 0;
 }
 
@@ -283,7 +283,7 @@ section.what-is-building {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-lg);
-  color: var(--color-text);
+  color: var(--asm-color-text);
   margin: 0;
   padding: var(--spacing-lg) 0;
 }
@@ -292,8 +292,8 @@ section.what-is-building {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-primary);
+  border: 3px solid var(--asm-color-border);
+  border-top-color: var(--asm-color-brand-primary-500);
   animation: spin 1s linear infinite;
 }
 
@@ -343,8 +343,8 @@ section.what-is-building {
 
 /* Error banner */
 .what-is-building .error-banner {
-  background: var(--color-danger);
-  color: var(--color-text);
+  background: var(--asm-color-danger-500);
+  color: var(--asm-color-text);
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
   margin-bottom: var(--spacing-lg);

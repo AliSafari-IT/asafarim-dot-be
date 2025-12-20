@@ -9,8 +9,8 @@
 
 .section {
   position: relative;
-  background: var(--color-background);
-  transition: background 0.3s ease;
+  background: var(--asm-color-bg);
+  transition: background var(--asm-motion-duration-normal) var(--asm-motion-easing-standard);
 }
 
 /* ============================================
@@ -60,13 +60,13 @@
    ============================================ */
 
 .feature-card {
-  background: var(--color-white);
-  border: 1px solid color-mix(in srgb, var(--color-neutral-400) 10%, transparent);
+  background: var(--asm-color-surface);
+  border: 1px solid color-mix(in srgb, var(--asm-color-neutral-400) 10%, transparent);
   border-radius: 16px;
   padding: 2rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 
-    0 0 0 1px color-mix(in srgb, var(--color-neutral-400) 5%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--asm-color-neutral-400) 5%, transparent),
     0 2px 4px rgba(0, 0, 0, 0.02),
     0 4px 8px rgba(0, 0, 0, 0.03);
   text-decoration: none;
@@ -75,10 +75,10 @@
 
 /* Dark theme feature card */
 [data-theme="dark"] .feature-card {
-  background: var(--color-surface);
-  border-color: color-mix(in srgb, var(--color-neutral-400) 15%, transparent);
+  background: var(--asm-color-surface);
+  border-color: color-mix(in srgb, var(--asm-color-neutral-400) 15%, transparent);
   box-shadow: 
-    0 0 0 1px color-mix(in srgb, var(--color-neutral-400) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--asm-color-neutral-400) 8%, transparent),
     0 2px 4px rgba(0, 0, 0, 0.1),
     0 4px 8px rgba(0, 0, 0, 0.12);
 }
@@ -86,16 +86,16 @@
 .feature-card:hover {
   transform: translateY(-4px);
   box-shadow: 
-    0 0 0 1px color-mix(in srgb, var(--color-neutral-400) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--asm-color-neutral-400) 8%, transparent),
     0 4px 8px rgba(0, 0, 0, 0.04),
     0 12px 24px rgba(0, 0, 0, 0.08);
-  border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  border-color: color-mix(in srgb, var(--asm-color-brand-primary-500) 20%, transparent);
 }
 
 /* Dark theme hover */
 [data-theme="dark"] .feature-card:hover {
   box-shadow: 
-    0 0 0 1px color-mix(in srgb, var(--color-primary) 15%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--asm-color-brand-primary-500) 15%, transparent),
     0 4px 8px rgba(0, 0, 0, 0.15),
     0 12px 24px rgba(0, 0, 0, 0.2);
 }
@@ -103,14 +103,14 @@
 .feature-card-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-text);
   margin: 0 0 0.75rem 0;
   letter-spacing: -0.015em;
 }
 
 .feature-card-description {
   font-size: 0.9375rem;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-text-muted);
   line-height: 1.6;
   margin: 0;
 }
@@ -121,19 +121,14 @@
 
 .divider {
   padding: 3rem 0;
-  border-top: 1px solid color-mix(in srgb, var(--color-neutral-400) 10%, transparent);
+  border-top: 1px solid var(--asm-color-border);
   margin-top: 2rem;
-}
-
-/* Dark theme divider */
-[data-theme="dark"] .divider {
-  border-top-color: color-mix(in srgb, var(--color-neutral-400) 15%, transparent);
 }
 
 .divider h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--asm-color-text);
   margin: 0 0 1.5rem 0;
   letter-spacing: -0.015em;
 }
@@ -146,7 +141,7 @@
 
 .divider li {
   font-size: 1rem;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-text-muted);
   line-height: 1.8;
   margin-bottom: 0.75rem;
 }
@@ -180,7 +175,7 @@
 }
 
 .text-brand {
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-500);
 }
 
 .list-disc {

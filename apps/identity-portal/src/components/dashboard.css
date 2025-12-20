@@ -144,7 +144,7 @@
   font-size: 1.75rem;
   font-weight: 400;
   margin: 0 0 2.5rem 0;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   position: relative;
   text-align: center;
   letter-spacing: 0.5px;
@@ -157,7 +157,7 @@
   left: 0;
   width: calc(50% - 60px);
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-border), var(--color-primary));
+  background: linear-gradient(90deg, transparent, var(--asm-color-border), var(--asm-color-brand-primary-600));
   transform: translateY(-50%);
 }
 
@@ -168,7 +168,7 @@
   right: 0;
   width: calc(50% - 60px);
   height: 1px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-border), transparent);
+  background: linear-gradient(90deg, var(--asm-color-brand-primary-600), var(--asm-color-border), transparent);
   transform: translateY(-50%);
 }
 
@@ -209,7 +209,7 @@
   display: block;
   font-weight: 600;
   font-size: 0.75rem;
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -223,7 +223,7 @@
   left: 0;
   width: 30px;
   height: 2px;
-  background: var(--color-primary);
+  background: var(--asm-color-brand-primary-600);
   border-radius: 1px;
 }
 
@@ -234,7 +234,7 @@
   border-bottom: 2px solid rgba(var(--color-border-rgb), 0.2);
   border-radius: 0;
   background: transparent;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-size: 1.1rem;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -243,7 +243,7 @@
 
 .profile-input:focus {
   outline: none;
-  border-bottom-color: var(--color-primary);
+  border-bottom-color: var(--asm-color-brand-primary-600);
 }
 
 .actions-section {
@@ -499,13 +499,13 @@
 /* Ultra-high contrast support */
 @media (prefers-contrast: high) {
   .dashboard-card {
-    background: var(--color-background);
-    border: 2px solid var(--color-border);
+    background: var(--asm-color-bg);
+    border: 2px solid var(--asm-color-border);
   }
   
   .input-group {
-    background: var(--color-surface);
-    border: 2px solid var(--color-border);
+    background: var(--asm-color-surface);
+    border: 2px solid var(--asm-color-border);
   }
   
   .action-button {
@@ -521,7 +521,7 @@
 }
 
 .dash-header {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
   padding: 16px 0;
 }
 
@@ -529,12 +529,12 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .dash-subtitle {
   margin: 4px 0 0 0;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   opacity: 0.75;
   font-size: 0.95rem;
 }
@@ -558,7 +558,7 @@
 }
 
 .card {
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   border-radius: 12px;
   padding: 16px;
   background-color: rgba(0, 0, 0, 0.02);
@@ -573,7 +573,7 @@
   margin: 0 0 12px 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .field {
@@ -584,17 +584,17 @@
 
 .field label {
   font-size: 0.8rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   opacity: 0.8;
 }
 
 .field-input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   border-radius: 8px;
   background: transparent;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   box-sizing: border-box;
   display: block;
   max-width: 100%;
@@ -615,6 +615,6 @@
 /* Input focus style that doesn't spill outside the card */
 .field-input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary) 25%, transparent);
+  border-color: var(--asm-color-brand-primary-600);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--asm-color-brand-primary-600) 25%, transparent);
 }

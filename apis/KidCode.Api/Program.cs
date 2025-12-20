@@ -8,9 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
-var connectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Host=localhost;Port=5432;Database=kidcode;Username=postgres;Password=postgres";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' is not configured. Set ConnectionStrings__DefaultConnection (e.g. in /etc/asafarim/env)."
+    );
 
 builder.Services.AddDbContext<KidCodeDbContext>(options => options.UseNpgsql(connectionString));
 

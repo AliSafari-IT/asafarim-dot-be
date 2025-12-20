@@ -14,20 +14,20 @@
 }
 
 .ai-ui-resume-maker-input {
-    color: var(--color-foreground);
-    background-color: var(--color-background);
+    color: var(--asm-color-text);
+    background-color: var(--asm-color-bg);
     margin-top: 12px;
     width: 100%;
-    border-radius: var(--global-border-radius-sm);
+    border-radius: var(--asm-radius-sm);
     padding: 0.5rem;
     resize: both;
     max-width: 40rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--asm-color-border);
 }
 
 .ai-ui-resume-maker-input:focus {
     outline: none;
-    border-color: var(--color-primary);
+    border-color: var(--asm-color-brand-primary-600);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
@@ -40,11 +40,11 @@
 .ai-ui-resume-maker-buttons button {
     padding: 0.5rem 1rem;
     border: none;
-    border-radius: var(--global-border-radius-sm);
+    border-radius: var(--asm-radius-sm);
     cursor: pointer;
-    background-color: var(--color-primary);
+    background-color: var(--asm-color-brand-primary-600);
     color: white;
-    transition: var(--global-transition-fast);
+    transition: var(--asm-motion-duration-fast);
 }
 
 .ai-ui-resume-maker-buttons button:hover {
@@ -71,12 +71,12 @@
     width: 100%;
     height: 200px;
     margin-top: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--global-border-radius-sm);
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-radius-sm);
     padding: 0.5rem;
     padding-right: 3rem; /* room for copy button inside */
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--asm-color-bg);
+    color: var(--asm-color-text);
 }
 
 /* Form styles */
@@ -85,10 +85,10 @@
   max-width: 900px;
   margin: 0 auto 1.5rem auto;
   padding: 1rem 1rem 1.25rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-lg);
-  box-shadow: var(--global-shadow-sm);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .ai-ui-resume-maker-form-header { 
@@ -120,7 +120,7 @@
 
 .ai-ui-resume-maker-form-field label { 
   font-size: .9rem; 
-  color: var(--color-primary-800); 
+  color: var(--asm-color-primary-800); 
   font-weight: 500;
   margin-bottom: .25rem;
   text-align: left;
@@ -134,17 +134,17 @@
 
 /* Input polish */
 .ai-ui-resume-maker-input {
-  border: 1px solid var(--color-border);
-  background: var(--color-background);
-  color: var(--color-foreground);
+  border: 1px solid var(--asm-color-border);
+  background: var(--asm-color-bg);
+  color: var(--asm-color-text);
   padding: .625rem .75rem;
-  border-radius: var(--global-border-radius-md);
+  border-radius: var(--asm-radius-md);
   outline: none;
-  transition: box-shadow var(--global-transition-fast), border-color var(--global-transition-fast);
+  transition: box-shadow var(--asm-motion-duration-fast), border-color var(--asm-motion-duration-fast);
 }
 
 .ai-ui-resume-maker-input:focus {
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-600);
   box-shadow: 0 0 0 3px rgba(59,130,246,.2);
 }
 
@@ -176,7 +176,7 @@
 }
 
 .ai-ui-resume-maker-button:focus {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--asm-color-brand-primary-600);
   outline-offset: 2px;
 }
 
@@ -186,15 +186,15 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 1.5rem;
-    background: var(--color-background);
-    color: var(--color-foreground);
-    border: 1px solid var(--color-border);
-    border-radius: var(--global-border-radius-lg);
-    box-shadow: var(--global-shadow-sm);
+    background: var(--asm-color-bg);
+    color: var(--asm-color-text);
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-radius-lg);
+    box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .ai-ui-resume-maker-resume-header {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--asm-color-border);
     margin-bottom: 1rem;
     padding-bottom: .5rem;
 }
@@ -205,7 +205,7 @@
 }
 
 .ai-ui-resume-maker-resume-contact {
-    color: var(--color-foreground);
+    color: var(--asm-color-text);
 }
 
 .ai-ui-resume-maker-resume-list {
@@ -226,7 +226,7 @@
 }
 
 .ai-ui-resume-maker-resume-project-desc { 
-  color: var(--color-foreground); 
+  color: var(--asm-color-text); 
 }
 
 .ai-ui-resume-maker-two-col { 
@@ -254,19 +254,19 @@
   z-index: 1;
   padding: 0.35rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-foreground);
+  border: 1px solid var(--asm-color-border);
+  background: var(--asm-color-surface);
+  color: var(--asm-color-text);
   font-size: 0.85rem;
   line-height: 1;
   cursor: pointer;
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
   opacity: 0;
   transform: translateY(-4px);
   transition: opacity 0.12s ease, transform 0.12s ease, background 0.2s ease;
 }
 .ai-ui-copy-btn:hover {
-  background: var(--color-surface);
+  background: var(--asm-color-surface);
 }
 .ai-ui-copyable:focus-within .ai-ui-copy-btn {
   opacity: 1;

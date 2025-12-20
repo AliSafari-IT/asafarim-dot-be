@@ -12,7 +12,7 @@
   text-align: center;
   padding: 2rem;
   font-size: 1.1rem;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 /* Section styles */
@@ -23,10 +23,10 @@
 .section-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--asm-color-brand-primary-500);
 }
 
 /* Grid layout for items */
@@ -54,14 +54,14 @@
 
 /* Dark mode support */
 [data-theme="dark"] .variant-items-display {
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 [data-theme="dark"] .section-title {
-  color: var(--color-text);
-  border-color: var(--color-primary);
+  color: var(--asm-color-text);
+  border-color: var(--asm-color-brand-primary-500);
 }
 
 [data-theme="dark"] .loading-state {
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }

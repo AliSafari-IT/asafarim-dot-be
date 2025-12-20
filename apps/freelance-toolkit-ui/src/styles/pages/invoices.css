@@ -2,19 +2,19 @@
 .flt-invoices-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
 }
 
 .flt-invoices-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--asm-space-6);
 }
 
 .flt-invoices-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--asm-font-size-2xl);
+  font-weight: var(--asm-font-weight-700);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -22,25 +22,25 @@
 .flt-invoices-loading {
   text-align: center;
   padding: var(--spacing-2xl);
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
 }
 
 .flt-invoices-empty {
   text-align: center;
   padding: var(--spacing-2xl);
   background: var(--color-background-secondary);
-  border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
+  border-radius: var(--asm-radius-md);
+  color: var(--asm-color-text-muted);
 }
 
 .flt-invoices-success {
   position: relative;
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+  padding: var(--asm-space-4);
+  margin-bottom: var(--asm-space-6);
   background: var(--color-success-50);
   color: var(--color-success-700);
   border: 1px solid var(--color-success-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--asm-radius-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -49,10 +49,10 @@
 .flt-invoices-success-close {
   background: none;
   border: none;
-  font-size: var(--font-size-xl);
+  font-size: var(--asm-font-size-xl);
   color: var(--color-success-700);
   cursor: pointer;
-  padding: 0 var(--spacing-sm);
+  padding: 0 var(--asm-space-2);
   opacity: 0.7;
   transition: opacity 0.2s;
 }
@@ -64,8 +64,8 @@
 .flt-invoices-table-wrapper {
   overflow-x: auto;
   background: var(--color-background-primary);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--asm-radius-md);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .flt-invoices-table {
@@ -78,17 +78,17 @@
 }
 
 .flt-invoices-table th {
-  padding: var(--spacing-md);
+  padding: var(--asm-space-4);
   text-align: left;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-text-muted);
+  font-size: var(--asm-font-size-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .flt-invoices-table td {
-  padding: var(--spacing-md);
+  padding: var(--asm-space-4);
   border-top: 1px solid var(--color-border-light);
   color: var(--color-text-primary);
 }
@@ -98,21 +98,21 @@
 }
 
 .flt-invoices-number {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary-600);
+  font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-brand-primary-600);
 }
 
 .flt-invoices-amount {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--asm-font-weight-600);
   font-family: var(--font-mono, monospace);
 }
 
 .flt-invoices-badge {
   display: inline-block;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  padding: var(--asm-space-1) var(--asm-space-2);
+  border-radius: var(--asm-radius-sm);
+  font-size: var(--asm-font-size-xs);
+  font-weight: var(--asm-font-weight-600);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -123,8 +123,8 @@
 }
 
 .flt-invoices-badge--sent {
-  background: var(--color-primary-100);
-  color: var(--color-primary-700);
+  background: var(--asm-color-primary-100);
+  color: var(--asm-color-brand-primary-700);
 }
 
 .flt-invoices-badge--paid {
@@ -144,26 +144,26 @@
 
 .flt-invoices-actions {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--asm-space-2);
 }
 
 .flt-invoices-btn {
-  padding: var(--spacing-xs) var(--spacing-md);
+  padding: var(--asm-space-1) var(--asm-space-4);
   border: none;
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  border-radius: var(--asm-radius-sm);
+  font-size: var(--asm-font-size-sm);
+  font-weight: var(--asm-font-weight-500);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .flt-invoices-btn--send {
-  background: var(--color-primary-600);
+  background: var(--asm-color-brand-primary-600);
   color: white;
 }
 
 .flt-invoices-btn--send:hover:not(:disabled) {
-  background: var(--color-primary-700);
+  background: var(--asm-color-brand-primary-700);
 }
 
 .flt-invoices-btn--send:disabled {

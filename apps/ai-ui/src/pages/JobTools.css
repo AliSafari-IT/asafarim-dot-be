@@ -3,7 +3,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   font-family: var(--global-font-family-base);
   line-height: 1.6;
 }
@@ -16,7 +16,7 @@
 .ai-ui-job-tools-header h1 {
   font-size: 2.5rem;
   margin: 0 0 0.5rem;
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
   font-weight: 700;
 }
 
@@ -35,7 +35,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .ai-ui-form-label .ai-ui-required {
@@ -53,12 +53,12 @@
 .ai-ui-form-textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-md);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
   font-size: 1rem;
-  transition: var(--global-transition-fast);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  transition: var(--asm-motion-duration-fast);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
 }
 
 .ai-ui-form-textarea {
@@ -69,7 +69,7 @@
 .ai-ui-form-input:focus,
 .ai-ui-form-textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-600);
   box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
 }
 
@@ -87,11 +87,11 @@
   justify-content: center;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: var(--global-border-radius-md);
+  border-radius: var(--asm-radius-md);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--global-transition-fast);
+  transition: var(--asm-motion-duration-fast);
   text-decoration: none;
 }
 
@@ -101,7 +101,7 @@
 }
 
 .ai-ui-btn-primary {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
 }
 
@@ -111,8 +111,8 @@
 }
 
 .ai-ui-btn-secondary {
-  background-color: var(--color-surface);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-surface);
+  color: var(--asm-color-text);
 }
 
 .ai-ui-btn-secondary:not(:disabled):hover {
@@ -122,7 +122,7 @@
 
 .ai-ui-btn-text {
   background: none;
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
   padding: 0.5rem 1rem;
 }
 
@@ -150,7 +150,7 @@
 }
 
 .ai-ui-btn-secondary.loading::after {
-  border-top-color: var(--color-primary);
+  border-top-color: var(--asm-color-brand-primary-600);
 }
 
 @keyframes spin {
@@ -162,7 +162,7 @@
   background-color: #ffebee;
   color: var(--color-canceled);
   padding: 1rem;
-  border-radius: var(--global-border-radius-md);
+  border-radius: var(--asm-radius-md);
   margin: 1.5rem 0;
   display: flex;
   align-items: center;
@@ -175,8 +175,8 @@
 
 /* Results Section */
 .ai-ui-results-section {
-  background-color: var(--color-surface);
-  border-radius: var(--global-border-radius-md);
+  background-color: var(--asm-color-surface);
+  border-radius: var(--asm-radius-md);
   padding: 2rem;
   margin: 2rem 0;
   text-align: center;
@@ -195,14 +195,14 @@
   height: 120px;
   border-radius: 50%;
   background: conic-gradient(
-    var(--color, var(--color-success)) calc(var(--score, 0) * 1%),
+    var(--color, var(--asm-color-success-500)) calc(var(--score, 0) * 1%),
     #e0e0e0 0
   );
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .ai-ui-score-circle::before {
@@ -217,7 +217,7 @@
 .ai-ui-score-value {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--color, var(--color-success));
+  color: var(--color, var(--asm-color-success-500));
   position: relative;
   z-index: 1;
 }
@@ -231,11 +231,11 @@
 
 /* Extracted Details */
 .ai-ui-extracted-details {
-  background-color: var(--color-background);
-  border-radius: var(--global-border-radius-md);
+  background-color: var(--asm-color-bg);
+  border-radius: var(--asm-radius-md);
   padding: 2rem;
   margin: 2rem 0;
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .ai-ui-details-grid {
@@ -268,7 +268,7 @@
 
 .ai-ui-detail-item li::before {
   content: '•';
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
   margin-right: 0.5rem;
   font-size: 1.2em;
   line-height: 0;
@@ -291,11 +291,11 @@
 
 /* Cover Letter Section */
 .ai-ui-cover-letter-section {
-  background-color: var(--color-background);
-  border-radius: var(--global-border-radius-md);
+  background-color: var(--asm-color-bg);
+  border-radius: var(--asm-radius-md);
   padding: 2rem;
   margin: 2rem 0;
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .ai-ui-section-header {
@@ -310,9 +310,9 @@
   white-space: pre-wrap;
   text-align: left;
   padding: 1rem;
-  background-color: var(--color-surface);
-  border-radius: var(--global-border-radius-md);
-  border: 1px solid var(--color-border);
+  background-color: var(--asm-color-surface);
+  border-radius: var(--asm-radius-md);
+  border: 1px solid var(--asm-color-border);
 }
 
 /* Responsive Adjustments */

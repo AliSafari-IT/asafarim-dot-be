@@ -319,7 +319,7 @@ public class CoreDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.ToTable("Projects", "public");
+            entity.ToTable("ResumeProjects", "public");
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(2000);
             entity.Property(e => e.Link).HasMaxLength(500);

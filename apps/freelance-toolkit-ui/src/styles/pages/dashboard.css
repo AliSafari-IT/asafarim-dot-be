@@ -5,18 +5,18 @@
 }
 
 .flt-dashboard-header {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--asm-space-8);
 }
 
 .flt-dashboard-title {
   margin: 0;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-size: var(--text-3xl);
   font-weight: 700;
 }
 
 .flt-dashboard-subtitle {
-  margin: var(--space-2) 0 0 0;
+  margin: var(--asm-space-2) 0 0 0;
   color: var(--text-muted);
   font-size: var(--text-base);
 }
@@ -25,11 +25,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--gap-lg);
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--asm-space-8);
 }
 
 .flt-dashboard-stat-card {
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
   background-color: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-color);
@@ -44,7 +44,7 @@
 .flt-dashboard-stat-label {
   font-size: var(--text-sm);
   color: var(--text-muted);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--asm-space-2);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -52,8 +52,8 @@
 .flt-dashboard-stat-value {
   font-size: var(--text-3xl);
   font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: var(--space-2);
+  color: var(--asm-color-text);
+  margin-bottom: var(--asm-space-2);
 }
 
 .flt-dashboard-stat-change {
@@ -70,28 +70,28 @@
 }
 
 .flt-dashboard-section {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--asm-space-8);
 }
 
 .flt-dashboard-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--asm-space-6);
 }
 
 .flt-dashboard-section-title {
   margin: 0;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-size: var(--text-2xl);
   font-weight: 600;
 }
 
 .flt-dashboard-section-action {
-  padding: var(--space-2) var(--space-4);
+  padding: var(--asm-space-2) var(--asm-space-4);
   border: 1px solid var(--border-color);
   background-color: transparent;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   border-radius: var(--border-radius-md);
   cursor: pointer;
   font-size: var(--text-sm);
@@ -104,7 +104,7 @@
 }
 
 .flt-dashboard-chart-container {
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
   background-color: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-color);
@@ -112,14 +112,14 @@
 }
 
 .flt-dashboard-activity-list {
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
   background-color: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-color);
 }
 
 .flt-dashboard-activity-item {
-  padding: var(--spacing-md);
+  padding: var(--asm-space-4);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   gap: var(--gap-md);
@@ -141,37 +141,37 @@
 
 .flt-dashboard-activity-title {
   margin: 0;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-weight: 600;
   font-size: var(--text-base);
 }
 
 .flt-dashboard-activity-description {
-  margin: var(--space-1) 0 0 0;
+  margin: var(--asm-space-1) 0 0 0;
   color: var(--text-muted);
   font-size: var(--text-sm);
 }
 
 .flt-dashboard-activity-time {
-  margin: var(--space-1) 0 0 0;
+  margin: var(--asm-space-1) 0 0 0;
   color: var(--text-muted);
   font-size: var(--text-xs);
 }
 
 .flt-dashboard-empty {
   text-align: center;
-  padding: var(--spacing-xl);
+  padding: var(--asm-space-8);
   color: var(--text-muted);
 }
 
 .flt-dashboard-loading {
   text-align: center;
-  padding: var(--spacing-xl);
+  padding: var(--asm-space-8);
   color: var(--text-muted);
 }
 
 .flt-dashboard-error {
-  padding: var(--space-4);
+  padding: var(--asm-space-4);
   background-color: rgba(239, 68, 68, 0.1);
   color: var(--error-color);
   border-radius: var(--border-radius-md);

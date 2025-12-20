@@ -2,6 +2,7 @@
   "name": "@asafarim/testrunner",
   "version": "1.2.0",
   "description": "TestCafe test runner for Test Automation Platform",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",

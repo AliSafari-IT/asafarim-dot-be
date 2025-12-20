@@ -1,41 +1,41 @@
 .exec-container {
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--asm-radius-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .exec-content {
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
 }
 
 .exec-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--asm-space-4);
 }
 
 .exec-title {
-  font-size: var(--font-size-lg);
+  font-size: var(--asm-font-size-lg);
 }
 
 .exec-runid {
-  font-size: var(--font-size-sm);
+  font-size: var(--asm-font-size-sm);
 }
 
 .exec-progress-section {
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--asm-space-4);
 }
 
 .exec-progress-info {
   display: flex;
   justify-content: space-between;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  margin-bottom: var(--spacing-sm);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
+  margin-bottom: var(--asm-space-2);
 }
 
 .exec-progress-percent {
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--asm-font-weight-500);
 }
 
 .exec-progress-bar {
@@ -57,16 +57,16 @@
   grid-template-columns: repeat(3, 1fr); */
   display: flex;
   flex-direction: row;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-md);
+  gap: var(--asm-space-1);
+  margin-bottom: var(--asm-space-4);
     width: 100%;
 
 }
 
 .exec-card {
-  border-radius: var(--radius-sm);
-  padding: var(--spacing-sm);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--asm-radius-sm);
+  padding: var(--asm-space-2);
+  box-shadow: var(--asm-effect-shadow-sm);
   transition: all 0.2s ease;
   width: 100%;
 }
@@ -90,8 +90,8 @@
 .exec-card-header {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--spacing-xs);
+  font-size: var(--asm-font-size-sm);
+  margin-bottom: var(--asm-space-1);
 }
 
 .exec-icon {
@@ -170,13 +170,13 @@
 
   .exec-grid {
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--asm-space-1);
     align-items: center;
     justify-content: center;
   }
 
   .exec-card {
-    padding: var(--spacing-xs);
+    padding: var(--asm-space-1);
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
@@ -186,8 +186,8 @@
   }
 
   .exec-card-header {
-    font-size: var(--font-size-xs);
-    margin-bottom: var(--spacing-xs);
+    font-size: var(--asm-font-size-xs);
+    margin-bottom: var(--asm-space-1);
   }
 
   .exec-icon {
@@ -196,7 +196,7 @@
   }
 
   .exec-count {
-    font-size: var(--font-size-xs);
+    font-size: var(--asm-font-size-xs);
   }
 }
 

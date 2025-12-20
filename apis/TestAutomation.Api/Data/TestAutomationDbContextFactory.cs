@@ -18,8 +18,12 @@ public class TestAutomationDbContextFactory : IDesignTimeDbContextFactory<TestAu
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<TestAutomationDbContext>();
-        var connStr = configuration.GetConnectionString("DefaultConnection")
-            ?? "Host=localhost;Database=TestAutomation;Username=postgres;Password=postgres";
+        var connStr = configuration.GetConnectionString("TestAutomationConnection")
+            ?? configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrWhiteSpace(connStr))
+            throw new InvalidOperationException(
+                "Connection string is not configured. Set ConnectionStrings__TestAutomationConnection (or ConnectionStrings__DefaultConnection)."
+            );
 
         optionsBuilder.UseNpgsql(connStr);
         return new TestAutomationDbContext(optionsBuilder.Options);

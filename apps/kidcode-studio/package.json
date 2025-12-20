@@ -11,7 +11,7 @@
     },
     "dependencies": {
         "@asafarim/shared-ui-react": "workspace:*",
-        "@asafarim/design-tokens": "^0.3.5",
+        "@asafarim/design-tokens": "^0.3.6",
         "@asafarim/react-themes": "^1.7.0",
         "idb": "^8.0.0",
         "lucide-react": "^0.460.0",

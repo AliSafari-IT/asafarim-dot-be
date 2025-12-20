@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
   background: linear-gradient(
     135deg,
     var(--bg-primary) 0%,
@@ -16,7 +16,7 @@
 .flt-login-card {
   width: 100%;
   max-width: 400px;
-  padding: var(--spacing-xl);
+  padding: var(--asm-space-8);
   background-color: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-color);
@@ -25,18 +25,18 @@
 
 .flt-login-header {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--asm-space-8);
 }
 
 .flt-login-title {
   margin: 0;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-size: var(--text-2xl);
   font-weight: 700;
 }
 
 .flt-login-subtitle {
-  margin: var(--space-2) 0 0 0;
+  margin: var(--asm-space-2) 0 0 0;
   color: var(--text-muted);
   font-size: var(--text-base);
 }
@@ -44,11 +44,11 @@
 .flt-login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
 }
 
 .flt-login-error {
-  padding: var(--space-3);
+  padding: var(--asm-space-3);
   background-color: rgba(239, 68, 68, 0.1);
   color: var(--error-color);
   border-radius: var(--border-radius-md);
@@ -59,21 +59,21 @@
 .flt-login-input-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--asm-space-2);
 }
 
 .flt-login-label {
   font-size: var(--text-sm);
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .flt-login-input {
-  padding: var(--space-3);
+  padding: var(--asm-space-3);
   border-radius: var(--border-radius-md);
   border: 1px solid var(--border-color);
   background-color: var(--bg-primary);
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-family: inherit;
   font-size: var(--text-base);
   transition: border-color 0.2s;
@@ -90,7 +90,7 @@
 }
 
 .flt-login-button {
-  padding: var(--space-3);
+  padding: var(--asm-space-3);
   border: none;
   background-color: var(--color-brand);
   color: var(--color-primary-inverse);
@@ -100,7 +100,7 @@
   font-family: inherit;
   font-size: var(--text-base);
   transition: all 0.2s;
-  margin-top: var(--space-2);
+  margin-top: var(--asm-space-2);
 }
 
 .flt-login-button:hover:not(:disabled) {
@@ -114,8 +114,8 @@
 
 .flt-login-footer {
   text-align: center;
-  margin-top: var(--spacing-lg);
-  padding-top: var(--spacing-lg);
+  margin-top: var(--asm-space-6);
+  padding-top: var(--asm-space-6);
   border-top: 1px solid var(--border-color);
 }
 
@@ -138,6 +138,6 @@
 
 .flt-login-loading {
   text-align: center;
-  padding: var(--spacing-xl);
+  padding: var(--asm-space-8);
   color: var(--text-muted);
 }

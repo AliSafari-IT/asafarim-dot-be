@@ -1,10 +1,10 @@
 import createTestCafe from 'testcafe';
 import { nanoid } from 'nanoid';
-import { TestRunRequest, TestRunStatus, TestCase } from './types';
-import { logger } from '../utils/logger';
+import { TestRunRequest, TestRunStatus, TestCase } from './types.js';
+import { logger } from '../utils/logger.js';
 import fs from 'fs/promises';
 import path from 'path';
-import { SignalRService } from './SignalRService';
+import { SignalRService } from './SignalRService.js';
 
 // Shape of the API response for GET /api/test-suites/{id}/testcafe-file
 interface TestCafeFileResponse {

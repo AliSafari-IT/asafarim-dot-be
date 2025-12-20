@@ -1,24 +1,24 @@
 .notification-container {
   position: fixed;
-  top: var(--spacing-lg, 1.5rem);
-  right: var(--spacing-lg, 1.5rem);
+  top: var(--asm-space-6, 1.5rem);
+  right: var(--asm-space-6, 1.5rem);
   z-index: var(--z-notification, 1000);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md, 1rem);
+  gap: var(--asm-space-4, 1rem);
   max-width: 22rem;
   width: 100%;
   pointer-events: none;
 }
 
 .notification {
-  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.25rem);
-  border-radius: var(--global-border-radius-md, 0.5rem);
-  box-shadow: var(--global-shadow-lg);
+  padding: var(--asm-space-4, 1rem) var(--asm-space-6, 1.25rem);
+  border-radius: var(--asm-radius-md, 0.5rem);
+  box-shadow: var(--asm-effect-shadow-lg);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--spacing-md, 1rem);
+  gap: var(--asm-space-4, 1rem);
   animation: slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   backdrop-filter: blur(8px);
   border: 1px solid transparent;
@@ -27,26 +27,26 @@
 }
 
 .notification-success {
-  background-color: var(--color-success);
-  color: var(--color-white);
+  background-color: var(--asm-color-success-500);
+  color: white;
   border-color: var(--color-success-500);
 }
 
 .notification-error {
-  background-color: var(--color-error);
-  color: var(--color-white);
+  background-color: var(--asm-color-danger-500);
+  color: white;
   border-color: var(--color-error-500);
 }
 
 .notification-warning {
-  background-color: var(--color-warning);
+  background-color: var(--asm-color-warning-500);
   color: var(--color-neutral-900);
   border-color: var(--color-warning-500);
 }
 
 .notification-info {
   background-color: var(--color-info);
-  color: var(--color-white);
+  color: white;
   border-color: var(--color-info-muted);
 }
 
@@ -56,8 +56,8 @@
 
 .notification-message {
   margin: 0;
-  font-size: var(--global-font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-size: var(--asm-font-size-sm, 0.875rem);
+  font-weight: var(--asm-font-weight-500, 500);
   line-height: var(--line-height-relaxed, 1.625);
 }
 
@@ -65,11 +65,11 @@
   background: transparent;
   border: none;
   color: currentColor;
-  font-size: var(--global-font-size-xl, 1.25rem);
+  font-size: var(--asm-font-size-xl, 1.25rem);
   cursor: pointer;
-  padding: var(--spacing-xs, 0.25rem);
+  padding: var(--asm-space-1, 0.25rem);
   line-height: 1;
-  border-radius: var(--global-border-radius-sm, 0.25rem);
+  border-radius: var(--asm-radius-sm, 0.25rem);
   transition: all 0.2s ease;
   opacity: 0.8;
   flex-shrink: 0;
@@ -117,17 +117,17 @@
 
 /* Dark theme adjustments */
 [data-theme="dark"] .notification {
-  box-shadow: var(--global-shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: var(--asm-effect-shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="dark"] .notification-success {
-  background-color: var(--color-success-50);
+  background-color: var(--asm-color-success-50);
   color: var(--color-success-950);
   border-color: var(--color-success-500);
 }
 
 [data-theme="dark"] .notification-error {
-  background-color: var(--color-error-50);
+  background-color: var(--asm-color-danger-50);
   color: var(--color-error-950);
   border-color: var(--color-error-500);
 }
@@ -140,7 +140,7 @@
 
 [data-theme="dark"] .notification-info {
   background-color: var(--color-info-muted);
-  color: var(--color-white);
+  color: white;
   border-color: var(--color-info);
 }
 
@@ -151,9 +151,9 @@
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .notification-container {
-    top: var(--spacing-sm, 0.5rem);
-    right: var(--spacing-sm, 0.5rem);
-    left: var(--spacing-sm, 0.5rem);
+    top: var(--asm-space-2, 0.5rem);
+    right: var(--asm-space-2, 0.5rem);
+    left: var(--asm-space-2, 0.5rem);
     max-width: none;
   }
 }

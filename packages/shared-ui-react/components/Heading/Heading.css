@@ -2,7 +2,7 @@
 .heading {
   margin: 0;
   font-family: var(--font-family-heading, 'Poppins', sans-serif);
-  font-weight: var(--font-weight-bold, 700);
+  font-weight: var(--asm-font-weight-700, 700);
   line-height: var(--line-height-md, 1.5);
   color: var(--color-foreground, #1e293b);
 }
@@ -11,52 +11,52 @@
 .heading--h1,
 .heading--display {
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: var(--font-weight-bold, 700);
+  font-weight: var(--asm-font-weight-700, 700);
   line-height: var(--line-height-tight, 1.25);
   letter-spacing: -0.025em;
 }
 
 .heading--h2 {
   font-size: clamp(1.5rem, 4vw, 2.25rem);
-  font-weight: var(--font-weight-bold, 700);
+  font-weight: var(--asm-font-weight-700, 700);
   line-height: var(--line-height-tight, 1.25);
   letter-spacing: -0.025em;
 }
 
 .heading--h3 {
   font-size: clamp(1.25rem, 3vw, 1.875rem);
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--asm-font-weight-600, 600);
   line-height: var(--line-height-normal, 1.5);
 }
 
 .heading--h4 {
   font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--asm-font-weight-600, 600);
   line-height: var(--line-height-normal, 1.5);
 }
 
 .heading--h5 {
   font-size: clamp(1rem, 2vw, 1.25rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--asm-font-weight-500, 500);
   line-height: var(--line-height-normal, 1.5);
 }
 
 .heading--h6 {
-  font-size: var(--font-size-md, 1rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-size: var(--asm-font-size-md, 1rem);
+  font-weight: var(--asm-font-weight-500, 500);
   line-height: var(--line-height-normal, 1.5);
 }
 
 .heading--subtitle {
-  font-size: var(--font-size-lg, 1.125rem);
-  font-weight: var(--font-weight-regular, 400);
+  font-size: var(--asm-font-size-lg, 1.125rem);
+  font-weight: var(--asm-font-weight-400, 400);
   line-height: var(--line-height-relaxed, 1.75);
   color: var(--color-foreground-muted, #64748b);
 }
 
 .heading--caption {
-  font-size: var(--font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-regular, 400);
+  font-size: var(--asm-font-size-sm, 0.875rem);
+  font-weight: var(--asm-font-weight-400, 400);
   line-height: var(--line-height-normal, 1.5);
   color: var(--color-foreground-muted, #64748b);
   text-transform: uppercase;
@@ -78,19 +78,19 @@
 
 /* Font weights */
 .heading--weight-regular {
-  font-weight: var(--font-weight-regular, 400);
+  font-weight: var(--asm-font-weight-400, 400);
 }
 
 .heading--weight-medium {
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--asm-font-weight-500, 500);
 }
 
 .heading--weight-semibold {
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--asm-font-weight-600, 600);
 }
 
 .heading--weight-bold {
-  font-weight: var(--font-weight-bold, 700);
+  font-weight: var(--asm-font-weight-700, 700);
 }
 
 /* Text colors */
@@ -133,23 +133,23 @@
 }
 
 .heading--margin-bottom-xs {
-  margin-bottom: var(--spacing-xs, 0.25rem);
+  margin-bottom: var(--asm-space-1, 0.25rem);
 }
 
 .heading--margin-bottom-sm {
-  margin-bottom: var(--spacing-sm, 0.5rem);
+  margin-bottom: var(--asm-space-2, 0.5rem);
 }
 
 .heading--margin-bottom-md {
-  margin-bottom: var(--spacing-md, 1rem);
+  margin-bottom: var(--asm-space-4, 1rem);
 }
 
 .heading--margin-bottom-lg {
-  margin-bottom: var(--spacing-lg, 1.5rem);
+  margin-bottom: var(--asm-space-6, 1.5rem);
 }
 
 .heading--margin-bottom-xl {
-  margin-bottom: var(--spacing-xl, 2rem);
+  margin-bottom: var(--asm-space-8, 2rem);
 }
 
 /* Text transformations */
@@ -167,19 +167,19 @@
 
 /* Custom sizes (overrides variant sizing) */
 .heading--size-xs {
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--asm-font-size-sm, 0.875rem);
 }
 
 .heading--size-sm {
-  font-size: var(--font-size-md, 1rem);
+  font-size: var(--asm-font-size-md, 1rem);
 }
 
 .heading--size-md {
-  font-size: var(--font-size-lg, 1.125rem);
+  font-size: var(--asm-font-size-lg, 1.125rem);
 }
 
 .heading--size-lg {
-  font-size: var(--font-size-xl, 1.5rem);
+  font-size: var(--asm-font-size-xl, 1.5rem);
 }
 
 .heading--size-xl {
@@ -235,24 +235,24 @@
   }
 
   .heading--h4 {
-    font-size: var(--font-size-lg, 1.125rem);
+    font-size: var(--asm-font-size-lg, 1.125rem);
   }
 
   .heading--h5 {
-    font-size: var(--font-size-md, 1rem);
+    font-size: var(--asm-font-size-md, 1rem);
   }
 }
 
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   .heading {
-    font-weight: var(--font-weight-bold, 700);
+    font-weight: var(--asm-font-weight-700, 700);
   }
 
   .heading--color-muted,
   .heading--subtitle,
   .heading--caption {
-    font-weight: var(--font-weight-medium, 500);
+    font-weight: var(--asm-font-weight-500, 500);
   }
 }
 

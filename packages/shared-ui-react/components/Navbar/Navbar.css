@@ -1,9 +1,9 @@
 /* Base styles */
 .nav-wrap {
-  background-color: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
+  background-color: var(--asm-color-bg);
+  border-bottom: 1px solid var(--asm-color-border);
   position: relative;
-  z-index: var(--z-navbar, 200);
+  z-index: var(--asm-z-sticky, 200);
 }
 
 .nav-wrap.is-mobile {
@@ -31,8 +31,8 @@
   align-items: center;
   justify-content: space-between;
   margin: 0;
-  padding: 0 var(--space-2);
-  height: var(--nav-height);
+  padding: 0 var(--asm-space-2);
+  height: var(--asm-space-16);
   width: 100%;
   box-sizing: border-box;
 }
@@ -40,13 +40,13 @@
 /* Responsive padding for navbar */
 @media (min-width: 640px) {
   .nav-row {
-    padding: 0 var(--space-4);
+    padding: 0 var(--asm-space-4);
   }
 }
 
 @media (min-width: 1024px) {
   .nav-row {
-    padding: 0 var(--space-3);
+    padding: 0 var(--asm-space-3);
   }
 }
 
@@ -58,17 +58,17 @@
 }
 
 .brand__text {
-  margin-left: var(--space-0);
-  color: var(--color-foreground);
-  font-family: var(--font-family-heading);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-md);
+  margin-left: var(--asm-space-0);
+  color: var(--asm-color-text);
+  font-family: var(--asm-font-family-primary);
+  font-weight: var(--asm-font-weight-600);
+  font-size: var(--asm-font-size-md);
 }
 
 .brand__logo {
   height: 2rem;
   width: auto;
-  margin-right: var(--space-1);
+  margin-right: var(--asm-space-1);
   margin-left: 0;
 }
 
@@ -81,19 +81,19 @@
   display: flex;
   list-style: none;
   padding-right: 10px;
-  gap: var(--space-3);
+  gap: var(--asm-space-3);
   justify-content: space-between;
   align-items: center;
   margin: 0;
-  padding: var(--space-0) var(--space-2);
+  padding: var(--asm-space-0) var(--asm-space-2);
   width: 100%;
 }
 
 .nav-list--vertical {
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-0);
-  background-color:  var(--color-info-0);
+  gap: var(--asm-space-0);
+  background-color:  var(--asm-color-info-0);
   width: 100%;
 }
 
@@ -104,12 +104,12 @@
     background-color var(--transition-speed) ease; */
   display: flex;
   align-items: center;
-  color: var(--color-primary-600);
+  color: var(--asm-color-brand-primary-600);
 }
 
 .nav-link:hover {
-  color: var(--color-foreground);
-  background-color: var(--color-surface);
+  color: var(--asm-color-text);
+  background-color: var(--asm-color-surface);
 }
 
 .nav-link--mobile {
@@ -129,7 +129,7 @@
   height: 100%; /* take full navbar height so centering applies */
   margin-left: 0;
   justify-content: flex-end;
-  gap: var(--space-2);
+  gap: var(--asm-space-2);
 }
 
 /* Align middle horizontal and vertical */
@@ -159,11 +159,11 @@
   width: 2rem;
   height: 1.5rem;
   position: relative;
-  z-index: calc(var(--z-navbar, 250) + 10);
+  z-index: calc(var(--asm-z-sticky, 250) + 10);
   /* Ensure bars use a visible, theme-aware color */
-  color: var(--nav-text);
+  color: var(--asm-color-text);
   border-radius: 8px;
-  border: 1px solid var(--nav-border);
+  border: 1px solid var(--asm-color-border);
   min-width: 2.25rem;
   min-height: 2rem;
 }
@@ -173,14 +173,14 @@
   width: 100%;
   height: 3px; /* thicker for visibility */
   /* Use explicit token color rather than inheriting, for contrast */
-  background-color: var(--color-foreground);
+  background-color: var(--asm-color-text);
   transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.2s ease;
 }
 
 /* Better contrast on hover/focus */
 .hamburger:hover,
 .hamburger:focus {
-  color: var(--nav-hover);
+  color: var(--asm-color-brand-primary-600);
   /* subtle background for contrast on both themes */
   background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.08);
 }
@@ -189,36 +189,36 @@
 .hamburger:hover .hamburger__bar,
 .hamburger:focus .hamburger__bar,
 .hamburger[aria-expanded="true"] .hamburger__bar {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
 }
 
 .hamburger:focus-visible {
-  outline: 2px solid var(--nav-hover);
+  outline: 2px solid var(--asm-color-brand-primary-600);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
 /* When menu is open, use active color to keep contrast */
 .hamburger[aria-expanded="true"] {
-  color: var(--nav-active);
+  color: var(--asm-color-brand-primary-700);
 }
 
 /* Explicit dark selectors in case app toggles class or attribute */
 [data-theme="dark"] .nav-root .hamburger,
 .dark .nav-root .hamburger {
-  color: var(--color-foreground);
-  border-color: var(--color-border);
+  color: var(--asm-color-text);
+  border-color: var(--asm-color-border);
 }
 
 [data-theme="dark"] .nav-root .hamburger__bar,
 .dark .nav-root .hamburger__bar {
-  background-color: var(--color-foreground);
+  background-color: var(--asm-color-text);
 }
 
 /* Explicit light selector (in case the app sets data-theme="light") */
 [data-theme="light"] .nav-root .hamburger {
-  color: var(--color-foreground);
-  border-color: var(--color-border);
+  color: var(--asm-color-text);
+  border-color: var(--asm-color-border);
 }
 
 .hamburger__bar.x1 {
@@ -239,11 +239,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--nav-bg);
-  z-index: var(--z-navbar, 200);
+  background-color: var(--asm-color-bg);
+  z-index: var(--asm-z-sticky, 200);
   transform: translateX(100%);
   transition: transform 0.3s ease;
-  padding-top: calc(var(--nav-height) + 1rem);
+  padding-top: calc(var(--asm-space-16) + 1rem);
   overflow-y: auto;
 }
 
@@ -252,17 +252,17 @@
 }
 
 .mobile-inner {
-  padding: 1rem var(--nav-padding);
-  background-color: var(--color-neutral-600);
+  padding: 1rem var(--asm-space-4);
+  background-color: var(--asm-color-neutral-600);
 }
 
 .theme-in-menu {
-  background-color: var(--color-primary-50);
-  border-top: 1px solid var(--nav-border);
+  background-color: var(--asm-color-primary-50);
+  border-top: 1px solid var(--asm-color-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-1) var(--space-5);
+  padding: var(--asm-space-1) var(--asm-space-5);
 }
 
 .navbar-theme-toggle {

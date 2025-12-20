@@ -1,24 +1,24 @@
 /* Public Resume View Styles */
 .public-resume-page {
   min-height: 100vh;
-  background: var(--color-neutral-50);
+  background: var(--asm-color-neutral-900);
   padding: var(--space-8) var(--space-4);
 }
 
 .public-resume-container {
   max-width: 900px;
   margin: 0 auto;
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .public-resume-actions {
   padding: var(--space-4) var(--space-8);
-  background: var(--color-surface, #f8f9fa);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border-bottom: 1px solid var(--asm-color-border);
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -29,7 +29,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--color-primary);
+  background: var(--asm-color-brand-primary-500);
   color: white;
   border: none;
   border-radius: 6px;
@@ -40,15 +40,15 @@
 }
 
 .print-button:hover {
-  background: var(--color-primary-dark);
+  background: var(--asm-color-brand-primary-600);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .public-resume-header {
   padding: var(--space-8) var(--space-8) var(--space-6);
-  background: var(--color-background);
-  border-bottom: 1px solid var(--color-neutral-200);
+  background: var(--asm-color-bg);
+  border-bottom: 1px solid var(--asm-color-neutral-200);
   text-align: center;
 }
 
@@ -56,12 +56,12 @@
   font-size: var(--text-3xl);
   font-weight: 700;
   margin: 0 0 var(--space-2) 0;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
 }
 
 .published-date {
   font-size: var(--text-sm);
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   margin: 0;
 }
 
@@ -87,16 +87,16 @@
 .section-title {
   font-size: var(--text-xl);
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   margin: 0;
   padding-bottom: var(--space-3);
-  border-bottom: 2px solid var(--color-neutral-900);
+  border-bottom: 2px solid var(--asm-color-neutral-900);
   flex: 1;
 }
 
 .section-count {
-  background: var(--color-neutral-100);
-  color: var(--color-neutral-700);
+  background: var(--asm-color-neutral-100);
+  color: var(--asm-color-neutral-700);
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
   font-size: var(--text-sm);
@@ -105,13 +105,13 @@
 }
 
 .section-content {
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
 }
 
 .summary-text {
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
 }
 
 /* Timeline Styles */
@@ -127,7 +127,7 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background: var(--color-neutral-300);
+  background: var(--asm-color-neutral-300);
 }
 
 .timeline-item {
@@ -142,18 +142,18 @@
   top: 0.25rem;
   width: var(--space-3);
   height: var(--space-3);
-  background: var(--color-neutral-900);
-  border: 3px solid var(--color-background);
+  background: var(--asm-color-neutral-900);
+  border: 3px solid var(--asm-color-bg);
   border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--color-neutral-300);
+  box-shadow: 0 0 0 2px var(--asm-color-neutral-300);
 }
 
 .timeline-content {
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   padding: var(--space-6);
   border-radius: 6px;
-  border: 1px solid var(--color-neutral-200);
-  border-left: 3px solid var(--color-neutral-900);
+  border: 1px solid var(--asm-color-neutral-200);
+  border-left: 3px solid var(--asm-color-neutral-900);
 }
 
 .item-header {
@@ -168,35 +168,35 @@
 .item-title {
   font-size: var(--text-lg);
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   margin: 0;
 }
 
 .item-date {
   font-size: var(--text-sm);
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   font-weight: 400;
 }
 
 .item-subtitle {
   margin-bottom: var(--space-4);
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
 }
 
 .company-name {
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
 }
 
 .location {
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   margin-left: 0.5rem;
 }
 
 .item-description {
   margin: var(--space-4) 0;
   line-height: 1.6;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
 }
 
 .achievements-list {
@@ -219,9 +219,9 @@
 .tech-tag {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background: var(--color-neutral-100);
-  color: var(--color-neutral-700);
-  border: 1px solid var(--color-neutral-200);
+  background: var(--asm-color-neutral-100);
+  color: var(--asm-color-neutral-700);
+  border: 1px solid var(--asm-color-neutral-200);
   border-radius: 4px;
   font-size: 0.85rem;
   font-weight: 500;
@@ -235,11 +235,11 @@
 }
 
 .skill-card {
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   padding: var(--space-5);
   border-radius: 6px;
-  border: 1px solid var(--color-neutral-200);
-  border-left: 3px solid var(--color-neutral-900);
+  border: 1px solid var(--asm-color-neutral-200);
+  border-left: 3px solid var(--asm-color-neutral-900);
 }
 
 .skill-header {
@@ -252,7 +252,7 @@
 .skill-name {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   margin: 0;
 }
 
@@ -262,19 +262,19 @@
 }
 
 .star {
-  color: var(--color-neutral-300);
+  color: var(--asm-color-neutral-300);
   font-size: 1rem;
 }
 
 .star.filled {
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
 }
 
 .skill-meta {
   display: flex;
   gap: 1rem;
   font-size: 0.85rem;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
 }
 
 /* Education Grid */
@@ -284,42 +284,42 @@
 }
 
 .education-card {
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   padding: 1.5rem;
   border-radius: 6px;
-  border: 1px solid var(--color-neutral-200);
-  border-left: 3px solid var(--color-neutral-900);
+  border: 1px solid var(--asm-color-neutral-200);
+  border-left: 3px solid var(--asm-color-neutral-900);
 }
 
 .education-degree {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 0.5rem;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
 }
 
 .education-institution {
   font-size: 1rem;
   font-weight: 500;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
   margin-bottom: 0.25rem;
 }
 
 .education-field {
   margin-bottom: 0.5rem;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
 }
 
 .education-dates {
   font-size: 0.9rem;
   margin-bottom: 0.75rem;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 .education-description {
   margin-top: 0.75rem;
   line-height: 1.6;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
 }
 
 /* Certificates Grid */
@@ -330,36 +330,36 @@
 }
 
 .certificate-card {
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   padding: 1.5rem;
   border-radius: 6px;
-  border: 1px solid var(--color-neutral-200);
-  border-left: 3px solid var(--color-neutral-900);
+  border: 1px solid var(--asm-color-neutral-200);
+  border-left: 3px solid var(--asm-color-neutral-900);
 }
 
 .certificate-name {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   margin: 0 0 0.5rem;
 }
 
 .certificate-issuer {
   font-weight: 500;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
   margin-bottom: 0.5rem;
 }
 
 .certificate-dates {
   font-size: 0.85rem;
   margin-bottom: 0.75rem;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
 }
 
 .certificate-link {
   display: inline-block;
   margin-top: 0.5rem;
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-500);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.9rem;
@@ -376,11 +376,11 @@
 }
 
 .project-card {
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   padding: 1.5rem;
   border-radius: 6px;
-  border: 1px solid var(--color-neutral-200);
-  border-left: 3px solid var(--color-neutral-900);
+  border: 1px solid var(--asm-color-neutral-200);
+  border-left: 3px solid var(--asm-color-neutral-900);
 }
 
 .project-header {
@@ -393,12 +393,12 @@
 .project-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   margin: 0;
 }
 
 .project-link {
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-500);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.9rem;
@@ -411,7 +411,7 @@
 .project-description {
   line-height: 1.6;
   margin-bottom: 1rem;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
 }
 
 /* Languages Grid */
@@ -422,25 +422,25 @@
 }
 
 .language-card {
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   padding: var(--space-5) var(--space-6);
   border-radius: 6px;
   text-align: center;
-  border: 1px solid var(--color-neutral-200);
-  border-left: 3px solid var(--color-neutral-900);
+  border: 1px solid var(--asm-color-neutral-200);
+  border-left: 3px solid var(--asm-color-neutral-900);
 }
 
 .language-name {
   font-size: var(--text-base);
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   margin: 0 0 var(--space-2) 0;
 }
 
 .language-level {
   font-size: var(--text-sm);
   font-weight: 400;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
 }
 
 /* Awards Grid */
@@ -450,11 +450,11 @@
 }
 
 .award-card {
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   padding: var(--space-6);
   border-radius: 6px;
-  border: 1px solid var(--color-neutral-200);
-  border-left: 3px solid var(--color-neutral-900);
+  border: 1px solid var(--asm-color-neutral-200);
+  border-left: 3px solid var(--asm-color-neutral-900);
 }
 
 .award-header {
@@ -469,24 +469,24 @@
 .award-title {
   font-size: var(--text-base);
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   margin: 0;
 }
 
 .award-date {
   font-size: var(--text-sm);
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 .award-issuer {
   font-weight: 500;
   margin-bottom: var(--space-3);
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
 }
 
 .award-description {
   line-height: 1.6;
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
 }
 
 /* References Grid */
@@ -497,29 +497,29 @@
 }
 
 .reference-card {
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   padding: var(--space-5);
   border-radius: 6px;
-  border: 1px solid var(--color-neutral-200);
-  border-left: 3px solid var(--color-neutral-900);
+  border: 1px solid var(--asm-color-neutral-200);
+  border-left: 3px solid var(--asm-color-neutral-900);
 }
 
 .reference-name {
   font-size: var(--text-base);
   font-weight: 600;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   margin: 0 0 var(--space-2) 0;
 }
 
 .reference-position {
   font-size: var(--text-sm);
-  color: var(--color-neutral-700);
+  color: var(--asm-color-neutral-700);
   margin-bottom: var(--space-1);
 }
 
 .reference-relationship {
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
 }
 
 /* Social Links */
@@ -534,26 +534,26 @@
   align-items: center;
   gap: 0.5rem;
   padding: var(--space-3) var(--space-5);
-  background: var(--color-background);
-  color: var(--color-neutral-700);
+  background: var(--asm-color-bg);
+  color: var(--asm-color-neutral-700);
   text-decoration: none;
   border-radius: 6px;
-  border: 1px solid var(--color-neutral-200);
+  border: 1px solid var(--asm-color-neutral-200);
   font-weight: 500;
   transition: all 0.2s;
 }
 
 .social-link:hover {
-  background: var(--color-neutral-50);
-  border-color: var(--color-neutral-300);
-  color: var(--color-neutral-900);
+  background: var(--asm-color-neutral-50);
+  border-color: var(--asm-color-neutral-300);
+  color: var(--asm-color-neutral-900);
 }
 
 /* Footer */
 .public-resume-footer {
   padding: var(--space-8);
-  background: var(--color-surface, #f8f9fa);
-  border-top: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border-top: 1px solid var(--asm-color-border);
   text-align: center;
 }
 
@@ -563,7 +563,7 @@
 }
 
 .privacy-notice a {
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-500);
   text-decoration: none;
   font-weight: 500;
 }
@@ -585,8 +585,8 @@
 .loading-spinner {
   width: var(--space-12);
   height: var(--space-12);
-  border: 4px solid var(--color-border);
-  border-top-color: var(--color-primary);
+  border: 4px solid var(--asm-color-border);
+  border-top-color: var(--asm-color-brand-primary-500);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: var(--space-4);

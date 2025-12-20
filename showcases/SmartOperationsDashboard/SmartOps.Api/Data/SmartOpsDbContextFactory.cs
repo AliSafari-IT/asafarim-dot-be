@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace SmartOps.Api.Data;
 
@@ -8,9 +9,20 @@ public class SmartOpsDbContextFactory : IDesignTimeDbContextFactory<SmartOpsDbCo
     public SmartOpsDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<SmartOpsDbContext>();
-        
-        // Use the same connection string as in Program.cs
-        var connectionString = "Host=localhost;Port=5432;Database=smartops;Username=postgres;Password=Ali+123456/";
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile($"appsettings.{environment}.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+
+        var connectionString = configuration.GetConnectionString("SmartOpsConnection")
+            ?? configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new InvalidOperationException(
+                "Connection string is not configured. Set ConnectionStrings__SmartOpsConnection (or ConnectionStrings__DefaultConnection)."
+            );
         
         optionsBuilder.UseNpgsql(
             connectionString,

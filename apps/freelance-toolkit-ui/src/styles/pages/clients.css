@@ -8,28 +8,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--asm-space-8);
 }
 
 .flt-clientspage-title {
   margin: 0;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-size: var(--text-2xl);
   font-weight: 700;
 }
 
 .flt-clientspage-search-container {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--asm-space-6);
 }
 
 .flt-clientspage-search-input {
   width: 100%;
   max-width: 400px;
-  padding: var(--space-3);
+  padding: var(--asm-space-3);
   border-radius: var(--border-radius-md);
   border: 1px solid var(--border-color);
   background-color: var(--bg-primary);
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-family: inherit;
   font-size: var(--text-base);
 }
@@ -42,12 +42,12 @@
 
 .flt-clientspage-loading {
   text-align: center;
-  padding: var(--spacing-xl);
+  padding: var(--asm-space-8);
   color: var(--text-muted);
 }
 
 .flt-clientspage-error {
-  padding: var(--space-4);
+  padding: var(--asm-space-4);
   background-color: rgba(239, 68, 68, 0.1);
   color: var(--error-color);
   border-radius: var(--border-radius-md);
@@ -56,7 +56,7 @@
 
 .flt-clientspage-empty {
   text-align: center;
-  padding: var(--space-12);
+  padding: var(--asm-space-12);
   background-color: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-color);
@@ -64,12 +64,12 @@
 
 .flt-clientspage-empty-icon {
   font-size: var(--text-2xl);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--asm-space-4);
 }
 
 .flt-clientspage-empty-title {
   margin-top: 0;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .flt-clientspage-empty-text {
@@ -77,11 +77,11 @@
 }
 
 .flt-clientspage-empty-button {
-  margin-top: var(--space-4);
+  margin-top: var(--asm-space-4);
   background-color: var(--color-brand);
   color: var(--color-primary-inverse);
   border: none;
-  padding: var(--space-3) var(--space-6);
+  padding: var(--asm-space-3) var(--asm-space-6);
   border-radius: var(--border-radius-md);
   cursor: pointer;
   font-weight: 600;
@@ -95,11 +95,11 @@
 }
 
 .flt-clientspage-table-container {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-lg);
+  border: 1px solid var(--asm-color-border);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .flt-clientspage-table {
@@ -109,15 +109,15 @@
 }
 
 .flt-clientspage-table-header {
-  background: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--asm-color-bg);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .flt-clientspage-table-header-cell {
-  padding: var(--spacing-md) var(--spacing-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
-  font-size: var(--font-size-sm);
+  padding: var(--asm-space-4) var(--asm-space-6);
+  font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-sm);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -127,17 +127,17 @@
 }
 
 .flt-clientspage-table-row {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
   transition: all 0.2s ease;
 }
 
 .flt-clientspage-table-row:hover {
-  background: var(--color-surface-hover);
+  background: var(--asm-color-surface-muted);
   box-shadow: inset 0 0 0 1px var(--color-primary-light);
 }
 
 .flt-clientspage-table-cell {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--asm-space-4) var(--asm-space-6);
 }
 
 .flt-clientspage-table-cell--actions {
@@ -146,24 +146,24 @@
 
 .flt-clientspage-client-name {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .flt-clientspage-client-company {
   font-size: var(--text-sm);
   color: var(--text-muted);
-  margin-top: var(--space-1);
+  margin-top: var(--asm-space-1);
 }
 
 .flt-clientspage-client-email {
   font-size: var(--text-sm);
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .flt-clientspage-client-phone {
   font-size: var(--text-sm);
   color: var(--text-muted);
-  margin-top: var(--space-1);
+  margin-top: var(--asm-space-1);
 }
 
 .flt-clientspage-client-activity {
@@ -175,16 +175,16 @@
 
 .flt-clientspage-client-revenue {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .flt-clientspage-action-button {
   background-color: transparent;
   border: 1px solid var(--border-color);
-  padding: var(--space-2);
+  padding: var(--asm-space-2);
   border-radius: var(--border-radius-sm);
   cursor: pointer;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   transition: all 0.2s;
   font-size: var(--text-base);
 }

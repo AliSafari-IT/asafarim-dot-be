@@ -1,7 +1,7 @@
 .admin-user-profile-container {
   min-height: 100vh;
   padding: 2rem clamp(1rem, 3vw, 3rem);
-  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%);
+  background: linear-gradient(135deg, var(--asm-color-surface) 0%, var(--asm-color-bg) 100%);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -9,11 +9,11 @@
 
 .admin-user-profile-card {
   width: min(900px, 100%);
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  background-color: var(--asm-color-surface);
+  color: var(--asm-color-text);
   border-radius: var(--radius-lg, 1rem);
   box-shadow: var(--shadow-lg, 0 20px 45px rgba(15, 23, 42, 0.15));
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   padding: clamp(1.5rem, 3vw, 2.5rem);
 }
 
@@ -39,14 +39,14 @@
   gap: 0.5rem;
   padding: 1.25rem;
   border-radius: var(--radius-md, 0.75rem);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface-muted, var(--color-surface));
+  border: 1px solid var(--asm-color-border);
+  background-color: var(--color-surface-muted, var(--asm-color-surface));
 }
 
 .admin-form-label {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 .admin-form-select,
@@ -54,9 +54,9 @@
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md, 0.75rem);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-background);
-  color: var(--color-text);
+  border: 1px solid var(--asm-color-border);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -64,8 +64,8 @@
 .admin-form-select:focus,
 .admin-form-input:focus {
   outline: none;
-  border-color: var(--color-accent, var(--color-primary));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent, var(--color-primary)) 30%, transparent);
+  border-color: var(--color-accent, var(--asm-color-brand-primary-600));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent, var(--asm-color-brand-primary-600)) 30%, transparent);
 }
 
 .admin-roles-section {
@@ -84,25 +84,25 @@
   gap: 0.5rem;
   padding: 0.6rem 0.9rem;
   border-radius: var(--radius-md, 0.75rem);
-  border: 1px solid var(--color-border-muted, var(--color-border));
+  border: 1px solid var(--color-border-muted, var(--asm-color-border));
   background-color: var(--color-warning-100);
   transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .admin-role-checkbox-item:hover {
-  border-color: var(--color-accent, var(--color-primary));
+  border-color: var(--color-accent, var(--asm-color-brand-primary-600));
   transform: translateY(-1px);
 }
 
 .admin-role-checkbox {
-  accent-color: var(--color-primary-500) !important;
-  color: var(--color-primary-500) !important;
+  accent-color: var(--asm-color-brand-primary-500) !important;
+  color: var(--asm-color-brand-primary-500) !important;
   background-color: var(--color-neutral-50) !important;
 }
 
 .admin-role-checkbox-label {
   font-size: 0.9rem;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   text-transform: capitalize;
 }
 
@@ -114,7 +114,7 @@
   gap: 1rem;
   align-items: center;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--asm-color-border);
 }
 
 .admin-form-actions .asafarim-button {

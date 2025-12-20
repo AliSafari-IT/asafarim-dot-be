@@ -3,12 +3,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--global-spacing-xs);
-  padding: var(--global-spacing-sm) var(--global-spacing-md);
+  gap: var(--asm-space-1);
+  padding: var(--asm-space-2) var(--asm-space-4);
   border: none;
-  border-radius: var(--global-border-radius-sm);
+  border-radius: var(--asm-radius-sm);
   font-family: inherit;
-  font-size: var(--global-font-size-sm);
+  font-size: var(--asm-font-size-sm);
   font-weight: 500;
   line-height: 1;
   text-decoration: none;
@@ -37,64 +37,64 @@
 
 /* Button Sizes */
 .btn--xs {
-  padding: var(--spacing-xs, 0.5rem) var(--spacing-sm, 0.75rem);
-  font-size: var(--global-font-size-xs);
+  padding: var(--asm-space-1, 0.5rem) var(--asm-space-2, 0.75rem);
+  font-size: var(--asm-font-size-xs);
   min-height: 2rem;
 }
 
 .btn--sm {
-  padding: var(--spacing-sm, 0.75rem) var(--spacing-md, 1rem);
-  font-size: var(--global-font-size-sm);
+  padding: var(--asm-space-2, 0.75rem) var(--asm-space-4, 1rem);
+  font-size: var(--asm-font-size-sm);
   min-height: 2.25rem;
 }
 
 .btn--md {
-  padding: var(--spacing-sm, 0.75rem) var(--spacing-lg, 1.5rem);
-  font-size: var(--global-font-size-sm);
+  padding: var(--asm-space-2, 0.75rem) var(--asm-space-6, 1.5rem);
+  font-size: var(--asm-font-size-sm);
   min-height: 2.5rem;
 }
 
 .btn--lg {
-  padding: var(--spacing-md, 1rem) var(--spacing-xl, 2rem);
-  font-size: var(--global-font-size-md);
+  padding: var(--asm-space-4, 1rem) var(--asm-space-8, 2rem);
+  font-size: var(--asm-font-size-md);
   min-height: 3rem;
 }
 
 .btn--xl {
-  padding: var(--spacing-lg, 1.5rem) var(--spacing-2xl, 3rem);
-  font-size: var(--global-font-size-lg);
+  padding: var(--asm-space-6, 1.5rem) var(--asm-space-12, 3rem);
+  font-size: var(--asm-font-size-lg);
   min-height: 3.5rem;
 }
 
 /* Button Variants */
 .btn--primary {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--primary:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
+  background-color: var(--asm-color-brand-primary-700);
   transform: translateY(-1px);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .btn--primary:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--secondary {
-  background-color: var(--bg-secondary);
-  color: var(--color-foreground);
-  border: 1px solid var(--color-border);
+  background-color: var(--asm-color-surface-muted);
+  color: var(--asm-color-text);
+  border: 1px solid var(--asm-color-border);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background-color: var(--bg-tertiary);
-  border-color: var(--color-primary);
+  background-color: var(--asm-color-surface);
+  border-color: var(--asm-color-brand-primary-600);
   transform: translateY(-1px);
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--secondary:active:not(:disabled) {
@@ -102,100 +102,100 @@
 }
 
 .btn--success {
-  background-color: var(--color-success);
+  background-color: var(--asm-color-success-500);
   color: white;
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--success:hover:not(:disabled) {
   background-color: #16a34a;
   transform: translateY(-1px);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .btn--success:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--warning {
-  background-color: var(--color-warning);
+  background-color: var(--asm-color-warning-500);
   color: white;
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--warning:hover:not(:disabled) {
   background-color: #d97706;
   transform: translateY(-1px);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .btn--warning:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--danger {
-  background-color: var(--color-error-600);
-  color: var(--color-error-50);
-  box-shadow: var(--global-shadow-sm);
+  background-color: var(--asm-color-danger-600);
+  color: var(--asm-color-danger-50);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--danger:hover:not(:disabled) {
-  background-color: var(--color-error-700);
+  background-color: var(--asm-color-danger-700);
   transform: translateY(-1px);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .btn--danger:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--info {
-  background-color: var(--color-primary-500);
-  color: var(--color-primary-0);
-  box-shadow: var(--global-shadow-sm);
+  background-color: var(--asm-color-brand-primary-500);
+  color: var(--asm-color-primary-0);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--info:hover:not(:disabled) {
-  background-color:var(--color-primary-600);
+  background-color:var(--asm-color-brand-primary-600);
   transform: translateY(-1px);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .btn--info:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--ghost {
   background-color: transparent;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   border: 1px solid transparent;
 }
 
 .btn--ghost:hover:not(:disabled) {
-  background-color: var(--bg-secondary);
-  color: var(--color-primary);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-surface-muted);
+  color: var(--asm-color-brand-primary-600);
+  border-color: var(--asm-color-border);
 }
 
 .btn--ghost:active:not(:disabled) {
-  background-color: var(--bg-tertiary);
+  background-color: var(--asm-color-surface);
 }
 
 .btn--outline {
-  color: var(--color-primary);
-  border: 2px solid var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
+  border: 2px solid var(--asm-color-brand-primary-600);
   background-color: transparent;
 }
 
 .btn--outline:hover:not(:disabled) {
-  background-color: var(--color-primary-400);
+  background-color: var(--asm-color-primary-400);
   color: white;
   transform: translateY(-1px);
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .btn--outline:active:not(:disabled) {
@@ -204,7 +204,7 @@
 
 .btn--link {
   background-color: transparent;
-  color: var(--color-primary-500);
+  color: var(--asm-color-brand-primary-500);
   border: none;
   padding: 0;
   text-decoration: underline;
@@ -223,7 +223,7 @@ a.btn--link {
 }
 
 .btn--link:hover:not(:disabled) {
-  color: var(--color-phosphor);
+  color: var(--asm-color-brand-primary-700);
   text-decoration-thickness: 2px;
   background-color: transparent;
   transform: none;
@@ -231,14 +231,14 @@ a.btn--link {
 }
 
 .btn--link:active:not(:disabled) {
-  color: var(--color-primary-dark);
+  color: var(--asm-color-brand-primary-700);
 }
 
 .btn--brand {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(135deg, var(--asm-color-brand-primary-600) 0%, var(--asm-color-brand-primary-700) 100%);
   color: white;
   border: none;
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
   position: relative;
   overflow: hidden;
 }
@@ -255,9 +255,9 @@ a.btn--link {
 }
 
 .btn--brand:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+  background: linear-gradient(135deg, var(--asm-color-brand-primary-700) 0%, var(--asm-color-brand-primary-600) 100%);
   transform: translateY(-2px);
-  box-shadow: var(--global-shadow-lg);
+  box-shadow: var(--asm-effect-shadow-lg);
 }
 
 .btn--brand:hover:not(:disabled)::before {
@@ -266,7 +266,7 @@ a.btn--link {
 
 .btn--brand:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 /* Button States */
@@ -285,7 +285,7 @@ a.btn--link {
 .btn--disabled:hover,
 .btn:disabled:hover {
   transform: none !important;
-  box-shadow: var(--global-shadow-sm) !important;
+  box-shadow: var(--asm-effect-shadow-sm) !important;
 }
 
 /* Button Modifiers */
@@ -294,7 +294,7 @@ a.btn--link {
 }
 
 .btn--rounded {
-  border-radius: var(--global-border-radius-2xl);
+  border-radius: var(--asm-radius-xl);
 }
 
 /* Button Content */
@@ -302,7 +302,7 @@ a.btn--link {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs, 0.5rem);
+  gap: var(--asm-space-1, 0.5rem);
 }
 
 /* Button Icons */
@@ -314,11 +314,11 @@ a.btn--link {
 }
 
 .btn__icon--left {
-  margin-right: var(--spacing-xs, 0.25rem);
+  margin-right: var(--asm-space-1, 0.25rem);
 }
 
 .btn__icon--right {
-  margin-left: var(--spacing-xs, 0.25rem);
+  margin-left: var(--asm-space-1, 0.25rem);
 }
 
 /* Button Loader */
@@ -326,7 +326,7 @@ a.btn--link {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: var(--spacing-xs, 0.5rem);
+  margin-right: var(--asm-space-1, 0.5rem);
 }
 
 .btn__spinner {
@@ -346,67 +346,67 @@ a.btn--link {
 
 /* Focus States */
 .btn:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--asm-color-brand-primary-600);
   outline-offset: 2px;
 }
 
 /* Dark Theme Enhancements */
 @media (prefers-color-scheme: dark) {
   .btn--secondary {
-    background-color: var(--bg-secondary);
-    color: var(--color-foreground);
-    border-color: var(--color-border);
+    background-color: var(--asm-color-surface-muted);
+    color: var(--asm-color-text);
+    border-color: var(--asm-color-border);
   }
   
   .btn--secondary:hover:not(:disabled) {
-    background-color: var(--bg-tertiary);
+    background-color: var(--asm-color-surface);
   }
   
   .btn--ghost:hover:not(:disabled) {
-    background-color: var(--bg-secondary);
+    background-color: var(--asm-color-surface-muted);
   }
   
   .btn--ghost:active:not(:disabled) {
-    background-color: var(--bg-tertiary);
+    background-color: var(--asm-color-surface);
   }
 }
 
 /* Theme-aware overrides */
 [data-theme="dark"] .btn--secondary {
-  background-color: var(--bg-secondary);
-  color: var(--color-foreground);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-surface-muted);
+  color: var(--asm-color-text);
+  border-color: var(--asm-color-border);
 }
 
 [data-theme="dark"] .btn--secondary:hover:not(:disabled) {
-  background-color: var(--bg-tertiary);
+  background-color: var(--asm-color-surface);
 }
 
 [data-theme="dark"] .btn--ghost:hover:not(:disabled) {
-  background-color: var(--bg-secondary);
+  background-color: var(--asm-color-surface-muted);
 }
 
 [data-theme="dark"] .btn--ghost:active:not(:disabled) {
-  background-color: var(--bg-tertiary);
+  background-color: var(--asm-color-surface);
 }
 
 /* Class-based dark mode detection */
 .theme-dark .btn--secondary {
-  background-color: var(--bg-secondary);
-  color: var(--color-foreground);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-surface-muted);
+  color: var(--asm-color-text);
+  border-color: var(--asm-color-border);
 }
 
 .theme-dark .btn--secondary:hover:not(:disabled) {
-  background-color: var(--bg-tertiary);
+  background-color: var(--asm-color-surface);
 }
 
 .theme-dark .btn--ghost:hover:not(:disabled) {
-  background-color: var(--bg-secondary);
+  background-color: var(--asm-color-surface-muted);
 }
 
 .theme-dark .btn--ghost:active:not(:disabled) {
-  background-color: var(--bg-tertiary);
+  background-color: var(--asm-color-surface);
 }
 
 /* High Contrast Mode Support */
@@ -438,14 +438,14 @@ a.btn--link {
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .btn--lg {
-    padding: var(--spacing-sm, 0.75rem) var(--spacing-lg, 1.5rem);
-    font-size: var(--global-font-size-sm);
+    padding: var(--asm-space-2, 0.75rem) var(--asm-space-6, 1.5rem);
+    font-size: var(--asm-font-size-sm);
     min-height: 2.5rem;
   }
   
   .btn--xl {
-    padding: var(--spacing-md, 1rem) var(--spacing-xl, 2rem);
-    font-size: var(--global-font-size-md);
+    padding: var(--asm-space-4, 1rem) var(--asm-space-8, 2rem);
+    font-size: var(--asm-font-size-md);
     min-height: 3rem;
   }
 }

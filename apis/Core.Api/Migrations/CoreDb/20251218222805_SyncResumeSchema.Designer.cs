@@ -10,11 +10,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Core.Api.Migrations.Resume
+namespace Core.Api.Migrations.CoreDb
 {
     [DbContext(typeof(CoreDbContext))]
-    [Migration("20251005164246_AddSocialLinkTimestamps")]
-    partial class AddSocialLinkTimestamps
+    [Migration("20251218222805_SyncResumeSchema")]
+    partial class SyncResumeSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -583,18 +583,79 @@ namespace Core.Api.Migrations.Resume
                     b.ToTable("Languages", "public");
                 });
 
+            modelBuilder.Entity("Core.Api.Models.Resume.PortfolioSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PublicSlug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("SectionOrderJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Theme")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublicSlug")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("PortfolioSettings", "public");
+                });
+
             modelBuilder.Entity("Core.Api.Models.Resume.Project", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DemoUrl")
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GithubUrl")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Link")
                         .IsRequired()
@@ -609,14 +670,71 @@ namespace Core.Api.Migrations.Resume
                     b.Property<Guid>("ResumeId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ShortDescription")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("Projects", "public");
+                    b.ToTable("ResumeProjects", "public");
+                });
+
+            modelBuilder.Entity("Core.Api.Models.Resume.ProjectImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Caption")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId", "DisplayOrder");
+
+                    b.ToTable("ProjectImages", "public");
+                });
+
+            modelBuilder.Entity("Core.Api.Models.Resume.ProjectPublication", b =>
+                {
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PublicationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProjectId", "PublicationId");
+
+                    b.HasIndex("PublicationId");
+
+                    b.ToTable("ProjectPublications", "public");
                 });
 
             modelBuilder.Entity("Core.Api.Models.Resume.ProjectTechnology", b =>
@@ -634,17 +752,52 @@ namespace Core.Api.Migrations.Resume
                     b.ToTable("ProjectTechnologies", "public");
                 });
 
+            modelBuilder.Entity("Core.Api.Models.Resume.ProjectWorkExperience", b =>
+                {
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("WorkExperienceId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ProjectId", "WorkExperienceId");
+
+                    b.HasIndex("WorkExperienceId");
+
+                    b.ToTable("ProjectWorkExperiences", "public");
+                });
+
             modelBuilder.Entity("Core.Api.Models.Resume.Reference", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ContactInfo")
+                    b.Property<string>("Company")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Position")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
@@ -674,6 +827,25 @@ namespace Core.Api.Migrations.Resume
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<bool>("IsPublic")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("PublicConsentGivenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PublicConsentIp")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PublicSlug")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Summary")
                         .IsRequired()
                         .HasMaxLength(2000)
@@ -695,6 +867,9 @@ namespace Core.Api.Migrations.Resume
                         .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PublicSlug")
+                        .IsUnique();
 
                     b.ToTable("Resumes", "public");
                 });
@@ -1052,6 +1227,36 @@ namespace Core.Api.Migrations.Resume
                     b.Navigation("Resume");
                 });
 
+            modelBuilder.Entity("Core.Api.Models.Resume.ProjectImage", b =>
+                {
+                    b.HasOne("Core.Api.Models.Resume.Project", "Project")
+                        .WithMany("ProjectImages")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Core.Api.Models.Resume.ProjectPublication", b =>
+                {
+                    b.HasOne("Core.Api.Models.Resume.Project", "Project")
+                        .WithMany("ProjectPublications")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Api.Models.Publication", "Publication")
+                        .WithMany()
+                        .HasForeignKey("PublicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Publication");
+                });
+
             modelBuilder.Entity("Core.Api.Models.Resume.ProjectTechnology", b =>
                 {
                     b.HasOne("Core.Api.Models.Resume.Project", "Project")
@@ -1069,6 +1274,25 @@ namespace Core.Api.Migrations.Resume
                     b.Navigation("Project");
 
                     b.Navigation("Technology");
+                });
+
+            modelBuilder.Entity("Core.Api.Models.Resume.ProjectWorkExperience", b =>
+                {
+                    b.HasOne("Core.Api.Models.Resume.Project", "Project")
+                        .WithMany("ProjectWorkExperiences")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Api.Models.Resume.WorkExperience", "WorkExperience")
+                        .WithMany()
+                        .HasForeignKey("WorkExperienceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("WorkExperience");
                 });
 
             modelBuilder.Entity("Core.Api.Models.Resume.Reference", b =>
@@ -1164,7 +1388,13 @@ namespace Core.Api.Migrations.Resume
 
             modelBuilder.Entity("Core.Api.Models.Resume.Project", b =>
                 {
+                    b.Navigation("ProjectImages");
+
+                    b.Navigation("ProjectPublications");
+
                     b.Navigation("ProjectTechnologies");
+
+                    b.Navigation("ProjectWorkExperiences");
                 });
 
             modelBuilder.Entity("Core.Api.Models.Resume.Resume", b =>
