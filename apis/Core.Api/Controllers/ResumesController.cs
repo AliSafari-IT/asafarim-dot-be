@@ -455,134 +455,144 @@ public class ResumesController : ControllerBase
                         Location = resume.Contact.Location,
                     }
                     : null,
-            Skills = resume
-                .Skills.Select(s => new SkillDto
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    Category = s.Category?.ToString() ?? string.Empty,
-                    Level = s.Level.ToString(),
-                    Rating = s.Rating,
-                    CreatedAt = s.CreatedAt,
-                    UpdatedAt = s.UpdatedAt,
-                })
-                .ToList(),
-            EducationItems = resume
-                .EducationItems.Select(e => new EducationDto
-                {
-                    Id = e.Id,
-                    Institution = e.Institution,
-                    Degree = e.Degree,
-                    FieldOfStudy = e.FieldOfStudy,
-                    StartDate = e.StartDate,
-                    EndDate = e.EndDate,
-                    Description = e.Description,
-                })
-                .ToList(),
-            Certificates = resume
-                .Certificates.Select(c => new CertificateDto
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Issuer = c.Issuer,
-                    IssueDate = c.IssueDate,
-                    ExpiryDate = c.ExpiryDate,
-                    CredentialId = c.CredentialId,
-                    CredentialUrl = c.CredentialUrl,
-                })
-                .ToList(),
-            WorkExperiences = resume
-                .WorkExperiences.Select(w => new WorkExperienceDto
-                {
-                    Id = w.Id,
-                    JobTitle = w.JobTitle,
-                    CompanyName = w.CompanyName,
-                    Location = w.Location,
-                    StartDate = w.StartDate,
-                    EndDate = w.EndDate,
-                    IsCurrent = w.IsCurrent,
-                    Description = w.Description,
-                    Achievements = w
-                        .Achievements?.Select(a => new WorkAchievementDto
-                        {
-                            Id = a.Id,
-                            Text = a.Text,
-                        })
-                        .ToList(),
-                    Technologies =
-                        w.WorkExperienceTechnologies?.Where(wt => wt.Technology != null)
-                            .Select(wt => new TechnologyDto
+            Skills =
+                resume
+                    .Skills?.Select(s => new SkillDto
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        Category = s.Category?.ToString() ?? string.Empty,
+                        Level = s.Level.ToString(),
+                        Rating = s.Rating,
+                        CreatedAt = s.CreatedAt,
+                        UpdatedAt = s.UpdatedAt,
+                    })
+                    .ToList() ?? new List<SkillDto>(),
+            EducationItems =
+                resume
+                    .EducationItems?.Select(e => new EducationDto
+                    {
+                        Id = e.Id,
+                        Institution = e.Institution,
+                        Degree = e.Degree,
+                        FieldOfStudy = e.FieldOfStudy,
+                        StartDate = e.StartDate,
+                        EndDate = e.EndDate,
+                        Description = e.Description,
+                    })
+                    .ToList() ?? new List<EducationDto>(),
+            Certificates =
+                resume
+                    .Certificates?.Select(c => new CertificateDto
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Issuer = c.Issuer,
+                        IssueDate = c.IssueDate,
+                        ExpiryDate = c.ExpiryDate,
+                        CredentialId = c.CredentialId,
+                        CredentialUrl = c.CredentialUrl,
+                    })
+                    .ToList() ?? new List<CertificateDto>(),
+            WorkExperiences =
+                resume
+                    .WorkExperiences?.Select(w => new WorkExperienceDto
+                    {
+                        Id = w.Id,
+                        JobTitle = w.JobTitle,
+                        CompanyName = w.CompanyName,
+                        Location = w.Location,
+                        StartDate = w.StartDate,
+                        EndDate = w.EndDate,
+                        IsCurrent = w.IsCurrent,
+                        Description = w.Description,
+                        Achievements = w
+                            .Achievements?.Select(a => new WorkAchievementDto
                             {
-                                Id = wt.Technology!.Id,
-                                Name = wt.Technology!.Name,
-                                Category = wt.Technology!.Category,
+                                Id = a.Id,
+                                Text = a.Text,
                             })
-                            .ToList() ?? new List<TechnologyDto>(),
-                    SortOrder = w.SortOrder,
-                    Highlighted = w.Highlighted,
-                    IsPublished = w.IsPublished,
-                    UserId = w.UserId,
-                    CreatedAt = w.CreatedAt,
-                    UpdatedAt = w.UpdatedAt,
-                })
-                .ToList(),
-            Projects = resume
-                .Projects.Select(p => new ProjectDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    Link = p.Link,
-                    StartDate = p.StartDate,
-                    EndDate = p.EndDate,
-                    Technologies = p
-                        .ProjectTechnologies.Select(pt => new TechnologyDto
-                        {
-                            Id = pt.Technology.Id,
-                            Name = pt.Technology.Name,
-                            Category = pt.Technology.Category,
-                        })
-                        .ToList(),
-                })
-                .ToList(),
-            SocialLinks = resume
-                .SocialLinks.Select(sl => new SocialLinkDto
-                {
-                    Id = sl.Id,
-                    Platform = sl.Platform,
-                    Url = sl.Url,
-                })
-                .ToList(),
-            Languages = resume
-                .Languages.Select(l => new LanguageDto
-                {
-                    Id = l.Id,
-                    Name = l.Name,
-                    Level = l.Level.ToString(),
-                })
-                .ToList(),
-            Awards = resume
-                .Awards.Select(a => new AwardDto
-                {
-                    Id = a.Id,
-                    Title = a.Title,
-                    Issuer = a.Issuer,
-                    Date = a.AwardedDate,
-                    Description = a.Description,
-                })
-                .ToList(),
-            References = resume
-                .References.Select(r => new ReferenceDto
-                {
-                    Id = r.Id,
-                    Name = r.Name,
-                    Relationship = r.Relationship,
-                    Position = r.Position,
-                    Company = r.Company,
-                    Email = r.Email,
-                    Phone = r.Phone,
-                })
-                .ToList(),
+                            .ToList(),
+                        Technologies =
+                            w.WorkExperienceTechnologies?.Where(wt => wt.Technology != null)
+                                .Select(wt => new TechnologyDto
+                                {
+                                    Id = wt.Technology!.Id,
+                                    Name = wt.Technology!.Name,
+                                    Category = wt.Technology!.Category,
+                                })
+                                .ToList() ?? new List<TechnologyDto>(),
+                        SortOrder = w.SortOrder,
+                        Highlighted = w.Highlighted,
+                        IsPublished = w.IsPublished,
+                        UserId = w.UserId,
+                        CreatedAt = w.CreatedAt,
+                        UpdatedAt = w.UpdatedAt,
+                    })
+                    .ToList() ?? new List<WorkExperienceDto>(),
+            Projects =
+                resume
+                    .Projects?.Select(p => new ProjectDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Description = p.Description,
+                        Link = p.Link,
+                        StartDate = p.StartDate,
+                        EndDate = p.EndDate,
+                        Technologies =
+                            p.ProjectTechnologies?.Where(pt => pt.Technology != null)
+                                .Select(pt => new TechnologyDto
+                                {
+                                    Id = pt.Technology!.Id,
+                                    Name = pt.Technology!.Name,
+                                    Category = pt.Technology!.Category,
+                                })
+                                .ToList() ?? new List<TechnologyDto>(),
+                    })
+                    .ToList() ?? new List<ProjectDto>(),
+            SocialLinks =
+                resume
+                    .SocialLinks?.Select(sl => new SocialLinkDto
+                    {
+                        Id = sl.Id,
+                        Platform = sl.Platform,
+                        Url = sl.Url,
+                    })
+                    .ToList() ?? new List<SocialLinkDto>(),
+            Languages =
+                resume
+                    .Languages?.Select(l => new LanguageDto
+                    {
+                        Id = l.Id,
+                        Name = l.Name,
+                        Level = l.Level.ToString(),
+                    })
+                    .ToList() ?? new List<LanguageDto>(),
+            Awards =
+                resume
+                    .Awards?.Select(a => new AwardDto
+                    {
+                        Id = a.Id,
+                        Title = a.Title,
+                        Issuer = a.Issuer,
+                        Date = a.AwardedDate,
+                        Description = a.Description,
+                    })
+                    .ToList() ?? new List<AwardDto>(),
+            References =
+                resume
+                    .References?.Select(r => new ReferenceDto
+                    {
+                        Id = r.Id,
+                        Name = r.Name,
+                        Relationship = r.Relationship,
+                        Position = r.Position,
+                        Company = r.Company,
+                        Email = r.Email,
+                        Phone = r.Phone,
+                    })
+                    .ToList() ?? new List<ReferenceDto>(),
         };
     }
 
@@ -594,98 +604,110 @@ public class ResumesController : ControllerBase
             Title = resume.Title,
             Summary = resume.Summary,
             PublishedAt = resume.PublishedAt,
-            Skills = resume
-                .Skills.Select(s => new PublicSkillDto
-                {
-                    Name = s.Name,
-                    Category = s.Category?.ToString() ?? string.Empty,
-                    Level = s.Level.ToString(),
-                    Rating = s.Rating,
-                })
-                .ToList(),
-            WorkExperiences = resume
-                .WorkExperiences.Select(w => new PublicWorkExperienceDto
-                {
-                    JobTitle = w.JobTitle,
-                    CompanyName = w.CompanyName,
-                    Location = w.Location,
-                    StartDate = w.StartDate,
-                    EndDate = w.EndDate,
-                    IsCurrent = w.IsCurrent,
-                    Description = w.Description,
-                    Achievements =
-                        w.Achievements?.Select(a => a.Text).ToList() ?? new List<string>(),
-                    Technologies =
-                        w.WorkExperienceTechnologies?.Where(wt => wt.Technology != null)
-                            .Select(wt => wt.Technology!.Name)
-                            .ToList() ?? new List<string>(),
-                })
-                .ToList(),
-            EducationItems = resume
-                .EducationItems.Select(e => new PublicEducationDto
-                {
-                    Institution = e.Institution,
-                    Degree = e.Degree,
-                    FieldOfStudy = e.FieldOfStudy,
-                    StartDate = e.StartDate,
-                    EndDate = e.EndDate,
-                    Description = e.Description,
-                })
-                .ToList(),
-            Projects = resume
-                .Projects.Select(p => new PublicProjectDto
-                {
-                    Name = p.Name,
-                    Description = p.Description,
-                    Link = p.Link,
-                    StartDate = p.StartDate,
-                    EndDate = p.EndDate,
-                    Technologies = p.ProjectTechnologies.Select(pt => pt.Technology.Name).ToList(),
-                })
-                .ToList(),
-            Certificates = resume
-                .Certificates.Select(c => new PublicCertificateDto
-                {
-                    Name = c.Name,
-                    Issuer = c.Issuer,
-                    IssueDate = c.IssueDate,
-                    ExpiryDate = c.ExpiryDate,
-                    CredentialUrl = c.CredentialUrl,
-                })
-                .ToList(),
-            Languages = resume
-                .Languages.Select(l => new PublicLanguageDto
-                {
-                    Name = l.Name,
-                    Level = l.Level.ToString(),
-                })
-                .ToList(),
-            Awards = resume
-                .Awards.Select(a => new PublicAwardDto
-                {
-                    Title = a.Title,
-                    Issuer = a.Issuer,
-                    AwardedDate = a.AwardedDate,
-                    Description = a.Description,
-                })
-                .ToList(),
-            SocialLinks = resume
-                .SocialLinks.Select(sl => new PublicSocialLinkDto
-                {
-                    Platform = sl.Platform,
-                    Url = sl.Url,
-                })
-                .ToList(),
-            References = resume
-                .References.Select(r => new PublicReferenceDto
-                {
-                    Name = r.Name,
-                    Position = r.Position,
-                    Company = r.Company,
-                    Relationship = r.Relationship,
-                    // Email and Phone excluded for privacy
-                })
-                .ToList(),
+            Skills =
+                resume
+                    .Skills?.Select(s => new PublicSkillDto
+                    {
+                        Name = s.Name,
+                        Category = s.Category?.ToString() ?? string.Empty,
+                        Level = s.Level.ToString(),
+                        Rating = s.Rating,
+                    })
+                    .ToList() ?? new List<PublicSkillDto>(),
+            WorkExperiences =
+                resume
+                    .WorkExperiences?.Select(w => new PublicWorkExperienceDto
+                    {
+                        JobTitle = w.JobTitle,
+                        CompanyName = w.CompanyName,
+                        Location = w.Location,
+                        StartDate = w.StartDate,
+                        EndDate = w.EndDate,
+                        IsCurrent = w.IsCurrent,
+                        Description = w.Description,
+                        Achievements =
+                            w.Achievements?.Select(a => a.Text).ToList() ?? new List<string>(),
+                        Technologies =
+                            w.WorkExperienceTechnologies?.Where(wt => wt.Technology != null)
+                                .Select(wt => wt.Technology!.Name)
+                                .ToList() ?? new List<string>(),
+                    })
+                    .ToList() ?? new List<PublicWorkExperienceDto>(),
+            EducationItems =
+                resume
+                    .EducationItems?.Select(e => new PublicEducationDto
+                    {
+                        Institution = e.Institution,
+                        Degree = e.Degree,
+                        FieldOfStudy = e.FieldOfStudy,
+                        StartDate = e.StartDate,
+                        EndDate = e.EndDate,
+                        Description = e.Description,
+                    })
+                    .ToList() ?? new List<PublicEducationDto>(),
+            Projects =
+                resume
+                    .Projects?.Select(p => new PublicProjectDto
+                    {
+                        Name = p.Name,
+                        Description = p.Description,
+                        Link = p.Link,
+                        StartDate = p.StartDate,
+                        EndDate = p.EndDate,
+                        Technologies =
+                            p.ProjectTechnologies?.Where(pt => pt.Technology != null)
+                                .Select(pt => pt.Technology!.Name)
+                                .ToList() ?? new List<string>(),
+                    })
+                    .ToList() ?? new List<PublicProjectDto>(),
+            Certificates =
+                resume
+                    .Certificates?.Select(c => new PublicCertificateDto
+                    {
+                        Name = c.Name,
+                        Issuer = c.Issuer,
+                        IssueDate = c.IssueDate,
+                        ExpiryDate = c.ExpiryDate,
+                        CredentialUrl = c.CredentialUrl,
+                    })
+                    .ToList() ?? new List<PublicCertificateDto>(),
+            Languages =
+                resume
+                    .Languages?.Select(l => new PublicLanguageDto
+                    {
+                        Name = l.Name,
+                        Level = l.Level.ToString(),
+                    })
+                    .ToList() ?? new List<PublicLanguageDto>(),
+            Awards =
+                resume
+                    .Awards?.Select(a => new PublicAwardDto
+                    {
+                        Title = a.Title,
+                        Issuer = a.Issuer,
+                        AwardedDate = a.AwardedDate,
+                        Description = a.Description,
+                    })
+                    .ToList() ?? new List<PublicAwardDto>(),
+            SocialLinks =
+                resume
+                    .SocialLinks?.Select(sl => new PublicSocialLinkDto
+                    {
+                        Platform = sl.Platform,
+                        Url = sl.Url,
+                    })
+                    .ToList() ?? new List<PublicSocialLinkDto>(),
+            References =
+                resume
+                    .References?.Select(r => new PublicReferenceDto
+                    {
+                        Name = r.Name,
+                        Position = r.Position,
+                        Company = r.Company,
+                        Relationship = r.Relationship,
+                        // Email and Phone excluded for privacy
+                    })
+                    .ToList() ?? new List<PublicReferenceDto>(),
         };
     }
 }
