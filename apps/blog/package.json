@@ -1,13 +1,13 @@
 {
   "name": "@asafarim/blog",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
     "dev": "docusaurus start",
     "prestart": "npx kill-port 3000",
     "start": "docusaurus start --host blog.asafarim.local --port 3000",
-    "build": "NODE_ENV=production docusaurus build",
+    "build": "cross-env NODE_ENV=production docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -37,6 +37,7 @@
     "@docusaurus/types": "3.9.2",
     "@types/node": "^24.3.1",
     "@types/react": "^18.3.1",
+    "cross-env": "^7.0.3",
     "typescript": "~5.6.2"
   },
   "browserslist": {
