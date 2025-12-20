@@ -9,7 +9,7 @@
 
 .footer {
   font-size: var(--asm-font-size-sm, 0.875rem);
-  line-height: var(--line-height-relaxed, 1.625);
+  line-height: var(--asm-line-height-relaxed, 1.625);
   padding: var(--asm-space-12, 3rem) var(--asm-space-6, 1.5rem);
   width: 100%;
   margin-top: auto;
@@ -18,7 +18,7 @@
 
 .theme-layout-footer {
   font-size: var(--asm-font-size-sm, 0.875rem);
-  line-height: var(--line-height-relaxed, 1.625);
+  line-height: var(--asm-line-height-relaxed, 1.625);
   padding: var(--asm-space-12, 3rem) var(--asm-space-6, 1.5rem);
   width: 100%;
   margin-top: auto;
@@ -26,7 +26,7 @@
 }
 
 .footer-container {
-  max-width: var(--width-2xl, 1200px);
+  max-width: var(--asm-container-2xl, 1200px);
   margin: 0 auto;
   width: 100%;
   padding-left: var(--asm-space-4, 1rem);
@@ -70,7 +70,7 @@
   margin: 0 0 var(--asm-space-6, 1.25rem);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  line-height: var(--line-height-tight, 1.25);
+  line-height: var(--asm-line-height-tight, 1.25);
 }
 
 .footer-links-list {
@@ -83,7 +83,7 @@
 }
 
 .footer-links-item {
-  line-height: var(--line-height-normal, 1.5);
+  line-height: var(--asm-line-height-normal, 1.5);
 }
 
 .footer-link {
@@ -113,7 +113,7 @@
 
 .footer-copyright {
   font-size: var(--asm-font-size-xs, 0.75rem);
-  line-height: var(--line-height-normal, 1.5);
+  line-height: var(--asm-line-height-normal, 1.5);
 }
 
 .footer-social {

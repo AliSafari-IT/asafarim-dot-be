@@ -15,7 +15,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@asafarim/design-tokens": "^0.3.6",
+    "@asafarim/design-tokens": "^0.4.1",
     "@asafarim/react-themes": "workspace:*",
     "@asafarim/shared-i18n": "workspace:*",
     "@asafarim/shared-logging": "workspace:*",

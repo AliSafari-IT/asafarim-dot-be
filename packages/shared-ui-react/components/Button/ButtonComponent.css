@@ -371,25 +371,6 @@ a.btn--link {
   }
 }
 
-/* Theme-aware overrides */
-[data-theme="dark"] .btn--secondary {
-  background-color: var(--asm-color-surface-muted);
-  color: var(--asm-color-text);
-  border-color: var(--asm-color-border);
-}
-
-[data-theme="dark"] .btn--secondary:hover:not(:disabled) {
-  background-color: var(--asm-color-surface);
-}
-
-[data-theme="dark"] .btn--ghost:hover:not(:disabled) {
-  background-color: var(--asm-color-surface-muted);
-}
-
-[data-theme="dark"] .btn--ghost:active:not(:disabled) {
-  background-color: var(--asm-color-surface);
-}
-
 /* Class-based dark mode detection */
 .theme-dark .btn--secondary {
   background-color: var(--asm-color-surface-muted);

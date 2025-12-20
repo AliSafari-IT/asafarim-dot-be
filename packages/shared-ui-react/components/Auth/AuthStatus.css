@@ -18,11 +18,11 @@
   display: flex;
   align-items: center;
   padding: var(--asm-space-2, 0.5rem) var(--asm-space-4, 0.75rem);
-  border-radius: var(--global-border-radius-full, 9999px);
+  border-radius: var(--asm-radius-full, 9999px);
   color: var(--asm-color-text);
   font-weight: var(--asm-font-weight-500, 500);
   font-size: var(--asm-font-size-sm, 0.875rem);
-  line-height: var(--line-height-normal, 1.5);
+  line-height: var(--asm-line-height-normal, 1.5);
   white-space: nowrap;
   overflow: visible;
   max-width: 100%;
@@ -57,20 +57,9 @@
   color: var(--asm-color-success-700);
 }
 
-[data-theme="dark"] .auth-status-authenticated {
-  border-color: var(--asm-color-success-50);
-  color: var(--asm-color-brand-primary-500);
-}
-
 /* Button spacing */
 .authStatusContainer button {
   white-space: nowrap;
-}
-
-/* Dark theme adjustments */
-[data-theme="dark"] .auth-status-indicator {
-  border-color: var(--asm-color-primary-900);
-  color: var(--asm-color-text);
 }
 
 /* Responsive styles for medium screens */

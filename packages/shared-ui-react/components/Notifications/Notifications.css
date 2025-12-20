@@ -2,7 +2,7 @@
   position: fixed;
   top: var(--asm-space-6, 1.5rem);
   right: var(--asm-space-6, 1.5rem);
-  z-index: var(--z-notification, 1000);
+  z-index: var(--asm-z-toast, 1000);
   display: flex;
   flex-direction: column;
   gap: var(--asm-space-4, 1rem);
@@ -29,25 +29,25 @@
 .notification-success {
   background-color: var(--asm-color-success-500);
   color: white;
-  border-color: var(--color-success-500);
+  border-color: var(--asm-color-success-500);
 }
 
 .notification-error {
   background-color: var(--asm-color-danger-500);
   color: white;
-  border-color: var(--color-error-500);
+  border-color: var(--asm-color-danger-500);
 }
 
 .notification-warning {
   background-color: var(--asm-color-warning-500);
-  color: var(--color-neutral-900);
-  border-color: var(--color-warning-500);
+  color: var(--asm-color-neutral-900);
+  border-color: var(--asm-color-warning-500);
 }
 
 .notification-info {
-  background-color: var(--color-info);
+  background-color: var(--asm-color-info-500);
   color: white;
-  border-color: var(--color-info-muted);
+  border-color: var(--asm-color-info-100);
 }
 
 .notification-content {
@@ -58,7 +58,7 @@
   margin: 0;
   font-size: var(--asm-font-size-sm, 0.875rem);
   font-weight: var(--asm-font-weight-500, 500);
-  line-height: var(--line-height-relaxed, 1.625);
+  line-height: var(--asm-line-height-tight, 1.25);
 }
 
 .notification-close {
@@ -113,39 +113,6 @@
 
 .notification.removing {
   animation: slide-out 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
-}
-
-/* Dark theme adjustments */
-[data-theme="dark"] .notification {
-  box-shadow: var(--asm-effect-shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="dark"] .notification-success {
-  background-color: var(--asm-color-success-50);
-  color: var(--color-success-950);
-  border-color: var(--color-success-500);
-}
-
-[data-theme="dark"] .notification-error {
-  background-color: var(--asm-color-danger-50);
-  color: var(--color-error-950);
-  border-color: var(--color-error-500);
-}
-
-[data-theme="dark"] .notification-warning {
-  background-color: var(--color-warning-50);
-  color: var(--color-warning-950);
-  border-color: var(--color-warning-500);
-}
-
-[data-theme="dark"] .notification-info {
-  background-color: var(--color-info-muted);
-  color: white;
-  border-color: var(--color-info);
-}
-
-[data-theme="dark"] .notification-close:hover {
-  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive adjustments */

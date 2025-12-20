@@ -583,27 +583,6 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Dark Theme Overrides
-   ----------------------------------------------------------------------------- */
-
-[data-theme="dark"] .avatar-menu {
-  background: var(--asm-color-surface);
-  border-color: var(--asm-color-border);
-}
-
-[data-theme="dark"] .avatar-menu__header {
-  background: var(--asm-color-surface-muted);
-}
-
-[data-theme="dark"] .avatar-menu__activity {
-  background: var(--asm-color-surface-muted);
-}
-
-[data-theme="dark"] .avatar-menu-overlay--mobile {
-  background: rgba(0, 0, 0, 0.7);
-}
-
-/* -----------------------------------------------------------------------------
    Reduced Motion
    ----------------------------------------------------------------------------- */
 

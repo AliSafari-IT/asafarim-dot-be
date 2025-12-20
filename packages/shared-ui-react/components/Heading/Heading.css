@@ -198,27 +198,6 @@
   font-size: clamp(3rem, 6vw, 3.5rem);
 }
 
-/* Dark mode adjustments */
-[data-theme="dark"] .heading,
-.dark .heading {
-  color: var(--color-foreground, #f1f5f9);
-}
-
-[data-theme="dark"] .heading--color-muted,
-.dark .heading--color-muted {
-  color: var(--color-foreground-muted, #94a3b8);
-}
-
-[data-theme="dark"] .heading--subtitle,
-.dark .heading--subtitle {
-  color: var(--color-foreground-muted, #94a3b8);
-}
-
-[data-theme="dark"] .heading--caption,
-.dark .heading--caption {
-  color: var(--color-foreground-muted, #94a3b8);
-}
-
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .heading--h1,
