@@ -3,45 +3,56 @@ import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
 
-function getWorkspaceAliases(baseDir: string, scope = '@asafarim') {
-  const packagesDir = path.resolve(baseDir, '../../packages');
-  const libsDir = path.resolve(baseDir, '../../libs');
+// Helper to create aliases for workspace packages
+function getWorkspaceAliases(appDir: string, packageJson: unknown): Record<string, string> {
   const aliases: Record<string, string> = {}
-
-  // Scan packages directory
-  if (fs.existsSync(packagesDir)) {
-    for (const pkgName of fs.readdirSync(packagesDir)) {
-      const pkgPath = path.join(packagesDir, pkgName)
-      const pkgJsonPath = path.join(pkgPath, 'package.json')
-
-      if (!fs.existsSync(pkgJsonPath)) continue
-
-      const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'))
-      const name = pkgJson.name
-
-      if (name?.startsWith(scope)) {
-        // Prefer src if it exists
-        const srcPath = path.join(pkgPath, 'src')
-        aliases[name] = fs.existsSync(srcPath) ? srcPath : pkgPath
+  const dependencies = (packageJson as { dependencies?: Record<string, string> }).dependencies || {}
+  
+  // Only alias packages that are declared as workspace:* dependencies
+  for (const [packageName, version] of Object.entries(dependencies)) {
+    if (version === 'workspace:*') {
+      // Find the package directory - look in both packages and libs folders
+      const monorepoRoot = path.resolve(appDir, '../..')
+      
+      // Try packages folder first
+      let packageDir: string | undefined
+      const packagesDir = path.join(monorepoRoot, 'packages')
+      if (fs.existsSync(packagesDir)) {
+        packageDir = fs.readdirSync(packagesDir).find(dir => {
+          const pkgPath = path.join(packagesDir, dir, 'package.json')
+          if (fs.existsSync(pkgPath)) {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+            return pkg.name === packageName
+          }
+          return false
+        })
       }
-    }
-  }
-
-  // Scan libs directory
-  if (fs.existsSync(libsDir)) {
-    for (const pkgName of fs.readdirSync(libsDir)) {
-      const pkgPath = path.join(libsDir, pkgName)
-      const pkgJsonPath = path.join(pkgPath, 'package.json')
-
-      if (!fs.existsSync(pkgJsonPath)) continue
-
-      const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'))
-      const name = pkgJson.name
-
-      if (name?.startsWith(scope)) {
-        // Prefer src if it exists
-        const srcPath = path.join(pkgPath, 'src')
-        aliases[name] = fs.existsSync(srcPath) ? srcPath : pkgPath
+      
+      // If not found in packages, try libs folder
+      if (!packageDir) {
+        const libsDir = path.join(monorepoRoot, 'libs')
+        if (fs.existsSync(libsDir)) {
+          packageDir = fs.readdirSync(libsDir).find(dir => {
+            const pkgPath = path.join(libsDir, dir, 'package.json')
+            if (fs.existsSync(pkgPath)) {
+              const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+              return pkg.name === packageName
+            }
+            return false
+          })
+          
+          if (packageDir) {
+            const srcPath = path.join(libsDir, packageDir, 'src')
+            aliases[packageName] = fs.existsSync(srcPath) ? srcPath : path.join(libsDir, packageDir)
+            continue
+          }
+        }
+      }
+      
+      // If found in packages, alias it
+      if (packageDir) {
+        const srcPath = path.join(packagesDir, packageDir, 'src')
+        aliases[packageName] = fs.existsSync(srcPath) ? srcPath : path.join(packagesDir, packageDir)
       }
     }
   }
@@ -57,7 +68,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      ...getWorkspaceAliases(__dirname),
+      ...getWorkspaceAliases(__dirname, JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8'))),
     },
     dedupe: ['react', 'react-dom'],
   },
@@ -65,7 +76,7 @@ export default defineConfig({
     include: [
       'react',
       'react-dom',
-      ...Object.keys(getWorkspaceAliases(__dirname)),
+      ...Object.keys(getWorkspaceAliases(__dirname, JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8')))),
     ],
     force: true,
   },
