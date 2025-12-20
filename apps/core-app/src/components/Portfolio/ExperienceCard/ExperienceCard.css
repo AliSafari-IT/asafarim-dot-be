@@ -1,8 +1,8 @@
 .experience-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-md);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-4);
   transition: box-shadow 0.2s ease;
 }
 
@@ -13,8 +13,8 @@
 .experience-card__header {
   display: flex;
   justify-content: space-between;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
+  gap: var(--asm-space-4);
+  margin-bottom: var(--asm-space-2);
 }
 
 .experience-card__main {
@@ -22,16 +22,16 @@
 }
 
 .experience-card__position {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--asm-font-size-lg);
+  font-weight: var(--asm-font-weight-600);
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-xs) 0;
+  margin: 0 0 var(--asm-space-1) 0;
 }
 
 .experience-card__company {
-  font-size: var(--font-size-base);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--asm-font-size-md);
+  color: var(--asm-color-brand-primary-600);
+  font-weight: var(--asm-font-weight-500);
   margin: 0;
 }
 
@@ -39,26 +39,26 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  gap: var(--asm-space-1);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
 }
 
 .experience-card__duration {
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--asm-font-weight-500);
 }
 
 .experience-card__location {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--asm-space-1);
 }
 
 .experience-card__description {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
   line-height: 1.6;
-  margin: var(--spacing-sm) 0 0 0;
+  margin: var(--asm-space-2) 0 0 0;
 }
 
 /* Responsive */

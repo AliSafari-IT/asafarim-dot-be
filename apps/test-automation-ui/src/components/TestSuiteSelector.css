@@ -1,10 +1,10 @@
 .suite-container {
-  background: var(--color-surface);
+  background: var(--asm-color-surface);
   color: var(--color-neutral-950);
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
 }
 
 .suite-content {
@@ -27,13 +27,13 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 0.25rem 0;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .suite-subtitle {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 .suite-selection-summary {
@@ -53,20 +53,20 @@
 .suite-filter-label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
 }
 
 .suite-filter-hint {
   font-size: 0.75rem;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 .suite-filter-select {
   min-width: 260px;
   padding: 0.45rem 0.75rem;
   border-radius: 0.375rem;
-  border: 1px solid var(--color-border);
-  background: var(--color-background);
+  border: 1px solid var(--asm-color-border);
+  background: var(--asm-color-bg);
   color: var(--color-text-primary);
   font-size: 0.875rem;
   line-height: 1.4;
@@ -83,7 +83,7 @@
 /* Functional Requirement level */
 .suite-fr-group {
   border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   background: var(--color-neutral-50);
   padding: 0.75rem 0.75rem 0.5rem;
 }
@@ -110,12 +110,12 @@
 .suite-fr-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--color-primary-500);
+  color: var(--asm-color-brand-primary-500);
 }
 
 .suite-fr-count {
   font-size: 0.75rem;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 .suite-fr-body {
@@ -127,8 +127,8 @@
 /* Fixture level */
 .suite-fixture-group {
   border-radius: 0.375rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
 }
 
 .suite-fixture-header {
@@ -153,12 +153,12 @@
 .suite-fixture-name {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .suite-fixture-count {
   font-size: 0.75rem;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 .suite-fixture-suites {
@@ -190,11 +190,11 @@
 }
 
 .suite-item:hover {
-  background: var(--color-neutral-200);
+  background: var(--asm-color-neutral-200);
 }
 
 .suite-item--selected {
-  border-color: var(--color-primary-400);
+  border-color: var(--asm-color-primary-400);
 }
 
 .suite-checkbox {
@@ -204,7 +204,7 @@
 }
 
 .suite-checkbox:hover {
-  fill: var(--color-primary-500);
+  fill: var(--asm-color-brand-primary-500);
 }
 
 .suite-info {
@@ -215,13 +215,13 @@
 .suite-name {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--color-primary-400);
+  color: var(--asm-color-primary-400);
   margin-bottom: 0.25rem;
 }
 
 .suite-desc {
   font-size: 0.75rem;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
   margin-bottom: 0.25rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -232,7 +232,7 @@
   display: flex;
   align-items: center;
   font-size: 0.75rem;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 .suite-icon {
@@ -259,7 +259,7 @@
 }
 
 .status-icon.running {
-  color: var(--color-primary-500);
+  color: var(--asm-color-brand-primary-500);
   animation: spin 1s linear infinite;
 }
 

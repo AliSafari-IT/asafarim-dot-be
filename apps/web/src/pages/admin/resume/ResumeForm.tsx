@@ -265,7 +265,7 @@ const ResumeForm = () => {
               <div className="form-actions">
                 <Button
                   type="button"
-                  variant="secondary"
+                  variant="warning"
                   onClick={() => navigate("/admin/entities/resumes")}
                   disabled={loading}
                 >
@@ -273,7 +273,7 @@ const ResumeForm = () => {
                 </Button>
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="success"
                   disabled={loading || !formData.title.trim()}
                 >
                   {loading

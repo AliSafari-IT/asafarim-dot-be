@@ -1,8 +1,8 @@
 /* Header Component - Using Design Tokens */
 .header {
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-background);
-  padding: var(--spacing-md, 1rem) 0;
+  border-bottom: 1px solid var(--asm-color-border);
+  background-color: var(--asm-color-bg);
+  padding: var(--asm-space-4, 1rem) 0;
   position: sticky;
   top: 0;
   z-index: var(--z-sticky, 100);
@@ -12,8 +12,8 @@
 
 /* Dark theme adjustments */
 [data-theme="dark"] .header {
-  background-color: var(--color-background);
-  border-bottom-color: var(--color-border);
+  background-color: var(--asm-color-bg);
+  border-bottom-color: var(--asm-color-border);
 }
 
 /* Reduced motion */
@@ -47,37 +47,37 @@
 
 /* Responsive padding - increases with screen size */
 .layout-container--padded {
-  padding-left: var(--spacing-md, 1rem);
-  padding-right: var(--spacing-md, 1rem);
-  padding-top: var(--spacing-lg, 1.5rem);
-  padding-bottom: var(--spacing-lg, 1.5rem);
+  padding-left: var(--asm-space-4, 1rem);
+  padding-right: var(--asm-space-4, 1rem);
+  padding-top: var(--asm-space-6, 1.5rem);
+  padding-bottom: var(--asm-space-6, 1.5rem);
 }
 
 /* Tablet and up: increase padding */
 @media (min-width: 640px) {
   .layout-container--padded {
-    padding-left: var(--spacing-lg, 1.5rem);
-    padding-right: var(--spacing-lg, 1.5rem);
-    padding-top: var(--spacing-xl, 2rem);
-    padding-bottom: var(--spacing-xl, 2rem);
+    padding-left: var(--asm-space-6, 1.5rem);
+    padding-right: var(--asm-space-6, 1.5rem);
+    padding-top: var(--asm-space-8, 2rem);
+    padding-bottom: var(--asm-space-8, 2rem);
   }
 }
 
 /* Desktop and up: increase padding more */
 @media (min-width: 1024px) {
   .layout-container--padded {
-    padding-left: var(--spacing-xl, 2rem);
-    padding-right: var(--spacing-xl, 2rem);
-    padding-top: var(--spacing-2xl, 3rem);
-    padding-bottom: var(--spacing-2xl, 3rem);
+    padding-left: var(--asm-space-8, 2rem);
+    padding-right: var(--asm-space-8, 2rem);
+    padding-top: var(--asm-space-12, 3rem);
+    padding-bottom: var(--asm-space-12, 3rem);
   }
 }
 
 /* Large desktop: maximum padding */
 @media (min-width: 1280px) {
   .layout-container--padded {
-    padding-left: var(--spacing-2xl, 3rem);
-    padding-right: var(--spacing-2xl, 3rem);
+    padding-left: var(--asm-space-12, 3rem);
+    padding-right: var(--asm-space-12, 3rem);
   }
 }
 

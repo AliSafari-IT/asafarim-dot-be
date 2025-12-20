@@ -15,6 +15,7 @@
     "@asafarim/react-themes": "workspace:*",
     "@asafarim/shared-i18n": "workspace:*",
     "@asafarim/shared-ui-react": "workspace:*",
+    "@asafarim/design-tokens": "^0.3.6",
     "@asafarim/toast": "1.2.0",
     "framer-motion": "^12.23.12",
     "html2canvas": "^1.4.1",

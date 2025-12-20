@@ -17,7 +17,7 @@
   justify-content: center;
   flex-direction: column;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
   overflow: hidden;
 }
 
@@ -102,7 +102,7 @@
 
 .language-dropdown {
   position: absolute;
-  top: calc(100% + var(--spacing-sm, 0.5rem));
+  top: calc(100% + var(--asm-space-2, 0.5rem));
   left: 80%;
   transform: translateX(-15%);
   z-index: var(--z-dropdown, 1000);
@@ -111,22 +111,22 @@
 
 .dropdown-arrow {
   position: absolute;
-  top: calc(-1 * var(--spacing-sm, 0.5rem));
+  top: calc(-1 * var(--asm-space-2, 0.5rem));
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: var(--spacing-sm, 0.5rem) solid transparent;
-  border-right: var(--spacing-sm, 0.5rem) solid transparent;
-  border-bottom: var(--spacing-sm, 0.5rem) solid var(--color-surface);
+  border-left: var(--asm-space-2, 0.5rem) solid transparent;
+  border-right: var(--asm-space-2, 0.5rem) solid transparent;
+  border-bottom: var(--asm-space-2, 0.5rem) solid var(--asm-color-surface);
   filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.1));
 }
 
 .dropdown-content {
-  background: var(--color-surface);
-  border-radius: var(--global-border-radius-md, 0.5rem);
-  box-shadow: var(--global-shadow-lg);
-  border: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-md, 0.5rem);
+  box-shadow: var(--asm-effect-shadow-lg);
+  border: 1px solid var(--asm-color-border);
   overflow: hidden;
   animation: dropdownFadeIn 0.2s ease-out;
 }
@@ -145,29 +145,29 @@
 .language-option {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm, 0.5rem);
+  gap: var(--asm-space-2, 0.5rem);
   width: 100%;
-  padding:var(--spacing-sm, 0.5rem);
+  padding:var(--asm-space-2, 0.5rem);
   border: none;
   background: none;
   text-align: right;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: var(--global-font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-size: var(--asm-font-size-sm, 0.875rem);
+  font-weight: var(--asm-font-weight-500, 500);
   line-height: var(--line-height-normal, 1.5);
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .language-option:hover:not(:disabled) {
-  background: var(--bg-hover-color);
-  color: var(--color-primary);
+  background: var(--asm-color-surface-muted);
+  color: var(--asm-color-brand-primary-600);
 }
 
 .language-option.active {
-  background: var(--color-primary-50);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-semibold, 600);
+  background: var(--asm-color-primary-50);
+  color: var(--asm-color-brand-primary-600);
+  font-weight: var(--asm-font-weight-600, 600);
 }
 
 .option-icon {
@@ -181,28 +181,28 @@
 }
 
 .check-icon {
-  color: var(--color-success);
-  font-weight: var(--font-weight-bold, 700);
-  font-size: var(--global-font-size-sm, 0.875rem);
+  color: var(--asm-color-success-500);
+  font-weight: var(--asm-font-weight-700, 700);
+  font-size: var(--asm-font-size-sm, 0.875rem);
 }
 
 .language-tooltip {
   position: absolute;
-  top: calc(100% + var(--spacing-lg, 1.5rem));
+  top: calc(100% + var(--asm-space-6, 1.5rem));
   left: 50%;
   transform: translateX(-50%);
   background: var(--color-neutral-900);
-  color: var(--color-white);
-  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 0.75rem);
-  border-radius: var(--global-border-radius-sm, 0.25rem);
-  font-size: var(--global-font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-medium, 500);
+  color: white;
+  padding: var(--asm-space-2, 0.5rem) var(--asm-space-4, 0.75rem);
+  border-radius: var(--asm-radius-sm, 0.25rem);
+  font-size: var(--asm-font-size-xs, 0.75rem);
+  font-weight: var(--asm-font-weight-500, 500);
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
   z-index: calc(var(--z-dropdown, 1000) + 1);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .language-switcher-creative:hover .language-tooltip {
@@ -216,27 +216,27 @@
 }
 
 .language-select {
-  padding: var(--spacing-sm, 0.5rem) 1.75rem var(--spacing-sm, 0.5rem) var(--spacing-sm, 0.625rem);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-sm, 0.25rem);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--global-font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-medium, 500);
+  padding: var(--asm-space-2, 0.5rem) 1.75rem var(--asm-space-2, 0.5rem) var(--asm-space-2, 0.625rem);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm, 0.25rem);
+  background-color: var(--asm-color-surface);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-xs, 0.75rem);
+  font-weight: var(--asm-font-weight-500, 500);
   line-height: var(--line-height-normal, 1.5);
   cursor: pointer;
   transition: all 0.2s ease;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right var(--spacing-sm, 0.5rem) center;
+  background-position: right var(--asm-space-2, 0.5rem) center;
   background-size: 10px;
   min-height: 2rem;
 }
 
 .language-select:hover:not(:disabled) {
   border-color: var(--border-hover-color);
-  background-color: var(--bg-hover-color);
+  background-color: var(--asm-color-surface-muted);
 }
 
 .language-select:focus {
@@ -260,13 +260,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 0.625rem);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-sm, 0.25rem);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--global-font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-semibold, 600);
+  padding: var(--asm-space-2, 0.5rem) var(--asm-space-4, 0.625rem);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm, 0.25rem);
+  background-color: var(--asm-color-surface);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-xs, 0.75rem);
+  font-weight: var(--asm-font-weight-600, 600);
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 2.5rem;
@@ -275,7 +275,7 @@
 
 .language-switcher-toggle:hover:not(:disabled) {
   border-color: var(--border-hover-color);
-  background-color: var(--bg-hover-color);
+  background-color: var(--asm-color-surface-muted);
   transform: translateY(-1px);
 }
 
@@ -305,22 +305,22 @@
 
 /* Dark theme adjustments */
 [data-theme="dark"] .dropdown-content {
-  background: var(--color-surface);
-  border-color: var(--color-border);
-  box-shadow: var(--global-shadow-lg);
+  background: var(--asm-color-surface);
+  border-color: var(--asm-color-border);
+  box-shadow: var(--asm-effect-shadow-lg);
 }
 
 [data-theme="dark"] .language-option:hover:not(:disabled) {
-  background: var(--bg-hover-color);
+  background: var(--asm-color-surface-muted);
 }
 
 [data-theme="dark"] .language-option.active {
   background: var(--color-primary-950);
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
 }
 
 [data-theme="dark"] .dropdown-arrow {
-  border-bottom-color: var(--color-surface);
+  border-bottom-color: var(--asm-color-surface);
 }
 
 [data-theme="dark"] .language-tooltip {

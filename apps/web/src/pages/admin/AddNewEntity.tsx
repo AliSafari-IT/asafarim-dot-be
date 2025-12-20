@@ -756,34 +756,34 @@ const AddNewEntity = () => {
                   placeholder="Describe an achievement..."
                 />
                 {achievements.length > 1 && (
-                  <button
+                  <Button
                     type="button"
-                    className="btn-remove"
+                    variant="danger"
                     onClick={() => removeAchievement(index)}
                   >
                     Remove
-                  </button>
+                  </Button>
                 )}
               </div>
             ))}
-            <button
+            <Button
               type="button"
-              className="btn btn-secondary"
+              variant="secondary"
               onClick={addAchievement}
             >
               + Add Achievement
-            </button>
+            </Button>
           </div>
         )}
 
         <div className="form-actions">
-          <button
+          <Button
             type="submit"
-            className="btn btn-primary"
+            variant="primary"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Creating..." : `Create ${entity.displayName}`}
-          </button>
+          </Button>
           <Button
             variant="secondary"
             onClick={() => navigate(`/admin/entities/${entityType}`)}

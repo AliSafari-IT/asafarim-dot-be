@@ -1,5 +1,5 @@
 import * as signalR from '@microsoft/signalr';
-import { logger } from '../utils/logger';
+import { logger } from '../utils/logger.js';
 
 export interface TestUpdateMessage {
     testRunId?: string;

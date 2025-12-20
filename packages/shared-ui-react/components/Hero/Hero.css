@@ -85,31 +85,31 @@
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
+  gap: var(--asm-space-2);
+  padding: var(--asm-space-2) var(--asm-space-4);
   background: linear-gradient(
     135deg,
-    var(--color-primary-50) 0%,
-    var(--color-primary-100) 100%
+    var(--asm-color-primary-50) 0%,
+    var(--asm-color-primary-100) 100%
   );
   border: 1px solid var(--color-primary-200);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-primary-700);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--asm-radius-full);
+  font-size: var(--asm-font-size-sm);
+  font-weight: var(--asm-font-weight-500);
+  color: var(--asm-color-brand-primary-700);
+  box-shadow: var(--asm-effect-shadow-sm);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hero-badge:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .hero-badge-dot {
   width: 8px;
   height: 8px;
-  background: var(--color-primary);
+  background: var(--asm-color-brand-primary-600);
   border-radius: 50%;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -123,20 +123,20 @@
    ============================================ */
 
 .hero-title {
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  color: var(--color-foreground);
+  font-family: var(--asm-font-family-primary);
+  font-size: var(--asm-font-size-3xl);
+  font-weight: var(--asm-font-weight-700);
+  line-height: var(--asm-line-height-tight);
+  color: var(--asm-color-text);
   letter-spacing: -0.02em;
   margin: 0;
   animation: fadeInUp 0.7s ease-out 0.1s both;
 }
 
 .hero-subtitle {
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-primary-700);
+  font-size: var(--asm-font-size-lg);
+  line-height: var(--asm-line-height-relaxed);
+  color: var(--asm-color-brand-primary-700);
   margin: 0;
   max-width: 600px;
   animation: fadeInUp 0.8s ease-out 0.2s both;
@@ -158,7 +158,7 @@
   }
   
   .hero-subtitle {
-    font-size: var(--font-size-xl);
+    font-size: var(--asm-font-size-xl);
   }
 }
 
@@ -175,7 +175,7 @@
 .hero-features {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--asm-space-3);
   padding: 0;
   margin: 0;
   list-style: none;
@@ -185,10 +185,10 @@
 .hero-feature-item {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-3);
-  font-size: var(--font-size-base);
-  color: var(--color-primary-600);
-  line-height: var(--line-height-relaxed);
+  gap: var(--asm-space-3);
+  font-size: var(--asm-font-size-md);
+  color: var(--asm-color-brand-primary-600);
+  line-height: var(--asm-line-height-relaxed);
 }
 
 .hero-feature-icon {
@@ -199,10 +199,10 @@
   height: 20px;
   min-width: 20px;
   border-radius: 50%;
-  background: var(--color-primary-100);
-  color: var(--color-primary-700);
+  background: var(--asm-color-primary-100);
+  color: var(--asm-color-brand-primary-700);
   font-size: 12px;
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--asm-font-weight-700);
   margin-top: 2px;
 }
 
@@ -233,10 +233,10 @@
 
 .hero-media-card {
   position: relative;
-  border-radius: var(--radius-xl);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: var(--space-6);
+  border-radius: var(--asm-radius-xl);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  padding: var(--asm-space-6);
   box-shadow: 
     0 10px 30px -10px rgba(0, 0, 0, 0.1),
     0 0 0 1px rgba(0, 0, 0, 0.02);
@@ -248,7 +248,7 @@
   content: '';
   position: absolute;
   inset: -1px;
-  border-radius: var(--radius-xl);
+  border-radius: var(--asm-radius-xl);
   padding: 1px;
   background: linear-gradient(
     135deg,
@@ -281,7 +281,7 @@
 
 @media (min-width: 768px) {
   .hero-media-card {
-    padding: var(--space-8);
+    padding: var(--asm-space-8);
   }
 }
 
@@ -315,8 +315,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, var(--color-border) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+    linear-gradient(to right, var(--asm-color-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--asm-color-border) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(
     ellipse at 50% 20%,
@@ -334,7 +334,7 @@
   height: 400px;
   background: linear-gradient(
     180deg,
-    var(--color-surface) 0%,
+    var(--asm-color-surface) 0%,
     transparent 100%
   );
   opacity: 0.6;
@@ -464,7 +464,7 @@
   }
   
   .hero-media-card {
-    padding: var(--space-6);
+    padding: var(--asm-space-6);
   }
 }
 
@@ -478,7 +478,7 @@
   }
   
   .hero-subtitle {
-    font-size: var(--font-size-base);
+    font-size: var(--asm-font-size-md);
   }
 }
 

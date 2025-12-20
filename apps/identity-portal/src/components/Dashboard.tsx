@@ -75,7 +75,7 @@ export const Dashboard = () => {
                 (window.location.href = (user?.roles || []).some((r: string) =>
                   /^(admin|superadmin)$/i.test(r)
                 )
-                  ? "/admin/user-profile/"
+                  ? "/admin-area/user-profile"
                   : "/me")
               }
               variant="success"

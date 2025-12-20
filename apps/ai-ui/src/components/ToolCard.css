@@ -2,18 +2,18 @@
 
 .ai-ui-tool-card {
   background: var(--color-primary-0);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-sm);
+  border: var(--border-width) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-xl);
+  padding: var(--asm-space-6);
+  transition: all var(--asm-motion-duration-normal);
+  box-shadow: var(--asm-effect-shadow-sm);
   height: 100%;
 }
 
 .ai-ui-tool-card:hover {
-  transform: translateY(calc(-1 * var(--space-1)));
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-primary);
+  transform: translateY(calc(-1 * var(--asm-space-1)));
+  box-shadow: var(--asm-effect-shadow-lg);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 .ai-ui-tool-card-link {
@@ -27,13 +27,13 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: var(--space-3);
+  gap: var(--asm-space-3);
 }
 
 .ai-ui-tool-card-icon {
-  font-size: var(--font-size-3xl);
+  font-size: var(--asm-font-size-3xl);
   line-height: var(--line-height-none);
-  transition: transform var(--transition-normal);
+  transition: transform var(--asm-motion-duration-normal);
 }
 
 .ai-ui-tool-card:hover .ai-ui-tool-card-icon {
@@ -41,18 +41,18 @@
 }
 
 .ai-ui-tool-card-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--asm-font-size-xl);
+  font-weight: var(--asm-font-weight-600);
   color: var(--color-success-500);
   margin: 0;
   letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-tight);
+  line-height: var(--asm-line-height-tight);
 }
 
 .ai-ui-tool-card-description {
-  font-size: var(--font-size-base);
-  color: var(--color-primary-900);
-  line-height: var(--line-height-relaxed);
+  font-size: var(--asm-font-size-md);
+  color: var(--asm-color-primary-900);
+  line-height: var(--asm-line-height-relaxed);
   margin: 0;
   flex-grow: 1;
 }
@@ -61,14 +61,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--space-8);
-  height: var(--space-8);
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
+  width: var(--asm-space-8);
+  height: var(--asm-space-8);
+  border-radius: var(--asm-radius-full);
+  background: var(--asm-color-brand-primary-600);
   color: var(--color-primary-contrast);
-  transition: all var(--transition-normal);
+  transition: all var(--asm-motion-duration-normal);
   opacity: 0;
-  transform: translateX(calc(-1 * var(--space-2)));
+  transform: translateX(calc(-1 * var(--asm-space-2)));
 }
 
 .ai-ui-tool-card:hover .ai-ui-tool-card-arrow {
@@ -79,14 +79,14 @@
 /* Responsive adjustments */
 @media (max-width: 767px) {
   .ai-ui-tool-card {
-    padding: var(--space-5);
+    padding: var(--asm-space-5);
   }
   
   .ai-ui-tool-card-title {
-    font-size: var(--font-size-lg);
+    font-size: var(--asm-font-size-lg);
   }
   
   .ai-ui-tool-card-description {
-    font-size: var(--font-size-sm);
+    font-size: var(--asm-font-size-sm);
   }
 }

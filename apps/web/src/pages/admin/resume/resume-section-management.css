@@ -6,7 +6,7 @@
 .resume-section-container {
   max-width: 1200px;
   margin: 0 auto;
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -18,19 +18,19 @@
   align-items: flex-start;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--asm-color-border);
 }
 
 .resume-section-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   margin: 0 0 0.5rem 0;
 }
 
 .resume-section-subtitle {
   font-size: 1rem;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
   margin: 0;
 }
 
@@ -40,14 +40,14 @@
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: var(--color-surface-muted);
+  background: var(--asm-color-neutral-100);
   border-radius: 8px;
-  border-left: 4px solid var(--color-primary);
+  border-left: 4px solid var(--asm-color-brand-primary-500);
 }
 
 .resume-selector-label {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   margin-right: 1rem;
   font-size: 1rem;
 }
@@ -56,21 +56,21 @@
   flex: 1;
   max-width: 400px;
   padding: 0.75rem 1rem;
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--asm-color-border);
   border-radius: 6px;
   font-size: 1rem;
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .resume-selector-dropdown:hover {
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-500);
 }
 
 .resume-selector-dropdown:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-500);
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
 }
 
@@ -83,8 +83,8 @@
 }
 
 .resume-section-card {
-  background: var(--color-background);
-  border: 2px solid var(--color-border);
+  background: var(--asm-color-bg);
+  border: 2px solid var(--asm-color-border);
   border-left-width: 4px;
   border-radius: 12px;
   padding: 1.5rem;
@@ -126,12 +126,12 @@
 .resume-section-card-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   margin: 0;
 }
 
 .resume-section-card-description {
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
   font-size: 0.95rem;
   line-height: 1.5;
   margin: 0;
@@ -142,11 +142,11 @@
   display: flex;
   justify-content: flex-end;
   padding-top: 0.5rem;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--asm-color-border);
 }
 
 .resume-section-card-action {
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-500);
   font-weight: 600;
   font-size: 0.9rem;
   transition: transform 0.2s;
@@ -164,7 +164,7 @@
 
 .empty-state-message {
   font-size: 1.125rem;
-  color: var(--color-accent-900);
+  color: var(--asm-color-text-900);
   margin-bottom: 2rem;
 }
 

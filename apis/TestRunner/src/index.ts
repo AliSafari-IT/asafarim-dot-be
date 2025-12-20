@@ -3,9 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import path from 'path';
-import { TestRunnerService } from './services/TestRunnerService';
-import { SignalRService } from './services/SignalRService';
-import { logger } from './utils/logger';
+import { TestRunnerService } from './services/TestRunnerService.js';
+import { SignalRService } from './services/SignalRService.js';
+import { logger } from './utils/logger.js';
 
 dotenv.config();
 

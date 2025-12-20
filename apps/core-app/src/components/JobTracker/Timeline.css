@@ -1,17 +1,17 @@
 .timeline-container {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-md);
-  padding: var(--spacing-xl);
-  margin-top: var(--spacing-xl);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-8);
+  margin-top: var(--asm-space-8);
 }
 
 /* Progress Overview */
 .timeline-overview {
   margin-bottom: var(--spacing-2xl);
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-  border-radius: var(--global-border-radius-md);
+  border-radius: var(--asm-radius-md);
   border: 1px solid rgba(59, 130, 246, 0.1);
 }
 
@@ -19,31 +19,31 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--asm-space-4);
 }
 
 .overview-header h3 {
   margin: 0;
-  font-size: var(--global-font-size-xl);
+  font-size: var(--asm-font-size-xl);
   font-weight: var(--global-font-weight-semibold);
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .progress-stats {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--asm-space-1);
 }
 
 .progress-percentage {
-  font-size: var(--global-font-size-2xl);
+  font-size: var(--asm-font-size-2xl);
   font-weight: var(--global-font-weight-bold);
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
 }
 
 .progress-label {
-  font-size: var(--global-font-size-xs);
+  font-size: var(--asm-font-size-xs);
   color: var(--color-foreground-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -51,16 +51,16 @@
 
 .overall-progress-bar {
   width: 100%;
-  height: var(--spacing-sm);
+  height: var(--asm-space-2);
   background-color: rgba(59, 130, 246, 0.1);
-  border-radius: var(--global-border-radius-sm);
+  border-radius: var(--asm-radius-sm);
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  border-radius: var(--global-border-radius-sm);
+  background: linear-gradient(90deg, var(--asm-color-brand-primary-600) 0%, var(--color-primary-dark) 100%);
+  border-radius: var(--asm-radius-sm);
   transition: width 0.6s ease;
 }
 
@@ -68,32 +68,32 @@
 .timeline-stages {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
   margin-bottom: var(--spacing-2xl);
 }
 
 .timeline-stage {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-sm);
-  padding: var(--spacing-md);
-  transition: all var(--global-transition-fast) ease;
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
+  padding: var(--asm-space-4);
+  transition: all var(--asm-motion-duration-fast) ease;
 }
 
 .timeline-stage:hover {
   transform: translateY(-2px);
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .timeline-stage.completed {
-  border-color: var(--color-success);
+  border-color: var(--asm-color-success-500);
   background-color: rgba(34, 197, 93, 0.05);
 }
 
 .stage-header {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
 }
 
 .stage-indicator {
@@ -118,13 +118,13 @@
   margin: 0 0 4px 0;
   font-size: 16px;
   font-weight: 600;
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
 }
 
 .stage-description {
   margin: 0 0 12px 0;
   font-size: 13px;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   line-height: 1.4;
 }
 
@@ -151,14 +151,14 @@
 .stage-progress-text {
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   min-width: 30px;
   text-align: right;
 }
 
 /* Milestones Section */
 .milestones-section {
-  border-top: 1px solid var(--card-border-color, var(--color-border));
+  border-top: 1px solid var(--card-border-color, var(--asm-color-border));
   padding-top: 24px;
 }
 
@@ -173,11 +173,11 @@
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
 }
 
 .add-milestone-btn {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -195,8 +195,8 @@
 
 /* Add Milestone Form */
 .add-milestone-form {
-  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
-  border: 1px solid var(--card-border-color, var(--color-border));
+  background-color: var(--card-row-bg, var(--card-bg, var(--asm-color-bg)));
+  border: 1px solid var(--card-border-color, var(--asm-color-border));
   border-radius: var(--global-border-radius-sm, 6px);
   padding: 16px;
   margin-bottom: 20px;
@@ -212,10 +212,10 @@
 .milestone-date-input {
   flex: 1;
   padding: 8px 12px;
-  border: 1px solid var(--card-border-color, var(--color-border));
+  border: 1px solid var(--card-border-color, var(--asm-color-border));
   border-radius: var(--global-border-radius-sm, 4px);
-  background-color: var(--card-bg, var(--color-background));
-  color: var(--card-text-color, var(--color-foreground));
+  background-color: var(--card-bg, var(--asm-color-bg));
+  color: var(--card-text-color, var(--asm-color-text));
   font-size: 14px;
 }
 
@@ -237,7 +237,7 @@
 }
 
 .save-btn {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
 }
 
@@ -246,8 +246,8 @@
 }
 
 .cancel-btn {
-  background-color: var(--color-border);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-border);
+  color: var(--asm-color-text);
 }
 
 .cancel-btn:hover {
@@ -265,14 +265,14 @@
   text-align: center;
   padding: 40px 20px;
   color: var(--color-foreground-muted);
-  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
-  border: 1px dashed var(--card-border-color, var(--color-border));
+  background-color: var(--card-row-bg, var(--card-bg, var(--asm-color-bg)));
+  border: 1px dashed var(--card-border-color, var(--asm-color-border));
   border-radius: var(--global-border-radius-sm, 6px);
 }
 
 .milestone-item {
-  background-color: var(--card-row-bg, var(--card-bg, var(--color-background)));
-  border: 1px solid var(--card-border-color, var(--color-border));
+  background-color: var(--card-row-bg, var(--card-bg, var(--asm-color-bg)));
+  border: 1px solid var(--card-border-color, var(--asm-color-border));
   border-radius: var(--global-border-radius-sm, 6px);
   padding: 16px;
   transition: all 0.2s ease;
@@ -284,12 +284,12 @@
 }
 
 .milestone-item.completed {
-  border-left: 4px solid var(--color-success);
+  border-left: 4px solid var(--asm-color-success-500);
   background-color: rgba(34, 197, 93, 0.02);
 }
 
 .milestone-item.overdue {
-  border-left: 4px solid var(--color-warning);
+  border-left: 4px solid var(--asm-color-warning-500);
   background-color: rgba(245, 158, 11, 0.02);
 }
 
@@ -330,12 +330,12 @@
 
 .milestone-text {
   font-weight: 600;
-  color: var(--card-text-color, var(--color-foreground));
+  color: var(--card-text-color, var(--asm-color-text));
 }
 
 .milestone-date {
   font-size: 12px;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   background-color: rgba(0, 0, 0, 0.05);
   padding: 2px 8px;
   border-radius: 12px;
@@ -344,7 +344,7 @@
 .milestone-description {
   margin: 0;
   font-size: 14px;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   line-height: 1.4;
 }
 
@@ -371,11 +371,11 @@
 
 .toggle-btn {
   background-color: rgba(0, 0, 0, 0.1);
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 .toggle-btn.completed {
-  background-color: var(--color-success);
+  background-color: var(--asm-color-success-500);
   color: white;
 }
 
@@ -384,7 +384,7 @@
 }
 
 .edit-btn {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
 }
 
@@ -408,7 +408,7 @@
   background-color: rgba(0, 0, 0, 0.02);
   border-radius: var(--global-border-radius-sm, 4px);
   font-size: 13px;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 .attachments-list {
@@ -419,7 +419,7 @@
 }
 
 .attachment-tag {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -439,14 +439,14 @@
   align-items: center;
   justify-content: center;
   z-index: var(--global-z-index-3);
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
 }
 
 .milestone-modal {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-lg);
-  box-shadow: var(--global-shadow-xl);
+  background-color: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
+  box-shadow: var(--asm-effect-shadow-xl);
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
@@ -457,21 +457,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg) var(--spacing-xl);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--asm-space-6) var(--asm-space-8);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .modal-header h3 {
   margin: 0;
-  font-size: var(--global-font-size-lg);
+  font-size: var(--asm-font-size-lg);
   font-weight: var(--global-font-weight-semibold);
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: var(--global-font-size-2xl);
+  font-size: var(--asm-font-size-2xl);
   cursor: pointer;
   color: var(--color-foreground-muted);
   padding: 0;
@@ -481,48 +481,48 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all var(--global-transition-fast) ease;
+  transition: all var(--asm-motion-duration-fast) ease;
 }
 
 .close-btn:hover {
   background-color: var(--bg-secondary);
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .modal-content {
-  padding: var(--spacing-xl);
+  padding: var(--asm-space-8);
 }
 
 .form-group {
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--asm-space-4);
 }
 
 .form-group label {
   display: block;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--asm-space-1);
   font-weight: var(--global-font-weight-medium);
-  color: var(--color-foreground);
-  font-size: var(--global-font-size-sm);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-sm);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--global-border-radius-sm);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-size: var(--global-font-size-sm);
-  transition: all var(--global-transition-fast) ease;
+  padding: var(--asm-space-2) var(--asm-space-4);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-sm);
+  transition: all var(--asm-motion-duration-fast) ease;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-600);
   box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb, 59, 130, 246), 0.2);
 }
 
@@ -533,25 +533,25 @@
 
 .modal-actions {
   display: flex;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
   justify-content: flex-end;
-  padding: var(--spacing-lg) var(--spacing-xl);
-  border-top: 1px solid var(--color-border);
+  padding: var(--asm-space-6) var(--asm-space-8);
+  border-top: 1px solid var(--asm-color-border);
 }
 
 .modal-actions .save-btn,
 .modal-actions .cancel-btn {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--global-font-size-sm);
+  padding: var(--asm-space-2) var(--asm-space-6);
+  font-size: var(--asm-font-size-sm);
   font-weight: var(--global-font-weight-medium);
   border: none;
-  border-radius: var(--global-border-radius-sm);
+  border-radius: var(--asm-radius-sm);
   cursor: pointer;
-  transition: all var(--global-transition-fast) ease;
+  transition: all var(--asm-motion-duration-fast) ease;
 }
 
 .modal-actions .save-btn {
-  background-color: var(--color-primary);
+  background-color: var(--asm-color-brand-primary-600);
   color: white;
 }
 
@@ -561,8 +561,8 @@
 }
 
 .modal-actions .cancel-btn {
-  background-color: var(--color-border);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-border);
+  color: var(--asm-color-text);
 }
 
 .modal-actions .cancel-btn:hover {
@@ -576,23 +576,23 @@
   }
   
   .milestone-modal {
-    background-color: var(--color-background);
-    border-color: var(--color-border);
+    background-color: var(--asm-color-bg);
+    border-color: var(--asm-color-border);
   }
   
   .form-group input,
   .form-group select,
   .form-group textarea {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    border-color: var(--color-border);
+    background-color: var(--asm-color-bg);
+    color: var(--asm-color-text);
+    border-color: var(--asm-color-border);
   }
   
   .form-group input:focus,
   .form-group select:focus,
   .form-group textarea:focus {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--asm-color-bg);
+    color: var(--asm-color-text);
   }
 }
 
@@ -602,16 +602,16 @@
 }
 
 [data-theme="dark"] .milestone-modal {
-  background-color: var(--color-background);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-bg);
+  border-color: var(--asm-color-border);
 }
 
 [data-theme="dark"] .form-group input,
 [data-theme="dark"] .form-group select,
 [data-theme="dark"] .form-group textarea {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
+  border-color: var(--asm-color-border);
 }
 
 /* Additional class-based dark mode detection */
@@ -620,16 +620,16 @@
 }
 
 .theme-dark .milestone-modal {
-  background-color: var(--color-background);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-bg);
+  border-color: var(--asm-color-border);
 }
 
 .theme-dark .form-group input,
 .theme-dark .form-group select,
 .theme-dark .form-group textarea {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
+  border-color: var(--asm-color-border);
 }
 
 /* Responsive Design */

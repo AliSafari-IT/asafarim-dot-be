@@ -3,16 +3,16 @@
 /* Main card container */
 .showcase-card {
   border-radius: var(--global-border-radius-lg, 1rem);
-  border: 1px solid var(--color-border);
-  padding: var(--spacing-lg, 1.5rem);
-  background-color: var(--color-surface);
+  border: 1px solid var(--asm-color-border);
+  padding: var(--asm-space-6, 1.5rem);
+  background-color: var(--asm-color-surface);
   backdrop-filter: blur(4px);
   transition: all 0.3s ease;
-  box-shadow: var(--global-shadow-sm);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .showcase-card:hover {
-  box-shadow: var(--global-shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
   transform: translateY(-2px);
   border-color: var(--color-primary-200);
 }
@@ -22,7 +22,7 @@
 }
 
 .border {
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
 }
 
 .border-neutral-800 {
@@ -30,16 +30,16 @@
 }
 
 .p-5 {
-  padding: var(--spacing-lg, 1.25rem);
+  padding: var(--asm-space-6, 1.25rem);
 }
 
 @media (min-width: 768px) {
   .md\:p-6 {
-    padding: var(--spacing-xl, 1.5rem);
+    padding: var(--asm-space-8, 1.5rem);
   }
   
   .showcase-card {
-    padding: var(--spacing-xl, 2rem);
+    padding: var(--asm-space-8, 2rem);
   }
 }
 
@@ -49,35 +49,35 @@
 
 /* Header section */
 .showcase-card__header {
-  margin-bottom: var(--spacing-lg, 1.5rem);
+  margin-bottom: var(--asm-space-6, 1.5rem);
 }
 
 .showcase-card__title {
-  font-size: var(--global-font-size-lg, 1.125rem);
-  font-weight: var(--font-weight-semibold, 600);
+  font-size: var(--asm-font-size-lg, 1.125rem);
+  font-weight: var(--asm-font-weight-600, 600);
   line-height: var(--line-height-tight, 1.25);
   color: var(--color-brand);
-  margin: 0 0 var(--spacing-xs, 0.25rem);
+  margin: 0 0 var(--asm-space-1, 0.25rem);
 }
 
 .showcase-card__subtitle {
-  font-size: var(--global-font-size-sm, 0.875rem);
+  font-size: var(--asm-font-size-sm, 0.875rem);
   line-height: var(--line-height-normal, 1.5);
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
   margin: 0;
 }
 
 .mb-3 {
-  margin-bottom: var(--spacing-md, 0.75rem);
+  margin-bottom: var(--asm-space-4, 0.75rem);
 }
 
 .text-lg {
-  font-size: var(--global-font-size-lg, 1.125rem);
+  font-size: var(--asm-font-size-lg, 1.125rem);
   line-height: var(--line-height-normal, 1.5);
 }
 
 .font-semibold {
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--asm-font-weight-600, 600);
 }
 
 .text-brand {
@@ -85,12 +85,12 @@
 }
 
 .text-sm {
-  font-size: var(--global-font-size-sm, 0.875rem);
+  font-size: var(--asm-font-size-sm, 0.875rem);
   line-height: var(--line-height-normal, 1.5);
 }
 
 .text-secondary {
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
 }
 
 /* Grid layout for mini tiles */
@@ -103,17 +103,17 @@
 }
 
 .gap-3 {
-  gap: var(--spacing-md, 0.75rem);
+  gap: var(--asm-space-4, 0.75rem);
 }
 
 /* Dark theme adjustments */
 [data-theme="dark"] .showcase-card {
-  background-color: var(--color-surface);
-  border-color: var(--color-border);
+  background-color: var(--asm-color-surface);
+  border-color: var(--asm-color-border);
 }
 
 [data-theme="dark"] .showcase-card:hover {
-  border-color: var(--color-primary-700);
+  border-color: var(--asm-color-brand-primary-700);
 }
 
 [data-theme="dark"] .showcase-card__title {
@@ -121,7 +121,7 @@
 }
 
 [data-theme="dark"] .showcase-card__subtitle {
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
 }
 
 /* Reduced motion */

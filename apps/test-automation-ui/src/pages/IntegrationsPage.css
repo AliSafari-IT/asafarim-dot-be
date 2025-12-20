@@ -452,7 +452,7 @@
 
 /* GitHub Actions Modal Styles */
 .modal-description {
-  color: var(--color-neutral-300);
+  color: var(--asm-color-neutral-300);
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
 }
@@ -505,11 +505,11 @@
 }
 
 .info-box {
-  border-left: 4px solid var(--color-primary-900);
+  border-left: 4px solid var(--asm-color-primary-900);
   padding: 1rem;
   border-radius: 0.375rem;
   margin-bottom: 1.5rem;
-  color: var(--color-primary-900);
+  color: var(--asm-color-primary-900);
   font-size: 0.9rem;
 }
 
@@ -528,7 +528,7 @@
 }
 
 .info-box code {
-  background: var(--color-neutral-100);
+  background: var(--asm-color-neutral-100);
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
   font-family: monospace;

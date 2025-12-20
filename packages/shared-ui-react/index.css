@@ -1,4 +1,4 @@
-@import url("@asafarim/shared-tokens/index.css");
+@import url("@asafarim/design-tokens/css");
 
 /* Component styles re-exported for convenience */
 @import url("./components/index.css");

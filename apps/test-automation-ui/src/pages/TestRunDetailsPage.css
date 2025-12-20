@@ -15,15 +15,15 @@
   padding: 0.5rem 1rem;
   background: var(--color-accent-0);
   color: var(--color-accent-900);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
 }
 
 .back-button:hover {
-  background: var(--color-surface-hover);
+  background: var(--asm-color-surface-muted);
 }
 
 .page-header h1 {
@@ -41,9 +41,9 @@
 }
 
 .summary-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
   padding: 1.5rem;
   display: flex;
   align-items: center;
@@ -54,7 +54,7 @@
 /* Pulsing animation for running status */
 .summary-card.status-running {
   animation: heartbeat 2s ease-in-out infinite;
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 .summary-card.status-running .card-icon {
@@ -112,7 +112,7 @@
 
 .card-label {
   font-size: 0.85rem;
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
   margin-bottom: 0.25rem;
 }
 
@@ -124,9 +124,9 @@
 
 /* Run Info */
 .run-info {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
   padding: 1.5rem;
   margin-bottom: 2rem;
   display: grid;
@@ -136,7 +136,7 @@
 
 .info-item {
   font-size: 0.9rem;
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
 }
 
 .info-item strong {
@@ -167,9 +167,9 @@
 
 .filter-group select {
   padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  background: var(--asm-color-surface);
   color: var(--color-text-primary);
   font-size: 0.9rem;
   cursor: pointer;
@@ -184,7 +184,7 @@
 .btn {
   padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--asm-radius-md);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -195,13 +195,13 @@
 }
 
 .btn-secondary {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
   color: var(--color-text-primary);
 }
 
 .btn-secondary:hover {
-  background: var(--color-surface-hover);
+  background: var(--asm-color-surface-muted);
 }
 
 .btn-warning {
@@ -224,9 +224,9 @@
 
 /* Execution Logs Section */
 .execution-logs-section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -242,8 +242,8 @@
 
 .execution-logs-container {
   background: #1e1e1e;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
   overflow: hidden;
 }
 
@@ -297,9 +297,9 @@
 
 /* Results Section */
 .results-section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
   padding: 1.5rem;
 }
 
@@ -312,7 +312,7 @@
 .empty-state {
   text-align: center;
   padding: 3rem;
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
   font-size: 1rem;
 }
 
@@ -324,7 +324,7 @@
 }
 
 .results-table thead {
-  background: var(--color-surface-hover);
+  background: var(--asm-color-surface-muted);
 }
 
 .results-table th {
@@ -332,21 +332,21 @@
   text-align: left;
   font-weight: 600;
   color: var(--color-text-primary);
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--asm-color-border);
 }
 
 .results-table tbody tr {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
   transition: background 0.2s;
 }
 
 .results-table tbody tr:hover {
-  background: var(--color-surface-hover);
+  background: var(--asm-color-surface-muted);
 }
 
 .results-table td {
   padding: 0.75rem 1rem;
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
 }
 
 .result-row.status-passed {
@@ -365,7 +365,7 @@
 .status-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: var(--radius-full);
+  border-radius: var(--asm-radius-full);
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -415,7 +415,7 @@
 .btn-link {
   background: none;
   border: none;
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
   cursor: pointer;
   font-size: 0.85rem;
   padding: 0.25rem 0.5rem;
@@ -452,7 +452,7 @@
 .error-details pre {
   background: #fff;
   border: 1px solid #fecaca;
-  border-radius: var(--radius-md);
+  border-radius: var(--asm-radius-md);
   padding: 1rem;
   overflow-x: auto;
   font-size: 0.85rem;
@@ -477,7 +477,7 @@
 .screenshot-container {
   background: #fff;
   border: 1px solid #fecaca;
-  border-radius: var(--radius-md);
+  border-radius: var(--asm-radius-md);
   padding: 0.5rem;
   overflow: auto;
   max-height: 600px;
@@ -487,7 +487,7 @@
   max-width: 100%;
   height: auto;
   display: block;
-  border-radius: var(--radius-sm);
+  border-radius: var(--asm-radius-sm);
 }
 
 /* Loading & Error States */
@@ -499,7 +499,7 @@
 }
 
 .loading {
-  color: var(--color-text-secondary);
+  color: var(--asm-color-text-muted);
 }
 
 .error {

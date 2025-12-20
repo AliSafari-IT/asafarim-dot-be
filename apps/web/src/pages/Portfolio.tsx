@@ -285,7 +285,7 @@ const Portfolio = () => {
       title: t("portfolio.sections.items.resume.title"),
       description: t("portfolio.sections.items.resume.description"),
       icon: "📄",
-      link: "/portfolio/cv-nov-2025/public?layout=print",
+      link: "/portfolio/cv-dec-2025/public?layout=print",
     },
     {
       id: "publications",
@@ -323,7 +323,7 @@ const Portfolio = () => {
         ]}
         primaryCta={{
           label: t("portfolio.hero.primaryCtaLabel"),
-          to: "/portfolio/cv-nov-2025/public?layout=print",
+          to: "/portfolio/cv-dec-2025/public?layout=print",
         }}
         secondaryCta={{
           label: t("portfolio.hero.secondaryCtaLabel"),

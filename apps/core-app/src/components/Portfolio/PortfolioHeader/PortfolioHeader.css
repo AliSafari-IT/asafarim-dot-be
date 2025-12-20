@@ -1,16 +1,16 @@
 .portfolio-header {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  padding: var(--spacing-xl) 0;
-  margin-bottom: var(--spacing-xl);
+  background: var(--asm-color-surface);
+  border-bottom: 1px solid var(--asm-color-border);
+  padding: var(--asm-space-8) 0;
+  margin-bottom: var(--asm-space-8);
 }
 
 .portfolio-header__container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--spacing-md);
+  padding: 0 var(--asm-space-4);
   display: flex;
-  gap: var(--spacing-lg);
+  gap: var(--asm-space-6);
   align-items: center;
 }
 
@@ -23,7 +23,7 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--color-primary);
+  border: 3px solid var(--asm-color-brand-primary-600);
 }
 
 .portfolio-header__content {
@@ -32,30 +32,30 @@
 
 .portfolio-header__name {
   font-size: var(--font-size-xxl);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--asm-font-weight-700);
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-xs) 0;
+  margin: 0 0 var(--asm-space-1) 0;
 }
 
 .portfolio-header__headline {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  margin: 0 0 var(--spacing-sm) 0;
-  font-weight: var(--font-weight-medium);
+  font-size: var(--asm-font-size-lg);
+  color: var(--asm-color-text-muted);
+  margin: 0 0 var(--asm-space-2) 0;
+  font-weight: var(--asm-font-weight-500);
 }
 
 .portfolio-header__bio {
-  font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
+  font-size: var(--asm-font-size-md);
+  color: var(--asm-color-text-muted);
   line-height: 1.6;
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0 0 var(--asm-space-4) 0;
   max-width: 700px;
 }
 
 .portfolio-header__contact {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
   align-items: center;
 }
 
@@ -63,15 +63,15 @@
 .portfolio-header__contact-item {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  gap: var(--asm-space-1);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .portfolio-header__contact-link:hover {
-  color: var(--color-primary);
+  color: var(--asm-color-brand-primary-600);
 }
 
 .portfolio-header__contact-link svg,
@@ -92,7 +92,7 @@
   }
 
   .portfolio-header__name {
-    font-size: var(--font-size-xl);
+    font-size: var(--asm-font-size-xl);
   }
 
   .portfolio-header__bio {

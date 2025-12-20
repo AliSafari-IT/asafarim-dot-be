@@ -9,8 +9,8 @@
 
 .section {
   position: relative;
-  background: var(--color-background);
-  transition: background 0.3s ease;
+  background: var(--asm-color-bg);
+  transition: background var(--asm-motion-duration-normal) var(--asm-motion-easing-standard);
   padding: 4rem 0;
 }
 
@@ -61,7 +61,7 @@
 .showcases-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   margin: 0 0 1rem 0;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -81,7 +81,7 @@
 
 .showcases-intro {
   font-size: 1.125rem;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-text-muted);
   margin: 0;
   line-height: 1.6;
   max-width: 600px;
@@ -119,8 +119,8 @@
 .showcase-card {
   display: flex;
   flex-direction: column;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
   border-radius: 16px;
   padding: 2rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -134,7 +134,7 @@
 
 .showcase-card:hover {
   transform: translateY(-4px);
-  border-color: var(--color-primary);
+  border-color: var(--asm-color-brand-primary-500);
   box-shadow: 
     0 4px 8px rgba(0, 0, 0, 0.04),
     0 12px 24px rgba(0, 0, 0, 0.08);
@@ -142,8 +142,8 @@
 
 /* Dark theme showcase card */
 [data-theme="dark"] .showcase-card {
-  background: var(--color-surface);
-  border-color: var(--color-border);
+  background: var(--asm-color-surface);
+  border-color: var(--asm-color-border);
   box-shadow: 
     0 2px 4px rgba(0, 0, 0, 0.1),
     0 4px 8px rgba(0, 0, 0, 0.12);
@@ -167,7 +167,7 @@
 .showcase-card-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
   margin: 0 0 0.75rem 0;
   letter-spacing: -0.015em;
   line-height: 1.4;
@@ -175,7 +175,7 @@
 
 .showcase-card-description {
   font-size: 0.9375rem;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-text-muted);
   line-height: 1.6;
   margin: 0;
 }
@@ -188,8 +188,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--color-primary-50);
-  color: var(--color-primary-700);
+  background: var(--asm-color-brand-primary-50);
+  color: var(--asm-color-brand-primary-600);
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.25rem;
@@ -250,12 +250,12 @@
    ============================================ */
 
 .showcase-card:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--asm-color-brand-primary-500);
   outline-offset: 2px;
 }
 
 .visit-button:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--asm-color-brand-primary-500);
   outline-offset: 2px;
 }
 

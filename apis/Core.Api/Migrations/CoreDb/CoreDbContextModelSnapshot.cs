@@ -632,7 +632,9 @@ namespace Core.Api.Migrations.CoreDb
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DemoUrl")
                         .HasColumnType("text");
@@ -674,13 +676,15 @@ namespace Core.Api.Migrations.CoreDb
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("Projects", "public");
+                    b.ToTable("ResumeProjects", "public");
                 });
 
             modelBuilder.Entity("Core.Api.Models.Resume.ProjectImage", b =>

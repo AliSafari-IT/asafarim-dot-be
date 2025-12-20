@@ -88,6 +88,9 @@ namespace Identity.Api.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("PreferredLanguage")
+                        .HasDatabaseName("IX_AspNetUsers_PreferredLanguage");
+
                     b.ToTable("AspNetUsers", (string)null);
                 });
 

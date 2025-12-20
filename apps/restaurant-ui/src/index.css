@@ -1,5 +1,5 @@
 /* Import shared design tokens */
-@import '@asafarim/shared-ui-react/index.css';
+@import '@asafarim/design-tokens/css/index.css';
 
 * {
   margin: 0;

@@ -2,7 +2,7 @@
   display: flex;
   gap: 8px;
   padding: 12px;
-  background: var(--color-background);
+  background: var(--asm-color-bg);
   border-radius: 8px;
   margin-bottom: 20px;
 }
@@ -17,7 +17,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--asm-color-brand-primary-500);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
@@ -26,24 +26,24 @@
 }
 
 .layout-btn:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-dark);
+  border-color: var(--asm-color-brand-primary-500);
+  background: var(--asm-color-brand-primary-600);
 }
 
 .layout-btn.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--asm-color-brand-primary-500);
+  border-color: var(--asm-color-brand-primary-500);
   color: white;
 }
 
 .layout-btn.export-pdf-btn {
-  background: var(--color-success);
-  border-color: var(--color-success);
+  background: var(--asm-color-success-500);
+  border-color: var(--asm-color-success-500);
 }
 
 .layout-btn.export-pdf-btn:hover {
-  background: var(--color-info);
-  border-color: var(--color-success-light);
+  background: var(--asm-color-info-500);
+  border-color: var(--asm-color-success-light);
 }
 
 .layout-icon {
@@ -51,7 +51,7 @@
 }
 
 .layout-label {
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 @media print {

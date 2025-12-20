@@ -10,13 +10,13 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
 }
 
 .flt-booking-modal {
   background: var(--color-neutral-0);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--asm-radius-lg);
+  box-shadow: var(--asm-effect-shadow-lg);
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
@@ -27,56 +27,56 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-neutral-200);
+  padding: var(--asm-space-6);
+  border-bottom: 1px solid var(--asm-color-neutral-200);
 }
 
 .flt-booking-modal-header h3 {
   margin: 0;
   color: var(--color-neutral-900);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--asm-font-size-lg);
+  font-weight: var(--asm-font-weight-600);
 }
 
 .flt-booking-modal-close {
   background: none;
   border: none;
-  font-size: var(--font-size-xl);
-  color: var(--color-neutral-500);
+  font-size: var(--asm-font-size-xl);
+  color: var(--asm-color-neutral-500);
   cursor: pointer;
-  padding: var(--spacing-xs);
-  border-radius: var(--radius-sm);
+  padding: var(--asm-space-1);
+  border-radius: var(--asm-radius-sm);
   transition: all 0.2s ease;
 }
 
 .flt-booking-modal-close:hover {
-  background: var(--color-neutral-100);
-  color: var(--color-neutral-700);
+  background: var(--asm-color-neutral-100);
+  color: var(--asm-color-neutral-700);
 }
 
 .flt-booking-modal-form {
-  padding: var(--spacing-lg);
+  padding: var(--asm-space-6);
 }
 
 .flt-booking-modal-field {
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--asm-space-4);
 }
 
 .flt-booking-modal-field label {
   display: block;
-  margin-bottom: var(--spacing-xs);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-neutral-700);
+  margin-bottom: var(--asm-space-1);
+  font-weight: var(--asm-font-weight-500);
+  color: var(--asm-color-neutral-700);
 }
 
 .flt-booking-modal-field input,
 .flt-booking-modal-field select,
 .flt-booking-modal-field textarea {
   width: 100%;
-  padding: var(--spacing-sm);
-  border: 1px solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
+  padding: var(--asm-space-2);
+  border: 1px solid var(--asm-color-neutral-300);
+  border-radius: var(--asm-radius-md);
+  font-size: var(--asm-font-size-md);
   transition: border-color 0.2s ease;
 }
 
@@ -84,40 +84,40 @@
 .flt-booking-modal-field select:focus,
 .flt-booking-modal-field textarea:focus {
   outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px var(--color-primary-100);
+  border-color: var(--asm-color-brand-primary-500);
+  box-shadow: 0 0 0 2px var(--asm-color-primary-100);
 }
 
 .flt-booking-modal-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-4);
 }
 
 .flt-booking-modal-actions {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--asm-space-2);
   justify-content: flex-end;
-  margin-top: var(--spacing-lg);
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--color-neutral-200);
+  margin-top: var(--asm-space-6);
+  padding-top: var(--asm-space-4);
+  border-top: 1px solid var(--asm-color-neutral-200);
 }
 
 .flt-booking-modal-error {
   background: var(--color-error-50);
   color: var(--color-error-700);
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-md);
-  font-size: var(--font-size-sm);
+  padding: var(--asm-space-2);
+  border-radius: var(--asm-radius-md);
+  margin-bottom: var(--asm-space-4);
+  font-size: var(--asm-font-size-sm);
 }
 
 .flt-booking-modal-warning {
   background: var(--color-warning-50);
   color: var(--color-warning-700);
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-md);
-  font-size: var(--font-size-sm);
-  border-left: 3px solid var(--color-warning);
+  padding: var(--asm-space-2);
+  border-radius: var(--asm-radius-md);
+  margin-bottom: var(--asm-space-4);
+  font-size: var(--asm-font-size-sm);
+  border-left: 3px solid var(--asm-color-warning-500);
 }

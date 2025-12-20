@@ -1,43 +1,45 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Core.Api.Migrations.Resume
+namespace Core.Api.Migrations.CoreDb
 {
     /// <inheritdoc />
-    public partial class AddStartEndDateToProject : Migration
+    public partial class AddCreatedAtUpdatedAtToProjects : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
-                name: "EndDate",
+                name: "CreatedAt",
                 schema: "public",
-                table: "Projects",
+                table: "ResumeProjects",
                 type: "timestamp with time zone",
-                nullable: true);
+                nullable: false,
+                defaultValueSql: "NOW()");
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "StartDate",
+                name: "UpdatedAt",
                 schema: "public",
-                table: "Projects",
+                table: "ResumeProjects",
                 type: "timestamp with time zone",
-                nullable: true);
+                nullable: false,
+                defaultValueSql: "NOW()");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "EndDate",
+                name: "CreatedAt",
                 schema: "public",
-                table: "Projects");
+                table: "ResumeProjects");
 
             migrationBuilder.DropColumn(
-                name: "StartDate",
+                name: "UpdatedAt",
                 schema: "public",
-                table: "Projects");
+                table: "ResumeProjects");
         }
     }
 }

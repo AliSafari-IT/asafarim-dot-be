@@ -9,10 +9,10 @@
   background: transparent;
   border: none;
   /* Match nav-link colors */
-  color: var(--color-text);
-  font-size: var(--font-size-base);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-md);
   font-family: inherit;
-  font-weight: var(--font-weight-normal);
+  font-weight: var(--asm-font-weight-400);
   cursor: pointer;
   /* Match nav-link transition */
   transition: color var(--transition-speed) ease, background-color var(--transition-speed) ease;
@@ -23,12 +23,12 @@
 
 /* Match nav-link hover state */
 .app-switcher-button:hover {
-  color: var(--nav-hover);
+  color: var(--asm-color-brand-primary-600);
   background-color: var(--bg-nav-hover-color);
 }
 
 .app-switcher-button.active {
-  color: var(--nav-active);
+  color: var(--asm-color-brand-primary-700);
   background-color: var(--bg-nav-active-color);
 }
 
@@ -58,13 +58,13 @@
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: var(--z-navbar-dropdown, 250);
+  z-index: var(--asm-z-dropdown, 250);
   min-width: 280px;
   margin-top: 8px;
-  background-color: var(--color-surface);
+  background-color: var(--asm-color-surface);
   border-radius: 8px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   overflow: hidden;
   animation: fadeIn 0.2s ease-out;
 }
@@ -93,12 +93,12 @@
   padding: 12px;
   border-radius: 6px;
   text-decoration: none;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   transition: background-color 0.2s;
 }
 
 .app-switcher-item:hover {
-  background-color: var(--bg-hover-color);
+  background-color: var(--asm-color-surface-muted);
 }
 
 .app-switcher-item-icon {
@@ -124,7 +124,7 @@
 
 .app-switcher-item-description {
   font-size: 0.8rem;
-  color: var(--color-neutral-muted);
+  color: var(--asm-color-border);
 }
 
 /* Mobile adjustments: keep dropdown under the trigger, not as a bottom sheet */

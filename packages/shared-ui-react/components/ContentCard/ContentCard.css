@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   background-color: var(--color-surface, #ffffff);
-  border-radius: var(--global-border-radius-md, 8px);
+  border-radius: var(--asm-radius-md, 8px);
   overflow: hidden;
   transition: all 0.3s ease;
   position: relative;
@@ -51,7 +51,7 @@
 }
 
 .content-card--elevated {
-  box-shadow: var(--global-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+  box-shadow: var(--asm-effect-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
 }
 
 .content-card--bordered {
@@ -66,7 +66,7 @@
 
 .content-card--clickable:hover {
   transform: translateY(-5px);
-  box-shadow: var(--global-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+  box-shadow: var(--asm-effect-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
 }
 
 .content-card--featured {
@@ -105,8 +105,8 @@
   background-color: var(--color-primary, #3b82f6);
   color: white;
   padding: 4px 8px;
-  border-radius: var(--global-border-radius-sm, 4px);
-  font-size: var(--global-font-size-xs, 0.75rem);
+  border-radius: var(--asm-radius-sm, 4px);
+  font-size: var(--asm-font-size-xs, 0.75rem);
   font-weight: 500;
 }
 
@@ -135,33 +135,33 @@
 
 .content-card__title {
   margin: 0;
-  font-size: var(--global-font-size-xl, 1.25rem);
+  font-size: var(--asm-font-size-xl, 1.25rem);
   font-weight: 600;
   color: var(--color-foreground, #1e293b);
   flex: 1;
 }
 
 .content-card__year {
-  font-size: var(--global-font-size-sm, 0.875rem);
+  font-size: var(--asm-font-size-sm, 0.875rem);
   color: var(--color-foreground-muted, #64748b);
   font-weight: 500;
 }
 
 .content-card__subtitle {
   margin: 0;
-  font-size: var(--global-font-size-md, 1rem);
+  font-size: var(--asm-font-size-md, 1rem);
   font-weight: 500;
   color: var(--color-primary, #3b82f6);
 }
 
 .content-card__meta {
-  font-size: var(--global-font-size-sm, 0.875rem);
+  font-size: var(--asm-font-size-sm, 0.875rem);
   color: var(--color-foreground-muted, #64748b);
 }
 
 .content-card__description {
   margin: 0;
-  font-size: var(--global-font-size-sm, 0.875rem);
+  font-size: var(--asm-font-size-sm, 0.875rem);
   color: var(--color-foreground, #1e293b);
   line-height: 1.5;
   overflow: hidden;
@@ -184,8 +184,8 @@
   padding: 0.25rem 0.5rem;
   background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
   color: var(--color-primary, #3b82f6);
-  border-radius: var(--global-border-radius-sm, 4px);
-  font-size: var(--global-font-size-xs, 0.75rem);
+  border-radius: var(--asm-radius-sm, 4px);
+  font-size: var(--asm-font-size-xs, 0.75rem);
   font-weight: 500;
 }
 
@@ -203,13 +203,13 @@
 }
 
 .content-card__metric-value {
-  font-size: var(--global-font-size-md, 1rem);
+  font-size: var(--asm-font-size-md, 1rem);
   font-weight: 600;
   color: var(--color-primary, #3b82f6);
 }
 
 .content-card__metric-label {
-  font-size: var(--global-font-size-xs, 0.75rem);
+  font-size: var(--asm-font-size-xs, 0.75rem);
   color: var(--color-foreground-muted, #64748b);
 }
 
@@ -227,7 +227,7 @@
   padding: 0.5rem 1rem;
   color: var(--color-primary, #3b82f6);
   text-decoration: none;
-  font-size: var(--global-font-size-sm, 0.875rem);
+  font-size: var(--asm-font-size-sm, 0.875rem);
   font-weight: 500;
   transition: color 0.2s ease;
 }
@@ -239,7 +239,7 @@
 }
 
 .content-card__external-link .content-card__link {
-  font-size: var(--global-font-size-sm, 0.875rem);
+  font-size: var(--asm-font-size-sm, 0.875rem);
   color: var(--color-primary, #3b82f6);
   text-decoration: underline;
   word-break: break-all;
@@ -263,8 +263,8 @@
   background-color: var(--color-primary, #3b82f6);
   color: white;
   text-decoration: none;
-  border-radius: var(--global-border-radius-sm, 4px);
-  font-size: var(--global-font-size-sm, 0.875rem);
+  border-radius: var(--asm-radius-sm, 4px);
+  font-size: var(--asm-font-size-sm, 0.875rem);
   font-weight: 500;
   transition: all 0.2s ease;
   border: none;
@@ -284,7 +284,7 @@
 .content-card__read-more {
   display: inline-flex;
   align-items: center;
-  font-size: var(--global-font-size-xs, 0.75rem);
+  font-size: var(--asm-font-size-xs, 0.75rem);
   color: var(--color-primary, #3b82f6);
   text-decoration: none;
   font-weight: 500;

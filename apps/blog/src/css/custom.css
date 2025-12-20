@@ -1,4 +1,5 @@
-@import url("@asafarim/shared-ui-react/index.css");
+/* @import url("@asafarim/shared-ui-react/index.css"); */
+@import url("@asafarim/design-tokens/css/index.css");
 
 *,
 *::before,
