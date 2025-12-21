@@ -44,27 +44,6 @@ public class PublicNotesController {
     }
 
     /**
-     * Track a view for a public note (anonymous access).
-     * Called when a user opens a public note page.
-     */
-    @PostMapping("/{id}/view")
-    public ResponseEntity<MessageResponse> trackView(
-            @PathVariable UUID id,
-            HttpServletRequest request
-    ) {
-        try {
-            String userAgent = request.getHeader("User-Agent");
-            String ipAddress = getClientIpAddress(request);
-            viewService.trackPublicView(id, userAgent, ipAddress);
-            return ResponseEntity.ok(new MessageResponse("View tracked successfully"));
-        } catch (Exception e) {
-            // View tracking is non-critical, don't fail the request
-            System.err.println("Warning: Could not track public view: " + e.getMessage());
-            return ResponseEntity.ok(new MessageResponse("View tracking skipped"));
-        }
-    }
-
-    /**
      * Get the client IP address, handling proxies
      */
     private String getClientIpAddress(HttpServletRequest request) {

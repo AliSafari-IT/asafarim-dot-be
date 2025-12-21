@@ -1,8 +1,8 @@
 .citation-graph {
   padding: 1rem;
-  background: var(--color-surface, #ffffff);
+  background: var(--asm-color-surface, #ffffff);
   border-radius: 8px;
-  border: 1px solid var(--color-border, #e2e8f0);
+  border: 1px solid var(--asm-color-border, #e2e8f0);
 }
 
 .graph-legend {
@@ -18,7 +18,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: var(--color-text-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
 }
 
 .legend-item .dot {
@@ -28,15 +28,15 @@
 }
 
 .legend-item .dot.center {
-  background: var(--color-primary, #3b82f6);
+  background: var(--asm-color-primary-500, #3b82f6);
 }
 
 .legend-item .dot.cited {
-  background: var(--color-success, #10b981);
+  background: var(--asm-color-success-500, #10b981);
 }
 
 .legend-item .dot.citing {
-  background: var(--color-warning, #f59e0b);
+  background: var(--asm-color-warning-500, #f59e0b);
 }
 
 .graph-svg {
@@ -48,17 +48,17 @@
 }
 
 .graph-edge {
-  stroke: var(--color-text-muted, #94a3b8);
+  stroke: var(--asm-color-text-muted, #94a3b8);
   stroke-width: 1.5;
   fill: none;
 }
 
 .graph-edge.cites {
-  stroke: var(--color-success, #10b981);
+  stroke: var(--asm-color-success-500, #10b981);
 }
 
 .graph-edge.cited-by {
-  stroke: var(--color-warning, #f59e0b);
+  stroke: var(--asm-color-warning-500, #f59e0b);
 }
 
 .graph-node circle {
@@ -67,18 +67,18 @@
 }
 
 .graph-node.center circle {
-  fill: var(--color-primary-light, #dbeafe);
-  stroke: var(--color-primary, #3b82f6);
+  fill: var(--asm-color-primary-200, #dbeafe);
+  stroke: var(--asm-color-primary-500, #3b82f6);
 }
 
 .graph-node.cited circle {
-  fill: var(--color-success-light, #d1fae5);
-  stroke: var(--color-success, #10b981);
+  fill: var(--asm-color-success-100, #d1fae5);
+  stroke: var(--asm-color-success-500, #10b981);
 }
 
 .graph-node.citing circle {
-  fill: var(--color-warning-light, #fef3c7);
-  stroke: var(--color-warning, #f59e0b);
+  fill: var(--asm-color-warning-100, #fef3c7);
+  stroke: var(--asm-color-warning-500, #f59e0b);
 }
 
 .graph-node:not(.center):hover circle {
@@ -87,7 +87,7 @@
 
 .node-label {
   font-size: 10px;
-  fill: var(--color-text, #1e293b);
+  fill: var(--asm-color-text, #1e293b);
   pointer-events: none;
 }
 
@@ -99,7 +99,7 @@
 .citation-graph-empty {
   text-align: center;
   padding: 2rem;
-  color: var(--color-text-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
 }
 
 .citation-graph-empty p {

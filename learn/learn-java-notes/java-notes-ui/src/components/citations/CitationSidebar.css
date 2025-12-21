@@ -6,7 +6,7 @@
   bottom: 1rem;
   z-index: 50;
   padding: 0.75rem 1rem;
-  background: var(--color-primary-600);
+  background: var(--asm-color-primary-600);
   color: white;
   border: none;
   border-radius: 2rem;
@@ -31,7 +31,7 @@
   padding: 0 0.375rem;
   margin-left: 0.5rem;
   background: white;
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
   border-radius: 1rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -49,8 +49,8 @@
 /* ============ Citation Sidebar ============ */
 .citation-sidebar {
   width: 320px;
-  background: var(--color-surface);
-  border-left: 1px solid var(--color-border);
+  background: var(--asm-color-surface);
+  border-left: 1px solid var(--asm-color-border);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -61,13 +61,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--asm-space-3);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .sidebar-header h3 {
   margin: 0;
-  font-size: var(--font-size-base);
+  font-size: var(--asm-font-size-md);
 }
 
 .sidebar-header .close-btn {
@@ -76,113 +76,113 @@
   background: transparent;
   border: none;
   font-size: 1.25rem;
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
   cursor: pointer;
-  border-radius: var(--radius-sm);
+  border-radius: var(--asm-radius-sm);
 }
 
 .sidebar-header .close-btn:hover {
-  background: var(--color-neutral-200);
-  color: var(--color-text);
+  background: var(--asm-color-neutral-200);
+  color: var(--asm-color-text);
 }
 
 .sidebar-style-select {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--asm-space-2) var(--asm-space-3);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .style-select {
   width: 100%;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
-  color: var(--color-text);
-  font-size: var(--font-size-sm);
+  padding: var(--asm-space-1) var(--asm-space-2);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  background: var(--asm-color-bg);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-sm);
 }
 
 .stats-bar {
   display: flex;
   justify-content: space-around;
-  padding: var(--spacing-sm);
-  background: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  padding: var(--asm-space-2);
+  background: var(--asm-color-bg);
+  border-bottom: 1px solid var(--asm-color-border);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
 }
 
 .sidebar-tabs {
   display: flex;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .sidebar-tabs .tab {
   flex: 1;
-  padding: var(--spacing-sm);
+  padding: var(--asm-space-2);
   border: none;
   background: none;
   cursor: pointer;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
   transition: color 0.2s, border-color 0.2s;
   border-bottom: 2px solid transparent;
 }
 
 .sidebar-tabs .tab:hover {
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .sidebar-tabs .tab.active {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+  color: var(--asm-color-primary-500);
+  border-bottom-color: var(--asm-color-primary-500);
 }
 
 .search-box {
-  padding: var(--spacing-sm);
+  padding: var(--asm-space-2);
 }
 
 .search-box input {
   width: 100%;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
-  color: var(--color-text);
-  font-size: var(--font-size-sm);
+  padding: var(--asm-space-1) var(--asm-space-2);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  background: var(--asm-color-bg);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-sm);
 }
 
 .citations-list {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-sm);
+  padding: var(--asm-space-2);
 }
 
 .loading,
 .empty {
   text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  padding: var(--asm-space-6);
+  color: var(--asm-color-text-muted);
+  font-size: var(--asm-font-size-sm);
 }
 
 .citation-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: var(--spacing-sm);
-  margin-bottom: var(--spacing-xs);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
+  padding: var(--asm-space-2);
+  margin-bottom: var(--asm-space-1);
+  border-radius: var(--asm-radius-md);
+  background: var(--asm-color-bg);
   border: 1px solid transparent;
   transition: border-color 0.2s;
 }
 
 .citation-item:hover {
-  border-color: var(--color-border);
+  border-color: var(--asm-color-border);
 }
 
 .citation-item.citing {
-  background: rgba(var(--color-success-rgb), 0.05);
+  background: rgba(var(--asm-color-success-500), 0.05);
 }
 
 .citation-item.add {
@@ -191,15 +191,15 @@
 
 .citation-info {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: var(--asm-space-1);
   flex: 1;
   min-width: 0;
 }
 
 .citation-order {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-xs);
-  color: var(--color-primary);
+  font-family: var(--asm-font-family-mono);
+  font-size: var(--asm-font-size-xs);
+  color: var(--asm-color-primary-500);
   font-weight: 600;
 }
 
@@ -211,8 +211,8 @@
 }
 
 .citation-title {
-  font-size: var(--font-size-sm);
-  color: var(--color-text);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text);
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -220,13 +220,13 @@
 }
 
 .citation-author {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  font-size: var(--asm-font-size-xs);
+  color: var(--asm-color-text-muted);
 }
 
 .citation-actions {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: var(--asm-space-1);
   flex-shrink: 0;
 }
 
@@ -253,7 +253,7 @@
     max-height: 70vh;
     height: auto;
     border-left: none;
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid var(--asm-color-border);
     border-radius: 1rem 1rem 0 0;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.2);
     transform: translateY(100%);
@@ -286,7 +286,7 @@
     transform: translateX(-50%);
     width: 2.5rem;
     height: 0.25rem;
-    background: var(--color-border);
+    background: var(--asm-color-border);
     border-radius: 0.125rem;
   }
 

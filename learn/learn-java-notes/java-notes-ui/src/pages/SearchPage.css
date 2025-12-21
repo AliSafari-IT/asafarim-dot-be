@@ -11,7 +11,7 @@
 .search-page-header h1 {
   font-size: 1.75rem;
   font-weight: 600;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
   margin-bottom: 1rem;
 }
 
@@ -25,9 +25,9 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding: 1rem;
-  background: var(--color-neutral-100);
-  border: 1px solid var(--color-neutral-800);
-  border-radius: var(--radius-md, 6px);
+  background: var(--asm-color-neutral-100);
+  border: 1px solid var(--asm-color-neutral-800);
+  border-radius: var(--asm-radius-md, 6px);
   margin-bottom: 1rem;
 }
 
@@ -40,7 +40,7 @@
 .search-filter-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   text-transform: uppercase;
   letter-spacing: 0.025em;
 }
@@ -48,16 +48,16 @@
 .search-filter-select {
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: var(--radius-sm, 4px);
-  background: var(--color-background, #fff);
-  color: var(--color-text, #1e293b);
+  border: 1px solid var(--asm-color-border, #e2e8f0);
+  border-radius: var(--asm-radius-sm, 4px);
+  background: var(--asm-color-bg, #fff);
+  color: var(--asm-color-text, #1e293b);
   cursor: pointer;
 }
 
 .search-filter-select:focus {
   outline: none;
-  border-color: var(--color-primary, #3b82f6);
+  border-color: var(--asm-color-primary-500, #3b82f6);
 }
 
 .search-filter-checkbox {
@@ -65,7 +65,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
   cursor: pointer;
   padding-top: 1.25rem;
 }
@@ -73,7 +73,7 @@
 .search-filter-checkbox input {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--color-primary, #3b82f6);
+  accent-color: var(--asm-color-primary-500, #3b82f6);
 }
 
 /* Tag Filters */
@@ -83,15 +83,15 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: var(--color-neutral-100);
-  border-radius: var(--radius-md, 6px);
+  background: var(--asm-color-neutral-100);
+  border-radius: var(--asm-radius-md, 6px);
   margin-bottom: 1rem;
 }
 
 .search-tag-filters-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
   text-transform: uppercase;
 }
 
@@ -106,9 +106,9 @@
   font-size: 0.75rem;
   font-weight: 500;
   border: none;
-  border-radius: var(--radius-sm, 4px);
-  background: var(--tag-bg);
-  color: var(--tag-text-color, #fff);
+  border-radius: var(--asm-radius-sm, 4px);
+  background: var(--asm-color-primary-100);
+  color: var(--asm-color-primary-700, #fff);
   cursor: pointer;
   opacity: 0.6;
   transition: opacity 0.15s, transform 0.15s;
@@ -126,7 +126,7 @@
 
 .search-tag-more {
   font-size: 0.75rem;
-  color: var(--color-neutral-500);
+  color: var(--asm-color-neutral-500);
 }
 
 /* Search Info */
@@ -139,12 +139,12 @@
 }
 
 .search-info-count {
-  color: var(--color-neutral-800);
+  color: var(--asm-color-neutral-800);
   font-weight: 500;
 }
 
 .search-info-time {
-  color: var(--color-foreground-muted, #94a3b8);
+  color: var(--asm-color-text-muted, #94a3b8);
 }
 
 /* Error */
@@ -153,14 +153,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  background: var(--color-danger-light, #fef2f2);
-  border: 1px solid var(--color-danger, #ef4444);
-  border-radius: var(--radius-md, 6px);
+  background: var(--asm-color-danger-100, #fef2f2);
+  border: 1px solid var(--asm-color-danger-500, #ef4444);
+  border-radius: var(--asm-radius-md, 6px);
   margin-bottom: 1rem;
 }
 
 .search-error span {
-  color: var(--color-danger, #ef4444);
+  color: var(--asm-color-danger-500, #ef4444);
 }
 
 .search-error button {
@@ -168,9 +168,9 @@
   font-size: 0.8125rem;
   font-weight: 500;
   color: #fff;
-  background: var(--color-danger, #ef4444);
+  background: var(--asm-color-danger-500, #ef4444);
   border: none;
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--asm-radius-sm, 4px);
   cursor: pointer;
 }
 
@@ -181,14 +181,14 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 3rem;
-  color: var(--color-foreground-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
 }
 
 .search-loading-spinner {
   width: 1.5rem;
   height: 1.5rem;
-  border: 3px solid var(--color-border, #e2e8f0);
-  border-top-color: var(--color-primary, #3b82f6);
+  border: 3px solid var(--asm-color-border, #e2e8f0);
+  border-top-color: var(--asm-color-primary-500, #3b82f6);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -206,7 +206,7 @@
   align-items: center;
   padding: 3rem 2rem;
   text-align: center;
-  color: var(--color-foreground-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
 }
 
 .search-no-results svg {
@@ -219,7 +219,7 @@
 .search-no-results h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
   margin-bottom: 0.5rem;
 }
 
@@ -230,8 +230,8 @@
 
 .search-suggestions-box {
   padding: 1rem;
-  background: var(--color-muted, #f8fafc);
-  border-radius: var(--radius-md, 6px);
+  background: var(--asm-color-neutral-100, #f8fafc);
+  border-radius: var(--asm-radius-md, 6px);
 }
 
 .search-suggestions-box p {
@@ -249,16 +249,16 @@
 .search-suggestion-btn {
   padding: 0.375rem 0.75rem;
   font-size: 0.8125rem;
-  color: var(--color-primary, #3b82f6);
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-primary, #3b82f6);
-  border-radius: var(--radius-sm, 4px);
+  color: var(--asm-color-primary-500, #3b82f6);
+  background: var(--asm-color-surface, #fff);
+  border: 1px solid var(--asm-color-primary-500, #3b82f6);
+  border-radius: var(--asm-radius-sm, 4px);
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
 }
 
 .search-suggestion-btn:hover {
-  background: var(--color-primary, #3b82f6);
+  background: var(--asm-color-primary-500, #3b82f6);
   color: #fff;
 }
 
@@ -266,9 +266,9 @@
 .search-result-card {
   position: relative;
   padding: 1rem 1.25rem;
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: var(--radius-md, 6px);
+  background: var(--asm-color-surface, #fff);
+  border: 1px solid var(--asm-color-border, #e2e8f0);
+  border-radius: var(--asm-radius-md, 6px);
   cursor: pointer;
   overflow: hidden;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
@@ -276,7 +276,7 @@
 }
 
 .search-result-card:hover {
-  border-color: var(--color-primary, #3b82f6);
+  border-color: var(--asm-color-primary-500, #3b82f6);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
@@ -292,7 +292,7 @@
 .search-result-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
   margin: 0;
 }
 
@@ -308,27 +308,27 @@
   font-size: 0.625rem;
   font-weight: 600;
   text-transform: uppercase;
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--asm-radius-sm, 4px);
 }
 
 .search-result-badge.public {
-  color: var(--color-success, #22c55e);
-  background: var(--color-success-light, #f0fdf4);
+  color: var(--asm-color-success-500, #22c55e);
+  background: var(--asm-color-success-100, #f0fdf4);
 }
 
 .search-result-badge.attachment {
-  color: var(--color-warning, #f59e0b);
-  background: var(--color-warning-light, #fffbeb);
+  color: var(--asm-color-warning-500, #f59e0b);
+  background: var(--asm-color-warning-100, #fffbeb);
 }
 
 .search-result-views {
   font-size: 0.75rem;
-  color: var(--color-foreground-muted, #94a3b8);
+  color: var(--asm-color-text-muted, #94a3b8);
 }
 
 .search-result-preview {
   font-size: 0.875rem;
-  color: var(--color-foreground-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
   line-height: 1.5;
   margin-bottom: 0.75rem;
   display: -webkit-box;
@@ -339,8 +339,8 @@
 }
 
 .search-highlight {
-  background: var(--color-warning-light, #fef3c7);
-  color: var(--color-warning-dark, #92400e);
+  background: var(--asm-color-warning-100, #fef3c7);
+  color: var(--asm-color-warning-700, #92400e);
   padding: 0 0.125rem;
   border-radius: 2px;
 }
@@ -361,23 +361,23 @@
   padding: 0.125rem 0.375rem;
   font-size: 0.6875rem;
   font-weight: 500;
-  border-radius: var(--radius-xs, 3px);
-  background: var(--tag-bg);
-  color: var(--tag-text-color, #fff);
+  border-radius: var(--asm-radius-sm, 3px);
+  background: var(--asm-color-primary-100);
+  color: var(--asm-color-primary-700, #fff);
 }
 
 .search-result-tag.matched {
-  box-shadow: 0 0 0 2px var(--color-primary, #3b82f6);
+  box-shadow: 0 0 0 2px var(--asm-color-primary-500, #3b82f6);
 }
 
 .search-result-tag-more {
   font-size: 0.6875rem;
-  color: var(--color-foreground-muted, #94a3b8);
+  color: var(--asm-color-text-muted, #94a3b8);
 }
 
 .search-result-date {
   font-size: 0.75rem;
-  color: var(--color-foreground-muted, #94a3b8);
+  color: var(--asm-color-text-muted, #94a3b8);
 }
 
 .search-result-relevance {
@@ -385,7 +385,7 @@
   bottom: 0;
   left: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--color-primary, #3b82f6), var(--color-success, #22c55e));
+  background: linear-gradient(90deg, var(--asm-color-primary-500, #3b82f6), var(--asm-color-success-500, #22c55e));
   opacity: 0.6;
 }
 
@@ -395,16 +395,16 @@
   padding: 0.75rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-primary, #3b82f6);
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-primary, #3b82f6);
-  border-radius: var(--radius-md, 6px);
+  color: var(--asm-color-primary-500, #3b82f6);
+  background: var(--asm-color-surface, #fff);
+  border: 1px solid var(--asm-color-primary-500, #3b82f6);
+  border-radius: var(--asm-radius-md, 6px);
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .search-load-more:hover {
-  background: var(--color-primary);
+  background: var(--asm-color-primary-500);
   color: #fff;
 }
 
@@ -418,13 +418,13 @@
   margin-top: 2rem;
   padding: 1rem;
   background: var(--color-neutral-0);
-  border-radius: var(--radius-md, 6px);
+  border-radius: var(--asm-radius-md, 6px);
 }
 
 .search-related h4 {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   margin-bottom: 0.75rem;
 }
 
@@ -442,9 +442,9 @@
   font-size: 0.75rem;
   font-weight: 500;
   border: none;
-  border-radius: var(--radius-sm, 4px);
-  background: var(--tag-bg);
-  color: var(--tag-text-color, #fff);
+  border-radius: var(--asm-radius-sm, 4px);
+  background: var(--asm-color-primary-100);
+  color: var(--asm-color-primary-700, #fff);
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
 }

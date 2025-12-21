@@ -4,6 +4,7 @@ import {
   advancedSearch,
   publicAdvancedSearch,
   trackSearchClick,
+  trackPublicSearchClick,
   type AdvancedSearchRequest,
   type AdvancedSearchResult,
   type SearchHit,
@@ -121,8 +122,14 @@ export default function SearchPage() {
   };
 
   const handleResultClick = (hit: SearchHit, index: number) => {
-    trackSearchClick(hit.id, index);
-    navigate(`/note/${hit.id}`);
+    // Use appropriate tracking function based on authentication status
+    if (isAuthenticated) {
+      trackSearchClick(hit.id, index);
+      navigate(`/note/${hit.id}`);
+    } else {
+      trackPublicSearchClick(hit.id, index);
+      navigate(`/public/note/${hit.id}`);
+    }
   };
 
   const handleLoadMore = () => {

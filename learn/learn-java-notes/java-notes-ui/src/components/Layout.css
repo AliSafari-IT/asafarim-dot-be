@@ -1,7 +1,7 @@
 .layout {
   position: relative;
   min-height: 100vh;
-  background-color: var(--color-background);
+  background-color: var(--asm-color-bg);
   overflow-x: hidden;
 }
 
@@ -12,9 +12,9 @@
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, 
-    var(--color-primary-50) 0%, 
-    var(--color-primary-100) 25%, 
-    var(--color-background) 100%);
+    var(--asm-color-primary-50) 0%, 
+    var(--asm-color-primary-100) 25%, 
+    var(--asm-color-bg) 100%);
   z-index: -2;
 }
 
@@ -25,9 +25,9 @@
   right: 0;
   bottom: 0;
   background-image: 
-    radial-gradient(circle at 20% 50%, var(--color-primary-200) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, var(--color-secondary-200) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, var(--color-accent-200) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, var(--asm-color-primary-200) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--asm-color-secondary-200) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, var(--asm-color-info-200) 0%, transparent 50%);
   opacity: 0.3;
   z-index: -1;
 }
@@ -35,7 +35,7 @@
 .layout-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--asm-space-4);
   position: relative;
   z-index: 1;
 }
@@ -50,27 +50,27 @@
 .layout-with-sidebar .layout-main {
   flex: 1;
   min-width: 0;
-  padding: var(--spacing-xl);
+  padding: var(--asm-space-6);
 }
 
 .layout-header {
-  padding: var(--spacing-sx) 0;
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--asm-space-2) 0;
+  border-bottom: 1px solid var(--asm-color-border);
   backdrop-filter: blur(10px);
-  margin-bottom: var(--spacing-0);
+  margin-bottom: var(--asm-space-0);
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--asm-space-4);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-3);
 }
 
 .logo-icon {
@@ -85,53 +85,53 @@
 }
 
 .logo-text {
-  font-size: var(--font-size-3xl);
-  font-family: var(--font-family-heading);
+  font-size: var(--asm-font-size-3xl);
+  font-family: var(--asm-font-family-primary);
   font-weight: 700;
   margin: 0;
 }
 
 .header-nav {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--asm-space-2);
 }
 
 .nav-btn {
-  font-size: var(--font-size-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--asm-font-size-sm);
+  padding: var(--asm-space-2) var(--asm-space-3);
 }
 
 .header-stats {
   display: flex;
-  gap: var(--spacing-lg);
+  gap: var(--asm-space-4);
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
+  padding: var(--asm-space-3) var(--asm-space-4);
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-lg);
+  box-shadow: var(--asm-effect-shadow-sm);
+  border: 1px solid var(--asm-color-border);
   transition: all 0.3s ease;
 }
 
 .stat-item:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--asm-effect-shadow-md);
 }
 
 .stat-number {
-  font-size: var(--font-size-2xl);
+  font-size: var(--asm-font-size-2xl);
   font-weight: 700;
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
 }
 
 .stat-label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -139,36 +139,36 @@
 .header-user {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-3);
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--color-surface);
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-border);
+  gap: var(--asm-space-2);
+  padding: var(--asm-space-2) var(--asm-space-3);
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-full);
+  border: 1px solid var(--asm-color-border);
 }
 
 .user-avatar {
-  font-size: var(--font-size-lg);
+  font-size: var(--asm-font-size-lg);
 }
 
 .user-name {
-  font-size: var(--font-size-sm);
+  font-size: var(--asm-font-size-sm);
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .logout-btn {
-  font-size: var(--font-size-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--asm-font-size-sm);
+  padding: var(--asm-space-2) var(--asm-space-3);
 }
 
 .layout-main {
-  padding-bottom: var(--spacing-2xl);
+  padding-bottom: var(--asm-space-8);
 }
 
 /* Responsive Design */
@@ -181,15 +181,15 @@
   }
   
   .nav-btn {
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--asm-font-size-xs);
+    padding: var(--asm-space-1) var(--asm-space-2);
   }
 }
 
 @media (max-width: 768px) {
   .header-content {
     flex-wrap: wrap;
-    gap: var(--spacing-sm);
+    gap: var(--asm-space-2);
   }
   
   .logo {
@@ -216,26 +216,26 @@
   
   .guest-nav {
     display: flex;
-    gap: var(--spacing-xs);
+    gap: var(--asm-space-1);
   }
   
   .guest-nav .nav-btn {
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--asm-font-size-xs);
+    padding: var(--asm-space-1) var(--asm-space-2);
   }
 }
 
 @media (max-width: 480px) {
   .layout-container {
-    padding: 0 var(--spacing-md);
+    padding: 0 var(--asm-space-3);
   }
   
   .layout-header {
-    padding: var(--spacing-sm) 0;
+    padding: var(--asm-space-2) 0;
   }
   
   .logo-text {
-    font-size: var(--font-size-xl);
+    font-size: var(--asm-font-size-xl);
   }
   
   .logo-icon {
@@ -243,11 +243,11 @@
   }
   
   .header-stats {
-    gap: var(--spacing-sm);
+    gap: var(--asm-space-2);
   }
   
   .stat-item {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--asm-space-2) var(--asm-space-3);
   }
   
   .user-name {

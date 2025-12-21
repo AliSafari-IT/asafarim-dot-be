@@ -4,10 +4,10 @@
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  background: var(--tag-bg, var(--color-primary));
+  background: var(--asm-color-primary-100, var(--asm-color-primary-500));
   border: 1px solid transparent;
-  border-radius: var(--radius-full);
-  color: var(--tag-text-color, var(--color-background));
+  border-radius: var(--asm-radius-full);
+  color: var(--asm-color-primary-700, var(--asm-color-bg));
   font-weight: 500;
   transition: all 120ms ease;
   white-space: nowrap;
@@ -15,18 +15,18 @@
 
 /* Sizes */
 .tag-badge-sm {
-  padding: 2px var(--spacing-xs);
-  font-size: var(--font-size-xs);
+  padding: 2px var(--asm-space-1);
+  font-size: var(--asm-font-size-xs);
 }
 
 .tag-badge-md {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: var(--font-size-sm);
+  padding: var(--asm-space-1) var(--asm-space-2);
+  font-size: var(--asm-font-size-sm);
 }
 
 .tag-badge-lg {
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-size-md);
+  padding: var(--asm-space-2) var(--asm-space-3);
+  font-size: var(--asm-font-size-md);
 }
 
 /* Icon */
@@ -48,7 +48,7 @@
 }
 
 .tag-badge-clickable:hover {
-  background: var(--tag-bg-hover, var(--color-primary));
+  background: var(--asm-color-primary-200, var(--asm-color-primary-500));
   transform: scale(1.03) translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -59,10 +59,10 @@
 
 /* Active State (when filtering by this tag) */
 .tag-badge-active {
-  background: var(--tag-bg, var(--color-primary));
-  border: 2px solid var(--color-background);
-  box-shadow: 0 0 0 2px var(--tag-bg, var(--color-primary));
-  color: var(--tag-text-color, var(--color-background));
+  background: var(--asm-color-primary-100, var(--asm-color-primary-500));
+  border: 2px solid var(--asm-color-bg);
+  box-shadow: 0 0 0 2px var(--asm-color-primary-100, var(--asm-color-primary-500));
+  color: var(--asm-color-primary-700, var(--asm-color-bg));
 }
 
 .tag-badge-active .tag-badge-icon {
@@ -70,7 +70,7 @@
 }
 
 .tag-badge-active:hover {
-  background: var(--tag-bg-hover, var(--color-primary));
+  background: var(--asm-color-primary-200, var(--asm-color-primary-500));
   transform: scale(1.05);
 }
 
@@ -86,7 +86,7 @@
   border: none;
   background: rgba(0, 0, 0, 0.1);
   color: inherit;
-  border-radius: var(--radius-full);
+  border-radius: var(--asm-radius-full);
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
@@ -95,7 +95,7 @@
 }
 
 .tag-badge-remove:hover {
-  background: var(--color-danger-500);
+  background: var(--asm-color-danger-500);
   color: white;
 }
 
@@ -113,17 +113,17 @@
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: var(--color-surface);
-  color: var(--color-text);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-md);
+  background: var(--asm-color-surface);
+  color: var(--asm-color-text);
+  padding: var(--asm-space-1) var(--asm-space-2);
+  border-radius: var(--asm-radius-md);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  font-size: var(--font-size-xs);
+  font-size: var(--asm-font-size-xs);
   white-space: nowrap;
   z-index: 1000;
   pointer-events: none;
   animation: fadeInUp 150ms ease;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
 }
 
 .tag-tooltip::after {
@@ -133,7 +133,7 @@
   left: 50%;
   transform: translateX(-50%);
   border: 4px solid transparent;
-  border-top-color: var(--color-surface);
+  border-top-color: var(--asm-color-surface);
 }
 
 .tag-tooltip strong {
@@ -143,8 +143,8 @@
 
 .tooltip-hint {
   display: block;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-2xs);
+  color: var(--asm-color-text-muted);
+  font-size: var(--asm-font-size-xs);
   margin-top: 2px;
 }
 
@@ -162,8 +162,8 @@
 /* Responsive */
 @media (max-width: 480px) {
   .tag-badge-md {
-    padding: 2px var(--spacing-xs);
-    font-size: var(--font-size-xs);
+    padding: 2px var(--asm-space-1);
+    font-size: var(--asm-font-size-xs);
   }
   
   .tag-badge-text {
@@ -171,6 +171,6 @@
   }
   
   .tag-tooltip {
-    font-size: var(--font-size-2xs);
+    font-size: var(--asm-font-size-xs);
   }
 }

@@ -5,15 +5,15 @@
 }
 
 .citation-label {
-  color: var(--color-primary, #3b82f6);
+  color: var(--asm-color-primary-500, #3b82f6);
   font-weight: 500;
   text-decoration: none;
-  border-bottom: 1px dotted var(--color-primary, #3b82f6);
+  border-bottom: 1px dotted var(--asm-color-primary-500, #3b82f6);
   transition: color 0.2s, border-color 0.2s;
 }
 
 .citation-inline:hover .citation-label {
-  color: var(--color-primary-dark, #1d4ed8);
+  color: var(--asm-color-primary-700, #1d4ed8);
   border-bottom-style: solid;
 }
 
@@ -22,8 +22,8 @@
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #e2e8f0);
+  background: var(--asm-color-surface, #ffffff);
+  border: 1px solid var(--asm-color-border, #e2e8f0);
   border-radius: 6px;
   padding: 0.75rem;
   min-width: 200px;
@@ -40,31 +40,31 @@
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: var(--color-border, #e2e8f0);
+  border-top-color: var(--asm-color-border, #e2e8f0);
 }
 
 .tooltip-title {
   font-weight: 600;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
   margin-bottom: 4px;
   line-height: 1.3;
 }
 
 .tooltip-authors {
   font-size: 0.875rem;
-  color: var(--color-text-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
   margin-bottom: 2px;
 }
 
 .tooltip-year {
   font-size: 0.875rem;
-  color: var(--color-text-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
 }
 
 .tooltip-hint {
   font-size: 0.75rem;
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--asm-color-text-muted, #94a3b8);
   margin-top: 8px;
   padding-top: 6px;
-  border-top: 1px solid var(--color-border, #e2e8f0);
+  border-top: 1px solid var(--asm-color-border, #e2e8f0);
 }

@@ -516,6 +516,22 @@ export const trackSearchClick = async (
 };
 
 /**
+ * Track click on public search result (anonymous users)
+ */
+export const trackPublicSearchClick = async (
+  noteId: string,
+  position: number = 0
+): Promise<void> => {
+  try {
+    await api.post("/search/public/click", null, {
+      params: { noteId, position },
+    });
+  } catch (error) {
+    console.log("Failed to track public search click (non-critical):", error);
+  }
+};
+
+/**
  * Get search analytics dashboard data
  */
 export const getSearchAnalytics = async (days: number = 30): Promise<SearchAnalytics> => {

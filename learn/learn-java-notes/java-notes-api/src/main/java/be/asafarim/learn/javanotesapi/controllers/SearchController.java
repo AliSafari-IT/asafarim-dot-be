@@ -100,7 +100,7 @@ public class SearchController {
     }
 
     /**
-     * Track search result click
+     * Track search result click (authenticated users)
      * POST /api/search/click
      */
     @PostMapping("/click")
@@ -109,6 +109,22 @@ public class SearchController {
             @RequestParam(defaultValue = "0") int position) {
         try {
             searchService.trackSearchClick(null, noteId, position);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Track public search result click (anonymous users)
+     * POST /api/search/public/click
+     */
+    @PostMapping("/public/click")
+    public ResponseEntity<Void> trackPublicClick(
+            @RequestParam UUID noteId,
+            @RequestParam(defaultValue = "0") int position) {
+        try {
+            searchService.trackPublicSearchClick(noteId, position);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

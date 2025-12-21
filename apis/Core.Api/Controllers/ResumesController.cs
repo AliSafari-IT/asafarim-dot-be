@@ -86,9 +86,6 @@ public class ResumesController : ControllerBase
             .Include(r => r.Certificates)
             .Include(r => r.WorkExperiences)
             .ThenInclude(w => w.Achievements)
-            .Include(r => r.WorkExperiences)
-            .ThenInclude(w => w.WorkExperienceTechnologies)
-            .ThenInclude(wt => wt.Technology)
             .Include(r => r.Projects)
             .ThenInclude(p => p.ProjectTechnologies)
             .ThenInclude(pt => pt.Technology)
@@ -97,6 +94,23 @@ public class ResumesController : ControllerBase
             .Include(r => r.Awards)
             .Include(r => r.References)
             .FirstOrDefaultAsync(r => r.Id == id);
+
+        // Load WorkExperienceTechnologies separately to avoid EF Core alias conflicts
+        if (resume?.WorkExperiences != null)
+        {
+            var workExperienceIds = resume.WorkExperiences.Select(we => we.Id).ToList();
+            var workExperienceTechnologies = await _context.WorkExperienceTechnologies
+                .Include(wet => wet.Technology)
+                .Where(wet => workExperienceIds.Contains(wet.WorkExperienceId))
+                .ToListAsync();
+            
+            foreach (var workExperience in resume.WorkExperiences)
+            {
+                workExperience.WorkExperienceTechnologies = workExperienceTechnologies
+                    .Where(wet => wet.WorkExperienceId == workExperience.Id)
+                    .ToList();
+            }
+        }
 
         if (resume == null)
         {

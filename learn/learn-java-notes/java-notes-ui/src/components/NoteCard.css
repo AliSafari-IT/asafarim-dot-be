@@ -1,11 +1,11 @@
 .note-card {
-  background: var(--color-surface);
-  border-radius: var(--radius-xl);
-  margin-bottom: var(--spacing-xl);
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-xl);
+  margin-bottom: var(--asm-space-6);
   box-shadow: 
     0 1px 3px rgba(0, 0, 0, 0.1),
     0 1px 2px rgba(0, 0, 0, 0.06);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -18,7 +18,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--color-primary-500), var(--color-secondary-500));
+  background: linear-gradient(90deg, var(--asm-color-primary-500), var(--asm-color-secondary-500));
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
@@ -40,30 +40,30 @@
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  padding-top: var(--spacing-md);
+  padding-top: var(--asm-space-3);
 }
 
 .note-title-row {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--asm-space-3);
   flex-wrap: wrap;
 }
 
 .note-card-link:hover .note-title {
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
 }
 
 .note-card-link:hover .note-content {
-  color: var(--color-text);
+  color: var(--asm-color-text);
 }
 
 .note-header {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-md);
-  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-md);
-  border-bottom: 1px solid var(--color-border-muted);
+  gap: var(--asm-space-3);
+  padding: var(--asm-space-6) var(--asm-space-6) var(--asm-space-3);
+  border-bottom: 1px solid var(--asm-color-border);
 }
 
 .note-icon {
@@ -79,9 +79,9 @@
 }
 
 .note-title {
-  margin: 0 0 var(--spacing-sm);
-  color: var(--color-text);
-  font-size: var(--font-size-xl);
+  margin: 0 0 var(--asm-space-2);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-xl);
   font-weight: 600;
   line-height: 1.3;
   word-break: break-word;
@@ -90,9 +90,9 @@
 .note-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-md);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  gap: var(--asm-space-3);
+  font-size: var(--asm-font-size-xs);
+  color: var(--asm-color-text-muted);
 }
 
 .meta-item {
@@ -100,51 +100,51 @@
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  background: var(--color-neutral-50);
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-neutral-200);
+  background: var(--asm-color-neutral-50);
+  border-radius: var(--asm-radius-full);
+  border: 1px solid var(--asm-color-neutral-200);
 }
 
 .note-content-wrapper {
-  padding: 0 var(--spacing-xl) var(--spacing-md);
+  padding: 0 var(--asm-space-6) var(--asm-space-3);
 }
 
 .note-content {
   margin: 0;
-  font-size: var(--font-size-md);
-  color: var(--color-text);
+  font-size: var(--asm-font-size-md);
+  color: var(--asm-color-text);
   line-height: 1.6;
   word-break: break-word;
 }
 
 .empty-content {
-  color: var(--color-text-muted);
+  color: var(--asm-color-text-muted);
   font-style: italic;
 }
 
 .read-more {
   display: inline-block;
-  margin-top: var(--spacing-sm);
-  font-size: var(--font-size-sm);
+  margin-top: var(--asm-space-2);
+  font-size: var(--asm-font-size-sm);
   font-weight: 500;
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
   transition: all 0.2s ease;
 }
 
 .note-card-link:hover .read-more {
-  color: var(--color-primary-700);
+  color: var(--asm-color-primary-700);
   transform: translateX(4px);
 }
 
 .note-tags-section {
-  padding: var(--spacing-md) var(--spacing-xl);
-  border-top: 1px solid var(--color-border-muted);
-  background: var(--color-neutral-50);
+  padding: var(--asm-space-3) var(--asm-space-6);
+  border-top: 1px solid var(--asm-color-border);
+  background: var(--asm-color-neutral-50);
 }
 
 .note-tags {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--asm-space-2);
   flex-wrap: wrap;
 }
 
@@ -152,37 +152,37 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: var(--spacing-md) var(--spacing-xl) var(--spacing-xl);
-  border-top: 1px solid var(--color-border-muted);
-  background: var(--color-neutral-50);
+  padding: var(--asm-space-3) var(--asm-space-6) var(--asm-space-6);
+  border-top: 1px solid var(--asm-color-border);
+  background: var(--asm-color-neutral-50);
 }
 
 .tag {
-  font-size: var(--font-size-xs);
+  font-size: var(--asm-font-size-xs);
   padding: 4px 12px;
-  background: linear-gradient(135deg, var(--color-primary-100), var(--color-primary-200));
-  color: var(--color-primary-700);
-  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--asm-color-primary-100), var(--asm-color-primary-200));
+  color: var(--asm-color-primary-700);
+  border-radius: var(--asm-radius-full);
   font-weight: 500;
   text-transform: lowercase;
-  border: 1px solid var(--color-primary-300);
+  border: 1px solid var(--asm-color-primary-300);
 }
 
 .no-tags {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  font-size: var(--asm-font-size-xs);
+  color: var(--asm-color-text-muted);
   font-style: italic;
 }
 
 .note-actions {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--asm-space-2);
 }
 
 .action-btn {
-  font-size: var(--font-size-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
+  font-size: var(--asm-font-size-sm);
+  padding: var(--asm-space-2) var(--asm-space-3);
+  border-radius: var(--asm-radius-md);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -202,11 +202,11 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .note-header {
-    padding: var(--spacing-lg);
+    padding: var(--asm-space-4);
   }
   
   .note-meta {
-    gap: var(--spacing-sm);
+    gap: var(--asm-space-2);
   }
   
   .meta-item {
@@ -215,15 +215,15 @@
   }
   
   .note-content-wrapper {
-    padding: 0 var(--spacing-lg) var(--spacing-md);
+    padding: 0 var(--asm-space-4) var(--asm-space-3);
   }
   
   .note-tags-section {
-    padding: var(--spacing-md) var(--spacing-lg);
+    padding: var(--asm-space-3) var(--asm-space-4);
   }
   
   .note-footer {
-    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+    padding: var(--asm-space-3) var(--asm-space-4) var(--asm-space-4);
   }
   
   .note-actions {
