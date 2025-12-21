@@ -42,7 +42,7 @@ public class AdminSystemController {
     }
 
     @GetMapping("/settings/by-category")
-    @PreAuthorize("hasAuthority('SYSTEM_SETTINGS')")
+    @PreAuthorize("hasAuthority('SYSTEM_SETTINGS') || hasRole('ADMIN')")
     public ResponseEntity<Map<String, List<SystemSettingDto>>> getSettingsByCategory() {
         return ResponseEntity.ok(adminSystemService.getSettingsByCategory());
     }
