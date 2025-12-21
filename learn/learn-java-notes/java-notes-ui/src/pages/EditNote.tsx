@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getNote, updateNote, getAttachments, updateAttachment, type Attachment } from "../api/notesApi";
+import { useAuth } from "../contexts/useAuth";
 import TagInput from "../components/TagInput";
 import AttachmentUploader from "../components/AttachmentUploader";
 import AttachmentList from "../components/AttachmentList";
@@ -13,6 +14,7 @@ import "./EditNote.css";
 export default function EditNote() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isPublic, setIsPublic] = useState(false);
@@ -22,6 +24,7 @@ export default function EditNote() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
   
   // Academic metadata state
   const [authors, setAuthors] = useState("");
@@ -37,9 +40,25 @@ export default function EditNote() {
     async function loadNote() {
       if (!id) return;
       
+      // Check if user is authenticated
+      if (!isAuthenticated || !user) {
+        setError("You must be logged in to edit notes.");
+        setInitialLoading(false);
+        return;
+      }
+      
       try {
         setInitialLoading(true);
         const note = await getNote(id);
+        
+        // Check if user owns this note
+        if (note.createdBy !== user.username || note.createdBy !== user.id) {
+          setError("You don't have permission to edit this note.");
+          setIsOwner(false);
+          return;
+        }
+        
+        setIsOwner(true);
         setTitle(note.title);
         setContent(note.content);
         setIsPublic(note.isPublic);
@@ -89,6 +108,12 @@ export default function EditNote() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !id) return;
+    
+    // Check if user is the owner before allowing update
+    if (!isOwner) {
+      setError("You don't have permission to edit this note.");
+      return;
+    }
     
     try {
       setLoading(true);
