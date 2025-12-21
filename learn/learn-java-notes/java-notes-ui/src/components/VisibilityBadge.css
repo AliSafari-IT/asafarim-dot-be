@@ -36,12 +36,12 @@
 }
 
 .visibility-badge.private {
-  background-color: var(--color-neutral-100, #f5f5f5);
-  color: var(--color-neutral-700, #404040);
-  border-color: var(--color-neutral-300, #d4d4d8);
+  background-color: var(--asm-color-neutral-100, #f5f5f5);
+  color: var(--asm-color-neutral-700, #404040);
+  border-color: var(--asm-color-neutral-300, #d4d4d8);
 }
 
 .visibility-badge.private:hover {
-  background-color: var(--color-neutral-200, #e5e5e5);
-  border-color: var(--color-neutral-400, #a1a1a3);
+  background-color: var(--asm-color-neutral-200, #e5e5e5);
+  border-color: var(--asm-color-neutral-400, #a1a1a3);
 }

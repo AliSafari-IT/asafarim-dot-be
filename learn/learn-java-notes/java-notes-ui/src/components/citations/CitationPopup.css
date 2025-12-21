@@ -1,8 +1,8 @@
 .citation-popup {
   position: fixed;
   z-index: 9999;
-  background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #e2e8f0);
+  background: var(--asm-color-surface, #ffffff);
+  border: 1px solid var(--asm-color-border, #e2e8f0);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
   min-width: 320px;
@@ -18,8 +18,8 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--color-border, #e2e8f0);
-  background: var(--color-background, #f8fafc);
+  border-bottom: 1px solid var(--asm-color-border, #e2e8f0);
+  background: var(--asm-color-bg, #f8fafc);
 }
 
 .popup-icon {
@@ -28,20 +28,20 @@
 
 .popup-title {
   font-weight: 600;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
   flex: 1;
 }
 
 .popup-hint {
   font-size: 0.75rem;
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--asm-color-text-muted, #94a3b8);
 }
 
 .popup-loading,
 .popup-empty {
   padding: 1.5rem;
   text-align: center;
-  color: var(--color-text-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
 }
 
 .popup-list {
@@ -63,12 +63,12 @@
 
 .popup-item:hover,
 .popup-item.selected {
-  background: var(--color-primary-light, #eff6ff);
+  background: var(--asm-color-primary-200, #eff6ff);
 }
 
 .item-title {
   font-weight: 500;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -76,7 +76,7 @@
 
 .item-meta {
   font-size: 0.8125rem;
-  color: var(--color-text-muted, #64748b);
+  color: var(--asm-color-text-muted, #64748b);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -84,5 +84,5 @@
 
 .item-year {
   font-size: 0.8125rem;
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--asm-color-text-muted, #94a3b8);
 }

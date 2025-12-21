@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Core.Api.Models.Resume;
 
 public class WorkAchievement
@@ -6,6 +8,7 @@ public class WorkAchievement
     public Guid WorkExperienceId { get; set; }
     public string Text { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    [NotMapped]
     public DateTime? UpdatedAt { get; set; }
 
     // Navigation property

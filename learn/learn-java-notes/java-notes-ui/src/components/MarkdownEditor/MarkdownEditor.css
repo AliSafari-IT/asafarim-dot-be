@@ -3,7 +3,7 @@
 .markdown-editor {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -14,15 +14,15 @@
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
-  background-color: var(--color-accent-100);
-  border-bottom: 1px solid var(--color-border);
+  background-color: var(--asm-color-info-100);
+  border-bottom: 1px solid var(--asm-color-border);
   flex-wrap: wrap;
 }
 
 .toolbar-group {
   display: flex;
   align-items: center;
-  gap: var(--space-0);
+  gap: var(--asm-space-0);
 }
 
 .toolbar-group button {
@@ -35,41 +35,41 @@
   border: none;
   border-radius: 4px;
   background: transparent;
-  color: var(--color-neutral-900);
+  color: var(--asm-color-neutral-900);
   font-size: 14px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .toolbar-group button:hover {
-  background-color: var(--bg-hover-color);
-  color: var(--color-text);
+  background-color: var(--asm-color-neutral-200);
+  color: var(--asm-color-text);
 }
 
 .toolbar-group button:active {
-  background-color: var(--bg-active-color);
+  background-color: var(--asm-color-neutral-300);
 }
 
 .toolbar-group button.active {
-  background-color: var(--color-primary-200);
-  color: var(--color-primary-950);
+  background-color: var(--asm-color-primary-200);
+  color: var(--asm-color-primary-950);
 }
 
 .toolbar-group button.citation-btn {
-  background-color: var(--color-accent-300);
-  color: var(--color-accent-950);
+  background-color: var(--asm-color-info-300);
+  color: var(--asm-color-info-950);
   font-weight: 500;
 }
 
 .toolbar-group button.citation-btn:hover {
-  background-color: var(--color-primary, #3b82f6);
+  background-color: var(--asm-color-primary-500, #3b82f6);
   color: white;
 }
 
 .toolbar-divider {
   width: 1px;
   height: 24px;
-  background-color: var(--color-border, #e2e8f0);
+  background-color: var(--asm-color-border, #e2e8f0);
   margin: 0 6px;
 }
 
@@ -97,7 +97,7 @@
 
 .editor-content.split .editor-pane {
   display: block !important;
-  border-right: 1px solid var(--color-border, #e2e8f0);
+  border-right: 1px solid var(--asm-color-border, #e2e8f0);
 }
 
 /* CodeMirror Wrapper */
@@ -108,7 +108,7 @@
 
 .codemirror-wrapper .cm-editor {
   height: 100%;
-  background-color: var(--color-background, #ffffff);
+  background-color: var(--asm-color-bg, #ffffff);
 }
 
 .codemirror-wrapper .cm-editor.cm-focused {
@@ -120,8 +120,8 @@
   flex: 1;
   padding: 16px;
   overflow: auto;
-  background-color: var(--color-background, #ffffff);
-  color: var(--color-text, #1e293b);
+  background-color: var(--asm-color-bg, #ffffff);
+  color: var(--asm-color-text, #1e293b);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -131,22 +131,22 @@
   font-weight: 700;
   margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-border, #e2e8f0);
-  color: var(--color-text, #1e293b);
+  border-bottom: 2px solid var(--asm-color-border, #e2e8f0);
+  color: var(--asm-color-text, #1e293b);
 }
 
 .preview-pane h2 {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 1.5rem 0 0.75rem 0;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
 }
 
 .preview-pane h3 {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 1.25rem 0 0.5rem 0;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
 }
 
 .preview-pane p {
@@ -166,17 +166,17 @@
 .preview-pane blockquote {
   margin: 1rem 0;
   padding: 0.75rem 1rem;
-  border-left: 4px solid var(--color-primary);
-  background-color: var(--color-neutral-100);
+  border-left: 4px solid var(--asm-color-primary-500);
+  background-color: var(--asm-color-neutral-100);
   border-radius: 0 4px 4px 0;
-  color: var(--color-text);
+  color: var(--asm-color-text);
   font-style: italic;
 }
 
 .preview-pane pre.code-block {
   margin: 1rem 0;
   padding: 1rem;
-  background-color: var(--color-neutral-900);
+  background-color: var(--asm-color-neutral-900);
   border-radius: 8px;
   overflow-x: auto;
   font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
@@ -185,20 +185,20 @@
 }
 
 .preview-pane pre.code-block code {
-  color: var(--color-neutral-100);
+  color: var(--asm-color-neutral-100);
 }
 
 .preview-pane .inline-code {
   padding: 0.15rem 0.4rem;
-  background-color: var(--color-neutral-200);
+  background-color: var(--asm-color-neutral-200);
   border-radius: 4px;
   font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
   font-size: 0.9em;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
 }
 
 .preview-pane a {
-  color: var(--color-primary-700);
+  color: var(--asm-color-primary-700);
   text-decoration: none;
 }
 
@@ -209,7 +209,7 @@
 .preview-pane hr {
   margin: 1.5rem 0;
   border: none;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--asm-color-border);
 }
 
 .preview-pane table {
@@ -221,12 +221,12 @@
 .preview-pane th,
 .preview-pane td {
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--asm-color-border);
   text-align: left;
 }
 
 .preview-pane th {
-  background-color: var(--color-neutral-300);
+  background-color: var(--asm-color-neutral-300);
   font-weight: 600;
 }
 
@@ -237,19 +237,19 @@
 
 /* Citation in preview */
 .preview-pane [📚] {
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
 }
 
 /* Editor Footer */
 .editor-footer {
   padding: 8px 12px;
-  background-color: var(--color-accent-100);
-  border-top: 1px solid var(--color-border);
+  background-color: var(--asm-color-info-100);
+  border-top: 1px solid var(--asm-color-border);
 }
 
 .shortcuts-hint {
   font-size: 12px;
-  color: var(--color-neutral-950);
+  color: var(--asm-color-neutral-950);
 }
 
 .shortcuts-hint kbd {
@@ -257,8 +257,8 @@
   padding: 2px 6px;
   font-family: inherit;
   font-size: 11px;
-  background-color: var(--color-neutral-50);
-  border: 1px solid var(--color-border);
+  background-color: var(--asm-color-neutral-50);
+  border: 1px solid var(--asm-color-border);
   border-radius: 4px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -291,7 +291,7 @@
 
   .editor-content.split .editor-pane {
     border-right: none;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--asm-color-border);
   }
 
   .shortcuts-hint {
@@ -303,77 +303,77 @@
 .cm-header-1 {
   font-size: 1.5em;
   font-weight: 700;
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
 }
 
 .cm-header-2 {
   font-size: 1.3em;
   font-weight: 600;
-  color: var(--color-primary, #3b82f6);
+  color: var(--asm-color-primary-500, #3b82f6);
 }
 
 .cm-header-3 {
   font-size: 1.15em;
   font-weight: 600;
-  color: var(--color-primary, #3b82f6);
+  color: var(--asm-color-primary-500, #3b82f6);
 }
 
 .cm-strong {
   font-weight: 700;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
 }
 
 .cm-emphasis {
   font-style: italic;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
 }
 
 .cm-strikethrough {
   text-decoration: line-through;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
 }
 
 .cm-link {
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
   text-decoration: underline;
 }
 
 .cm-url {
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
   font-size: 0.9em;
 }
 
 .cm-quote {
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
   font-style: italic;
 }
 
 .cm-list {
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
 }
 
 /* Citation Marker in Editor */
 .cm-citation-marker {
-  background-color: var(--color-primary-200);
+  background-color: var(--asm-color-primary-200);
   border-radius: 4px;
   padding: 0 4px;
-  color: var(--color-primary-600);
+  color: var(--asm-color-primary-600);
   font-weight: 500;
   cursor: pointer;
 }
 
 .cm-citation-marker:hover {
-  background-color: var(--color-primary-200);
+  background-color: var(--asm-color-primary-200);
   text-decoration: underline;
 }
 
 /* Animation */
 @keyframes pulse-citation {
   0%, 100% {
-    background-color: var(--color-primary-200);
+    background-color: var(--asm-color-primary-200);
   }
   50% {
-    background-color: var(--color-primary-200);
+    background-color: var(--asm-color-primary-200);
   }
 }
 
@@ -385,8 +385,8 @@
 
 /* Autocomplete tooltip container */
 .cm-tooltip.cm-tooltip-autocomplete {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
+  background: var(--asm-color-bg);
+  border: 1px solid var(--asm-color-border);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   overflow: hidden;
@@ -417,14 +417,14 @@
 /* Hover and selected states */
 .cm-tooltip-autocomplete > ul > li:hover,
 .cm-tooltip-autocomplete > ul > li[aria-selected="true"] {
-  background: var(--color-primary-light);
-  border-left-color: var(--color-primary-600);
+  background: var(--asm-color-primary-200);
+  border-left-color: var(--asm-color-primary-600);
 }
 
 /* Completion label (title) */
 .cm-completionLabel {
   font-weight: 500;
-  color: var(--color-text, #1e293b);
+  color: var(--asm-color-text, #1e293b);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -433,7 +433,7 @@
 /* Completion detail (author, year) */
 .cm-completionDetail {
   font-size: 0.8125rem;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -444,10 +444,10 @@
 /* Completion info panel */
 .cm-completionInfo {
   padding: 0.75rem 1rem;
-  border-left: 1px solid var(--color-border);
-  background: var(--color-background);
+  border-left: 1px solid var(--asm-color-border);
+  background: var(--asm-color-bg);
   font-size: 0.875rem;
-  color: var(--color-neutral-600);
+  color: var(--asm-color-neutral-600);
   max-width: 300px;
 }
 
@@ -461,26 +461,6 @@
   content: "📚 ";
 }
 
-/* Dark mode overrides */
-[data-theme="dark"] .cm-tooltip.cm-tooltip-autocomplete {
-  background: var(--color-background);
-  border-color: var(--color-border);
-}
-
-[data-theme="dark"] .cm-tooltip-autocomplete > ul > li:hover,
-[data-theme="dark"] .cm-tooltip-autocomplete > ul > li[aria-selected="true"] {
-  background: var(--color-primary-muted);
-}
-
-[data-theme="dark"] .cm-completionLabel {
-  color: var(--color-text);
-}
-
-[data-theme="dark"] .cm-completionInfo {
-  background: var(--color-neutral-600);
-  border-color: var(--color-border);
-}
-
 /* Scrollbar styling for autocomplete */
 .cm-tooltip-autocomplete > ul::-webkit-scrollbar {
   width: 8px;
@@ -491,10 +471,10 @@
 }
 
 .cm-tooltip-autocomplete > ul::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: var(--asm-color-border);
   border-radius: 4px;
 }
 
 .cm-tooltip-autocomplete > ul::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-600);
+  background: var(--asm-color-neutral-600);
 }

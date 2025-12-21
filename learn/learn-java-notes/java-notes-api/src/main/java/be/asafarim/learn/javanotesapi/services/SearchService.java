@@ -454,6 +454,21 @@ public class SearchService {
     }
 
     /**
+     * Track click on public search result (anonymous users)
+     */
+    @Transactional
+    public void trackPublicSearchClick(UUID noteId, int position) {
+        // Create a public search click event
+        SearchAnalytics click = new SearchAnalytics();
+        click.setQuery(""); // Will be linked by timing
+        click.setClickedNoteId(noteId);
+        click.setClickPosition(position);
+        click.setTimestamp(Instant.now());
+        click.setPublicSearch(true);
+        analyticsRepository.save(click);
+    }
+
+    /**
      * Get search analytics dashboard data
      */
     @Transactional(readOnly = true)
