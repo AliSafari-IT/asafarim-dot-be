@@ -122,6 +122,66 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
         params: []
     },
     {
+        id: 'draw-spiral',
+        type: 'drawSpiral',
+        category: 'motion',
+        label: 'Draw Spiral',
+        color: '#4ECDC4',
+        icon: '🌀',
+        params: [
+            { name: 'turns', type: 'number', default: 3, min: 1, max: 10 },
+            { name: 'spacing', type: 'number', default: 10, min: 5, max: 30 }
+        ]
+    },
+    {
+        id: 'draw-arc',
+        type: 'drawArc',
+        category: 'motion',
+        label: 'Draw Arc',
+        color: '#4ECDC4',
+        icon: '🌙',
+        params: [
+            { name: 'radius', type: 'number', default: 50, min: 20, max: 150 },
+            { name: 'angle', type: 'number', default: 180, min: 30, max: 360 }
+        ]
+    },
+    {
+        id: 'draw-zigzag',
+        type: 'drawZigzag',
+        category: 'motion',
+        label: 'Draw Zigzag',
+        color: '#4ECDC4',
+        icon: '⚡',
+        params: [
+            { name: 'segments', type: 'number', default: 5, min: 2, max: 15 },
+            { name: 'width', type: 'number', default: 30, min: 10, max: 80 }
+        ]
+    },
+    {
+        id: 'draw-wave',
+        type: 'drawWave',
+        category: 'motion',
+        label: 'Draw Wave',
+        color: '#4ECDC4',
+        icon: '〰️',
+        params: [
+            { name: 'amplitude', type: 'number', default: 30, min: 10, max: 80 },
+            { name: 'frequency', type: 'number', default: 3, min: 1, max: 8 }
+        ]
+    },
+    {
+        id: 'teleport',
+        type: 'teleport',
+        category: 'motion',
+        label: 'Teleport',
+        color: '#4ECDC4',
+        icon: '✨',
+        params: [
+            { name: 'x', type: 'number', default: 0, min: -300, max: 300 },
+            { name: 'y', type: 'number', default: 0, min: -200, max: 200 }
+        ]
+    },
+    {
         id: 'set-color',
         type: 'setColor',
         category: 'color',
@@ -143,6 +203,64 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
         color: '#A06CD5',
         icon: '🖌️',
         params: [{ name: 'size', type: 'number', default: 3, min: 1, max: 20 }]
+    },
+    {
+        id: 'rainbow-mode',
+        type: 'rainbowMode',
+        category: 'color',
+        label: 'Rainbow Mode',
+        color: '#A06CD5',
+        icon: '🌈',
+        params: [{ name: 'speed', type: 'number', default: 5, min: 1, max: 20 }]
+    },
+    {
+        id: 'gradient-color',
+        type: 'gradientColor',
+        category: 'color',
+        label: 'Gradient',
+        color: '#A06CD5',
+        icon: '🎨',
+        params: [
+            {
+                name: 'from',
+                type: 'select',
+                default: 'red',
+                options: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink']
+            },
+            {
+                name: 'to',
+                type: 'select',
+                default: 'blue',
+                options: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink']
+            }
+        ]
+    },
+    {
+        id: 'glow-effect',
+        type: 'glowEffect',
+        category: 'color',
+        label: 'Glow Effect',
+        color: '#A06CD5',
+        icon: '✨',
+        params: [{ name: 'intensity', type: 'number', default: 10, min: 0, max: 30 }]
+    },
+    {
+        id: 'set-opacity',
+        type: 'setOpacity',
+        category: 'color',
+        label: 'Set Opacity',
+        color: '#A06CD5',
+        icon: '👻',
+        params: [{ name: 'opacity', type: 'number', default: 100, min: 10, max: 100 }]
+    },
+    {
+        id: 'random-color',
+        type: 'randomColor',
+        category: 'color',
+        label: 'Random Color',
+        color: '#A06CD5',
+        icon: '🎲',
+        params: []
     },
     {
         id: 'repeat-magic',

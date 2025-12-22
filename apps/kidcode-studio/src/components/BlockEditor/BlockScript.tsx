@@ -68,6 +68,7 @@ export default function BlockScript() {
     return (
       <div className="block-script empty">
         <div className="empty-state">
+          <h3 className="script-title">📜 My Script</h3>
           <span className="empty-icon">📝</span>
           <p>Drag blocks here to start creating!</p>
           <p className="empty-hint">
@@ -98,11 +99,9 @@ export default function BlockScript() {
           return (
             <div
               key={block.id}
-              className={`script-block ${isSelected ? "selected" : ""} ${
-                isActive ? "active" : ""
-              } ${isFailed ? "failed" : ""} ${isDragging ? "dragging" : ""} ${
-                isDropTarget ? "drop-target" : ""
-              }`}
+              className={`script-block ${isSelected ? "selected" : ""} ${isActive ? "active" : ""
+                } ${isFailed ? "failed" : ""} ${isDragging ? "dragging" : ""} ${isDropTarget ? "drop-target" : ""
+                }`}
               style={{ backgroundColor: def.color }}
               onClick={() => selectBlock(block.id)}
               onDragOver={(e) => handleDragOver(e, index)}
@@ -180,11 +179,10 @@ export default function BlockScript() {
         })}
 
         <div
-          className={`script-drop-end ${
-            dropIndex === blocks.length && dragIndex !== null
-              ? "drop-target"
-              : ""
-          }`}
+          className={`script-drop-end ${dropIndex === blocks.length && dragIndex !== null
+            ? "drop-target"
+            : ""
+            }`}
           onDragOver={(e) => handleDragOver(e, blocks.length)}
           onDrop={handleDropAtEnd}
         />

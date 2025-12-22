@@ -48,22 +48,55 @@
   font-weight: 600;
   font-size: 0.9rem;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.palette-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
 }
 
 .palette-block:hover {
-  transform: translateX(6px) scale(1.02);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+  transform: translateX(8px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35), 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.palette-block:hover::before {
+  left: 100%;
+}
+
+.palette-block:active {
+  transform: translateX(4px) scale(0.98);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .block-icon {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
 }
 
 .block-label {
   flex: 1;
   text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  margin-right: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .block-script {
@@ -114,41 +147,47 @@
 .script-blocks {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--asm-space-2);
 }
 
 .script-block {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border-radius: var(--kid-radius-sm);
+  gap: var(--asm-space-2);
+  padding: var(--asm-space-2) var(--asm-space-3);
+  border-radius: var(--asm-radius-md);
   color: white;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 3px solid transparent;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  min-height: 52px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .script-block:hover {
-  transform: scale(1.02);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .script-block.selected {
-  border-color: white;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .script-block.active {
-  animation: pulse 0.5s ease-in-out;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  animation: pulse 0.6s ease-in-out;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 .script-block.failed {
-  border: 3px solid #ff4d4f !important;
-  box-shadow: 0 0 20px rgba(255, 77, 79, 0.8), 0 0 40px rgba(255, 77, 79, 0.4) !important;
+  border: 3px solid rgba(255, 77, 79, 0.9) !important;
+  box-shadow: 0 0 20px rgba(255, 77, 79, 0.6), 0 0 40px rgba(255, 77, 79, 0.3) !important;
   animation: shake-block 0.5s ease-in-out !important;
 }
 
@@ -193,15 +232,23 @@
 
 .block-drag-handle {
   cursor: grab;
-  opacity: 0.5;
-}
-
-.block-drag-handle:active {
-  cursor: grabbing;
+  opacity: 0.6;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .block-drag-handle:hover {
   opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.block-drag-handle:active {
+  cursor: grabbing;
+  transform: scale(0.95);
 }
 
 .script-drop-end {
@@ -217,45 +264,106 @@
 
 .block-params {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   margin-left: auto;
+  align-items: flex-end;
+  flex-shrink: 0;
+  max-width: 55%;
+  overflow: visible;
+  justify-content: center;
 }
 
 .param-control input,
 .param-control select {
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: none;
-  font-size: 0.8rem;
+  padding: 6px 8px;
+  border-radius: var(--asm-radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 0.85rem;
   font-weight: 600;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  min-width: 50px;
+  max-width: 80px;
+  text-align: center;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+}
+
+.param-control select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='rgba(255,255,255,0.6)' viewBox='0 0 20 20'%3E%3Cpath d='M5 7l5 5 5-5' stroke='rgba(255,255,255,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 16px;
+  padding-right: 24px;
+}
+
+.param-control select option {
   background: var(--asm-color-surface);
-  color: var(--kid-text);
-  min-width: 60px;
+  color: var(--asm-color-text);
+  padding: 4px 8px;
+}
+
+.param-control input:focus,
+.param-control select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.param-control input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .param-control input[type="number"] {
-  width: 70px;
+  width: 60px;
+  max-width: 60px;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.param-control input[type="number"]::-webkit-outer-spin-button,
+.param-control input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .param-control input[type="text"] {
-  width: 100px;
+  width: 80px;
+  max-width: 80px;
 }
 
 .block-delete {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
-  transition: opacity 0.15s ease;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .block-delete:hover {
   opacity: 1;
-  background: rgba(255, 0, 0, 0.4);
+  background: rgba(255, 59, 48, 0.8);
+  border-color: rgba(255, 59, 48, 0.9);
+  transform: scale(1.1);
+}
+
+.block-delete:active {
+  transform: scale(0.95);
 }
 
 .controls-bar {

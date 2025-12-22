@@ -40,9 +40,9 @@ export default defineConfig(
             host: 'kidcode.asafarim.local',
             port: 5191,
             proxy: {
-                '/api': 'http://kidcode.asafarim.local:5190',
+                '/api': process.env.NODE_ENV === 'production' ? 'https://kidcode.asafarim.be' : 'http://kidcode.asafarim.local:5190',
                 '/hubs': {
-                    target: 'http://kidcode.asafarim.local:5190',
+                    target: process.env.NODE_ENV === 'production' ? 'https://kidcode.asafarim.be' : 'http://kidcode.asafarim.local:5190',
                     ws: true,
                     changeOrigin: true
                 }
@@ -73,5 +73,12 @@ export default defineConfig(
             commonjsOptions: {
                 include: [/node_modules/],
             },
+            rollupOptions: {
+                output: {
+                    entryFileNames: 'assets/[name]-[hash].js',
+                    chunkFileNames: 'assets/[name]-[hash].js',
+                    assetFileNames: 'assets/[name]-[hash].[ext]'
+                }
+            }
         },
     })
