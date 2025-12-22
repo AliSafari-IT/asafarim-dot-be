@@ -244,6 +244,7 @@ var productionOrigins = new[]
     "https://smartops.asafarim.be",
     "https://testora.asafarim.be",
     "https://freelance-toolkit.asafarim.be",
+    "https://kidcode.asafarim.be",
 };
 
 var developmentOrigins = new[]
