@@ -32,6 +32,14 @@ interface TurtleState {
   penDown: boolean;
   color: string;
   brushSize: number;
+  rainbowMode: boolean;
+  rainbowSpeed: number;
+  rainbowHue: number;
+  gradientMode: boolean;
+  gradientFrom: string;
+  gradientTo: string;
+  glowIntensity: number;
+  opacity: number;
 }
 
 export default function DrawingCanvas() {
@@ -194,11 +202,45 @@ export default function DrawingCanvas() {
         penDown: true,
         color: "#2D3436",
         brushSize: 3,
+        rainbowMode: false,
+        rainbowSpeed: 5,
+        rainbowHue: 0,
+        gradientMode: false,
+        gradientFrom: "red",
+        gradientTo: "blue",
+        glowIntensity: 0,
+        opacity: 100,
       };
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
+
+      const getColor = () => {
+        if (turtle.rainbowMode) {
+          turtle.rainbowHue = (turtle.rainbowHue + turtle.rainbowSpeed) % 360;
+          return `hsl(${turtle.rainbowHue}, 80%, 60%)`;
+        }
+        if (turtle.gradientMode) {
+          const fromColor = COLORS[turtle.gradientFrom] || turtle.gradientFrom;
+          const toColor = COLORS[turtle.gradientTo] || turtle.gradientTo;
+          const gradient = ctx.createLinearGradient(turtle.x - 50, turtle.y - 50, turtle.x + 50, turtle.y + 50);
+          gradient.addColorStop(0, fromColor);
+          gradient.addColorStop(1, toColor);
+          return gradient;
+        }
+        return turtle.color;
+      };
+
+      const applyEffects = () => {
+        ctx.globalAlpha = turtle.opacity / 100;
+        if (turtle.glowIntensity > 0) {
+          ctx.shadowBlur = turtle.glowIntensity;
+          ctx.shadowColor = turtle.color;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+      };
 
       const drawLine = (
         fromX: number,
@@ -207,18 +249,22 @@ export default function DrawingCanvas() {
         toY: number
       ) => {
         if (turtle.penDown) {
+          applyEffects();
           ctx.beginPath();
-          ctx.strokeStyle = turtle.color;
+          ctx.strokeStyle = getColor();
           ctx.lineWidth = turtle.brushSize;
           ctx.moveTo(fromX, fromY);
           ctx.lineTo(toX, toY);
           ctx.stroke();
+          ctx.globalAlpha = 1;
+          ctx.shadowBlur = 0;
         }
       };
 
       const drawShape = (shape: string, size: number) => {
-        ctx.fillStyle = turtle.color;
-        ctx.strokeStyle = turtle.color;
+        applyEffects();
+        ctx.fillStyle = getColor();
+        ctx.strokeStyle = getColor();
         ctx.lineWidth = turtle.brushSize;
 
         switch (shape) {
@@ -288,6 +334,8 @@ export default function DrawingCanvas() {
             ctx.fill();
             break;
         }
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
       };
 
       const executeBlock = (block: Block) => {
@@ -331,6 +379,88 @@ export default function DrawingCanvas() {
           case "penDown":
             turtle.penDown = true;
             break;
+          case "drawSpiral": {
+            const turns = params.turns as number;
+            const spacing = params.spacing as number;
+            const segments = turns * 20;
+            for (let i = 0; i < segments; i++) {
+              const angle = (i / segments) * turns * Math.PI * 2;
+              const radius = (i / segments) * spacing * turns;
+              const newX = turtle.x + Math.cos(angle) * radius;
+              const newY = turtle.y + Math.sin(angle) * radius;
+              drawLine(turtle.x, turtle.y, newX, newY);
+              turtle.x = newX;
+              turtle.y = newY;
+            }
+            break;
+          }
+          case "drawArc": {
+            const radius = params.radius as number;
+            const arcAngle = params.angle as number;
+            const segments = Math.ceil(arcAngle / 5);
+            const startAngle = turtle.angle;
+            for (let i = 0; i <= segments; i++) {
+              const currentAngle = startAngle + (arcAngle * i) / segments;
+              const rad = (currentAngle * Math.PI) / 180;
+              const newX = turtle.x + Math.cos(rad) * (radius / segments);
+              const newY = turtle.y + Math.sin(rad) * (radius / segments);
+              drawLine(turtle.x, turtle.y, newX, newY);
+              turtle.x = newX;
+              turtle.y = newY;
+            }
+            turtle.angle = startAngle + arcAngle;
+            break;
+          }
+          case "drawZigzag": {
+            const segments = params.segments as number;
+            const width = params.width as number;
+            const segmentLength = 40;
+            for (let i = 0; i < segments; i++) {
+              const direction = i % 2 === 0 ? 1 : -1;
+              const perpAngle = turtle.angle + 90 * direction;
+              const rad = (perpAngle * Math.PI) / 180;
+              const newX = turtle.x + Math.cos(rad) * width;
+              const newY = turtle.y + Math.sin(rad) * width;
+              drawLine(turtle.x, turtle.y, newX, newY);
+              turtle.x = newX;
+              turtle.y = newY;
+              const forwardRad = (turtle.angle * Math.PI) / 180;
+              const forwardX = turtle.x + Math.cos(forwardRad) * segmentLength;
+              const forwardY = turtle.y + Math.sin(forwardRad) * segmentLength;
+              drawLine(turtle.x, turtle.y, forwardX, forwardY);
+              turtle.x = forwardX;
+              turtle.y = forwardY;
+            }
+            break;
+          }
+          case "drawWave": {
+            const amplitude = params.amplitude as number;
+            const frequency = params.frequency as number;
+            const segments = frequency * 20;
+            const waveLength = 200;
+            for (let i = 0; i <= segments; i++) {
+              const t = i / segments;
+              const forwardRad = (turtle.angle * Math.PI) / 180;
+              const perpRad = forwardRad + Math.PI / 2;
+              const offset = Math.sin(t * frequency * Math.PI * 2) * amplitude;
+              const forwardDist = (waveLength * t);
+              const newX = turtle.x + Math.cos(forwardRad) * forwardDist + Math.cos(perpRad) * offset;
+              const newY = turtle.y + Math.sin(forwardRad) * forwardDist + Math.sin(perpRad) * offset;
+              if (i > 0) {
+                drawLine(turtle.x, turtle.y, newX, newY);
+              }
+              turtle.x = newX;
+              turtle.y = newY;
+            }
+            break;
+          }
+          case "teleport": {
+            const offsetX = params.x as number;
+            const offsetY = params.y as number;
+            turtle.x = canvas.width / 2 + offsetX;
+            turtle.y = canvas.height / 2 + offsetY;
+            break;
+          }
           case "setColor":
             turtle.color =
               COLORS[params.color as string] || (params.color as string);
@@ -338,6 +468,31 @@ export default function DrawingCanvas() {
           case "setBrush":
             turtle.brushSize = params.size as number;
             break;
+          case "rainbowMode":
+            turtle.rainbowMode = true;
+            turtle.rainbowSpeed = params.speed as number;
+            turtle.gradientMode = false;
+            break;
+          case "gradientColor":
+            turtle.gradientMode = true;
+            turtle.gradientFrom = params.from as string;
+            turtle.gradientTo = params.to as string;
+            turtle.rainbowMode = false;
+            break;
+          case "glowEffect":
+            turtle.glowIntensity = params.intensity as number;
+            break;
+          case "setOpacity":
+            turtle.opacity = params.opacity as number;
+            break;
+          case "randomColor": {
+            const colors = Object.keys(COLORS);
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            turtle.color = COLORS[randomColor];
+            turtle.rainbowMode = false;
+            turtle.gradientMode = false;
+            break;
+          }
           case "repeatMagic": {
             const times = params.times as number;
             const angleStep = 360 / times;

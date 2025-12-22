@@ -1,7 +1,8 @@
+// Cache bust: 2024-12-21-22-49-FIXED
 import type { Project, CreateProjectDto, UpdateProjectDto } from '../types/project';
 import type { Progress, Challenge } from '../types/progress';
 
-const RAW_API_BASE = import.meta.env.VITE_API_URL || 'http://kidcode.asafarim.local:5190/api';
+const RAW_API_BASE = import.meta.env.VITE_API_URL || '/api';
 const API_BASE = RAW_API_BASE.replace(/\/$/, '').endsWith('/api')
     ? RAW_API_BASE.replace(/\/$/, '')
     : `${RAW_API_BASE.replace(/\/$/, '')}/api`;

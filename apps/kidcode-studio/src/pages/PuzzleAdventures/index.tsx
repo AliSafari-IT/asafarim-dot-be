@@ -205,6 +205,13 @@ export default function PuzzleAdventures() {
   const remainingStepsRef = useRef(0);
   const remainingBlockIndexRef = useRef<number | null>(null);
 
+  const blocks = useStore((state) => state.editor.blocks);
+  const blocksRef = useRef(blocks);
+  
+  useEffect(() => {
+    blocksRef.current = blocks;
+  }, [blocks]);
+
   useEffect(() => {
     playerPosRef.current = playerPos;
   }, [playerPos]);
@@ -212,8 +219,6 @@ export default function PuzzleAdventures() {
   useEffect(() => {
     directionRef.current = direction;
   }, [direction]);
-
-  const blocks = useStore((state) => state.editor.blocks);
   const setBlocks = useStore((state) => state.setBlocks);
   const progress = useStore((state) => state.progress);
   const isPlaying = useStore((state) => state.editor.isPlaying);
@@ -449,11 +454,42 @@ export default function PuzzleAdventures() {
     stop();
   }, [clearBlocks, difficulty, gridSize, resetMaze, stop]);
 
-  const executeCurrentBlock = useCallback(() => {
-    if (currentStep < 0 || currentStep >= blocks.length) return;
+  // Store refs for values needed in executeCurrentBlock to avoid stale closures
+  const currentStepRef = useRef(currentStep);
+  const mazeRef = useRef(maze);
+  const currentPuzzleHashRef = useRef(currentPuzzleHash);
+  const progressRef = useRef(progress);
 
-    const block = blocks[currentStep];
+  useEffect(() => {
+    currentStepRef.current = currentStep;
+  }, [currentStep]);
+
+  useEffect(() => {
+    mazeRef.current = maze;
+  }, [maze]);
+
+  useEffect(() => {
+    currentPuzzleHashRef.current = currentPuzzleHash;
+  }, [currentPuzzleHash]);
+
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  // Use a ref-based approach to avoid recreating the callback
+  const executeCurrentBlockRef = useRef<() => void>(() => {});
+
+  executeCurrentBlockRef.current = () => {
+    const stepIndex = currentStepRef.current;
+    const currentBlocks = blocksRef.current;
+    const currentMaze = mazeRef.current;
+
+    if (stepIndex < 0 || stepIndex >= currentBlocks.length) return;
+
+    const block = currentBlocks[stepIndex];
     const { type } = block;
+
+    console.log("🧩 Executing block:", { type, params: block.params, block });
 
     switch (type) {
       case "moveForward":
@@ -462,12 +498,13 @@ export default function PuzzleAdventures() {
         const dir = directionRef.current;
         const { dx, dy } = DIRECTION_MAP[dir];
 
+        console.log("🚶 Move Forward block params:", JSON.stringify(block.params), "steps value:", block.params?.steps, "typeof steps:", typeof block.params?.steps);
         const totalStepsRaw = toIntSteps(block.params?.steps);
+        console.log("🚶 totalStepsRaw:", totalStepsRaw, "remainingBlockIndexRef:", remainingBlockIndexRef.current, "currentStep:", stepIndex);
         const totalSteps = Math.max(0, totalStepsRaw);
 
         if (totalSteps === 0) {
-          // No-op; ensure multi-step state for this block is cleared.
-          if (remainingBlockIndexRef.current === currentStep) {
+          if (remainingBlockIndexRef.current === stepIndex) {
             remainingBlockIndexRef.current = null;
             remainingStepsRef.current = 0;
           }
@@ -475,8 +512,8 @@ export default function PuzzleAdventures() {
         }
 
         // Initialize per-block remaining steps ONCE
-        if (remainingBlockIndexRef.current !== currentStep) {
-          remainingBlockIndexRef.current = currentStep;
+        if (remainingBlockIndexRef.current !== stepIndex) {
+          remainingBlockIndexRef.current = stepIndex;
           remainingStepsRef.current = totalSteps;
 
           // Validate entire path BEFORE starting movement
@@ -488,15 +525,15 @@ export default function PuzzleAdventures() {
 
             const out =
               checkY < 0 ||
-              checkY >= maze.length ||
+              checkY >= currentMaze.length ||
               checkX < 0 ||
-              checkX >= maze[0].length;
-            const wall = !out && maze[checkY][checkX] === "wall";
+              checkX >= currentMaze[0].length;
+            const wall = !out && currentMaze[checkY][checkX] === "wall";
 
             if (out || wall) {
               const failedPos = { x: checkX, y: checkY };
               setFailedCell(failedPos);
-              setFailedBlockIndex(currentStep);
+              setFailedBlockIndex(stepIndex);
               setMessage("Oops! Hit a wall! 🧱");
 
               remainingStepsRef.current = 0;
@@ -513,7 +550,7 @@ export default function PuzzleAdventures() {
           break;
         }
 
-        // Move ONE cell per tick (refs are updated immediately so repeated calls progress correctly)
+        // Move ONE cell per tick
         const nextX = pos.x + dx;
         const nextY = pos.y + dy;
 
@@ -524,7 +561,7 @@ export default function PuzzleAdventures() {
         remainingStepsRef.current -= 1;
 
         // Goal check
-        if (maze[nextY]?.[nextX] === "goal") {
+        if (currentMaze[nextY]?.[nextX] === "goal") {
           remainingStepsRef.current = 0;
           remainingBlockIndexRef.current = null;
 
@@ -532,9 +569,9 @@ export default function PuzzleAdventures() {
           setWon(true);
           setMessage("You reached the goal! 🎉");
 
-          const puzzleStickerId = `puzzle-${currentPuzzleHash}`;
+          const puzzleStickerId = `puzzle-${currentPuzzleHashRef.current}`;
           const hasSolvedThisPuzzle =
-            progress?.puzzle?.stickers?.includes(puzzleStickerId) ?? false;
+            progressRef.current?.puzzle?.stickers?.includes(puzzleStickerId) ?? false;
 
           if (!hasSolvedThisPuzzle) {
             const wasShown = showStickerReward(
@@ -585,34 +622,53 @@ export default function PuzzleAdventures() {
         break;
       }
     }
-  }, [
-    addNotification,
-    blocks,
-    currentPuzzleHash,
-    currentStep,
-    maze,
-    progress,
-    setFailedBlockIndex,
-    showStickerReward,
-    stop,
-    updateProgress,
-  ]);
+  };
+
+  const prevIsPlayingRef = useRef(false);
 
   useEffect(() => {
+    // Handle run end
+    if (!isPlaying && prevIsPlayingRef.current) {
+      if (!wonRef.current) resetMaze(true);
+      remainingStepsRef.current = 0;
+      remainingBlockIndexRef.current = null;
+      prevIsPlayingRef.current = false;
+      return;
+    }
+
+    // Handle run start - initialize only when transitioning from not playing to playing
+    if (isPlaying && !prevIsPlayingRef.current) {
+      wonRef.current = false;
+      setFailedCell(null);
+      // Don't reset remainingSteps here - let the block execution handle it
+      prevIsPlayingRef.current = true;
+    }
+
     if (!isPlaying) return;
 
-    executeCurrentBlock();
+    executeCurrentBlockRef.current();
 
     const timer = window.setTimeout(() => {
-      const currentBlock = blocks[currentStep];
+      const currentBlocks = blocksRef.current;
+      const stepIndex = currentStepRef.current;
+      const currentBlock = currentBlocks[stepIndex];
       const isMoveForward =
         currentBlock?.type === "moveForward" ||
         currentBlock?.type === "move-forward";
 
       const hasRemainingSteps =
         isMoveForward &&
-        remainingBlockIndexRef.current === currentStep &&
+        remainingBlockIndexRef.current === stepIndex &&
         remainingStepsRef.current > 0;
+
+      console.log("⏱️ Timer fired:", {
+        currentStep: stepIndex,
+        blockType: currentBlock?.type,
+        isMoveForward,
+        remainingBlockIndex: remainingBlockIndexRef.current,
+        remainingSteps: remainingStepsRef.current,
+        hasRemainingSteps,
+      });
 
       // If we're still inside the SAME moveForward block, schedule another tick
       if (hasRemainingSteps) {
@@ -620,7 +676,7 @@ export default function PuzzleAdventures() {
         return;
       }
 
-      if (currentStep < blocks.length - 1 && !wonRef.current) {
+      if (stepIndex < currentBlocks.length - 1 && !wonRef.current) {
         step();
       } else {
         stop();
@@ -629,34 +685,17 @@ export default function PuzzleAdventures() {
 
     return () => window.clearTimeout(timer);
   }, [
-    blocks,
-    currentStep,
-    executeCurrentBlock,
     isPlaying,
+    currentStep,
     moveTick,
     step,
     stop,
+    resetMaze,
+    addNotification,
+    setFailedBlockIndex,
+    showStickerReward,
+    updateProgress,
   ]);
-
-  const prevIsPlayingRef = useRef(isPlaying);
-
-  useEffect(() => {
-    const wasPlaying = prevIsPlayingRef.current;
-    prevIsPlayingRef.current = isPlaying;
-
-    if (!isPlaying && wasPlaying) {
-      // run ended
-      if (!wonRef.current) resetMaze(true);
-      remainingStepsRef.current = 0;
-      remainingBlockIndexRef.current = null;
-    } else if (isPlaying && !wasPlaying) {
-      // run started
-      wonRef.current = false;
-      setFailedCell(null);
-      remainingStepsRef.current = 0;
-      remainingBlockIndexRef.current = null;
-    }
-  }, [isPlaying, resetMaze]);
 
   const getDirectionEmoji = () => {
     switch (direction) {

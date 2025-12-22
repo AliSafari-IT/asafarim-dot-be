@@ -1,4 +1,4 @@
-const RAW_API_BASE = import.meta.env.VITE_API_URL || "http://kidcode.asafarim.local:5190/api";
+const RAW_API_BASE = import.meta.env.VITE_API_URL || "/api";
 const API_BASE = RAW_API_BASE.replace(/\/$/, '').endsWith('/api')
     ? RAW_API_BASE.replace(/\/$/, '')
     : `${RAW_API_BASE.replace(/\/$/, '')}/api`;
