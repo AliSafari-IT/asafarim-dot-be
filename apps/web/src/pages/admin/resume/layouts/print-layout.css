@@ -246,13 +246,23 @@
 
 /* Projects */
 .print-projects {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* 2 columns for tablets and larger screens */
+@media (min-width: 768px) {
+  .print-projects {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
 }
 
 .print-project {
-  margin-bottom: 8px;
+  margin-bottom: 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .print-project strong {

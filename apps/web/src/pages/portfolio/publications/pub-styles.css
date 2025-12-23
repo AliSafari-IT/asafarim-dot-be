@@ -272,12 +272,12 @@
 }
 
 .action-button.delete {
-  color: var(--danger-color);
+  color: var(--asm-color-semantic-error);
 }
 
 .action-button.delete:hover {
-  color: var(--danger-color);
-  box-shadow: 0 0 0 3px var(--danger-color);
+  color: var(--asm-color-semantic-error);
+  box-shadow: 0 0 0 3px var(--asm-color-semantic-error);
 }
 
 .empty-state {
@@ -290,7 +290,7 @@
 
 .empty-state-message {
   font-size: 1.125rem;
-  color: var(--asm-color-text-900);
+  color: var(--asm-color-text);
   margin-bottom: 1.5rem;
 }
 
@@ -363,35 +363,35 @@
 .publications-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--global-font-family-base);
-  font-size: var(--global-font-size-sm);
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border: var(--global-border-width-sm) solid var(--border-color);
-  border-radius: var(--global-border-radius-md);
-  box-shadow: var(--global-shadow-sm);
+  font-family: var(--asm-font-family-primary);
+  font-size: var(--asm-font-size-sm);
+  background: var(--asm-color-surface);
+  color: var(--asm-color-text);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  box-shadow: var(--asm-effect-shadow-sm);
   overflow: hidden;
 }
 
 /* Table head */
 .publications-table thead {
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
+  background: var(--asm-color-surface-muted);
+  color: var(--asm-color-text-muted);
 }
 
 .publications-table th {
   text-align: left;
-  padding: var(--spacing-md);
-  font-weight: var(--global-font-weight-medium);
-  font-size: var(--global-font-size-sm);
-  border-bottom: var(--global-border-width-sm) solid var(--border-color);
+  padding: var(--asm-space-4);
+  font-weight: var(--asm-font-weight-500);
+  font-size: var(--asm-font-size-sm);
+  border-bottom: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 /* Table body rows */
 .publications-table td {
-  padding: var(--spacing-md);
-  border-bottom: var(--global-border-width-sm) solid var(--border-color);
-  color: var(--text-primary);
+  padding: var(--asm-space-4);
+  border-bottom: var(--asm-border-hairline) solid var(--asm-color-border);
+  color: var(--asm-color-text);
 }
 
 .publications-table tr:last-child td {
@@ -400,50 +400,50 @@
 
 /* Row hover */
 .publications-table tbody tr:hover {
-  background: var(--bg-row);
-  transition: var(--transition);
+  background: var(--asm-color-surface-muted);
+  transition: var(--asm-transition-fade);
 }
 
 /* Status tags (success, warning, error, neutral) */
 .publications-status {
   display: inline-block;
   padding: 0.25rem 0.5rem;
-  font-size: var(--global-font-size-xs);
-  font-weight: var(--global-font-weight-medium);
-  border-radius: var(--radius-md);
-  border: var(--global-border-width-sm) solid transparent;
+  font-size: var(--asm-font-size-xs);
+  font-weight: var(--asm-font-weight-500);
+  border-radius: var(--asm-radius-md);
+  border: var(--asm-border-hairline) solid transparent;
 }
 
 .publications-status.success {
-  background: color-mix(in srgb, var(--success-color) 15%, transparent);
-  color: var(--success-color);
-  border-color: var(--success-color);
+  background: color-mix(in srgb, var(--asm-color-semantic-success) 15%, transparent);
+  color: var(--asm-color-semantic-success);
+  border-color: var(--asm-color-semantic-success);
 }
 
 .publications-status.warning {
-  background: color-mix(in srgb, var(--warning-color) 15%, transparent);
-  color: var(--warning-color);
-  border-color: var(--warning-color);
+  background: color-mix(in srgb, var(--asm-color-semantic-warning) 15%, transparent);
+  color: var(--asm-color-semantic-warning);
+  border-color: var(--asm-color-semantic-warning);
 }
 
 .publications-status.error {
-  background: color-mix(in srgb, var(--danger-color) 15%, transparent);
-  color: var(--danger-color);
-  border-color: var(--danger-color);
+  background: color-mix(in srgb, var(--asm-color-semantic-error) 15%, transparent);
+  color: var(--asm-color-semantic-error);
+  border-color: var(--asm-color-semantic-error);
 }
 
 .publications-status.neutral {
-  background: color-mix(in srgb, var(--info-color) 15%, transparent);
-  color: var(--info-color);
-  border-color: var(--info-color);
+  background: color-mix(in srgb, var(--asm-color-semantic-info) 15%, transparent);
+  color: var(--asm-color-semantic-info);
+  border-color: var(--asm-color-semantic-info);
 }
 
 /* Responsive */
-@media (max-width: var(--global-breakpoint-md)) {
+@media (max-width: var(--asm-container-md)) {
   .publications-table th,
   .publications-table td {
-    padding: var(--spacing-sm, 0.75rem);
-    font-size: var(--global-font-size-xs);
+    padding: var(--asm-space-3);
+    font-size: var(--asm-font-size-xs);
   }
 }
 
@@ -556,8 +556,8 @@
   padding: 0.25rem 0.5rem;
   background-color: rgba(var(--asm-color-brand-primary-rgb, 59, 130, 246), 0.1);
   color: var(--asm-color-brand-primary-600);
-  border-radius: var(--global-border-radius-sm, 4px);
-  font-size: var(--global-font-size-xs, 0.75rem);
+  border-radius: var(--asm-radius-sm);
+  font-size: var(--asm-font-size-xs);
   font-weight: 500;
   border: 1px solid rgba(var(--asm-color-brand-primary-rgb, 59, 130, 246), 0.2);
 }

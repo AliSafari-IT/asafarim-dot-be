@@ -686,7 +686,7 @@
   background-color: var(--asm-color-surface);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  font-family: var(--global-font-family-monospace);
+  font-family: var(--asm-font-family-mono);
   font-size: 0.875rem;
 }
 
@@ -703,7 +703,7 @@
 /* Resume specific styles */
 .resume-section {
   margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  padding: 1.5rem;
   border-top: 1px solid var(--asm-color-border);
 }
 

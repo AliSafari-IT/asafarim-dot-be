@@ -101,6 +101,7 @@ const router = createBrowserRouter([
       { path: "portfolio/:contentType/view/:id", element: <ViewDocument /> },
 
       { path: "portfolio/resume", element: <Resume /> },
+      { path: "resume", element: <Resume /> },
       
       { path: "portfolio/:publicSlug/public", element: <PublicResumeView /> },
 
