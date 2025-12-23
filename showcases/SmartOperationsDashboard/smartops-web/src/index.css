@@ -1,4 +1,4 @@
-@import url("@asafarim/shared-ui-react/index.css");
+@import url("@asafarim/design-tokens/css");
 
 *,
 *::before,
@@ -6,4 +6,16 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+body {
+  font-family: var(--asm-font-family-primary);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
+  line-height: var(--asm-line-height-normal);
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
 }

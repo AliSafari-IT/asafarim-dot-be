@@ -1,9 +1,10 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider } from 'react-router-dom'
-import { initI18n } from '@asafarim/shared-i18n'
-import App from './App.tsx'
-import './index.css'
+import { StrictMode } from 'react';
+import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+import { initI18n } from '@asafarim/shared-i18n';
+import "@asafarim/design-tokens/css";
+import App from './App.tsx';
+import './index.css';
 import { createBrowserRouter } from "react-router-dom";
 import Root from "./theme/Root";
 import Dashboard from "./pages/Dashboard";
@@ -13,7 +14,7 @@ import DeviceDetail from './pages/Devices/DeviceDetail.tsx';
 import UserManagement from './pages/Admin/UserManagement.tsx';
 
 // Initialize i18n before rendering
-initI18n()
+initI18n();
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  <StrictMode>  
     <Root>
       <RouterProvider router={router} />
     </Root>

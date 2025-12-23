@@ -41,8 +41,13 @@ async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> 
     console.log(`🔍 fetchIsAuthenticated response: ${res.status}`);
     if (res.status === 401) {
       console.warn('⚠️ 401 Unauthorized - auth cookies may not be present or invalid');
+    } else if (res.status === 404) {
+      console.warn('⚠️ 404 Not Found - auth endpoint does not exist');
+    } else if (!res.ok) {
+      console.warn(`⚠️ ${res.status} ${res.statusText} - unexpected auth check response`);
     }
-    return res.status !== 401;
+    // Only 200 OK means authenticated
+    return res.ok;
   } catch (error) {
     console.error('❌ fetchIsAuthenticated failed:', error);
     return false;
@@ -318,21 +323,36 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     const checkAuth = async (reason: string = 'initial') => {
       // Check if logout is in progress - don't try to re-authenticate
       const logoutInProgress = localStorage.getItem('logout_in_progress') === 'true';
+      
+      // CRITICAL: Check if logout flag is stale (older than 10 seconds)
       if (logoutInProgress) {
-        console.log('🛑 Logout in progress, skipping auth check');
-        // Ensure all auth data is cleared
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user_info');
-        // DON'T remove the logout_in_progress flag here - let it persist until after redirect
-        // This prevents multiple auth checks from re-authenticating
-        if (mounted) {
-          setAuthenticated(false);
-          setUser(null);
-          setToken(null);
-          setLoading(false);
+        const logoutTimestamp = localStorage.getItem('logout_timestamp');
+        if (logoutTimestamp) {
+          const elapsed = Date.now() - parseInt(logoutTimestamp, 10);
+          if (elapsed > 10000) { // 10 seconds
+            console.log('🧹 Clearing stale logout flag before auth check');
+            localStorage.removeItem('logout_in_progress');
+            localStorage.removeItem('logout_timestamp');
+            // Continue with auth check
+          } else {
+            console.log('🛑 Logout in progress, skipping auth check');
+            // Ensure all auth data is cleared
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user_info');
+            if (mounted) {
+              setAuthenticated(false);
+              setUser(null);
+              setToken(null);
+              setLoading(false);
+            }
+            return;
+          }
+        } else {
+          // No timestamp means flag is invalid, clear it
+          console.log('🧹 Clearing logout flag without timestamp');
+          localStorage.removeItem('logout_in_progress');
         }
-        return;
       }
 
       // Prevent multiple simultaneous auth checks

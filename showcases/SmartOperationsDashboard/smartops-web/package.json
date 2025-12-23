@@ -14,7 +14,7 @@
   "dependencies": {
     "@asafarim/react-themes": "workspace:*",
     "@asafarim/shared-i18n": "workspace:*",
-    "@asafarim/shared-tokens": "workspace:*",
+    "@asafarim/design-tokens": "^0.4.1",
     "@asafarim/shared-ui-react": "workspace:*",
     "@asafarim/toast": "1.2.0",
     "@microsoft/signalr": "^9.0.6",

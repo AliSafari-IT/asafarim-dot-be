@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Net.Sockets;
 
 namespace Identity.Api.Services;
 
@@ -15,10 +16,12 @@ public class SmartOpsRoleService : ISmartOpsRoleService
     private readonly HttpClient _httpClient;
     private readonly ILogger<SmartOpsRoleService> _logger;
     private const string SmartOpsApiUrl = "http://smartops.asafarim.local:5105";
+    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
 
     public SmartOpsRoleService(HttpClient httpClient, ILogger<SmartOpsRoleService> logger)
     {
         _httpClient = httpClient;
+        _httpClient.Timeout = DefaultTimeout;
         _logger = logger;
     }
 
@@ -43,6 +46,11 @@ public class SmartOpsRoleService : ISmartOpsRoleService
                     userId
                 );
             }
+        }
+        catch (HttpRequestException ex) when (ex.InnerException is SocketException || ex.InnerException is TaskCanceledException)
+        {
+            _logger.LogWarning(ex, "SmartOps API is unreachable or timed out for user {UserId}", userId);
+            // Continue without SmartOps role - not critical
         }
         catch (Exception ex)
         {
@@ -76,6 +84,11 @@ public class SmartOpsRoleService : ISmartOpsRoleService
             var json = await response.Content.ReadAsStringAsync();
             var data = System.Text.Json.JsonSerializer.Deserialize<SmartOpsUserDto>(json);
             return data?.Role;
+        }
+        catch (HttpRequestException ex) when (ex.InnerException is SocketException || ex.InnerException is TaskCanceledException)
+        {
+            _logger.LogWarning(ex, "Error fetching SmartOps role for user {UserId}: SmartOps API is unreachable or timed out", userId);
+            return null;
         }
         catch (Exception ex)
         {

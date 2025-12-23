@@ -2,23 +2,23 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--color-background);
-  color: var(--color-text);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
 }
 
 .main-content {
   flex: 1;
   overflow-y: auto;
-  padding: 2rem;
+  padding: var(--asm-space-6);
 }
 
 .page {
-  max-width: 1360px;
+  max-width: var(--asm-container-2xl);
   margin: 0 auto;
-  padding: 2rem;
-  background-color: var(--color-surface);
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: var(--asm-space-6);
+  background-color: var(--asm-color-surface);
+  border-radius: var(--asm-radius-lg);
+  box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .loading {
@@ -26,8 +26,8 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  font-size: 1.125rem;
-  color: var(--color-text-muted);
+  font-size: var(--asm-font-size-lg);
+  color: var(--asm-color-text-muted);
 }
 
 .auth-container {
@@ -35,59 +35,59 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, var(--color-background) 0%, var(--color-surface) 100%);
+  background: linear-gradient(135deg, var(--asm-color-bg) 0%, var(--asm-color-surface) 100%);
 }
 
 .auth-box {
   text-align: center;
-  padding: 3rem;
-  background-color: var(--color-surface);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
+  padding: var(--asm-space-12);
+  background-color: var(--asm-color-surface);
+  border-radius: var(--asm-radius-xl);
+  box-shadow: var(--asm-effect-shadow-md);
+  max-width: var(--asm-container-sm);
 }
 
 .auth-box h1 {
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  color: var(--color-text);
+  margin-bottom: var(--asm-space-4);
+  font-size: var(--asm-font-size-4xl);
+  color: var(--asm-color-text);
 }
 
 .auth-box p {
-  margin-bottom: 2rem;
-  color: var(--color-text-muted);
+  margin-bottom: var(--asm-space-8);
+  color: var(--asm-color-text-muted);
 }
 
 .btn-primary {
   display: inline-block;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary, #3b82f6);
+  padding: var(--asm-space-control-padding-y) var(--asm-space-control-padding-x);
+  background-color: var(--asm-color-primary-500);
   color: white;
-  border-radius: 6px;
+  border-radius: var(--asm-radius-md);
   text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  font-weight: var(--asm-font-weight-500);
+  transition: var(--asm-transition-fade);
 }
 
 .btn-primary:hover {
-  background-color: var(--color-primary-dark, #2563eb);
+  background-color: var(--asm-color-primary-600);
 }
 
 @media (max-width: 768px) {
   .main-content {
-    padding: 1rem;
+    padding: var(--asm-space-4);
   }
 
   .page {
-    padding: 1rem;
+    padding: var(--asm-space-4);
   }
 
   .auth-box {
-    padding: 2rem;
-    margin: 1rem;
+    padding: var(--asm-space-8);
+    margin: var(--asm-space-4);
   }
 
   .auth-box h1 {
-    font-size: 1.5rem;
+    font-size: var(--asm-font-size-2xl);
   }
 }
