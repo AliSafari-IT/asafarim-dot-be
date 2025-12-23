@@ -42,7 +42,7 @@ public class PublicWorkExperienceDto
     public bool IsCurrent { get; set; }
     public string? Description { get; set; }
     public List<string> Achievements { get; set; } = new();
-    public List<string> Technologies { get; set; } = new();
+    public List<object> Technologies { get; set; } = new();
 }
 
 public class PublicEducationDto
@@ -60,7 +60,7 @@ public class PublicProjectDto
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Link { get; set; } = string.Empty;
-    public List<string> Technologies { get; set; } = new();
+    public List<object> Technologies { get; set; } = new();
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
 }

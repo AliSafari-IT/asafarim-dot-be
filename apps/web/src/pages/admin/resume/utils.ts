@@ -1,4 +1,5 @@
 import type { ResumeSectionItem } from "./ResumeSectionItemsView";
+import { isProduction } from "@asafarim/shared-ui-react";
 
 /**
  * Helper function to convert any DTO array to ResumeSectionItem array
@@ -10,3 +11,5 @@ export function convertToResumeSectionItems<T extends { id: string }>(
 ): ResumeSectionItem[] {
   return items as unknown as ResumeSectionItem[];
 }
+
+export const getReturnUrl = (url: string) => isProduction? `https://identity.asafarim.be/login?returnUrl=${encodeURIComponent(url)}` : `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(url)}`;

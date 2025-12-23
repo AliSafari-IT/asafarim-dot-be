@@ -13,10 +13,47 @@ import {
   Link2,
 } from "lucide-react";
 import "./print-layout.css";
+import { fetchProjectById } from "../../../../services/projectApi.ts";
+import { useState, useEffect } from "react";
 
 type AnySkill = SkillDto | PublicSkillDto;
 
 export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
+  const [projectTechnologies, setProjectTechnologies] = useState<
+    Record<string, (string | { id: string; name: string; category?: string })[]>
+  >({});
+
+  useEffect(() => {
+    const loadProjectTechnologies = async () => {
+      const techs: Record<
+        string,
+        (string | { id: string; name: string; category?: string })[]
+      > = {};
+
+      // Only fetch if this is a private resume (has id property)
+      if (!("id" in resume)) {
+        return;
+      }
+
+      for (const project of resume.projects?.slice(0, 15) ?? []) {
+        if ("id" in project && project.id) {
+          try {
+            const fullProject = await fetchProjectById(resume.id, project.id);
+            if (fullProject.technologies) {
+              techs[project.id] = fullProject.technologies as (string | { id: string; name: string; category?: string })[];
+            }
+          } catch (error) {
+            console.error(`Failed to fetch project ${project.id}:`, error);
+          }
+        }
+      }
+
+      setProjectTechnologies(techs);
+    };
+
+    loadProjectTechnologies();
+  }, [resume]);
+
   const skillsByCategory = (resume.skills ?? []).reduce<
     Record<string, AnySkill[]>
   >((acc, skill) => {
@@ -186,38 +223,43 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
         <section className="print-section">
           <h3 className="print-section-title">PROJECTS</h3>
           <div className="print-projects">
-            {resume.projects.slice(0, 10).map((project, index) => (
-              <div key={index} className="print-project">
-                {project?.link && (
-                  <a href={project.link} target="_blank" rel="noopener noreferrer">
+            {resume.projects.slice(0, 15).map((project, index) => {
+              const projectId = "id" in project ? project.id : undefined;
+              const techs = projectId ? projectTechnologies[projectId] : project.technologies;
+
+              return (
+                <div key={index} className="print-project">
+                  {project?.link && (
+                    <a href={project.link} target="_blank" rel="noopener noreferrer">
+                      <strong>{project.name}</strong>
+                    </a>
+                  )}
+                  {!project?.link && (
                     <strong>{project.name}</strong>
-                  </a>
-                )}
-                {!project?.link && (
-                  <strong>{project.name}</strong>
-                )}
-                {project.description && (
-                  <div className="print-desc">{project.description}</div>
-                )}
-                {project.technologies && project.technologies.length > 0 && (
-                  <div className="print-tech-tags">
-                    <span className="print-tech-label">Tech:</span>
-                    <div className="print-tech-list">
-                      {(
-                        project.technologies as (
-                          | string
-                          | { id: string; name: string; category: string }
-                        )[]
-                      ).map((tech, index) => (
-                        <span key={index} className="print-tech-badge">
-                          {typeof tech === "string" ? tech : tech.name}
-                        </span>
-                      ))}
+                  )}
+                  {project.description && (
+                    <div className="print-desc">{project.description}</div>
+                  )}
+                  {techs && techs.length > 0 && (
+                    <div className="print-tech-tags">
+                      <span className="print-tech-label">Tech:</span>
+                      <div className="print-tech-list">
+                        {techs.map((tech, techIndex) => (
+                          <span
+                            key={techIndex}
+                            className="print-tech-badge"
+                            data-testid="print-tech-badge"
+                            title={typeof tech === "string" ? tech : tech.category || tech.name}
+                          >
+                            {typeof tech === "string" ? tech : tech.name}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

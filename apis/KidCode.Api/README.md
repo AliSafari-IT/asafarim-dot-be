@@ -1,73 +1,180 @@
-# KidCode API 🚀
+# KidCode API - Educational Creative Platform Backend
 
-> Backend service for KidCode Studio - powering cloud saves, challenges, and progress tracking.
+> A production-ready ASP.NET Core 8 Web API powering KidCode Studio. Provides project management, progress tracking, challenge system, leaderboards, and media management for an educational creative playground where kids learn coding through art, animation, puzzles, and music.
 
-[![.NET](https://img.shields.io/badge/.NET-8-purple)](https://dotnet.microsoft.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-blue)](https://www.postgresql.org/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4.svg)](https://dotnet.microsoft.com/)
+[![C#](https://img.shields.io/badge/C%23-12-239120.svg)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791.svg)](https://www.postgresql.org/)
+[![JWT](https://img.shields.io/badge/JWT-Authentication-blue.svg)](https://jwt.io/)
 
-## 📋 Overview
+## 🚀 Features
 
-The KidCode API provides backend services for the KidCode Studio application, including:
+### 📁 Project Management
+- **Save & Sync**: Store creative projects in the cloud
+- **Multiple Modes**: Drawing, Story, Puzzle, Music creation
+- **Block Serialization**: Save block-based code as JSON
+- **Asset Management**: Store images, sounds, and custom assets
+- **Version Control**: Track project history and changes
 
-- **Project Management** - Save and sync creative projects
-- **Progress Tracking** - Monitor achievements and unlocked levels
-- **Challenge System** - Daily coding challenges for kids
-- **User Authentication** - Secure JWT-based auth
+### 📊 Progress Tracking
+- **Achievement System**: Earn stickers and badges
+- **Level Unlocking**: Progressive content unlocking
+- **Challenge Completion**: Track completed challenges
+- **Statistics**: Monitor learning progress and activity
+- **Leaderboards**: Compare progress with peers
 
-## 🛠️ Tech Stack
+### 🎯 Challenge System
+- **Daily Challenges**: Fresh challenges every day
+- **Progressive Difficulty**: Levels 1-5 for all skill levels
+- **Mode-Specific**: Challenges for Drawing, Story, Puzzle, Music
+- **Starter Blocks**: Pre-filled blocks to guide learners
+- **Success Criteria**: Clear completion requirements
+- **Rewards**: Sticker rewards for completion
 
-| Technology | Version | Purpose |
-|------------|---------|----------|
-| .NET | 8.0 | Web API framework |
-| Entity Framework Core | 8.0 | ORM & migrations |
-| PostgreSQL | 14+ | Database |
-| JWT | - | Authentication |
+### 🎮 Game Sessions
+- **Session Management**: Track active play sessions
+- **Session Analytics**: Monitor engagement and playtime
+- **Session Persistence**: Resume interrupted sessions
+- **Session Cleanup**: Automatic cleanup of old sessions
 
-## 🚀 Quick Start
+### 🏆 Leaderboards
+- **Global Rankings**: Compare with all users
+- **Mode-Specific**: Separate leaderboards per creative mode
+- **Time-Based**: Daily, weekly, monthly rankings
+- **Stat Tracking**: Multiple ranking criteria
+
+### 🎨 Media Management
+- **Asset Upload**: Store images and sounds
+- **Character Assets**: Pre-built character library
+- **Asset Organization**: Categorized asset collections
+- **Asset Reuse**: Share assets across projects
+
+### 🔐 Authentication & Authorization
+- **JWT Bearer Tokens**: Secure token-based auth
+- **Cookie Support**: Token storage in HTTP-only cookies
+- **User Isolation**: Data scoped to authenticated users
+- **Role-Based Access**: Support for different user roles
+
+## 🏗️ Architecture
+
+### Tech Stack
+- **Framework**: ASP.NET Core 8.0
+- **Language**: C# 12 with nullable reference types
+- **Database**: PostgreSQL 14+ with Entity Framework Core 8.0
+- **Authentication**: JWT Bearer tokens
+- **Documentation**: Swagger/OpenAPI
+- **Serialization**: JSON with JSONB support
+
+### Project Structure
+```
+KidCode.Api/
+├── Controllers/
+│   ├── ProjectsController.cs          # Project CRUD operations
+│   ├── ProgressController.cs          # Progress & achievements
+│   ├── ChallengesController.cs        # Challenge management
+│   ├── GameSessionsController.cs      # Session tracking
+│   ├── LeaderboardController.cs       # Leaderboard rankings
+│   ├── CharacterAssetsController.cs   # Character assets
+│   ├── MediaController.cs             # Media management
+│   └── StatsController.cs             # Statistics & analytics
+├── Services/
+│   ├── ProjectService.cs              # Project business logic
+│   ├── ProgressService.cs             # Progress calculations
+│   ├── ChallengeService.cs            # Challenge operations
+│   ├── GameSessionService.cs          # Session management
+│   ├── LeaderboardService.cs          # Ranking calculations
+│   └── MediaService.cs                # Media operations
+├── Models/
+│   ├── Project.cs
+│   ├── Progress.cs
+│   ├── Challenge.cs
+│   ├── GameSession.cs
+│   ├── Leaderboard.cs
+│   ├── CharacterAsset.cs
+│   ├── Media.cs
+│   └── User.cs
+├── DTOs/
+│   ├── ProjectDto.cs
+│   ├── ProgressDto.cs
+│   ├── ChallengeDto.cs
+│   ├── GameSessionDto.cs
+│   └── LeaderboardDto.cs
+├── Data/
+│   └── KidCodeDbContext.cs
+└── Program.cs
+```
+
+## 🛠️ Installation
 
 ### Prerequisites
-
-- [.NET 8 SDK](https://dotnet.microsoft.com/download)
-- [PostgreSQL 14+](https://www.postgresql.org/download/)
-- Database credentials
+- .NET 8.0 SDK
+- PostgreSQL 14+
+- Identity API running (for JWT validation)
 
 ### Setup
 
-1. **Configure Database**
+1. **Restore dependencies**:
+   ```bash
+   dotnet restore
+   ```
 
-Update `appsettings.Development.json`:
+2. **Configure database**:
+   Update `appsettings.json` or use environment variables:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Host=localhost;Database=kidcode;Username=postgres;Password=your_password"
+     }
+   }
+   ```
 
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=kidcode;Username=postgres;Password=YOUR_PASSWORD"
-  },
-  "Jwt": {
-    "Key": "your-secret-key-min-32-chars",
-    "Issuer": "KidCodeApi",
-    "Audience": "KidCodeStudio"
-  }
-}
-```
+3. **Configure JWT Authentication**:
+   ```json
+   {
+     "AuthJwt": {
+       "Key": "your-secret-key-min-32-chars",
+       "Issuer": "https://identity.asafarim.be",
+       "Audience": "kidcode-studio-client"
+     }
+   }
+   ```
 
-2. **Apply Migrations**
+4. **Run database migrations**:
+   ```bash
+   dotnet ef database update
+   ```
 
+5. **Start the API**:
+   ```bash
+   dotnet run
+   ```
+   The API will be available at `http://localhost:5190`
+
+## 🔧 Development
+
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `dotnet run` | Start the API server on port 5190 |
+| `dotnet build` | Build the project |
+| `dotnet test` | Run tests |
+| `dotnet ef migrations add <Name>` | Create new migration |
+| `dotnet ef database update` | Apply migrations |
+| `dotnet watch run` | Run with hot reload |
+
+### Configuration
+
+#### Environment Variables
 ```bash
-dotnet ef database update
+# Database
+ConnectionStrings__DefaultConnection="Host=localhost;Database=kidcode;..."
+
+# JWT Authentication
+AuthJwt__Key="your-secret-key-min-32-chars"
+AuthJwt__Issuer="https://identity.asafarim.be"
+AuthJwt__Audience="kidcode-studio-client"
 ```
-
-3. **Run the API**
-
-```bash
-# From apis/KidCode.Api directory
-dotnet run
-
-# Or using pnpm (from monorepo root)
-pnpm --filter @asafarim/kidcode-api start
-```
-
-API available at: `http://localhost:5190`
 
 ## 📡 API Endpoints
 
@@ -84,7 +191,6 @@ Manage user creative projects.
 | `DELETE` | `/api/projects/{id}` | Delete project | ✅ |
 
 **Example Request:**
-
 ```json
 POST /api/projects
 {
@@ -106,7 +212,6 @@ Track user achievements and unlocked content.
 | `POST` | `/api/progress/update` | Update progress | ✅ |
 
 **Example Response:**
-
 ```json
 {
   "userId": "user-123",
@@ -125,17 +230,67 @@ Daily and progressive coding challenges.
 |--------|----------|-------------|------|
 | `GET` | `/api/challenges` | List challenges | ❌ |
 | `GET` | `/api/challenges/daily` | Get today's challenge | ❌ |
+| `GET` | `/api/challenges/{id}` | Get challenge by ID | ❌ |
 
 **Query Parameters:**
-
 - `mode` - Filter by mode (Drawing, Story, Puzzle, Music)
 - `level` - Filter by difficulty level (1-5)
 
 **Example:**
-
 ```
 GET /api/challenges?mode=Drawing&level=1
 ```
+
+### Game Sessions
+
+Track active play sessions.
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `GET` | `/api/game-sessions` | List user's sessions | ✅ |
+| `POST` | `/api/game-sessions` | Create new session | ✅ |
+| `PUT` | `/api/game-sessions/{id}` | Update session | ✅ |
+| `DELETE` | `/api/game-sessions/{id}` | End session | ✅ |
+
+### Leaderboards
+
+Global and mode-specific rankings.
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `GET` | `/api/leaderboards` | Get global leaderboard | ❌ |
+| `GET` | `/api/leaderboards/{mode}` | Get mode-specific leaderboard | ❌ |
+| `GET` | `/api/leaderboards/weekly` | Get weekly rankings | ❌ |
+| `GET` | `/api/leaderboards/monthly` | Get monthly rankings | ❌ |
+
+### Character Assets
+
+Pre-built character library.
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `GET` | `/api/character-assets` | List all characters | ❌ |
+| `GET` | `/api/character-assets/{id}` | Get character by ID | ❌ |
+| `GET` | `/api/character-assets/category/{category}` | Get by category | ❌ |
+
+### Media
+
+User-uploaded media and assets.
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `GET` | `/api/media` | List user's media | ✅ |
+| `POST` | `/api/media/upload` | Upload new media | ✅ |
+| `DELETE` | `/api/media/{id}` | Delete media | ✅ |
+
+### Statistics
+
+User statistics and analytics.
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `GET` | `/api/stats/user` | Get user statistics | ✅ |
+| `GET` | `/api/stats/global` | Get global statistics | ❌ |
 
 ### Health
 
@@ -185,109 +340,145 @@ GET /api/challenges?mode=Drawing&level=1
 | `IsDaily` | bool | Daily challenge flag |
 | `CreatedAt` | DateTime | Creation timestamp |
 
-## 🔧 Development
+### Game Sessions Table
 
-### Database Migrations
+| Column | Type | Description |
+|--------|------|-------------|
+| `Id` | GUID | Primary key |
+| `UserId` | string | User ID |
+| `ProjectId` | GUID | Associated project |
+| `StartedAt` | DateTime | Session start |
+| `EndedAt` | DateTime | Session end |
+| `DurationSeconds` | int | Total duration |
 
-```bash
-# Create new migration
-dotnet ef migrations add MigrationName
+### Leaderboard Table
 
-# Apply migrations
-dotnet ef database update
-
-# Rollback migration
-dotnet ef database update PreviousMigrationName
-
-# Remove last migration (if not applied)
-dotnet ef migrations remove
-```
-
-### Build & Test
-
-```bash
-# Build project
-dotnet build
-
-# Run tests
-dotnet test
-
-# Watch mode (auto-reload)
-dotnet watch run
-```
-
-### Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `ConnectionStrings__DefaultConnection` | PostgreSQL connection string | ✅ |
-| `Jwt__Key` | JWT signing key (min 32 chars) | ✅ |
-| `Jwt__Issuer` | JWT issuer | ✅ |
-| `Jwt__Audience` | JWT audience | ✅ |
+| Column | Type | Description |
+|--------|------|-------------|
+| `Id` | GUID | Primary key |
+| `UserId` | string | User ID |
+| `Mode` | enum | Creative mode |
+| `Score` | int | Ranking score |
+| `Rank` | int | Current rank |
+| `UpdatedAt` | DateTime | Last update |
 
 ## 🔐 Authentication
 
-The API uses JWT Bearer tokens for authentication.
+The API uses JWT Bearer tokens for authentication:
 
-**Login Flow:**
+1. **Token Sources**:
+   - Authorization header: `Bearer <token>`
+   - Generated by Identity API
 
-1. User authenticates via Identity API
-2. Receives JWT token
-3. Includes token in requests: `Authorization: Bearer {token}`
+2. **Token Validation**:
+   - Issuer validation
+   - Audience validation
+   - Signature validation
+   - Lifetime validation
 
-**Protected Endpoints:**
-All `/api/projects` and `/api/progress` endpoints require authentication.
-
-## 📊 Monitoring
-
-### Health Check
-
-```bash
-curl http://localhost:5190/health
-```
-
-**Response:**
-
-```json
-{
-  "status": "Healthy",
-  "timestamp": "2024-01-15T10:30:00Z"
-}
-```
+3. **Protected Endpoints**:
+   - All `/api/projects` endpoints require authentication
+   - All `/api/progress` endpoints require authentication
+   - All `/api/game-sessions` endpoints require authentication
+   - All `/api/media` endpoints require authentication
 
 ## 🚢 Deployment
 
-### Production Checklist
+### Production Configuration
 
-- [ ] Update connection string in production config
-- [ ] Set strong JWT secret key (min 32 characters)
-- [ ] Apply database migrations
-- [ ] Configure CORS for frontend domain
-- [ ] Enable HTTPS
-- [ ] Set up logging and monitoring
-- [ ] Configure backup strategy
+1. **Database**:
+   ```bash
+   export ConnectionStrings__DefaultConnection="Host=prod-db;Database=kidcode;..."
+   ```
 
-### Docker (Optional)
+2. **Authentication**:
+   ```bash
+   export AuthJwt__Key="production-secret-key"
+   export AuthJwt__Issuer="https://identity.asafarim.be"
+   export AuthJwt__Audience="kidcode-studio-client"
+   ```
 
-```bash
-# Build image
-docker build -t kidcode-api .
+3. **Build and Run**:
+   ```bash
+   dotnet publish -c Release -o ./publish
+   cd publish
+   dotnet KidCode.Api.dll
+   ```
 
-# Run container
-docker run -p 5190:8080 \
-  -e ConnectionStrings__DefaultConnection="Host=db;..." \
-  kidcode-api
+### Systemd Service
+```ini
+[Unit]
+Description=KidCode API Service
+After=network.target postgresql.service
+
+[Service]
+Type=notify
+WorkingDirectory=/var/www/kidcode-api
+ExecStart=/usr/bin/dotnet /var/www/kidcode-api/KidCode.Api.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=kidcode-api
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-## 📄 License
+### Nginx Reverse Proxy
+```nginx
+server {
+    listen 80;
+    server_name kidcode-api.asafarim.be;
+    
+    location / {
+        proxy_pass http://localhost:5190;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
-MIT License - see [LICENSE](LICENSE) file for details.
+## 🐛 Troubleshooting
 
-## 🔗 Related Projects
+### Common Issues
 
-- [KidCode Studio](../../apps/kidcode-studio) - Frontend application
-- [Identity API](../Identity.Api) - Authentication service
+1. **Database Connection Errors**
+   - Verify PostgreSQL is running
+   - Check connection string format
+   - Ensure database exists
+   - Verify user permissions
+
+2. **Authentication Failures**
+   - Verify JWT configuration matches Identity API
+   - Check token expiration
+   - Ensure user has required roles
+
+3. **Migration Errors**
+   - Verify database is accessible
+   - Check for pending migrations
+   - Review migration history
+
+## � License
+
+Part of the asafarim.be monorepo. All rights reserved.
+
+## 🤝 Contributing
+
+This is a private monorepo project. For internal development guidelines, see the main repository documentation.
+
+## 📞 Support
+
+For issues or questions, contact the development team or create an issue in the repository.
 
 ---
 
-**Part of the ASafariM monorepo**
+**Version**: 0.2.0  
+**Port**: 5190  
+**Last Updated**: December 2025

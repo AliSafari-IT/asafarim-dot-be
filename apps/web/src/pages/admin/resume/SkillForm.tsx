@@ -10,6 +10,7 @@ import {
 } from "../../../services/skillApi";
 import { fetchResumeById } from "../../../services/resumeApi";
 import "./resume-section-form.css";
+import { getReturnUrl } from "./utils";
 
 const SKILL_LEVELS = ["Beginner", "Intermediate", "Advanced", "Expert"];
 const SKILL_CATEGORIES = [
@@ -43,9 +44,7 @@ const SkillForm = () => {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
-        window.location.href
-      )}`;
+      window.location.href = getReturnUrl(window.location.href);
     }
   }, [authLoading, isAuthenticated]);
 
