@@ -42,6 +42,9 @@ if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(issuer) && !string.IsNul
                 ValidIssuer = issuer,
                 ValidAudience = audience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                ClockSkew = TimeSpan.FromSeconds(30),
+                RoleClaimType = System.Security.Claims.ClaimTypes.Role,
+                NameClaimType = System.Security.Claims.ClaimTypes.NameIdentifier,
             };
 
             // Extract token from cookie if present

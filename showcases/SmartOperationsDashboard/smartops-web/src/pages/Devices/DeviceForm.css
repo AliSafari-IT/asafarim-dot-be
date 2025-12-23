@@ -1,82 +1,82 @@
 .device-form-container {
-  padding: 2rem;
-  max-width: 800px;
+  padding: var(--asm-space-6);
+  max-width: var(--asm-container-md);
   margin: 0 auto;
 }
 
 .form-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--asm-space-4);
+  margin-bottom: var(--asm-space-6);
 }
 
 .btn-back {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
+  gap: var(--asm-space-2);
+  padding: var(--asm-space-2) var(--asm-space-4);
+  background-color: var(--asm-color-surface);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
   cursor: pointer;
-  color: var(--color-foreground);
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-sm);
+  transition: var(--asm-transition-scale);
 }
 
 .btn-back:hover {
-  background-color: var(--bg-hover-color);
-  border-color: var(--border-hover-color);
+  background-color: var(--asm-color-bg);
+  border-color: var(--asm-color-primary-500);
 }
 
 .form-header h1 {
   margin: 0;
-  font-size: 1.875rem;
-  color: var(--color-foreground);
+  font-size: var(--asm-font-size-3xl);
+  color: var(--asm-color-text);
 }
 
 .device-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 2rem;
+  gap: var(--asm-space-6);
+  background-color: var(--asm-color-surface);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-8);
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--asm-space-2);
 }
 
 .form-group label {
-  font-weight: 500;
-  color: var(--color-foreground);
-  font-size: 0.875rem;
+  font-weight: var(--asm-font-weight-500);
+  color: var(--asm-color-text);
+  font-size: var(--asm-font-size-sm);
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
-  padding: 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: inherit;
-  font-size: 0.875rem;
-  transition: border-color 0.2s ease;
+  padding: var(--asm-space-control-padding-y) var(--asm-space-control-padding-x);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  background-color: var(--asm-color-bg);
+  color: var(--asm-color-text);
+  font-family: var(--asm-font-family-primary);
+  font-size: var(--asm-font-size-sm);
+  transition: border-color var(--asm-motion-duration-normal) var(--asm-motion-easing-standard);
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--asm-color-primary-500);
+  box-shadow: 0 0 0 3px var(--asm-color-primary-50);
 }
 
 .form-group textarea {
@@ -86,32 +86,32 @@
 
 .form-actions {
   display: flex;
-  gap: 1rem;
+  gap: var(--asm-space-4);
   justify-content: flex-end;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
+  margin-top: var(--asm-space-4);
+  padding-top: var(--asm-space-4);
+  border-top: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .btn-cancel,
 .btn-submit {
-  padding: 0.75rem 1.5rem;
+  padding: var(--asm-space-control-padding-y) var(--asm-space-control-padding-x);
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  border-radius: var(--asm-radius-md);
+  font-size: var(--asm-font-size-sm);
+  font-weight: var(--asm-font-weight-500);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--asm-transition-scale);
 }
 
 .btn-cancel {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-foreground);
+  background-color: var(--asm-color-surface);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  color: var(--asm-color-text);
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background-color: var(--bg-hover-color);
+  background-color: var(--asm-color-bg);
 }
 
 .btn-cancel:disabled {
@@ -120,12 +120,12 @@
 }
 
 .btn-submit {
-  background-color: #3b82f6;
+  background-color: var(--asm-color-primary-500);
   color: white;
 }
 
 .btn-submit:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color: var(--asm-color-primary-600);
 }
 
 .btn-submit:disabled {
@@ -135,7 +135,7 @@
 
 @media (max-width: 640px) {
   .device-form-container {
-    padding: 1rem;
+    padding: var(--asm-space-4);
   }
 
   .form-header {
@@ -144,7 +144,7 @@
   }
 
   .device-form {
-    padding: 1.5rem;
+    padding: var(--asm-space-6);
   }
 
   .form-actions {
