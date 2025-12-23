@@ -353,7 +353,7 @@
 }
 
 .project-card {
-  background: linear-gradient(135deg, var(--asm-color-warning-500) 0%, var(--asm-color-warning-700) 100%);
+  background: var(--asm-color-surface);
   padding: var(--asm-space-6);
   border-radius: var(--asm-space-3);
   border-left: 4px solid var(--asm-color-warning-500);

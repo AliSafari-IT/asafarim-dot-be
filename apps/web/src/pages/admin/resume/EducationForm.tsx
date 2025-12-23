@@ -9,6 +9,7 @@ import {
 } from "../../../services/educationApi";
 import { fetchResumeById } from "../../../services/resumeApi";
 import "./resume-section-form.css";
+import { getReturnUrl } from "./utils";
 
 const EducationForm = () => {
   const navigate = useNavigate();
@@ -30,9 +31,7 @@ const EducationForm = () => {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      window.location.href = `http://identity.asafarim.local:5177/login?returnUrl=${encodeURIComponent(
-        window.location.href
-      )}`;
+      window.location.href = getReturnUrl(window.location.href);
     }
   }, [authLoading, isAuthenticated]);
 
