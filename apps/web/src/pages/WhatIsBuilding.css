@@ -22,7 +22,7 @@ section.what-is-building {
 }
 
 .what-is-building .what-is-building-heading {
-  margin: var(--spacing-2xl) var(--spacing-md);
+  margin: var(--asm-space-12) var(--asm-space-4);
   padding: 0;
 }
 
@@ -37,13 +37,13 @@ section.what-is-building {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--spacing-lg);
-  margin: var(--spacing-lg) auto;
-  padding: var(--spacing-lg);
+  gap: var(--asm-space-6);
+  margin: var(--asm-space-6) auto;
+  padding: var(--asm-space-6);
   max-width: 600px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-xl);
+  border-radius: var(--asm-radius-xl);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
@@ -52,9 +52,9 @@ section.what-is-building {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--asm-space-1);
   flex: 1;
-  margin: var(--spacing-md);
+  margin: var(--asm-space-4);
 }
 
 .what-is-building .stat-label {
@@ -95,7 +95,7 @@ section.what-is-building {
 .what-is-building .view-controls {
   display: flex;
   justify-content: center;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--asm-space-6);
   padding: 0;
 }
 
@@ -104,7 +104,7 @@ section.what-is-building {
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--asm-color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--asm-radius-lg);
   padding: 0.25rem;
 }
 
@@ -114,7 +114,7 @@ section.what-is-building {
   border: none;
   color: var(--asm-color-text-muted);
   cursor: pointer;
-  border-radius: var(--radius-md);
+  border-radius: var(--asm-radius-md);
   font-size: 0.95rem;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -133,8 +133,8 @@ section.what-is-building {
 /* Table styling */
 .what-is-building .table-wrapper {
   overflow-x: auto;
-  margin-bottom: var(--spacing-lg);
-  border-radius: var(--radius-lg);
+  margin-bottom: var(--asm-space-6);
+  border-radius: var(--asm-radius-lg);
   border: 1px solid var(--asm-color-border);
 }
 
@@ -150,7 +150,7 @@ section.what-is-building {
 }
 
 .what-is-building .updates-table th {
-  padding: var(--spacing-md);
+  padding: var(--asm-space-4);
   text-align: left;
   font-weight: 600;
   color: var(--asm-color-text);
@@ -174,7 +174,7 @@ section.what-is-building {
 }
 
 .what-is-building .updates-table td {
-  padding: var(--spacing-md);
+  padding: var(--asm-space-4);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   color: var(--asm-color-text);
   font-size: 0.95rem;
@@ -211,7 +211,7 @@ section.what-is-building {
   cursor: pointer;
   font-size: 1.1rem;
   padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--asm-radius-sm);
   transition: all 0.2s ease;
 }
 
@@ -224,8 +224,8 @@ section.what-is-building {
 .what-is-building .build-card {
   background: var(--asm-color-surface);
   border: 1px solid var(--asm-color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
+  border-radius: var(--asm-radius-xl);
+  padding: var(--asm-space-6);
   transition: all 0.3s ease;
   color: var(--asm-color-text);
 }
@@ -239,7 +239,7 @@ section.what-is-building {
 .what-is-building .card-top h3 {
   font-size: 1.25rem;
   font-weight: 700;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--asm-space-1);
   color: var(--asm-color-text);
 }
 
@@ -254,7 +254,7 @@ section.what-is-building {
   color: var(--asm-color-text);
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--asm-radius-md);
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -268,10 +268,10 @@ section.what-is-building {
 /* Empty state with improved dark mode */
 .what-is-building .empty-state {
   text-align: center;
-  padding: var(--spacing-xl);
+  padding: var(--asm-space-8);
   background: var(--asm-color-surface);
   border: 2px dashed var(--asm-color-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--asm-radius-xl);
   color: var(--asm-color-text);
   margin: 0;
 }
@@ -282,10 +282,10 @@ section.what-is-building {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-lg);
+  gap: var(--asm-space-6);
   color: var(--asm-color-text);
   margin: 0;
-  padding: var(--spacing-lg) 0;
+  padding: var(--asm-space-6) 0;
 }
 
 .what-is-building .spinner {
@@ -319,14 +319,14 @@ section.what-is-building {
 .what-is-building .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: var(--spacing-xl);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--asm-space-8);
+  margin-bottom: var(--asm-space-6);
 }
 
 /* Updates wrapper - ensure no gap from hero */
 .what-is-building .updates-wrapper {
   margin: 0;
-  padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg);
+  padding: var(--asm-space-6) var(--asm-space-6) 0 var(--asm-space-6);
   width: 100%;
   box-sizing: border-box;
 }
@@ -336,8 +336,8 @@ section.what-is-building {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--spacing-md);
-  margin: var(--spacing-lg);
+  gap: var(--asm-space-4);
+  margin: var(--asm-space-6);
   padding: 0;
 }
 
@@ -345,9 +345,9 @@ section.what-is-building {
 .what-is-building .error-banner {
   background: var(--asm-color-danger-500);
   color: var(--asm-color-text);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
+  padding: var(--asm-space-4);
+  border-radius: var(--asm-radius-md);
+  margin-bottom: var(--asm-space-6);
   text-align: center;
   font-weight: 600;
 }
@@ -355,7 +355,7 @@ section.what-is-building {
 
   .what-is-building .pagination span {
     font-size: 0.85rem;
-    padding: var(--spacing-md);
+    padding: var(--asm-space-4);
   }
 
 /* Responsive Design */
@@ -370,9 +370,9 @@ section.what-is-building {
 
   .what-is-building .stats-card {
     flex-wrap: wrap;
-    gap: var(--spacing-md);
-    margin: var(--spacing-md) auto;
-    padding: var(--spacing-md);
+    gap: var(--asm-space-4);
+    margin: var(--asm-space-4) auto;
+    padding: var(--asm-space-4);
   }
 
   .what-is-building .stat-divider {
@@ -380,7 +380,7 @@ section.what-is-building {
   }
 
   .what-is-building .stat-item {
-    flex: 0 1 calc(33.333% - var(--spacing-md));
+    flex: 0 1 calc(33.333% - var(--asm-space-4));
   }
 
   .what-is-building .stat-label {
@@ -406,7 +406,7 @@ section.what-is-building {
 
   .what-is-building .updates-table th,
   .what-is-building .updates-table td {
-    padding: var(--spacing-sm);
+    padding: var(--asm-space-2);
   }
 
   .what-is-building .title-cell {
@@ -415,12 +415,12 @@ section.what-is-building {
 
   .what-is-building .cards-grid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
+    gap: var(--asm-space-6);
   }
 
   .what-is-building .pagination {
     flex-wrap: wrap;
-    gap: var(--spacing-sm);
+    gap: var(--asm-space-2);
   }
 
   .what-is-building .pagination button {
@@ -444,9 +444,9 @@ section.what-is-building {
 
   .what-is-building .stats-card {
     flex-direction: column;
-    gap: var(--spacing-sm);
-    margin: var(--spacing-md) auto;
-    padding: var(--spacing-md);
+    gap: var(--asm-space-2);
+    margin: var(--asm-space-4) auto;
+    padding: var(--asm-space-4);
     max-width: 100%;
   }
 
@@ -463,7 +463,7 @@ section.what-is-building {
   }
 
   .what-is-building .view-controls {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--asm-space-4);
   }
 
   .what-is-building .toggle-btn {
@@ -472,7 +472,7 @@ section.what-is-building {
   }
 
   .what-is-building .table-wrapper {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--asm-space-4);
   }
 
   .what-is-building .updates-table {
@@ -481,7 +481,7 @@ section.what-is-building {
 
   .what-is-building .updates-table th,
   .what-is-building .updates-table td {
-    padding: var(--spacing-xs);
+    padding: var(--asm-space-1);
   }
 
   .what-is-building .title-cell {
@@ -494,7 +494,7 @@ section.what-is-building {
   }
 
   .what-is-building .build-card {
-    padding: var(--spacing-md);
+    padding: var(--asm-space-4);
   }
 
   .what-is-building .card-top h3 {
@@ -502,7 +502,7 @@ section.what-is-building {
   }
 
   .what-is-building .pagination {
-    margin-top: var(--spacing-md);
+    margin-top: var(--asm-space-4);
   }
 
   .what-is-building .pagination span {

@@ -604,7 +604,7 @@ export default function LandingPage() {
                   {t("landing.cv.downloadPdf")}
                 </a>
                 <a
-                  href={ONLINE_CV || "/resume"}
+                  href={ONLINE_CV || "/portfolio"}
                   className="landing-btn landing-btn-secondary"
                 >
                   {t("landing.cv.viewOnline")} →

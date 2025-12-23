@@ -12,12 +12,17 @@
   gap: 8px;
 }
 
+.layout-label {
+  color: var(--asm-color-neutral-600);
+}
+
 .layout-btn {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  border: 2px solid var(--asm-color-brand-primary-500);
+  background: var(--asm-color-neutral-200);
+  border-color: var(--asm-color-neutral-300);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
@@ -26,32 +31,29 @@
 }
 
 .layout-btn:hover {
-  border-color: var(--asm-color-brand-primary-500);
-  background: var(--asm-color-brand-primary-600);
+  border-color: var(--asm-color-primary-500);
+  background: var(--asm-color-primary-400);
 }
 
 .layout-btn.active {
-  background: var(--asm-color-brand-primary-500);
-  border-color: var(--asm-color-brand-primary-500);
-  color: white;
+  background: var(--asm-color-primary-400);
+  color: var(--asm-color-neutral-50);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
 }
 
 .layout-btn.export-pdf-btn {
-  background: var(--asm-color-success-500);
+  background: var(--asm-color-success-300);
   border-color: var(--asm-color-success-500);
 }
 
 .layout-btn.export-pdf-btn:hover {
-  background: var(--asm-color-info-500);
-  border-color: var(--asm-color-success-light);
+  background: var(--asm-color-success-600);
+  border-color: var(--asm-color-success-300);
+  color: var(--asm-color-neutral-300);
 }
 
 .layout-icon {
   font-size: 18px;
-}
-
-.layout-label {
-  color: var(--asm-color-text);
 }
 
 @media print {

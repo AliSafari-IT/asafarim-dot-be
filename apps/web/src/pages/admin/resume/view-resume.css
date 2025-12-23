@@ -275,7 +275,7 @@
 }
 
 .tech-tag {
-  background: linear-gradient(135deg, var(--asm-color-brand-primary-500) 0%, var(--asm-color-brand-primary-700) 100%);
+  background: linear-gradient(135deg, var(--asm-color-brand-primary-100) 0%, var(--asm-color-brand-primary-500) 100%);
   color: var(--asm-color-text);
   padding: var(--asm-space-1) var(--asm-space-3);
   border-radius: var(--asm-space-2);
@@ -453,7 +453,7 @@
 .language-card.level-beginner { background: linear-gradient(135deg, var(--asm-color-warning-400) 0%, var(--asm-color-warning-600) 100%); }
 .language-card.level-intermediate { background: linear-gradient(135deg, var(--asm-color-info-400) 0%, var(--asm-color-info-600) 100%); }
 .language-card.level-advanced { background: linear-gradient(135deg, var(--asm-color-success-400) 0%, var(--asm-color-success-600) 100%); }
-.language-card.name-english { background: linear-gradient(135deg, var(--asm-color-brand-primary-500) 0%, var(--asm-color-brand-primary-700) 100%); }
+.language-card.name-english { background: linear-gradient(135deg, var(--asm-color-primary-500) 0%, var(--asm-color-primary-700) 100%); }
 .language-card.name-persian { background: linear-gradient(135deg, var(--asm-color-danger-400) 0%, var(--asm-color-danger-600) 100%); }
 .language-card.name-german { background: linear-gradient(135deg, var(--asm-color-secondary-500) 0%, var(--asm-color-secondary-700) 100%); }
 .language-card.name-spanish { background: linear-gradient(135deg, var(--asm-color-warning-400) 0%, var(--asm-color-warning-600) 100%); }
@@ -469,13 +469,13 @@
 .language-name {
   font-size: var(--asm-font-size-lg);
   font-weight: var(--asm-font-weight-600);
-  color: var(--asm-color-brand-primary-500);
+  color: var(--asm-color-brand-primary-800);
   margin: 0 0 var(--asm-space-2) 0;
 }
 
 .language-level {
   font-size: var(--asm-font-size-md);
-  color: var(--asm-color-brand-primary-500);
+  color: var(--asm-color-brand-primary-200);
   font-weight: var(--asm-font-weight-500);
 }
 
@@ -570,19 +570,19 @@
   align-items: center;
   gap: var(--asm-space-2);
   padding: var(--asm-space-3) var(--asm-space-5);
-  background: var(--asm-color-brand-primary-500);
+  background: var(--asm-color-purple-100);
+  color: var(--asm-color-text);
   border-radius: var(--asm-space-2);
   text-decoration: none;
-  color: var(--asm-color-text-muted);
   font-weight: var(--asm-font-weight-500);
   border: 2px solid var(--asm-color-neutral-muted);
   transition: all var(--asm-motion-duration-normal) var(--asm-motion-easing-standard);
 }
 
 .social-link:hover {
-  background: linear-gradient(135deg, var(--asm-color-brand-primary-500) 0%, var(--asm-color-brand-primary-700) 100%);
+  background: linear-gradient(135deg, var(--asm-color-primary-200) 0%, var(--asm-color-primary-300) 100%);
   color: var(--asm-color-text);
-  border-color: var(--asm-color-brand-primary-500);
+  border-color: var(--asm-color-primary-500);
   transform: translateY(-2px);
 }
 
@@ -596,7 +596,7 @@
   background: var(--asm-color-neutral-100);
   padding: var(--asm-space-6);
   border-radius: var(--asm-space-3);
-  border-left: 3px solid var(--asm-color-brand-primary-500);
+  border-left: 3px solid var(--asm-color-primary-500);
 }
 
 .education-degree {

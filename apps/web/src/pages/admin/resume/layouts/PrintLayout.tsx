@@ -186,9 +186,16 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
         <section className="print-section">
           <h3 className="print-section-title">PROJECTS</h3>
           <div className="print-projects">
-            {resume.projects.slice(0, 3).map((project, index) => (
+            {resume.projects.slice(0, 10).map((project, index) => (
               <div key={index} className="print-project">
-                <strong>{project.name}</strong>
+                {project?.link && (
+                  <a href={project.link} target="_blank" rel="noopener noreferrer">
+                    <strong>{project.name}</strong>
+                  </a>
+                )}
+                {!project?.link && (
+                  <strong>{project.name}</strong>
+                )}
                 {project.description && (
                   <div className="print-desc">{project.description}</div>
                 )}

@@ -221,7 +221,7 @@ body.light .action-button-direct.secondary:hover {
 /* Alternative approach using CSS custom properties for theme-aware colors */
 .action-button-direct.secondary {
   background-color: var(--button-secondary-bg, var(--asm-color-neutral-700));
-  color: var(--button-secondary-text, white);
+  color: white;
   border: 1px solid var(--button-secondary-border, var(--asm-color-neutral-600));
 }
 

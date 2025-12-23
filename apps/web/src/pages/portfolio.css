@@ -28,7 +28,7 @@
 .portfolio-card {
   background-color: var(--asm-color-surface);
   border: 1px solid var(--asm-color-border);
-  border-radius: var(--radius-lg, 1rem);
+  border-radius: var(--asm-radius-lg);
   padding: 2rem 1.5rem;
   text-align: center;
   display: flex;
@@ -71,7 +71,7 @@
 
 .featured-project {
   background-color: var(--asm-color-surface);
-  border-radius: var(--radius-lg, 1rem);
+  border-radius: var(--asm-radius-lg);
   border: 1px solid var(--asm-color-border);
   overflow: hidden;
   box-shadow: var(--asm-effect-shadow-md, 0 15px 30px rgba(15, 23, 42, 0.1));
@@ -134,7 +134,7 @@
   max-width: 720px;
   background-color: var(--asm-color-surface);
   border: 1px solid var(--asm-color-border);
-  border-radius: var(--radius-lg, 1rem);
+  border-radius: var(--asm-radius-lg);
   padding: 1.75rem;
   box-shadow: var(--asm-effect-shadow-sm, 0 10px 25px rgba(15, 23, 42, 0.08));
   color: var(--asm-color-text-muted);
