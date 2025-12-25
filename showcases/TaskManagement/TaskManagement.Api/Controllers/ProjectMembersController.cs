@@ -20,18 +20,21 @@ public class ProjectMembersController : ControllerBase
     private readonly TaskManagementDbContext _context;
     private readonly IPermissionService _permissionService;
     private readonly IUserService _userService;
+    private readonly IEmailService _emailService;
     private readonly ILogger<ProjectMembersController> _logger;
 
     public ProjectMembersController(
         TaskManagementDbContext context,
         IPermissionService permissionService,
         IUserService userService,
+        IEmailService emailService,
         ILogger<ProjectMembersController> logger
     )
     {
         _context = context;
         _permissionService = permissionService;
         _userService = userService;
+        _emailService = emailService;
         _logger = logger;
     }
 
@@ -82,7 +85,8 @@ public class ProjectMembersController : ControllerBase
             return Forbid();
 
         // Resolve email to userId if needed
-        string targetUserId = dto.UserId;
+        string? targetUserId = null;
+        string emailToInvite = dto.UserId;
         
         // Check if the input looks like an email (contains @)
         if (dto.UserId.Contains("@"))
@@ -95,13 +99,72 @@ public class ProjectMembersController : ControllerBase
                 
                 if (userLookup == null)
                 {
-                    _logger.LogWarning("User not found with email: {Email}", dto.UserId);
-                    return NotFound(new 
-                    { 
-                        message = "User not found. They need to create an account first.",
-                        email = dto.UserId,
-                        suggestion = "Send them an invitation to register at the identity portal."
-                    });
+                    _logger.LogWarning("User not found with email: {Email}. Creating invitation.", dto.UserId);
+                    
+                    // Check if invitation already exists
+                    var existingInvitation = await _context.ProjectInvitations
+                        .FirstOrDefaultAsync(i => i.ProjectId == projectId && i.Email == dto.UserId && !i.IsAccepted);
+                    
+                    if (existingInvitation != null)
+                    {
+                        return BadRequest(new { message = "An invitation has already been sent to this email address." });
+                    }
+                    
+                    // Get project details for the invitation email
+                    var project = await _context.Projects.FindAsync(projectId);
+                    if (project == null)
+                        return NotFound("Project not found");
+                    
+                    // Get inviter name
+                    var inviterUser = await _userService.GetUserByEmailAsync(User.FindFirst("email")?.Value ?? "");
+                    var inviterName = inviterUser?.UserName ?? User.Identity?.Name ?? "A team member";
+                    
+                    // Create invitation record
+                    var invitation = new ProjectInvitation
+                    {
+                        Id = Guid.NewGuid(),
+                        ProjectId = projectId,
+                        Email = dto.UserId,
+                        Role = dto.Role,
+                        InvitedBy = userId,
+                        InvitedAt = DateTime.UtcNow,
+                        IsAccepted = false
+                    };
+                    
+                    _context.ProjectInvitations.Add(invitation);
+                    await _context.SaveChangesAsync();
+                    
+                    // Send invitation email
+                    try
+                    {
+                        await _emailService.SendProjectInvitationAsync(
+                            dto.UserId,
+                            project.Name,
+                            inviterName,
+                            invitation.Id
+                        );
+                        
+                        _logger.LogInformation("Invitation sent to {Email} for project {ProjectId}", dto.UserId, projectId);
+                        
+                        return Ok(new 
+                        { 
+                            status = "invitation_sent",
+                            message = $"Invitation sent to {dto.UserId}. They will be added to the project once they create an account.",
+                            invitationId = invitation.Id,
+                            email = dto.UserId
+                        });
+                    }
+                    catch (Exception emailEx)
+                    {
+                        _logger.LogError(emailEx, "Failed to send invitation email to {Email}", dto.UserId);
+                        return Ok(new 
+                        { 
+                            status = "invitation_created",
+                            message = $"Invitation created for {dto.UserId}, but email sending failed. They can still accept the invitation.",
+                            invitationId = invitation.Id,
+                            email = dto.UserId
+                        });
+                    }
                 }
                 
                 targetUserId = userLookup.Id;
@@ -112,6 +175,10 @@ public class ProjectMembersController : ControllerBase
                 _logger.LogError(ex, "Error resolving email to userId: {Email}", dto.UserId);
                 return StatusCode(500, new { message = "Error looking up user", error = ex.Message });
             }
+        }
+        else
+        {
+            targetUserId = dto.UserId;
         }
 
         // Check if member already exists

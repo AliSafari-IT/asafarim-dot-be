@@ -134,6 +134,16 @@ export const LoginForm = () => {
         let returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
         console.log('🔄 Original returnUrl:', returnUrl);
         
+        // Decode the returnUrl if it's encoded
+        if (returnUrl) {
+          try {
+            returnUrl = decodeURIComponent(returnUrl);
+            console.log('🔄 Decoded returnUrl:', returnUrl);
+          } catch (e) {
+            console.warn('⚠️ Failed to decode returnUrl:', e);
+          }
+        }
+        
         // Prevent infinite loop: if returnUrl points to login page, use dashboard instead
         const isReturnUrlLoginPage = returnUrl && (
           returnUrl === '/login' || 

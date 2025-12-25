@@ -10,6 +10,7 @@ namespace TaskManagement.Api.Data
 
         public DbSet<TaskProject> Projects { get; set; } = null!;
         public DbSet<ProjectMember> ProjectMembers { get; set; } = null!;
+        public DbSet<ProjectInvitation> ProjectInvitations { get; set; } = null!;
         public DbSet<TaskManagement.Api.Models.TaskManagement> Tasks { get; set; } = null!;
         public DbSet<TaskAssignment> TaskAssignments { get; set; } = null!;
         public DbSet<TaskComment> TaskComments { get; set; } = null!;
@@ -53,6 +54,24 @@ namespace TaskManagement.Api.Data
                 entity.Property(e => e.UserId).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.JoinedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.HasIndex(e => new { e.ProjectId, e.UserId }).IsUnique();
+            });
+
+            // ProjectInvitation configuration
+            modelBuilder.Entity<ProjectInvitation>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.InvitedBy).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.InvitedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsAccepted).HasDefaultValue(false);
+                entity.Property(e => e.AcceptedByUserId).HasMaxLength(100);
+                entity.HasIndex(e => new { e.ProjectId, e.Email });
+                
+                entity
+                    .HasOne(e => e.Project)
+                    .WithMany()
+                    .HasForeignKey(e => e.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Task configuration

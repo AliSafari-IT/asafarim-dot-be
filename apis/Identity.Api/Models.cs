@@ -2,7 +2,7 @@ namespace Identity.Api;
 
 public record RegisterRequest(string Email, string Password, string? UserName);
 
-public record LoginRequest(string Email, string Password, bool RememberMe = false);
+public record LoginRequest(string Email, string Password, bool RememberMe = false, string? ReturnUrl = null);
 
 public record MeResponse(string Id, string? Email, string? UserName, string[] Roles);
 
