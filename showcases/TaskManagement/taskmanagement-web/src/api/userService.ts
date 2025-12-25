@@ -20,7 +20,7 @@ type BatchUserResponse = {
 const userService = {
   async getUserById(userId: string): Promise<UserDto> {
     try {
-      const url = `${IDENTITY_API_URL}/users/${userId}`;
+      const url = `${IDENTITY_API_URL}/users/${encodeURIComponent(userId)}`;
       console.log(`👤 Fetching user from: ${url}`);
       const response = await fetch(url, {
         credentials: 'include',
