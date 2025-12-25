@@ -13,7 +13,7 @@ export default function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
-  
+
   const [project, setProject] = useState<ProjectDto | null>(null)
   const [tasks, setTasks] = useState<TaskDto[]>([])
   const [members, setMembers] = useState<ProjectMemberDto[]>([])
@@ -25,7 +25,7 @@ export default function ProjectDetail() {
   // Check if current user is a member of this project
   const isUserMember = members.some(m => m.userId === user?.id)
   // const userRole = members.find(m => m.userId === user?.id)?.role
-  
+
   // Filter states
   const [filterPriority, setFilterPriority] = useState<TaskPriority | ''>("")
   const [filterAssignee, setFilterAssignee] = useState<string>("")
@@ -40,52 +40,43 @@ export default function ProjectDetail() {
 
   const loadProjectData = async () => {
     if (!projectId) return
-    
+
     try {
-      setLoading(true)
-      const projectData = await projectService.getProject(projectId)
-      setProject(projectData)
-      
-      // Only fetch tasks and members if authenticated (private projects)
-      // Public projects can be viewed but not edited
-      if (isAuthenticated) {
-        const [tasksData, membersData] = await Promise.all([
+      setLoading(true);
+      const projectData = await projectService.getProject(projectId);
+      setProject(projectData);
+      const [tasksData, membersData] = await Promise.all([
           taskService.getProjectTasks(projectId).catch(() => []),
           memberService.getProjectMembers(projectId).catch(() => [])
         ])
-        setTasks(tasksData)
-        setMembers(membersData)
-      } else {
-        // For public projects viewed by unauthenticated users, show empty state
-        setTasks([])
-        setMembers([])
-      }
+      setTasks(tasksData);
+      setMembers(membersData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load project')
+      setError(err instanceof Error ? err.message : 'Failed to load project');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   const handleStatusChange = async (taskId: string, newStatus: TaskStatus) => {
     try {
-      await taskService.updateTaskStatus(taskId, newStatus)
-      setTasks(prev => prev.map(t => 
+      await taskService.updateTaskStatus(taskId, newStatus);
+      setTasks(prev => prev.map(t =>
         t.id === taskId ? { ...t, status: newStatus } : t
-      ))
+      ));
     } catch {
-      alert('Failed to update task status')
+      alert('Failed to update task status');
     }
   }
 
   const handleDeleteTask = async (taskId: string) => {
     if (!confirm('Are you sure you want to delete this task?')) return
-    
+
     try {
-      await taskService.deleteTask(taskId)
-      setTasks(prev => prev.filter(t => t.id !== taskId))
+      await taskService.deleteTask(taskId);
+      setTasks(prev => prev.filter(t => t.id !== taskId));
     } catch {
-      alert('Failed to delete task')
+      alert('Failed to delete task');
     }
   }
 
@@ -95,22 +86,22 @@ export default function ProjectDetail() {
       if (filterAssignee && !task.assignments.some(a => a.userId === filterAssignee)) return false
       if (searchTerm && !task.title.toLowerCase().includes(searchTerm.toLowerCase())) return false
       return true
-    })
+    });
   }
 
   const getTasksByStatus = (status: TaskStatus) => {
-    return getFilteredTasks().filter(t => t.status === status)
+    return getFilteredTasks().filter(t => t.status === status);
   }
 
   const getPriorityBadge = (priority: TaskPriority) => {
     const labels = ['Low', 'Medium', 'High', 'Critical']
     const classes = ['priority-low', 'priority-medium', 'priority-high', 'priority-critical']
-    return <span className={`priority-badge ${classes[priority]}`}>{labels[priority]}</span>
+    return <span className={`priority-badge ${classes[priority]}`}>{labels[priority]}</span>;
   }
 
   const getStatusLabel = (status: TaskStatus) => {
     const labels = ['To Do', 'In Progress', 'Done', 'Blocked', 'Archived']
-    return labels[status]
+    return labels[status];
   }
 
   if (loading) {
@@ -121,7 +112,7 @@ export default function ProjectDetail() {
     return <div className="project-detail-error">{error || 'Project not found'}</div>
   }
 
-  const filteredTasks = getFilteredTasks()
+  const filteredTasks = getFilteredTasks();
 
   return (
     <div className="project-detail">
@@ -135,8 +126,13 @@ export default function ProjectDetail() {
           </div>
         </div>
         <div className="project-actions">
-          <button className="btn-action" onClick={() => setShowMemberModal(true)}>
-            👥 Members ({members.length})
+          <button
+            className="btn-action"
+            onClick={() => setShowMemberModal(true)}
+            disabled={!isAuthenticated}
+            title={!isAuthenticated ? 'You must be logged in to manage members' : ''}
+          >
+            👥 Members ({project?.memberCount || 0})
           </button>
           {isAuthenticated && isUserMember && (
             <button className="btn-primary" onClick={() => navigate(`/projects/${projectId}/tasks/new`)}>
@@ -156,13 +152,13 @@ export default function ProjectDetail() {
       {/* View Mode Toggle & Filters */}
       <div className="project-controls">
         <div className="view-toggle">
-          <button 
+          <button
             className={`toggle-btn ${viewMode === 'board' ? 'active' : ''}`}
             onClick={() => setViewMode('board')}
           >
             📋 Board
           </button>
-          <button 
+          <button
             className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
             onClick={() => setViewMode('list')}
           >
@@ -178,7 +174,7 @@ export default function ProjectDetail() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <select 
+          <select
             className="filter-select"
             value={filterPriority}
             onChange={(e) => setFilterPriority(e.target.value === "" ? "" : parseInt(e.target.value))}
@@ -212,8 +208,8 @@ export default function ProjectDetail() {
               </div>
               <div className="column-tasks">
                 {getTasksByStatus(status).map(task => (
-                  <div 
-                    key={task.id} 
+                  <div
+                    key={task.id}
                     className="task-card"
                     onClick={() => navigate(`/tasks/${task.id}`)}
                   >
@@ -236,7 +232,7 @@ export default function ProjectDetail() {
                       )}
                     </div>
                     <div className="task-actions" onClick={(e) => e.stopPropagation()}>
-                      <select 
+                      <select
                         className="status-select"
                         value={task.status}
                         onChange={(e) => handleStatusChange(task.id, parseInt(e.target.value))}
@@ -246,7 +242,7 @@ export default function ProjectDetail() {
                         <option value={TaskStatus.Done}>Done</option>
                         <option value={TaskStatus.Blocked}>Blocked</option>
                       </select>
-                      <button 
+                      <button
                         className="btn-icon btn-edit"
                         onClick={(e) => {
                           e.stopPropagation()
@@ -255,7 +251,7 @@ export default function ProjectDetail() {
                       >
                         ✏️
                       </button>
-                      <button 
+                      <button
                         className="btn-icon btn-delete"
                         onClick={(e) => {
                           e.stopPropagation()
@@ -312,13 +308,13 @@ export default function ProjectDetail() {
                     <td>{task.assignments.length} assigned</td>
                     <td onClick={(e) => e.stopPropagation()}>
                       <div className="table-actions">
-                        <button 
+                        <button
                           className="btn-icon"
                           onClick={() => navigate(`/tasks/${task.id}/edit`)}
                         >
                           ✏️
                         </button>
-                        <button 
+                        <button
                           className="btn-icon"
                           onClick={() => handleDeleteTask(task.id)}
                         >
@@ -334,44 +330,13 @@ export default function ProjectDetail() {
         </div>
       )}
 
-      {/* Member Modal */}
-      {showMemberModal && (
-        <div className="modal-overlay" onClick={() => setShowMemberModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Project Members</h2>
-              <button className="btn-close" onClick={() => setShowMemberModal(false)}>×</button>
-            </div>
-            <div className="modal-body">
-              {members.length === 0 ? (
-                <p>No members yet</p>
-              ) : (
-                <ul className="members-list">
-                  {members.map(member => (
-                    <li key={member.id} className="member-item">
-                      <div>
-                        <strong>{member.userId}</strong>
-                        <span className="member-role">{ProjectRole[member.role]}</span>
-                      </div>
-                      <span className="member-joined">
-                        Joined {new Date(member.joinedAt).toLocaleDateString()}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Member Management Modal */}
       <MemberManagement
         projectId={projectId}
         isOpen={showMemberModal}
         onClose={() => setShowMemberModal(false)}
         currentUserId={user?.id}
-        isProjectAdmin={members.some(m => m.userId === user?.id && m.role === ProjectRole.Admin)}
+        isProjectAdmin={members.some(m => m.userId === user?.id && (m.role === ProjectRole.Admin || m.role === ProjectRole.Manager))}
         projectOwnerId={project?.userId}
         onMembersUpdated={() => {
           if (projectId) {
