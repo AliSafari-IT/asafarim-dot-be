@@ -22,8 +22,8 @@ export default function ProjectDetail() {
   const [viewMode, setViewMode] = useState<ViewMode>('board')
   const [showMemberModal, setShowMemberModal] = useState(false)
 
-  // Check if current user is a member of this project
-  const isUserMember = members.some(m => m.userId === user?.id)
+  // Check if current user is a member of this project (or is the owner)
+  const isUserMember = members.some(m => m.userId === user?.id) || project?.userId === user?.id
   // const userRole = members.find(m => m.userId === user?.id)?.role
 
   // Filter states
@@ -51,6 +51,7 @@ export default function ProjectDetail() {
         ])
       setTasks(tasksData);
       setMembers(membersData);
+      console.log({membersData, user});
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load project');
     } finally {
@@ -338,6 +339,8 @@ export default function ProjectDetail() {
         currentUserId={user?.id}
         isProjectAdmin={members.some(m => m.userId === user?.id && (m.role === ProjectRole.Admin || m.role === ProjectRole.Manager))}
         projectOwnerId={project?.userId}
+        isUserMember={isUserMember}
+        onCreateTask={() => navigate(`/projects/${projectId}/tasks/new`)}
         onMembersUpdated={() => {
           if (projectId) {
             memberService.getProjectMembers(projectId).then(setMembers)

@@ -43,7 +43,11 @@ const memberService = {
       credentials: 'include',
       body: JSON.stringify(dto),
     });
-    if (!response.ok) throw new Error('Failed to add project member');
+    if (!response.ok) {
+      const error: any = new Error('Failed to add project member');
+      error.response = response;
+      throw error;
+    }
     return response.json();
   },
 

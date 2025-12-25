@@ -41,6 +41,27 @@ public class UserController : ControllerBase
         );
     }
 
+    [HttpGet("by-email/{email}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetUserByEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return BadRequest("Email is required");
+
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null)
+            return NotFound(new { message = "User not found", email });
+
+        return Ok(
+            new
+            {
+                id = user.Id.ToString(),
+                email = user.Email,
+                userName = user.UserName,
+            }
+        );
+    }
+
     [HttpPost("batch")]
     public async Task<IActionResult> GetUsersByIds([FromBody] BatchUsersRequest request)
     {
