@@ -2,8 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--asm-color-bg);
+  color: var(--asm-color-text);
 }
 
 .homepage-loading {
@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  font-size: 1.125rem;
+  font-size: var(--asm-font-size-lg);
   color: var(--color-neutral-500);
 }
 
@@ -19,24 +19,24 @@
 .hero {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  gap: var(--asm-space-16);
   align-items: center;
   padding: 6rem 2rem;
-  max-width: 1200px;
+  max-width: var(--asm-container-xl);
   margin: 0 auto;
   width: 100%;
 }
 
 .hero-content h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
+  font-size: var(--asm-font-size-6xl);
+  font-weight: var(--asm-font-weight-700);
   line-height: 1.2;
   margin-bottom: 1rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
+  font-size: var(--asm-font-size-xl);
   color: var(--color-neutral-500);
   margin-bottom: 2rem;
   line-height: 1.6;
@@ -44,18 +44,18 @@
 
 .hero-cta {
   display: flex;
-  gap: 1rem;
+  gap: var(--asm-space-4);
   flex-wrap: wrap;
 }
 
 .btn {
   padding: 0.875rem 1.75rem;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: var(--asm-radius-md);
+  font-size: var(--asm-font-size-md);
+  font-weight: var(--asm-font-weight-600);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--asm-motion-duration-slow) var(--asm-motion-easing-standard);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -74,9 +74,9 @@
 }
 
 .btn-secondary {
-  background: var(--color-surface);
+  background: var(--asm-color-surface);
   color: var(--color-primary-600);
-  border: 2px solid var(--color-primary-600);
+  border: var(--asm-border-thin) solid var(--color-primary-600);
 }
 
 .btn-secondary:hover {
@@ -85,8 +85,8 @@
 }
 
 .btn-large {
-  padding: 1rem 2.5rem;
-  font-size: 1.125rem;
+  padding: var(--asm-space-4) 2.5rem;
+  font-size: var(--asm-font-size-lg);
 }
 
 .hero-visual {
@@ -96,7 +96,7 @@
 }
 
 .hero-icon {
-  font-size: 12rem;
+  font-size: clamp(6rem, 12vw, 12rem);
   opacity: 0.8;
   animation: float 3s ease-in-out infinite;
 }
@@ -113,32 +113,32 @@
 /* Features Section */
 .features {
   padding: 6rem 2rem;
-  max-width: 1200px;
+  max-width: var(--asm-container-xl);
   margin: 0 auto;
   width: 100%;
 }
 
 .features h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: var(--asm-font-size-5xl);
+  font-weight: var(--asm-font-weight-700);
   text-align: center;
   margin-bottom: 4rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  gap: var(--asm-space-8);
 }
 
 .feature-card {
-  background: var(--color-surface);
-  padding: 2rem;
-  border-radius: 12px;
+  background: var(--asm-color-surface);
+  padding: var(--asm-space-8);
+  border-radius: var(--asm-radius-lg);
   box-shadow: 0 2px 8px var(--color-shadow);
-  transition: all 0.3s ease;
-  border: 1px solid var(--color-border);
+  transition: all var(--asm-motion-duration-slow) var(--asm-motion-easing-standard);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .feature-card:hover {
@@ -147,16 +147,16 @@
 }
 
 .feature-icon {
-  font-size: 2.5rem;
+  font-size: var(--asm-font-size-5xl);
   margin-bottom: 1rem;
   display: block;
 }
 
 .feature-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: var(--asm-font-size-xl);
+  font-weight: var(--asm-font-weight-600);
   margin-bottom: 0.75rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .feature-card p {
@@ -168,29 +168,29 @@
 /* How It Works Section */
 .how-it-works {
   padding: 6rem 2rem;
-  background: var(--color-surface);
-  max-width: 1200px;
+  background: var(--asm-color-surface);
+  max-width: var(--asm-container-xl);
   margin: 0 auto;
   width: 100%;
 }
 
 .how-it-works h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: var(--asm-font-size-5xl);
+  font-weight: var(--asm-font-weight-700);
   text-align: center;
   margin-bottom: 4rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .steps {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  gap: var(--asm-space-8);
 }
 
 .step {
   text-align: center;
-  padding: 2rem;
+  padding: var(--asm-space-8);
 }
 
 .step-number {
@@ -201,17 +201,17 @@
   height: 60px;
   background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
   color: white;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  font-weight: 700;
+  border-radius: var(--asm-radius-full);
+  font-size: var(--asm-font-size-2xl);
+  font-weight: var(--asm-font-weight-700);
   margin-bottom: 1.5rem;
 }
 
 .step h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: var(--asm-font-size-xl);
+  font-weight: var(--asm-font-weight-600);
   margin-bottom: 0.75rem;
-  color: var(--color-foreground);
+  color: var(--asm-color-text);
 }
 
 .step p {
@@ -227,20 +227,20 @@
   text-align: center;
   color: var(--color-primary-50);
   max-width: var(--max-width);
-  margin: 4rem auto;
+  margin: var(--asm-space-16) auto;
   width: 100%;
-  border-radius: 16px;
+  border-radius: var(--asm-radius-xl);
 }
 
 .cta-section h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: var(--asm-font-size-5xl);
+  font-weight: var(--asm-font-weight-700);
   margin-bottom: 1rem;
   color: var(--color-primary-50);
 }
 
 .cta-section p {
-  font-size: 1.125rem;
+  font-size: var(--asm-font-size-lg);
   margin-bottom: 2rem;
   opacity: 0.95;
   color: var(--color-primary-50);
@@ -248,14 +248,14 @@
 
 .cta-buttons {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--asm-space-6);
   justify-content: center;
   flex-wrap: wrap;
-  padding: 2rem;
+  padding: var(--asm-space-8);
 }
 
 .cta-section .btn-primary {
-  background: var(--color-surface);
+  background: var(--asm-color-surface);
   color: var(--color-primary-600);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
@@ -276,10 +276,10 @@
 
 /* Footer */
 .homepage-footer {
-  padding: 2rem;
+  padding: var(--asm-space-8);
   text-align: center;
   color: var(--color-neutral-500);
-  border-top: 1px solid var(--color-border);
+  border-top: var(--asm-border-hairline) solid var(--asm-color-border);
   margin-top: auto;
 }
 
@@ -291,16 +291,16 @@
 @media (max-width: 768px) {
   .hero {
     grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 3rem 1rem;
+    gap: var(--asm-space-8);
+    padding: var(--asm-space-12) 1rem;
   }
 
   .hero-content h1 {
-    font-size: 2rem;
+    font-size: var(--asm-font-size-4xl);
   }
 
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: var(--asm-font-size-md);
   }
 
   .hero-icon {
@@ -308,39 +308,39 @@
   }
 
   .features {
-    padding: 3rem 1rem;
+    padding: var(--asm-space-12) 1rem;
   }
 
   .features h2 {
-    font-size: 1.75rem;
+    font-size: var(--asm-font-size-3xl);
     margin-bottom: 2rem;
   }
 
   .features-grid {
-    gap: 1.5rem;
+    gap: var(--asm-space-6);
   }
 
   .how-it-works {
-    padding: 3rem 1rem;
+    padding: var(--asm-space-12) 1rem;
   }
 
   .how-it-works h2 {
-    font-size: 1.75rem;
+    font-size: var(--asm-font-size-3xl);
     margin-bottom: 2rem;
   }
 
   .cta-section {
-    padding: 3rem 1rem;
-    margin: 2rem 1rem;
+    padding: var(--asm-space-12) 1rem;
+    margin: var(--asm-space-8) 1rem;
   }
 
   .cta-section h2 {
-    font-size: 1.75rem;
+    font-size: var(--asm-font-size-3xl);
   }
 
   .cta-buttons {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--asm-space-4);
   }
 
   .btn, .btn-large {
@@ -358,15 +358,15 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding: 2rem 1rem;
+    padding: var(--asm-space-8) 1rem;
   }
 
   .hero-content h1 {
-    font-size: 1.5rem;
+    font-size: var(--asm-font-size-2xl);
   }
 
   .hero-subtitle {
-    font-size: 0.95rem;
+    font-size: var(--asm-font-size-md);
   }
 
   .hero-icon {
@@ -376,15 +376,15 @@
   .features h2,
   .how-it-works h2,
   .cta-section h2 {
-    font-size: 1.5rem;
+    font-size: var(--asm-font-size-2xl);
   }
 
   .feature-card {
-    padding: 1.5rem;
+    padding: var(--asm-space-6);
   }
 
   .btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
+    padding: var(--asm-space-3) 1.5rem;
+    font-size: var(--asm-font-size-md);
   }
 }

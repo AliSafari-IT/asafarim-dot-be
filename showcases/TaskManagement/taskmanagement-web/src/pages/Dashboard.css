@@ -1,145 +1,145 @@
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
+  gap: var(--asm-space-8);
+  padding: var(--asm-space-8);
 }
 
 .dashboard-header {
-  margin-bottom: 1rem;
+  margin-bottom: var(--asm-space-4);
 }
 
 .dashboard-header h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: var(--color-neutral-500);
+  font-size: var(--asm-font-size-4xl);
+  margin-bottom: var(--asm-space-2);
+  color: var(--asm-color-text);
 }
 
 .dashboard-header p {
-  color: var(--color-text);
-  font-size: 1rem;
+  color: var(--asm-color-text-muted);
+  font-size: var(--asm-font-size-md);
 }
 
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: var(--asm-space-8);
 }
 
 .dashboard-section {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 2rem;
+  background-color: var(--asm-color-surface);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-lg);
+  padding: var(--asm-space-8);
 }
 
 .dashboard-section h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1.5rem;
-  color: var(--color-foreground);
+  font-size: var(--asm-font-size-xl);
+  margin-bottom: var(--asm-space-6);
+  color: var(--asm-color-text);
 }
 
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  gap: var(--asm-space-6);
 }
 
 .project-card {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1.5rem;
+  background-color: var(--asm-color-bg);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-6);
   text-decoration: none;
   color: inherit;
-  transition: all 0.2s ease;
+  transition: all var(--asm-motion-duration-normal) var(--asm-motion-easing-standard);
   cursor: pointer;
 }
 
 .project-card:hover {
-  border-color: var(--color-foreground);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--asm-color-primary-500);
+  box-shadow: var(--asm-effect-shadow-lg);
   transform: translateY(-2px);
 }
 
 .project-card h3 {
-  font-size: 1.125rem;
-  margin-bottom: 0.5rem;
-  color: var(--color-foreground);
+  font-size: var(--asm-font-size-lg);
+  margin-bottom: var(--asm-space-2);
+  color: var(--asm-color-text);
 }
 
 .project-card p {
-  color: var(--color-text);
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-  line-height: 1.4;
+  color: var(--asm-color-text-muted);
+  font-size: var(--asm-font-size-sm);
+  margin-bottom: var(--asm-space-4);
+  line-height: var(--asm-line-height-normal);
 }
 
 .project-stats {
   display: flex;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: var(--color-text);
+  gap: var(--asm-space-4);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
+  gap: var(--asm-space-4);
 }
 
 .stat-card {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1.5rem;
+  background-color: var(--asm-color-bg);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-6);
   text-align: center;
 }
 
 .stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--color-foreground);
-  margin-bottom: 0.5rem;
+  font-size: var(--asm-font-size-4xl);
+  font-weight: var(--asm-font-weight-700);
+  color: var(--asm-color-text);
+  margin-bottom: var(--asm-space-2);
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  color: var(--color-text);
+  font-size: var(--asm-font-size-sm);
+  color: var(--asm-color-text-muted);
 }
 
 .empty-state {
   text-align: center;
-  padding: 3rem 2rem;
-  background-color: var(--color-surface);
-  border: 1px dashed var(--color-border);
-  border-radius: 8px;
-  color: var(--color-text);
+  padding: var(--asm-space-12) var(--asm-space-8);
+  background-color: var(--asm-color-surface);
+  border: var(--asm-border-hairline) dashed var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  color: var(--asm-color-text-muted);
 }
 
 .dashboard-loading,
 .dashboard-error {
-  padding: 2rem;
+  padding: var(--asm-space-8);
   text-align: center;
-  color: var(--color-text);
+  color: var(--asm-color-text-muted);
 }
 
 .dashboard-error {
-  color: #ef4444;
+  color: var(--asm-color-danger-500);
 }
 
 @media (max-width: 768px) {
   .dashboard {
-    gap: 1.5rem;
-    padding: 1rem;
+    gap: var(--asm-space-6);
+    padding: var(--asm-space-4);
   }
 
   .dashboard-header h1 {
-    font-size: 1.5rem;
+    font-size: var(--asm-font-size-2xl);
   }
 
   .dashboard-section {
-    padding: 1.5rem;
+    padding: var(--asm-space-6);
   }
 
   .projects-grid {

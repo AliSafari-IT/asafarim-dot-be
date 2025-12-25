@@ -1,58 +1,58 @@
 .task-form-page {
-  padding: 2rem;
-  max-width: 900px;
+  padding: var(--asm-space-8);
+  max-width: var(--asm-container-lg);
   margin: 0 auto;
 }
 
 .task-form {
-  background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 8px;
-  padding: 2rem;
+  background: var(--asm-color-surface);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-8);
 }
 
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: var(--asm-space-6);
+  margin-bottom: var(--asm-space-6);
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--asm-space-6);
 }
 
 .form-label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: var(--color-text, #1e293b);
+  margin-bottom: var(--asm-space-2);
+  font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-text);
 }
 
 .required {
-  color: #ef4444;
+  color: var(--asm-color-danger-500);
 }
 
 .form-input,
 .form-textarea,
 .form-select {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 6px;
-  font-size: 1rem;
-  font-family: inherit;
-  background: var(--color-background, #ffffff);
-  color: var(--color-text, #1e293b);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: var(--asm-space-3);
+  border: var(--asm-border-hairline) solid var(--asm-color-input-border);
+  border-radius: var(--asm-radius-sm);
+  font-size: var(--asm-font-size-md);
+  font-family: var(--asm-font-family-primary);
+  background: var(--asm-color-input-bg);
+  color: var(--asm-color-input-text);
+  transition: border-color var(--asm-motion-duration-normal), box-shadow var(--asm-motion-duration-normal);
 }
 
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--asm-color-input-border-focus);
+  box-shadow: 0 0 0 3px rgba(58, 90, 254, 0.1);
 }
 
 .form-textarea {
@@ -61,40 +61,40 @@
 }
 
 .form-error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
+  background: var(--asm-color-danger-50);
+  border: var(--asm-border-hairline) solid var(--asm-color-danger-200);
+  color: var(--asm-color-danger-600);
+  padding: var(--asm-space-3) var(--asm-space-4);
+  border-radius: var(--asm-radius-sm);
+  margin-bottom: var(--asm-space-6);
 }
 
 .form-actions {
   display: flex;
-  gap: 1rem;
+  gap: var(--asm-space-4);
   justify-content: flex-end;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--color-border, #e2e8f0);
+  margin-top: var(--asm-space-8);
+  padding-top: var(--asm-space-6);
+  border-top: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .form-loading {
   text-align: center;
-  padding: 3rem;
-  color: var(--color-text-muted, #64748b);
+  padding: var(--asm-space-12);
+  color: var(--asm-color-text-muted);
 }
 
 /* Dark theme support */
 [data-theme="dark"] .task-form {
-  background: var(--color-surface, #1e293b);
+  background: var(--asm-color-surface);
 }
 
 [data-theme="dark"] .form-input,
 [data-theme="dark"] .form-textarea,
 [data-theme="dark"] .form-select {
-  background: var(--color-surface, #1e293b);
-  border-color: var(--color-border, #334155);
-  color: var(--color-text, #f1f5f9);
+  background: var(--asm-color-input-bg);
+  border-color: var(--asm-color-input-border);
+  color: var(--asm-color-input-text);
 }
 
 [data-theme="dark"] .form-error {
@@ -105,17 +105,17 @@
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .task-form-page {
-    padding: 1rem;
+    padding: var(--asm-space-4);
   }
 
   .task-form {
-    padding: 1.5rem;
-  }
+    padding: var(--asm-space-6);
+}
 
   .form-row {
     grid-template-columns: 1fr;
-    gap: 1rem;
-  }
+    gap: var(--asm-space-4);
+}
 
   .form-actions {
     flex-direction: column-reverse;
