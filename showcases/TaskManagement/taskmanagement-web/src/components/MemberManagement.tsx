@@ -11,6 +11,8 @@ interface MemberManagementProps {
   isProjectAdmin?: boolean
   projectOwnerId?: string
   onMembersUpdated?: () => void
+  onCreateTask?: () => void
+  isUserMember?: boolean
 }
 
 export default function MemberManagement({
@@ -21,6 +23,8 @@ export default function MemberManagement({
   isProjectAdmin,
   projectOwnerId,
   onMembersUpdated,
+  onCreateTask,
+  isUserMember,
 }: MemberManagementProps) {
   const [members, setMembers] = useState<ProjectMemberDto[]>([])
   const [loading, setLoading] = useState(false)
@@ -94,7 +98,7 @@ export default function MemberManagement({
 
   const handleAddMember = async () => {
     if (!newMemberUserId.trim()) {
-      setError('Please enter a user ID')
+      setError('Please enter a user ID or email')
       return
     }
 
@@ -107,8 +111,13 @@ export default function MemberManagement({
       setShowAddMemberForm(false)
       await loadMembers()
       onMembersUpdated?.()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add member')
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        const data = await err.response.json().catch(() => ({}))
+        setError(data.message || 'User not found. They need to create an account first.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to add member')
+      }
     } finally {
       setAddingMember(false)
     }
@@ -176,6 +185,19 @@ export default function MemberManagement({
         </div>
 
         <div className="modal-footer">
+          {/* New Task Button (for members) */}
+          {isUserMember && onCreateTask && (
+            <button
+              className="btn-primary"
+              onClick={() => {
+                onCreateTask()
+                onClose()
+              }}
+            >
+              + New Task
+            </button>
+          )}
+
           {/* Add Member Button (for admins) */}
           {isProjectAdmin && !showAddMemberForm && (
             <button

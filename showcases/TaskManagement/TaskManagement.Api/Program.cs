@@ -92,6 +92,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddHttpClient<IUserService, UserService>();
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("AuthJwt");

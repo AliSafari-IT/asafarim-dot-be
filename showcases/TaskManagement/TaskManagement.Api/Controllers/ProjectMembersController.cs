@@ -19,14 +19,20 @@ public class ProjectMembersController : ControllerBase
 {
     private readonly TaskManagementDbContext _context;
     private readonly IPermissionService _permissionService;
+    private readonly IUserService _userService;
+    private readonly ILogger<ProjectMembersController> _logger;
 
     public ProjectMembersController(
         TaskManagementDbContext context,
-        IPermissionService permissionService
+        IPermissionService permissionService,
+        IUserService userService,
+        ILogger<ProjectMembersController> logger
     )
     {
         _context = context;
         _permissionService = permissionService;
+        _userService = userService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -75,9 +81,42 @@ public class ProjectMembersController : ControllerBase
         if (!await _permissionService.CanManageProjectMembersAsync(projectId, userId))
             return Forbid();
 
+        // Resolve email to userId if needed
+        string targetUserId = dto.UserId;
+        
+        // Check if the input looks like an email (contains @)
+        if (dto.UserId.Contains("@"))
+        {
+            _logger.LogInformation("Attempting to resolve email to userId: {Email}", dto.UserId);
+            
+            try
+            {
+                var userLookup = await _userService.GetUserByEmailAsync(dto.UserId);
+                
+                if (userLookup == null)
+                {
+                    _logger.LogWarning("User not found with email: {Email}", dto.UserId);
+                    return NotFound(new 
+                    { 
+                        message = "User not found. They need to create an account first.",
+                        email = dto.UserId,
+                        suggestion = "Send them an invitation to register at the identity portal."
+                    });
+                }
+                
+                targetUserId = userLookup.Id;
+                _logger.LogInformation("Resolved email {Email} to userId {UserId}", dto.UserId, targetUserId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resolving email to userId: {Email}", dto.UserId);
+                return StatusCode(500, new { message = "Error looking up user", error = ex.Message });
+            }
+        }
+
         // Check if member already exists
         var existingMember = await _context.ProjectMembers.FirstOrDefaultAsync(m =>
-            m.ProjectId == projectId && m.UserId == dto.UserId
+            m.ProjectId == projectId && m.UserId == targetUserId
         );
 
         if (existingMember != null)
@@ -87,7 +126,7 @@ public class ProjectMembersController : ControllerBase
         {
             Id = Guid.NewGuid(),
             ProjectId = projectId,
-            UserId = dto.UserId,
+            UserId = targetUserId,
             Role = dto.Role,
             JoinedAt = DateTime.UtcNow,
         };

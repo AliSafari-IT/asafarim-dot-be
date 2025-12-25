@@ -41,9 +41,11 @@
     <Compile Include="Services\IPermissionService.cs" />
     <Compile Include="Services\IProjectService.cs" />
     <Compile Include="Services\ITaskService.cs" />
+    <Compile Include="Services\IUserService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\ProjectService.cs" />
     <Compile Include="Services\TaskService.cs" />
+    <Compile Include="Services\UserService.cs" />
 
     <!-- DTOs - only the individual files -->
     <Compile Include="DTOs\ProjectDto.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="DTOs\TaskAttachmentDto.cs" />
     <Compile Include="DTOs\TaskCommentDto.cs" />
     <Compile Include="DTOs\TaskDto.cs" />
+    <Compile Include="DTOs\UserLookupDto.cs" />
 
     <!-- Data layer -->
     <Compile Include="Data\TaskManagementDbContext.cs" />
