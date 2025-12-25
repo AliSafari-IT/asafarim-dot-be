@@ -6,6 +6,7 @@ import memberService, { type ProjectMemberDto, ProjectRole } from '../api/member
 import { useAuth } from '@asafarim/shared-ui-react'
 import MemberManagement from '../components/MemberManagement'
 import './ProjectDetail.css'
+import { getLoginUrl } from '../utils/getLoginUrl'
 
 type ViewMode = 'board' | 'list'
 
@@ -146,7 +147,7 @@ export default function ProjectDetail() {
       {/* Public Project Notice */}
       {!isAuthenticated && project?.isPrivate === false && (
         <div className="public-project-notice">
-          📖 This is a public project. <a href="/login">Sign in</a> to view tasks and collaborate.
+          📖 This is a public project. <a href={getLoginUrl(encodeURIComponent(window.location.href))}>Sign in</a> to view tasks and collaborate.
         </div>
       )}
 

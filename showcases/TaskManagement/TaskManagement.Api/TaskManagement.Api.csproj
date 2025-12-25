@@ -27,6 +27,7 @@
     <Compile Include="Program.cs" />
 
     <!-- Models - only the individual files -->
+    <Compile Include="Models\ProjectInvitation.cs" />
     <Compile Include="Models\ProjectMember.cs" />
     <Compile Include="Models\ProjectRole.cs" />
     <Compile Include="Models\TaskAssignment.cs" />
@@ -38,6 +39,8 @@
     <Compile Include="Models\TaskStatus.cs" />
 
     <!-- Services - only the individual files -->
+    <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Services\IEmailService.cs" />
     <Compile Include="Services\IPermissionService.cs" />
     <Compile Include="Services\IProjectService.cs" />
     <Compile Include="Services\ITaskService.cs" />
