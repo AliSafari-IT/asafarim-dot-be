@@ -176,7 +176,7 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
                     {skills.map((skill, index) => (
                       <div key={index} className="print-skill">
                         <span className="print-skill-name">{skill.name}</span>
-                        {renderDots(skill.rating)}
+                        {("rating" in skill) && renderDots(skill.rating)}
                       </div>
                     ))}
                   </div>
@@ -244,16 +244,20 @@ export const PrintLayout = ({ resume }: ResumeLayoutProps) => {
                     <div className="print-tech-tags">
                       <span className="print-tech-label">Tech:</span>
                       <div className="print-tech-list">
-                        {techs.map((tech, techIndex) => (
-                          <span
-                            key={techIndex}
-                            className="print-tech-badge"
-                            data-testid="print-tech-badge"
-                            title={typeof tech === "string" ? tech : tech.category || tech.name}
-                          >
-                            {typeof tech === "string" ? tech : tech.name}
-                          </span>
-                        ))}
+                        {techs.map((tech, techIndex) => {
+                          const techName = typeof tech === "string" ? tech : (tech?.name || "");
+                          const techTitle = typeof tech === "string" ? tech : (tech?.category || tech?.name || "");
+                          return (
+                            <span
+                              key={techIndex}
+                              className="print-tech-badge"
+                              data-testid="print-tech-badge"
+                              title={techTitle}
+                            >
+                              {techName}
+                            </span>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

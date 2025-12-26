@@ -643,13 +643,7 @@ public class ResumesController : ControllerBase
                             w.Achievements?.Select(a => a.Text).ToList() ?? new List<string>(),
                         Technologies =
                             w.WorkExperienceTechnologies?.Where(wt => wt.Technology != null)
-                                .Select(wt => new TechnologyDto
-                                {
-                                    Id = wt.Technology!.Id,
-                                    Name = wt.Technology!.Name,
-                                    Category = wt.Technology!.Category,
-                                })
-                                .Cast<object>()
+                                .Select(wt => (object)wt.Technology!.Name)
                                 .ToList() ?? new List<object>(),
                     })
                     .ToList() ?? new List<PublicWorkExperienceDto>(),
@@ -676,13 +670,7 @@ public class ResumesController : ControllerBase
                         EndDate = p.EndDate,
                         Technologies =
                             p.ProjectTechnologies?.Where(pt => pt.Technology != null)
-                                .Select(pt => new TechnologyDto
-                                {
-                                    Id = pt.Technology!.Id,
-                                    Name = pt.Technology!.Name,
-                                    Category = pt.Technology!.Category,
-                                })
-                                .Cast<object>()
+                                .Select(pt => (object)pt.Technology!.Name)
                                 .ToList() ?? new List<object>(),
                     })
                     .ToList() ?? new List<PublicProjectDto>(),

@@ -115,9 +115,8 @@ public class ProjectMembersController : ControllerBase
                     if (project == null)
                         return NotFound("Project not found");
                     
-                    // Get inviter name
-                    var inviterUser = await _userService.GetUserByEmailAsync(User.FindFirst("email")?.Value ?? "");
-                    var inviterName = inviterUser?.UserName ?? User.Identity?.Name ?? "A team member";
+                    // Get inviter name - use a simple fallback since we don't have user details readily available
+                    var inviterName = User.Identity?.Name ?? "A team member";
                     
                     // Create invitation record
                     var invitation = new ProjectInvitation

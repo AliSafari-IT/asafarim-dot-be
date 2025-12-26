@@ -67,18 +67,6 @@ const PublicResumeView = () => {
     });
   };
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className="skill-rating">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <span key={star} className={star <= rating ? "star filled" : "star"}>
-            ★
-          </span>
-        ))}
-      </div>
-    );
-  };
-
   const handleExportPDF = async () => {
     if (!resume) return;
 
@@ -256,17 +244,16 @@ const PublicResumeView = () => {
               <h2 className="section-title">{t('resume.sections.skills.title')}</h2>
               <div className="section-content">
                 <div className="skills-grid">
-                  {resume.skills.map((skill, index) => (
+                  {resume.skills.map((skill: any, index: number) => (
                     <div key={index} className="skill-card">
                       <div className="skill-header">
                         <h3 className="skill-name">{skill.name}</h3>
-                        {renderStars(skill.rating)}
                       </div>
                       <div className="skill-meta">
                         <span className="skill-category">
-                          {t('resume.sections.skills.categories.category', { category: skill.category })}
+                          {skill.category}
                         </span>
-                        <span className="skill-level">{t('resume.sections.skills.categories.level', { level: skill.level })}</span>
+                        <span className="skill-level">{skill.level}</span>
                       </div>
                     </div>
                   ))}
