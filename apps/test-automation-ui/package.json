@@ -1,6 +1,6 @@
 {
   "name": "@asafarim/testora-ui",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "@asafarim/react-themes": "workspace:*",
     "@asafarim/shared-i18n": "workspace:*",
     "@asafarim/shared-ui-react": "workspace:*",
-    "@asafarim/design-tokens": "^0.3.6",
+    "@asafarim/design-tokens": "^0.4.1",
     "@asafarim/helpers": "workspace:*",
     "@asafarim/toast": "1.2.0",
     "@emotion/styled": "^11.14.1",
