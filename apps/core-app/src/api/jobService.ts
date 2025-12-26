@@ -12,7 +12,9 @@ export const fetchJobApplications = async (): Promise<JobApplication[]> => {
 };
 
 export const fetchJobApplicationById = async (id: string): Promise<JobApplication> => {
-  const response = await fetch(`${API_URL}/${id}`);
+  const response = await fetch(`${API_URL}/${id}`, {
+    credentials: 'include',
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch job application');
   }

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Core.Api.Data;
 using Core.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -28,12 +30,28 @@ public class TimelineMilestonesController : ControllerBase
 
     // GET: api/TimelineMilestones/job/{jobId}
     [HttpGet("job/{jobId}")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<TimelineMilestoneDto>>> GetMilestonesByJob(
         Guid jobId
     )
     {
         try
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
+            // Verify the job belongs to the user
+            var jobBelongsToUser = await _context.JobApplications
+                .AnyAsync(j => j.Id == jobId && j.UserId == userId);
+            
+            if (!jobBelongsToUser)
+            {
+                return NotFound();
+            }
+
             var milestones = await _context
                 .TimelineMilestones.Where(t => t.JobApplicationId == jobId)
                 .OrderBy(t => t.Date)
@@ -69,12 +87,21 @@ public class TimelineMilestonesController : ControllerBase
 
     // GET: api/TimelineMilestones/{id}
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<TimelineMilestoneDto>> GetMilestone(Guid id)
     {
         try
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
             var milestone = await _context
-                .TimelineMilestones.Where(t => t.Id == id)
+                .TimelineMilestones
+                .Include(t => t.JobApplication)
+                .Where(t => t.Id == id && t.JobApplication.UserId == userId)
                 .Select(t => new TimelineMilestoneDto
                 {
                     Id = t.Id,
@@ -112,19 +139,26 @@ public class TimelineMilestonesController : ControllerBase
 
     // POST: api/TimelineMilestones
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<TimelineMilestoneDto>> CreateMilestone(
         [FromBody] CreateTimelineMilestoneDto createDto
     )
     {
         try
         {
-            // Verify the job application exists
-            var jobExists = await _context.JobApplications.AnyAsync(j =>
-                j.Id == createDto.JobApplicationId
-            );
-            if (!jobExists)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest("Job application not found");
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
+            // Verify the job application exists and belongs to the user
+            var jobBelongsToUser = await _context.JobApplications
+                .AnyAsync(j => j.Id == createDto.JobApplicationId && j.UserId == userId);
+            
+            if (!jobBelongsToUser)
+            {
+                return BadRequest("Job application not found or access denied");
             }
 
             var milestone = new TimelineMilestone
@@ -187,11 +221,22 @@ public class TimelineMilestonesController : ControllerBase
 
     // PUT: api/TimelineMilestones/{id}
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> UpdateMilestone(Guid id, [FromBody] UpdateTimelineMilestoneDto updateDto)
     {
         try
         {
-            var milestone = await _context.TimelineMilestones.FindAsync(id);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
+            var milestone = await _context.TimelineMilestones
+                .Include(t => t.JobApplication)
+                .Where(t => t.Id == id && t.JobApplication.UserId == userId)
+                .FirstOrDefaultAsync();
+            
             if (milestone == null)
             {
                 return NotFound();
@@ -229,11 +274,22 @@ public class TimelineMilestonesController : ControllerBase
 
     // DELETE: api/TimelineMilestones/{id}
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> DeleteMilestone(Guid id)
     {
         try
         {
-            var milestone = await _context.TimelineMilestones.FindAsync(id);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
+            var milestone = await _context.TimelineMilestones
+                .Include(t => t.JobApplication)
+                .Where(t => t.Id == id && t.JobApplication.UserId == userId)
+                .FirstOrDefaultAsync();
+            
             if (milestone == null)
             {
                 return NotFound();
