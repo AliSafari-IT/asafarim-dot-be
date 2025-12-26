@@ -408,6 +408,7 @@
   overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   overflow: hidden;
   -webkit-box-orient: vertical;
 }
@@ -425,6 +426,7 @@
   /* optional: clamp to N lines instead of full text */
 display: -webkit-box;
 -webkit-line-clamp: 3;
+line-clamp: 3;
 overflow: hidden;
 -webkit-box-orient: vertical;
 }
