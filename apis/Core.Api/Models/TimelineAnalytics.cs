@@ -9,11 +9,18 @@ public class TimelineAnalytics
     public double AverageTimeToOffer { get; set; } // in days
     public double SuccessRate { get; set; } // percentage
     public List<string> MostResponsiveCompanies { get; set; } = new();
+    public List<CityStatistic> TopCities { get; set; } = new();
     public double AverageResponseTime { get; set; } // in days
     public double InterviewSuccessRate { get; set; } // percentage
     public int TotalMilestones { get; set; }
     public int CompletedMilestones { get; set; }
     public double MilestoneCompletionRate { get; set; } // percentage
+}
+
+public class CityStatistic
+{
+    public string City { get; set; } = string.Empty;
+    public int ApplicationCount { get; set; }
 }
 
 public class JobSearchInsights

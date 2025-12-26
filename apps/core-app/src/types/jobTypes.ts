@@ -5,6 +5,8 @@ export interface JobApplication {
   userId?: string;
   company: string;
   role: string;
+  location?: string;
+  city?: string;
   status: JobStatus;
   appliedDate: string;
   notes?: string;

@@ -13,6 +13,8 @@ interface JobFormProps {
 const initialState: Omit<JobApplication, 'id'> = {
   company: '',
   role: '',
+  location: '',
+  city: '',
   status: 'Applied',
   appliedDate: new Date().toISOString().split('T')[0],
   notes: ''
@@ -153,6 +155,32 @@ const JobForm = ({ job, onSave, onCancel }: JobFormProps) => {
             className={errors.role ? 'error' : ''}
           />
           {errors.role && <span className="error-message">{errors.role}</span>}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="location">Location (Full Address)</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={formData.location || ''}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            placeholder="e.g., 123 Main St, Suite 100, New York, NY 10001"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="city">City</label>
+          <input
+            type="text"
+            id="city"
+            name="city"
+            value={formData.city || ''}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            placeholder="e.g., New York, Brussels, Remote"
+          />
         </div>
 
         <div className="form-group">

@@ -17,6 +17,12 @@ public class JobApplication
     [Required, MaxLength(200)]
     public string Role { get; set; } = string.Empty;
     
+    [MaxLength(200)]
+    public string? Location { get; set; }
+    
+    [MaxLength(100)]
+    public string? City { get; set; }
+    
     [Required, MaxLength(50)]
     public string Status { get; set; } = "Applied";
     

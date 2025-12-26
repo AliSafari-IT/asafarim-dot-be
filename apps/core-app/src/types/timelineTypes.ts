@@ -50,11 +50,17 @@ export interface JobTimeline {
   nextReminder?: string;
 }
 
+export interface CityStatistic {
+  city: string;
+  applicationCount: number;
+}
+
 export interface TimelineAnalytics {
   totalApplications: number;
   averageTimeToOffer: number;
   successRate: number;
   mostResponsiveCompanies: string[];
+  topCities: CityStatistic[];
   averageResponseTime: number;
   interviewSuccessRate: number;
   totalMilestones: number;
