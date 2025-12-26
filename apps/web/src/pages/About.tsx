@@ -27,7 +27,7 @@ export default function About() {
         secondaryCta={secondaryCta}
         media={media}
         className={className}
-      />{" "}
+      />
       <div className="web-about-container">
         <section className="web-about-section">
           <h2 className="web-about-heading">{t("about.whatIDo.title")}</h2>

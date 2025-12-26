@@ -7,6 +7,9 @@ public class JobApplicationDto
 {
     public Guid Id { get; set; }
     
+    [MaxLength(450)]
+    public string? UserId { get; set; }
+    
     [Required, MaxLength(200)]
     public string Company { get; set; } = string.Empty;
     

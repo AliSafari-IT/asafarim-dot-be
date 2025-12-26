@@ -8,6 +8,9 @@ public class JobApplication
     [Key]
     public Guid Id { get; set; }
     
+    [Required, MaxLength(450)]
+    public string UserId { get; set; } = string.Empty;
+    
     [Required, MaxLength(200)]
     public string Company { get; set; } = string.Empty;
     

@@ -3,6 +3,7 @@ using Core.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Core.Api.Controllers;
 
@@ -30,10 +31,19 @@ public class JobApplicationsController : ControllerBase
     }
 
     [HttpGet("analytics")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<JobApplicationDto>>> GetAnalytics()
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new { error = "User not authenticated" });
+        }
+
         var applications = await _context
-            .JobApplications.OrderByDescending(j => j.AppliedDate)
+            .JobApplications
+            .Where(j => j.UserId == userId)
+            .OrderByDescending(j => j.AppliedDate)
             .Select(j => new JobApplicationDto
             {
                 Id = j.Id,
@@ -49,10 +59,19 @@ public class JobApplicationsController : ControllerBase
     }
     
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<JobApplicationDto>>> GetAll()
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new { error = "User not authenticated" });
+        }
+
         var applications = await _context
-            .JobApplications.OrderByDescending(j => j.AppliedDate)
+            .JobApplications
+            .Where(j => j.UserId == userId)
+            .OrderByDescending(j => j.AppliedDate)
             .Select(j => new JobApplicationDto
             {
                 Id = j.Id,
@@ -68,8 +87,15 @@ public class JobApplicationsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<JobApplicationDto>> GetById(Guid id)
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new { error = "User not authenticated" });
+        }
+
         _logger.LogInformation(
             "GetById called with ID: {Id} from IP: {IP}, UserAgent: {UserAgent}, Path: {Path}",
             id,
@@ -78,7 +104,9 @@ public class JobApplicationsController : ControllerBase
             HttpContext.Request.Path
         );
 
-        var application = await _context.JobApplications.FindAsync(id);
+        var application = await _context.JobApplications
+            .Where(j => j.Id == id && j.UserId == userId)
+            .FirstOrDefaultAsync();
 
         if (application == null)
         {
@@ -104,6 +132,12 @@ public class JobApplicationsController : ControllerBase
     {
         try
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Invalid model state when creating job application");
@@ -119,6 +153,7 @@ public class JobApplicationsController : ControllerBase
             var application = new JobApplication
             {
                 Id = Guid.NewGuid(),
+                UserId = userId,
                 Company = dto.Company,
                 Role = dto.Role,
                 Status = dto.Status,
@@ -155,6 +190,12 @@ public class JobApplicationsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Update(Guid id, JobApplicationDto dto)
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new { error = "User not authenticated" });
+        }
+
         if (id != dto.Id)
         {
             return BadRequest();
@@ -165,7 +206,9 @@ public class JobApplicationsController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var application = await _context.JobApplications.FindAsync(id);
+        var application = await _context.JobApplications
+            .Where(j => j.Id == id && j.UserId == userId)
+            .FirstOrDefaultAsync();
 
         if (application == null)
         {
@@ -204,7 +247,15 @@ public class JobApplicationsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var application = await _context.JobApplications.FindAsync(id);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new { error = "User not authenticated" });
+        }
+
+        var application = await _context.JobApplications
+            .Where(j => j.Id == id && j.UserId == userId)
+            .FirstOrDefaultAsync();
 
         if (application == null)
         {
