@@ -1,8 +1,8 @@
 /* Professional Tool Card - Using ONLY Shared Design Tokens */
 
 .ai-ui-tool-card {
-  background: var(--color-primary-0);
-  border: var(--border-width) solid var(--asm-color-border);
+  background: var(--asm-color-surface);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
   border-radius: var(--asm-radius-xl);
   padding: var(--asm-space-6);
   transition: all var(--asm-motion-duration-normal);
@@ -32,7 +32,7 @@
 
 .ai-ui-tool-card-icon {
   font-size: var(--asm-font-size-3xl);
-  line-height: var(--line-height-none);
+  line-height: var(--asm-line-height-tight);
   transition: transform var(--asm-motion-duration-normal);
 }
 
@@ -43,15 +43,15 @@
 .ai-ui-tool-card-title {
   font-size: var(--asm-font-size-xl);
   font-weight: var(--asm-font-weight-600);
-  color: var(--color-success-500);
+  color: var(--asm-color-success-500);
   margin: 0;
-  letter-spacing: var(--letter-spacing-tight);
+  letter-spacing: var(--asm-letter-spacing-tight);
   line-height: var(--asm-line-height-tight);
 }
 
 .ai-ui-tool-card-description {
   font-size: var(--asm-font-size-md);
-  color: var(--asm-color-primary-900);
+  color: var(--asm-color-text);
   line-height: var(--asm-line-height-relaxed);
   margin: 0;
   flex-grow: 1;
@@ -65,7 +65,7 @@
   height: var(--asm-space-8);
   border-radius: var(--asm-radius-full);
   background: var(--asm-color-brand-primary-600);
-  color: var(--color-primary-contrast);
+  color: white;
   transition: all var(--asm-motion-duration-normal);
   opacity: 0;
   transform: translateX(calc(-1 * var(--asm-space-2)));

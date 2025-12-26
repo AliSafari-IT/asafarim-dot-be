@@ -122,13 +122,6 @@
   }
 }
 
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  .test-run-container {
-    background-color: var(--asm-color-bg);
-  }
-}
-
 /* Loading state */
 .test-run-loading {
   display: flex;

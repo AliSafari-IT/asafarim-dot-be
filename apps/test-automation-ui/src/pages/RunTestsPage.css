@@ -15,7 +15,7 @@
   gap: var(--asm-space-4);
   margin-bottom: var(--asm-space-6);
   padding-bottom: var(--asm-space-4);
-  border-bottom: 2px solid var(--asm-color-border);
+  border-bottom: var(--asm-border-thin) solid var(--asm-color-border);
 }
 
 .header-content {

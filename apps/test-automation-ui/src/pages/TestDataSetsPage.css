@@ -290,15 +290,6 @@ textarea.test-data-set-form-control {
   }
 }
 
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  .test-data-set-form,
-  .test-data-sets-table,
-  .empty-state {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  }
-}
-
 /* Button styles */
 .button {
   display: inline-flex;
@@ -320,7 +311,7 @@ textarea.test-data-set-form-control {
 }
 
 .button-primary:hover {
-  background-color: var(--color-primary-dark);
+  background-color: var(--asm-color-brand-primary-700);
 }
 
 .button-secondary {
@@ -339,7 +330,7 @@ textarea.test-data-set-form-control {
 }
 
 .button-danger:hover {
-  background-color: var(--color-error-dark);
+  background-color: var(--asm-color-danger-600);
 }
 
 /* Form elements */

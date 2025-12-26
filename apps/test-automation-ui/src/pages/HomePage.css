@@ -11,32 +11,32 @@
 
 .home-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--asm-container-2xl);
 }
 
 .home-heading {
   text-align: center;
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--color-text, #111827);
+  font-size: var(--asm-font-size-4xl);
+  font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-text);
 }
 
 .tool-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  gap: var(--asm-space-section-gap);
   justify-items: stretch;
   align-items: stretch;
 }
 
 /* Tool Card */
 .tool-card {
-  border-radius: 8px;
-  padding: 1.5rem;
-  background-color: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #e5e7eb);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: var(--asm-radius-lg);
+  padding: var(--asm-space-6);
+  background-color: var(--asm-color-surface);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
+  box-shadow: var(--asm-effect-shadow-md);
+  transition: transform var(--asm-motion-duration-normal) ease, box-shadow var(--asm-motion-duration-normal) ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -44,24 +44,24 @@
 
 .tool-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  border-color: var(--color-border-hover, #d1d5db);
+  box-shadow: var(--asm-effect-shadow-lg);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 .tool-card-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: var(--asm-font-size-5xl);
+  margin-bottom: var(--asm-space-4);
 }
 
 .tool-card-title {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: var(--color-text, #111827);
+  font-size: var(--asm-font-size-xl);
+  font-weight: var(--asm-font-weight-500);
+  margin-bottom: var(--asm-space-2);
+  color: var(--asm-color-text);
 }
 
 .tool-card-description {
-  font-size: 0.95rem;
+  font-size: var(--asm-font-size-md);
   flex-grow: 1;
-  color: var(--color-text-muted, #6b7280);
+  color: var(--asm-color-text-muted);
 }
