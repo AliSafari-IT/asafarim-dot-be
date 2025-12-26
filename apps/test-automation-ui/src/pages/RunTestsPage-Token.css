@@ -22,11 +22,10 @@
 }
 
 .run-tests-page-token__title {
-  font-size: var(--global-secondary-title-size);
-  font-weight: var(--global-font-weight-bold);
+  font-size: var(--asm-font-size-4xl);
+  font-weight: var(--asm-font-weight-700);
   color: var(--asm-color-text);
-  margin: 0 0 var(--asm-space-3) 0;
-  line-height: var(--asm-line-height-tight);
+  margin: 0 0 var(--asm-space-2) 0;
   font-family: var(--asm-font-family-primary);
 }
 

@@ -3,5 +3,5 @@
 
 .app-header {
   position: relative;
-  z-index: var(--z-navbar, 200);
+  z-index: var(--asm-z-sticky);
 }

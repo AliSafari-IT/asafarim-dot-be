@@ -16,7 +16,7 @@
 .run-history__title {
   font-size: var(--asm-font-size-lg);
   font-weight: var(--asm-font-weight-500);
-  color: var(--color-heading);
+  color: var(--asm-color-text);
   margin-bottom: var(--asm-space-4);
 }
 
@@ -32,7 +32,7 @@
 }
 
 .run-history__thead {
-  background-color: var(--color-accent-0);
+  background-color: var(--asm-color-bg);
 }
 
 .run-history__thead th {
@@ -41,18 +41,18 @@
   font-size: var(--asm-font-size-xs);
   font-weight: var(--asm-font-weight-600);
   color: var(--asm-color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--asm-color-border);
+  text-transform: uppercase;
+  letter-spacing: var(--asm-letter-spacing-wide);
+  border-bottom: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 /* Table rows */
 .run-history__tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color var(--asm-motion-duration-fast) ease;
 }
 
 .run-history__tbody tr:hover {
-  background-color: var(--color-hover);
+  background-color: var(--asm-color-surface-muted);
 }
 
 /* Table cells */
@@ -66,27 +66,27 @@
 /* Empty state */
 .run-history__empty {
   text-align: center;
-  padding: var(--spacing-lg, 1.25rem);
-  color: var(--color-text-muted, #6b7280);
+  padding: var(--asm-space-6);
+  color: var(--asm-color-text-muted);
 }
 
 /* Status indicators */
 .run-history__status {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm, 0.5rem);
+  gap: var(--asm-space-2);
 }
 
 .run-history__status--passed {
-  color: var(--color-success, #16a34a);
+  color: var(--asm-color-success-500);
 }
 
 .run-history__status--failed {
-  color: var(--color-danger, #dc2626);
+  color: var(--asm-color-danger-500);
 }
 
 .run-history__status--running {
-  color: var(--color-info, #2563eb);
+  color: var(--asm-color-info-500);
 }
 
 /* Icon animation */
@@ -108,11 +108,11 @@
   gap: var(--asm-space-4);
   margin-top: var(--asm-space-4);
   padding-top: var(--asm-space-4);
-  border-top: 1px solid var(--asm-color-border);
+  border-top: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .run-history__pagination-btn {
-  background-color: var(--color-accent-50);
+  background-color: var(--asm-color-surface-muted);
   color: var(--asm-color-text);
   display: flex;
   align-items: center;
@@ -120,16 +120,16 @@
   width: 36px;
   height: 36px;
   padding: 0;
-  border: 1px solid var(--asm-color-border);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
   border-radius: var(--asm-radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--asm-motion-duration-fast) ease;
   font-size: 0;
 }
 
 .run-history__pagination-btn:hover:not(:disabled) {
-  background-color: var(--color-accent-100);
-  border-color: var(--color-border-hover);
+  background-color: var(--asm-color-primary-100);
+  border-color: var(--asm-color-brand-primary-600);
 }
 
 .run-history__pagination-btn:disabled {
@@ -146,12 +146,12 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .run-history__content {
-    padding: 1rem;
+    padding: var(--asm-space-4);
   }
 
   .run-history__title {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
+    font-size: var(--asm-font-size-md);
+    margin-bottom: var(--asm-space-3);
   }
 
   .run-history__table-wrapper {
@@ -160,29 +160,29 @@
   }
 
   .run-history__thead th {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.65rem;
+    padding: var(--asm-space-2) var(--asm-space-3);
+    font-size: var(--asm-font-size-xs);
   }
 
   .run-history__cell {
-    padding: 0.75rem;
-    font-size: 0.75rem;
+    padding: var(--asm-space-3);
+    font-size: var(--asm-font-size-xs);
     white-space: normal;
   }
 
   .run-history__empty {
-    padding: 1rem;
-    font-size: 0.875rem;
+    padding: var(--asm-space-4);
+    font-size: var(--asm-font-size-sm);
   }
 
   .run-history__status {
-    gap: 0.25rem;
+    gap: var(--asm-space-1);
   }
 
   .run-history__pagination {
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
+    gap: var(--asm-space-2);
+    margin-top: var(--asm-space-3);
+    padding-top: var(--asm-space-3);
   }
 
   .run-history__pagination-btn {
@@ -191,6 +191,6 @@
   }
 
   .run-history__pagination-info {
-    font-size: 0.75rem;
+    font-size: var(--asm-font-size-xs);
   }
 }

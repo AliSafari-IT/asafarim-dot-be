@@ -34,7 +34,7 @@
 .view-toggle-buttons {
   display: flex;
   gap: 0;
-  border: 1px solid var(--asm-color-border);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
   border-radius: var(--asm-radius-md);
   overflow: hidden;
   background-color: var(--asm-color-surface);
@@ -47,10 +47,10 @@
   padding: var(--asm-space-2) var(--asm-space-3);
   border: none;
   background-color: transparent;
-  color: var(--color-foreground-muted);
+  color: var(--asm-color-text-muted);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border-right: 1px solid var(--asm-color-border);
+  transition: all var(--asm-motion-duration-fast) ease-in-out;
+  border-right: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .view-toggle-button:last-child {
@@ -90,10 +90,10 @@
 }
 .generic-table thead th {
   font-weight: var(--asm-font-weight-600);
-  color: var(--color-accent-800);
+  color: var(--asm-color-neutral-700);
   text-transform: uppercase;
   font-size: var(--asm-font-size-sm);
-  letter-spacing: 0.05em;
+  letter-spacing: var(--asm-letter-spacing-wide);
 }
 .generic-table th:hover {
   background-color: var(--asm-color-surface-muted);
@@ -103,7 +103,7 @@
 .generic-table td {
   padding: var(--asm-space-3) var(--asm-space-4);
   text-align: left;
-  border-bottom: 1px solid var(--asm-color-border);
+  border-bottom: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .generic-table tbody tr:hover {
@@ -118,7 +118,7 @@
 .generic-form {
   margin-bottom: var(--asm-space-6);
   padding: var(--asm-space-4);
-  border: 1px solid var(--asm-color-border);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
   border-radius: var(--asm-radius-md);
   background-color: var(--asm-color-surface);
 }
@@ -149,9 +149,9 @@
   font-size: var(--asm-font-size-md);
   color: var(--asm-color-text);
   background-color: var(--asm-color-bg);
-  border: 1px solid var(--asm-color-border);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
   border-radius: var(--asm-radius-md);
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: border-color var(--asm-motion-duration-fast) ease-in-out, box-shadow var(--asm-motion-duration-fast) ease-in-out;
 }
 
 .form-control:focus {
@@ -166,9 +166,9 @@ textarea.form-control {
 }
 
 .json-editor {
-  font-family: "Fira Code", "Courier New", monospace;
+  font-family: var(--asm-font-family-mono);
   min-height: 150px;
-  line-height: 1.5;
+  line-height: var(--asm-line-height-relaxed);
 }
 
 .checkbox-container {
@@ -181,7 +181,7 @@ textarea.form-control {
 .checkbox-input {
   width: 1.125rem;
   height: 1.125rem;
-  border: 1px solid var(--asm-color-border);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
   border-radius: var(--asm-radius-sm);
   background-color: var(--asm-color-bg);
   cursor: pointer;
@@ -208,7 +208,7 @@ textarea.form-control {
   color: var(--asm-color-brand-primary-600);
   font-weight: var(--asm-font-weight-700);
   min-width: 1rem;
-  transition: transform 0.2s ease-in-out;
+  transition: transform var(--asm-motion-duration-fast) ease-in-out;
 }
 
 /* Buttons */
@@ -222,8 +222,8 @@ textarea.form-control {
   font-weight: var(--asm-font-weight-500);
   line-height: var(--asm-line-height-normal);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border: 1px solid transparent;
+  transition: all var(--asm-motion-duration-fast) ease-in-out;
+  border: var(--asm-border-hairline) solid transparent;
 }
 
 .button:disabled {
@@ -237,13 +237,13 @@ textarea.form-control {
 }
 
 .button-primary:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
+  background-color: var(--asm-color-brand-primary-700);
 }
 
 .button-secondary {
   background-color: var(--asm-color-surface);
   color: var(--asm-color-text);
-  border: 1px solid var(--asm-color-border);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .button-secondary:hover:not(:disabled) {
@@ -256,13 +256,13 @@ textarea.form-control {
 }
 
 .button-danger:hover:not(:disabled) {
-  background-color: var(--color-error-hover);
+  background-color: var(--asm-color-danger-600);
 }
 
 .button-ghost {
   background-color: transparent;
   color: var(--asm-color-brand-primary-600);
-  border: 1px solid transparent;
+  border: var(--asm-border-hairline) solid transparent;
   padding: var(--asm-space-1) var(--asm-space-2);
   gap: var(--asm-space-1);
 }
@@ -292,28 +292,28 @@ td[data-label="Actions"]::before {
 
 /* Expandable Rows */
 .expanded-row {
-  background-color: var(--color-neutral-50);
+  background-color: var(--asm-color-neutral-50);
 }
 
 .expanded-cell {
   padding: var(--asm-space-4) !important;
-  border-top: 1px solid var(--asm-color-border);
+  border-top: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .expanded-content {
   background-color: var(--asm-color-surface);
   border-radius: var(--asm-radius-md);
   padding: var(--asm-space-3);
-  border: 1px solid var(--asm-color-border);
+  border: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .expanded-content h5 {
   margin: 0 0 var(--asm-space-3) 0;
   font-size: var(--asm-font-size-sm);
   font-weight: var(--asm-font-weight-600);
-  color: var(--color-foreground-muted);
+  color: var(--asm-color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--asm-letter-spacing-wide);
 }
 
 .nested-table {
@@ -326,13 +326,13 @@ td[data-label="Actions"]::before {
 .nested-table td {
   padding: var(--asm-space-2) var(--asm-space-3);
   text-align: left;
-  border-bottom: 1px solid var(--asm-color-border);
+  border-bottom: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .nested-table th {
   font-weight: var(--asm-font-weight-500);
-  color: var(--color-foreground-muted);
-  background-color: var(--color-neutral-50);
+  color: var(--asm-color-text-muted);
+  background-color: var(--asm-color-neutral-50);
 }
 
 .nested-table tbody tr:hover {
