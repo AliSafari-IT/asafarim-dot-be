@@ -317,26 +317,40 @@ public class TimelineMilestonesController : ControllerBase
 
     // GET: api/TimelineMilestones/analytics
     [HttpGet("analytics")]
+    [Authorize]
     public async Task<ActionResult<TimelineAnalytics>> GetAnalytics()
     {
         try
         {
-            var totalApplications = await _context.JobApplications.CountAsync();
-            var totalMilestones = await _context.TimelineMilestones.CountAsync();
-            var completedMilestones = await _context.TimelineMilestones.CountAsync(m =>
-                m.IsCompleted
-            );
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
+            var totalApplications = await _context.JobApplications
+                .Where(j => j.UserId == userId)
+                .CountAsync();
+            
+            var totalMilestones = await _context.TimelineMilestones
+                .Where(m => m.JobApplication.UserId == userId)
+                .CountAsync();
+            
+            var completedMilestones = await _context.TimelineMilestones
+                .Where(m => m.JobApplication.UserId == userId && m.IsCompleted)
+                .CountAsync();
 
             // Calculate success rate (jobs with status "Offer" or "Accepted")
-            var successfulJobs = await _context.JobApplications.CountAsync(j =>
-                j.Status == "Offer" || j.Status == "Accepted"
-            );
+            var successfulJobs = await _context.JobApplications
+                .Where(j => j.UserId == userId && (j.Status == "Offer" || j.Status == "Accepted"))
+                .CountAsync();
             var successRate =
                 totalApplications > 0 ? (double)successfulJobs / totalApplications * 100 : 0;
 
             // Calculate average time to offer
             var offerJobs = await _context
-                .JobApplications.Where(j => j.Status == "Offer" || j.Status == "Accepted")
+                .JobApplications
+                .Where(j => j.UserId == userId && (j.Status == "Offer" || j.Status == "Accepted"))
                 .ToListAsync();
 
             double averageTimeToOffer = 0;
@@ -354,17 +368,33 @@ public class TimelineMilestonesController : ControllerBase
 
             // Get most responsive companies (companies with most milestones)
             var mostResponsiveCompanies = await _context
-                .TimelineMilestones.GroupBy(t => t.JobApplicationId)
+                .TimelineMilestones
+                .Where(t => t.JobApplication.UserId == userId)
+                .GroupBy(t => t.JobApplicationId)
                 .Select(g => new { JobId = g.Key, MilestoneCount = g.Count() })
                 .OrderByDescending(x => x.MilestoneCount)
                 .Take(5)
                 .Join(
-                    _context.JobApplications,
+                    _context.JobApplications.Where(j => j.UserId == userId),
                     milestone => milestone.JobId,
                     job => job.Id,
                     (milestone, job) => job.Company
                 )
                 .Distinct()
+                .ToListAsync();
+
+            // Get top cities where user applied most
+            var topCities = await _context
+                .JobApplications
+                .Where(j => j.UserId == userId && !string.IsNullOrEmpty(j.City))
+                .GroupBy(j => j.City)
+                .Select(g => new CityStatistic
+                {
+                    City = g.Key!,
+                    ApplicationCount = g.Count()
+                })
+                .OrderByDescending(c => c.ApplicationCount)
+                .Take(3)
                 .ToListAsync();
 
             var analytics = new TimelineAnalytics
@@ -373,6 +403,7 @@ public class TimelineMilestonesController : ControllerBase
                 AverageTimeToOffer = Math.Round(averageTimeToOffer, 1),
                 SuccessRate = Math.Round(successRate, 1),
                 MostResponsiveCompanies = mostResponsiveCompanies,
+                TopCities = topCities,
                 AverageResponseTime = 0, // TODO: Implement based on milestone dates
                 InterviewSuccessRate = 0, // TODO: Implement based on interview milestones
                 TotalMilestones = totalMilestones,
@@ -391,14 +422,27 @@ public class TimelineMilestonesController : ControllerBase
 
     // GET: api/TimelineMilestones/progress/{jobId}
     [HttpGet("progress/{jobId}")]
+    [Authorize]
     public async Task<ActionResult<TimelineProgress>> GetJobProgress(Guid jobId)
     {
         try
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
             var job = await _context.JobApplications.FindAsync(jobId);
             if (job == null)
             {
                 return NotFound("Job application not found");
+            }
+
+            // Verify the job belongs to the authenticated user
+            if (job.UserId != userId)
+            {
+                return Forbid();
             }
 
             var milestones = await _context
@@ -530,13 +574,20 @@ public class TimelineMilestonesController : ControllerBase
 
     // GET: api/TimelineMilestones/insights
     [HttpGet("insights")]
+    [Authorize]
     public async Task<ActionResult<List<JobSearchInsights>>> GetJobSearchInsights()
     {
         try
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
             var insights = new List<JobSearchInsights>();
 
-            var jobs = await _context.JobApplications.ToListAsync();
+            var jobs = await _context.JobApplications.Where(j => j.UserId == userId).ToListAsync();
             foreach (var job in jobs)
             {
                 var milestones = await _context

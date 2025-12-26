@@ -49,6 +49,8 @@ public class JobApplicationsController : ControllerBase
                 Id = j.Id,
                 Company = j.Company,
                 Role = j.Role,
+                Location = j.Location,
+                City = j.City,
                 Status = j.Status,
                 AppliedDate = j.AppliedDate,
                 Notes = j.Notes,
@@ -77,6 +79,8 @@ public class JobApplicationsController : ControllerBase
                 Id = j.Id,
                 Company = j.Company,
                 Role = j.Role,
+                Location = j.Location,
+                City = j.City,
                 Status = j.Status,
                 AppliedDate = j.AppliedDate,
                 Notes = j.Notes,
@@ -118,6 +122,8 @@ public class JobApplicationsController : ControllerBase
             Id = application.Id,
             Company = application.Company,
             Role = application.Role,
+            Location = application.Location,
+            City = application.City,
             Status = application.Status,
             AppliedDate = application.AppliedDate,
             Notes = application.Notes,
@@ -156,6 +162,8 @@ public class JobApplicationsController : ControllerBase
                 UserId = userId,
                 Company = dto.Company,
                 Role = dto.Role,
+                Location = dto.Location,
+                City = dto.City,
                 Status = dto.Status,
                 AppliedDate = dto.AppliedDate,
                 Notes = dto.Notes,
@@ -217,6 +225,8 @@ public class JobApplicationsController : ControllerBase
 
         application.Company = dto.Company;
         application.Role = dto.Role;
+        application.Location = dto.Location;
+        application.City = dto.City;
         application.Status = dto.Status;
         application.AppliedDate = dto.AppliedDate;
         application.Notes = dto.Notes;

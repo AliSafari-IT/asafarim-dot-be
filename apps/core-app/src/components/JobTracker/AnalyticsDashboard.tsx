@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
 import { fetchTimelineAnalytics, fetchJobSearchInsights } from '../../api/timelineService';
+import { fetchJobApplications } from '../../api/jobService';
 import type { TimelineAnalytics, JobSearchInsights } from '../../types/timelineTypes';
+import type { JobApplication } from '../../types/jobTypes';
+import FilterPanel, { type FilterCriteria } from './FilterPanel';
+import FilteredAnalytics from './FilteredAnalytics';
 import './AnalyticsDashboard.css';
 
 const AnalyticsDashboard = () => {
   const [analytics, setAnalytics] = useState<TimelineAnalytics | null>(null);
   const [insights, setInsights] = useState<JobSearchInsights[]>([]);
+  const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FilterCriteria>({ status: 'All', city: '', company: '' });
 
   useEffect(() => {
     const loadAnalytics = async () => {
@@ -15,13 +21,15 @@ const AnalyticsDashboard = () => {
         setLoading(true);
         setError(null);
         
-        const [analyticsData, insightsData] = await Promise.all([
+        const [analyticsData, insightsData, jobsData] = await Promise.all([
           fetchTimelineAnalytics(),
-          fetchJobSearchInsights()
+          fetchJobSearchInsights(),
+          fetchJobApplications()
         ]);
         
         setAnalytics(analyticsData);
         setInsights(insightsData);
+        setJobs(jobsData);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load analytics';
         setError(errorMessage);
@@ -58,9 +66,26 @@ const AnalyticsDashboard = () => {
     );
   }
 
+  const cities = Array.from(new Set(jobs.map(j => j.city).filter(Boolean))) as string[];
+  const companies = Array.from(new Set(jobs.map(j => j.company)));
+
   return (
     <div className="analytics-dashboard">
       <h2>Job Search Analytics Dashboard</h2>
+      
+      {/* Filter Panel */}
+      {jobs.length > 0 && (
+        <FilterPanel 
+          onFilterChange={setFilters}
+          cities={cities}
+          companies={companies}
+        />
+      )}
+
+      {/* Filtered Analytics */}
+      {jobs.length > 0 && (
+        <FilteredAnalytics jobs={jobs} filters={filters} />
+      )}
       
       {/* Key Metrics */}
       <div className="metrics-grid">
@@ -116,6 +141,22 @@ const AnalyticsDashboard = () => {
               <div key={index} className="company-item">
                 <span className="company-rank">#{index + 1}</span>
                 <span className="company-name">{company}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Top Cities */}
+      {analytics.topCities && analytics.topCities.length > 0 && (
+        <div className="cities-section">
+          <h3>Top Cities Applied</h3>
+          <div className="cities-list">
+            {analytics.topCities.map((cityData, index) => (
+              <div key={index} className="city-item">
+                <span className="city-rank">#{index + 1}</span>
+                <span className="city-name">{cityData.city}</span>
+                <span className="city-count">{cityData.applicationCount} {cityData.applicationCount === 1 ? 'application' : 'applications'}</span>
               </div>
             ))}
           </div>

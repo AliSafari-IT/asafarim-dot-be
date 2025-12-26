@@ -16,9 +16,21 @@
 /* Metrics Grid */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--asm-space-6);
   margin-bottom: var(--spacing-2xl);
+}
+
+@media (max-width: 1024px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .metric-card {
@@ -69,8 +81,20 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--asm-space-4);
+}
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-item {
@@ -95,7 +119,8 @@
 }
 
 /* Companies Section */
-.companies-section {
+.companies-section,
+.cities-section {
   background-color: var(--asm-color-bg);
   border: 1px solid var(--asm-color-border);
   border-radius: var(--asm-radius-lg);
@@ -103,20 +128,23 @@
   margin-bottom: var(--spacing-2xl);
 }
 
-.companies-section h3 {
+.companies-section h3,
+.cities-section h3 {
   margin: 0 0 20px 0;
   font-size: 20px;
   font-weight: 600;
   color: var(--card-text-color, var(--asm-color-text));
 }
 
-.companies-list {
+.companies-list,
+.cities-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.company-item {
+.company-item,
+.city-item {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -127,12 +155,14 @@
   transition: all 0.2s ease;
 }
 
-.company-item:hover {
+.company-item:hover,
+.city-item:hover {
   transform: translateX(4px);
   border-color: var(--asm-color-brand-primary-600);
 }
 
-.company-rank {
+.company-rank,
+.city-rank {
   background-color: var(--asm-color-brand-primary-600);
   color: white;
   width: 24px;
@@ -145,8 +175,16 @@
   font-weight: 600;
 }
 
-.company-name {
+.company-name,
+.city-name {
   color: var(--card-text-color, var(--asm-color-text));
+  font-weight: 500;
+  flex: 1;
+}
+
+.city-count {
+  color: var(--asm-color-text-muted);
+  font-size: var(--asm-font-size-sm);
   font-weight: 500;
 }
 
