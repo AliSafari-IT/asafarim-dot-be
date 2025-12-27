@@ -433,6 +433,9 @@ export default function TestSuitesPage() {
           // Clear the query parameters
           window.history.replaceState({}, document.title, window.location.pathname);
         }}
+        onEdit={(item) => {
+          setEditSuiteId(item.id);
+        }}
       />
 
       {viewingTestCafe && (

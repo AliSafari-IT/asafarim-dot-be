@@ -1,5 +1,5 @@
 // apps/test-automation-ui/src/pages/GenericCrudPage.tsx - Refactored version using GenericTable and GenericForm
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import React from "react";
 import { api } from "../config/api";
 import { GenericTable, ColumnDefinition } from "../components/GenericTable";
@@ -32,6 +32,7 @@ interface GenericCrudPageProps<T> {
   editSuiteId?: string | null;
   focusField?: string | null;
   onEditComplete?: () => void;
+  onEdit?: (item: T) => void;
 }
 
 export function GenericCrudPage<T>({
@@ -56,6 +57,7 @@ export function GenericCrudPage<T>({
   editSuiteId,
   focusField,
   onEditComplete,
+  onEdit,
 }: GenericCrudPageProps<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +68,7 @@ export function GenericCrudPage<T>({
   const [searchText, setSearchText] = useState('');
   const { isAuthenticated, loading: authLoading } = useAuth();
   const toast = useToast();
+  const formRef = useRef<HTMLDivElement>(null);
 
   const extractServerMessage = (data: unknown): string | null => {
     if (!data) return null;
@@ -109,6 +112,15 @@ export function GenericCrudPage<T>({
   useEffect(() => {
     loadItems();
   }, []);
+
+  // Scroll form into view when editing or creating
+  useEffect(() => {
+    if ((editing || creating) && formRef.current) {
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 0);
+    }
+  }, [editing, creating]);
 
   // Handle edit mode from query parameters
   useEffect(() => {
@@ -264,18 +276,20 @@ export function GenericCrudPage<T>({
       </div>
 
       {(creating || editing) && (
-        <GenericForm
-          key={editing ? getItemId(editing) : "create"}
-          fields={formFields}
-          formData={formData}
-          onChange={setFormData}
-          onSubmit={editing ? handleUpdate : handleCreate}
-          onCancel={cancelEdit}
-          title={editing ? editFormTitle : createFormTitle}
-          submitLabel={editing ? "Update" : "Create"}
-          className={formClassName}
-          autoFocusFieldName={(focusField || autoFocusFieldName) as keyof T}
-        />
+        <div ref={formRef}>
+          <GenericForm
+            key={editing ? getItemId(editing) : "create"}
+            fields={formFields}
+            formData={formData}
+            onChange={setFormData}
+            onSubmit={editing ? handleUpdate : handleCreate}
+            onCancel={cancelEdit}
+            title={editing ? editFormTitle : createFormTitle}
+            submitLabel={editing ? "Update" : "Create"}
+            className={formClassName}
+            autoFocusFieldName={(focusField || autoFocusFieldName) as keyof T}
+          />
+        </div>
       )}
 
       {items.length > 0 && (
@@ -303,7 +317,7 @@ export function GenericCrudPage<T>({
         <GenericTable
           data={filteredItems}
           columns={columns}
-          onEdit={startEdit}
+          onEdit={onEdit ? (item) => { onEdit(item); startEdit(item); } : startEdit}
           onDelete={handleDelete}
           customActions={customActions}
           loading={loading}

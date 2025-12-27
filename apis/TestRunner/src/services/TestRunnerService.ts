@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import { TestRunRequest, TestRunStatus, TestCase } from './types.js';
 import { logger } from '../utils/logger.js';
 import fs from 'fs/promises';
+import { existsSync } from 'fs';
 import path from 'path';
 import { SignalRService } from './SignalRService.js';
 
@@ -387,44 +388,30 @@ export class TestRunnerService {
         const list: string[] = [];
         const req = (requested || '').trim();
         const isWin = process.platform === 'win32';
+        const isLinux = process.platform === 'linux';
         const forceHeadless = process.env.FORCE_HEADLESS === 'true';
         const defaultBrowser = process.env.BROWSER || 'chrome:headless';
-        const edgePath = process.env.EDGE_PATH;
+
+        // Set CHROME_BIN environment variable to help TestCafe find Chromium on Linux
+        if (isLinux && !process.env.CHROME_BIN) {
+            process.env.CHROME_BIN = '/snap/bin/chromium';
+            logger.info('🔧 Set CHROME_BIN environment variable', { chromeBin: process.env.CHROME_BIN });
+        }
 
         // In production or when FORCE_HEADLESS is set, only use headless browsers
         if (forceHeadless) {
-            logger.info('🎭 Force headless mode enabled');
-            // Use environment variable browser or default to chrome:headless with stability flags
-            if (defaultBrowser.includes('chrome')) {
-                // Add comprehensive flags for stability in production
-                const chromeFlags = [
-                    'chrome:headless',
-                    '--no-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                    '--disable-software-rasterizer',
-                    '--disable-extensions',
-                    '--disable-setuid-sandbox',
-                    '--single-process',
-                    '--disable-background-networking',
-                    '--disable-default-apps',
-                    '--disable-sync',
-                    '--metrics-recording-only',
-                    '--mute-audio',
-                    '--no-first-run',
-                    '--safebrowsing-disable-auto-update',
-                    '--disable-web-security'
-                ].join(' ');
-                list.push(chromeFlags);
-            } else if (defaultBrowser.includes('edge')) {
-                // Use Edge headless
-                logger.info(`🎯 Using Edge headless mode`);
-                list.push('edge:headless');
+            logger.info('🎭 Force headless mode enabled', { defaultBrowser });
+            // Use environment variable browser directly
+            // For path-based browsers, append --headless flag
+            if (defaultBrowser.startsWith('path:')) {
+                list.push(`${defaultBrowser} --headless --no-sandbox --disable-dev-shm-usage`);
             } else {
                 list.push(defaultBrowser);
             }
             // Fallback options for production
-            list.push('chrome:headless --no-sandbox --disable-dev-shm-usage');
+            if (!defaultBrowser.includes('/snap/bin/chromium')) {
+                list.push('chrome:headless');
+            }
             return Array.from(new Set(list));
         }
 
@@ -956,9 +943,27 @@ test('${tc.name}', async t => {
 
                 // Run all test files together
                 const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_HEADLESS === 'true';
+                
+                // For path-based browsers, extract the path and pass args separately
+                let browserSpec = browserConfig;
+                let browserArgs: string[] = [];
+                
+                if (browserConfig.startsWith('path:')) {
+                    // Extract path and arguments
+                    const parts = browserConfig.split(' ');
+                    browserSpec = parts[0]; // e.g., "path:/snap/bin/chromium"
+                    browserArgs = parts.slice(1); // e.g., ["--headless", "--no-sandbox", "--disable-dev-shm-usage"]
+                    
+                    logger.info('🔧 Parsed browser configuration', {
+                        browserSpec,
+                        browserArgs,
+                        original: browserConfig
+                    });
+                }
+                
                 const runPromise = runner
                     .src(testCafeFilePaths)  // Pass all test files at once
-                    .browsers(browserConfig)
+                    .browsers(browserSpec)
                     .reporter('json', testCafeReportPath)
                     .run({
                         pageLoadTimeout: isProduction ? 120000 : 60000,
@@ -968,7 +973,8 @@ test('${tc.name}', async t => {
                         speed: 1,
                         skipJsErrors: true,
                         quarantineMode: false,
-                        stopOnFirstFail: false
+                        stopOnFirstFail: false,
+                        ...(browserArgs.length > 0 && { browserInitOptions: { args: browserArgs } })
                     });
 
                 logger.info('⏳ Test execution started, waiting for completion...', this.context(runId, { browserConfig }));
@@ -1238,7 +1244,7 @@ test('${tc.name}', async t => {
                     originalPath: filePath,
                     absolutePath: absoluteFilePath,
                     testCafePath: testCafeFilePath,
-                    fileExists: require('fs').existsSync(absoluteFilePath)
+                    fileExists: existsSync(absoluteFilePath)
                 });
 
                 await this.sendSignalRUpdate(runId, {
