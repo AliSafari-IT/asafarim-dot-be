@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../config/api';
-import { isProduction } from '@asafarim/shared-ui-react';
+import { ButtonComponent, isProduction } from '@asafarim/shared-ui-react';
+import { Download, Copy, Play, RefreshCw, X } from 'lucide-react';
 import './TestCafeFileViewer.css';
 import { useAuth } from '@asafarim/shared-ui-react';
 
@@ -125,39 +126,59 @@ export function TestCafeFileViewer({ testSuiteId, testSuiteName, onClose }: Test
       <div className="testcafe-viewer-modal">
         <div className="testcafe-viewer-header">
           <h3>TestCafe File: {testSuiteName}</h3>
-          <button className="button button-secondary" onClick={onClose}>
-            ✕
+          <button className="testcafe-close-btn" onClick={onClose} aria-label="Close">
+            <X size={20} />
           </button>
         </div>
 
         <div className="testcafe-viewer-actions">
-          <button
-            className="button button-primary"
-            onClick={generateTestCafeFile}
-            disabled={loading}
-          >
-            {loading ? 'Generating...' : '🔄 Regenerate File'}
-          </button>
-          {fileContent && (
-            <>
+          <div className="testcafe-actions-primary">
+            <button
+              className="testcafe-btn testcafe-btn-primary"
+              onClick={generateTestCafeFile}
+              disabled={loading}
+              title="Regenerate TestCafe file"
+            >
+              <RefreshCw size={16} />
+              <span>{loading ? 'Generating...' : 'Regenerate'}</span>
+            </button>
+            {fileContent && (
               <button 
-                className="button button-primary" 
+                className="testcafe-btn testcafe-btn-success" 
                 onClick={runTest}
                 disabled={!isAuthenticated || running}
+                title="Run the test"
               >
-                {running ? 'Running...' : '▶️ Run Test'}
+                <Play size={16} />
+                <span>{running ? 'Running...' : 'Run Test'}</span>
               </button>
-              <button className="button button-secondary" onClick={downloadFile}>
-                📥 Download
+            )}
+          </div>
+          
+          {fileContent && (
+            <div className="testcafe-actions-secondary">
+              <button 
+                className="testcafe-btn-icon" 
+                onClick={downloadFile}
+                title="Download file"
+                aria-label="Download"
+              >
+                <Download size={18} />
               </button>
-              <button className="button button-secondary" onClick={copyToClipboard}>
-                {copied ? '✅ Copied!' : '📋 Copy'}
+              <button 
+                className="testcafe-btn-icon" 
+                onClick={copyToClipboard}
+                title={copied ? 'Copied!' : 'Copy to clipboard'}
+                aria-label="Copy"
+              >
+                <Copy size={18} />
               </button>
-            </>
+            </div>
           )}
+          
           {generatedAt && (
             <span className="generated-timestamp">
-              Generated: {new Date(generatedAt).toLocaleString()}
+              {new Date(generatedAt).toLocaleString()}
             </span>
           )}
         </div>

@@ -30,30 +30,135 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--asm-space-4);
-  border-bottom: 1px solid var(--asm-color-border);
+  padding: var(--asm-space-3) var(--asm-space-4);
+  border-bottom: var(--asm-border-hairline) solid var(--asm-color-border);
 }
 
 .testcafe-viewer-header h3 {
   margin: 0;
-  font-size: var(--asm-font-size-xl);
+  font-size: var(--asm-font-size-lg);
   font-weight: var(--asm-font-weight-600);
+  color: var(--asm-color-text);
+}
+
+.testcafe-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--asm-color-text-muted);
+  padding: var(--asm-space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--asm-radius-md);
+  transition: all var(--asm-motion-duration-fast) var(--asm-motion-easing-standard);
+}
+
+.testcafe-close-btn:hover {
+  background-color: var(--asm-color-surface-muted);
   color: var(--asm-color-text);
 }
 
 .testcafe-viewer-actions {
   display: flex;
-  gap: var(--asm-space-2);
-  padding: var(--asm-space-4);
-  border-bottom: 1px solid var(--asm-color-border);
+  gap: var(--asm-space-3);
+  padding: var(--asm-space-3) var(--asm-space-4);
+  border-bottom: var(--asm-border-hairline) solid var(--asm-color-border);
   align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
 }
 
-.generated-timestamp {
-  margin-left: auto;
+.testcafe-actions-primary {
+  display: flex;
+  gap: var(--asm-space-2);
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.testcafe-actions-secondary {
+  display: flex;
+  gap: var(--asm-space-1);
+  align-items: center;
+}
+
+.testcafe-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--asm-space-2);
+  padding: var(--asm-space-2) var(--asm-space-3);
+  border: none;
+  border-radius: var(--asm-radius-md);
   font-size: var(--asm-font-size-sm);
-  color: var(--color-foreground-muted);
+  font-weight: var(--asm-font-weight-500);
+  cursor: pointer;
+  transition: all var(--asm-motion-duration-fast) var(--asm-motion-easing-standard);
+  white-space: nowrap;
+  font-family: var(--asm-font-family-primary);
+}
+
+.testcafe-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.testcafe-btn-primary {
+  background-color: var(--asm-color-brand-primary-600);
+  color: white;
+}
+
+.testcafe-btn-primary:hover:not(:disabled) {
+  background-color: var(--asm-color-brand-primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--asm-effect-shadow-sm);
+}
+
+.testcafe-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.testcafe-btn-success {
+  background-color: var(--asm-color-success-500);
+  color: white;
+}
+
+.testcafe-btn-success:hover:not(:disabled) {
+  background-color: var(--asm-color-success-600);
+  transform: translateY(-1px);
+  box-shadow: var(--asm-effect-shadow-sm);
+}
+
+.testcafe-btn-success:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.testcafe-btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--asm-color-text-muted);
+  padding: var(--asm-space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--asm-radius-md);
+  transition: all var(--asm-motion-duration-fast) var(--asm-motion-easing-standard);
+}
+
+.testcafe-btn-icon:hover {
+  background-color: var(--asm-color-surface-muted);
+  color: var(--asm-color-text);
+}
+
+.testcafe-btn-icon:active {
+  transform: scale(0.95);
+}
+
+.generated-timestamp {
+  font-size: var(--asm-font-size-xs);
+  color: var(--asm-color-text-muted);
+  white-space: nowrap;
 }
 
 .testcafe-viewer-error {
@@ -103,26 +208,40 @@
   }
 
   .testcafe-viewer-header {
-    padding: var(--asm-space-3);
+    padding: var(--asm-space-2) var(--asm-space-3);
   }
 
   .testcafe-viewer-header h3 {
-    font-size: var(--asm-font-size-lg);
+    font-size: var(--asm-font-size-md);
   }
 
   .testcafe-viewer-actions {
-    padding: var(--asm-space-3);
+    padding: var(--asm-space-2) var(--asm-space-3);
+    gap: var(--asm-space-2);
     flex-direction: column;
     align-items: stretch;
   }
 
-  .testcafe-viewer-actions .button {
+  .testcafe-actions-primary {
+    flex-direction: column;
     width: 100%;
   }
 
+  .testcafe-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .testcafe-actions-secondary {
+    width: 100%;
+    justify-content: center;
+    gap: var(--asm-space-2);
+  }
+
   .generated-timestamp {
-    margin-left: 0;
+    width: 100%;
     text-align: center;
+    order: 3;
   }
 
   .testcafe-viewer-content {
