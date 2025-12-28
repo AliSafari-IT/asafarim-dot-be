@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, Trash2, Calendar } from 'lucide-react';
 import { API_BASE } from '../config/api';
 import './TestRunsPage.css';
 
@@ -21,28 +21,109 @@ export function TestRunsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
+  const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+
+  const fetchRuns = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/api/test-runs`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Authentication required. Please log in to view test runs.');
+          return;
+        }
+        
+        if (response.status === 403) {
+          setError('You do not have permission to view test runs.');
+          return;
+        }
+
+        throw new Error('Failed to fetch test runs');
+      }
+
+      const data = await response.json();
+      setRuns(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchRuns = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/api/test-runs`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
-          credentials: 'include',
-        });
-
-        if (!response.ok) throw new Error('Failed to fetch test runs');
-
-        const data = await response.json();
-        setRuns(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRuns();
   }, []);
+
+  const handleBulkDelete = async (status?: string, olderThan?: string, all = false) => {
+    const confirmMessage = all
+      ? 'Are you sure you want to delete ALL test runs? This action cannot be undone.'
+      : status
+      ? `Are you sure you want to delete all ${status} test runs?`
+      : olderThan
+      ? `Are you sure you want to delete all test runs older than ${olderThan}?`
+      : 'Are you sure you want to delete these test runs?';
+
+    if (!window.confirm(confirmMessage)) return;
+
+    try {
+      setDeleteLoading(true);
+      const params = new URLSearchParams();
+      if (all) params.append('all', 'true');
+      if (status) params.append('status', status);
+      if (olderThan) params.append('olderThan', olderThan);
+
+      const response = await fetch(`${API_BASE}/api/test-runs/bulk?${params}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          alert('Authentication required. Please log in to delete test runs.');
+          // Optionally redirect to login
+          // navigate('/login');
+          return;
+        }
+        
+        if (response.status === 403) {
+          alert('You do not have permission to delete test runs. This action requires Tester role.');
+          return;
+        }
+
+        // Try to get error message from response
+        let errorMessage = 'Failed to delete test runs';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch {
+          // If JSON parsing fails, use default message
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      alert(result.message || `Deleted ${result.deleted} test runs`);
+      
+      // Refresh the list
+      await fetchRuns();
+      setShowDeleteMenu(false);
+      setShowDatePicker(false);
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   const getStatusBadgeClass = (status: string) => {
     const s = status.toLowerCase();
@@ -170,6 +251,80 @@ export function TestRunsPage() {
           <div>
             <h1 className="test-runs-title" data-testid="page-title">Test Runs</h1>
             <p className="test-runs-subtitle">View and manage all test run executions</p>
+          </div>
+          <div className="test-runs-actions">
+            <button
+              className="btn-delete-menu"
+              onClick={() => setShowDeleteMenu(!showDeleteMenu)}
+              disabled={deleteLoading}
+            >
+              <Trash2 size={18} />
+              Bulk Delete
+            </button>
+            {showDeleteMenu && (
+              <div className="delete-menu">
+                <button
+                  onClick={() => handleBulkDelete('failed')}
+                  disabled={deleteLoading}
+                  className="delete-menu-item"
+                >
+                  Delete Failed
+                </button>
+                <button
+                  onClick={() => handleBulkDelete('completed')}
+                  disabled={deleteLoading}
+                  className="delete-menu-item"
+                >
+                  Delete Completed
+                </button>
+                <button
+                  onClick={() => handleBulkDelete('cancelled')}
+                  disabled={deleteLoading}
+                  className="delete-menu-item"
+                >
+                  Delete Cancelled
+                </button>
+                <button
+                  onClick={() => setShowDatePicker(!showDatePicker)}
+                  disabled={deleteLoading}
+                  className="delete-menu-item"
+                >
+                  <Calendar size={16} />
+                  Delete Older Than...
+                </button>
+                {showDatePicker && (
+                  <div className="date-picker-container">
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="date-picker-input"
+                    />
+                    <button
+                      onClick={() => {
+                        if (selectedDate) {
+                          handleBulkDelete(undefined, selectedDate);
+                        } else {
+                          alert('Please select a date');
+                        }
+                      }}
+                      disabled={deleteLoading || !selectedDate}
+                      className="btn-date-delete"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+                <hr className="delete-menu-divider" />
+                <button
+                  onClick={() => handleBulkDelete(undefined, undefined, true)}
+                  disabled={deleteLoading}
+                  className="delete-menu-item danger"
+                >
+                  Delete All Test Runs
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

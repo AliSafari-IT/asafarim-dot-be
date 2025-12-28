@@ -156,7 +156,18 @@ app.post('/run-generated-file', validateApiKey, async (req, res) => {
             code: error.code,
             details: error.toString()
         });
-        res.status(500).json({ error: error.message, details: error.stack });
+        const message = error?.message || 'Unknown error';
+        const code = error?.code;
+
+        if (code === 'E1035' || /Cannot prepare tests due to the following error/i.test(message)) {
+            return res.status(422).json({
+                error: 'Cannot prepare tests (syntax error in generated test file)',
+                details: message,
+                code,
+            });
+        }
+
+        res.status(500).json({ error: message, details: error.stack, code });
     }
 });
 

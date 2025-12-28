@@ -39,9 +39,137 @@
 }
 
 .test-runs-actions {
+  position: relative;
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+/* Bulk Delete Button */
+.btn-delete-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--asm-color-danger-500);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-delete-menu:hover:not(:disabled) {
+  background-color: var(--asm-color-danger-600);
+}
+
+.btn-delete-menu:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Delete Menu Dropdown */
+.delete-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: var(--asm-color-surface);
+  border: 1px solid var(--asm-color-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  z-index: 50;
+  padding: 0.5rem;
+}
+
+.delete-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--asm-color-text);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-align: left;
+}
+
+.delete-menu-item:hover:not(:disabled) {
+  background-color: var(--asm-color-surface-muted);
+}
+
+.delete-menu-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delete-menu-item.danger {
+  color: var(--asm-color-danger-500);
+  font-weight: 600;
+}
+
+.delete-menu-item.danger:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.delete-menu-divider {
+  margin: 0.5rem 0;
+  border: none;
+  border-top: 1px solid var(--asm-color-border);
+}
+
+/* Date Picker */
+.date-picker-container {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: var(--asm-color-surface-muted);
+  border-radius: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.date-picker-input {
+  flex: 1;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--asm-color-border);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--asm-color-text);
+  background-color: var(--asm-color-surface);
+}
+
+.date-picker-input:focus {
+  outline: none;
+  border-color: var(--asm-color-brand-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-date-delete {
+  padding: 0.375rem 0.75rem;
+  background-color: var(--asm-color-danger-500);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-date-delete:hover:not(:disabled) {
+  background-color: var(--asm-color-danger-600);
+}
+
+.btn-date-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .test-runs-button {

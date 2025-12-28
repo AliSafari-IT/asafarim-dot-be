@@ -476,6 +476,26 @@ test('${tc.name}', async t => {
 `.trim();
     }
 
+    private stripTypeScriptSyntax(source: string): string {
+        let s = source;
+
+        s = s.replace(/^\s*(export\s+)?interface\s+[A-Za-z0-9_$]+\s*\{[\s\S]*?^\s*\}\s*\n?/gm, '');
+        s = s.replace(/^\s*(export\s+)?type\s+[A-Za-z0-9_$]+\s*=\s*[\s\S]*?;\s*\n?/gm, '');
+
+        s = s.replace(/^\s*(public|private|protected|readonly)\s+/gm, '');
+
+        s = s.replace(/\b(implements)\s+[A-Za-z0-9_$<>,\s.]+/g, '');
+
+        s = s.replace(/([,(]\s*[A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*[^,)=]+/g, '$1');
+        s = s.replace(/\)\s*:\s*[^({=>]+(?=\s*(\{|=>))/g, ')');
+        s = s.replace(/(\b(?:const|let|var)\s+[A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*[^=;]+/g, '$1');
+        s = s.replace(/(^\s*[A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*[^=;{]+(?=\s*[=;{])/gm, '$1');
+
+        s = s.replace(/\s+as\s+[A-Za-z0-9_$<>,\s.\[\]]+/g, '');
+
+        return s;
+    }
+
     // --- Test execution --------------------------------------------------------
 
     async runTests(requestOrId: TestRunRequest | string): Promise<string> {
@@ -855,7 +875,8 @@ test('${tc.name}', async t => {
             logger.info('📝 Writing test file', { filePath, suiteId: testFile.suiteId });
             try {
                 await fs.mkdir(path.dirname(filePath), { recursive: true });
-                await fs.writeFile(filePath, testFile.fileContent, 'utf8');
+                const sanitizedContent = this.stripTypeScriptSyntax(testFile.fileContent);
+                await fs.writeFile(filePath, sanitizedContent, 'utf8');
                 logger.info('✅ Test file written successfully', { filePath, size: testFile.fileContent.length });
                 filePaths.push(filePath);
             } catch (error: any) {
@@ -1174,7 +1195,8 @@ test('${tc.name}', async t => {
         logger.info('📝 Writing test file', { filePath });
         try {
             await fs.mkdir(path.dirname(filePath), { recursive: true });
-            await fs.writeFile(filePath, fileContent, 'utf8');
+            const sanitizedContent = this.stripTypeScriptSyntax(fileContent);
+            await fs.writeFile(filePath, sanitizedContent, 'utf8');
             logger.info('Test file written successfully', { filePath });
         } catch (error: any) {
             logger.error('Failed to write test file', {
@@ -1252,10 +1274,12 @@ test('${tc.name}', async t => {
                 // Increase timeouts significantly for production headless mode
                 const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_HEADLESS === 'true';
                 const runPromise = runner.src([testCafeFilePath]).browsers(browserConfig).reporter('json', testCafeReportPath).run({
-                    pageLoadTimeout: isProduction ? 120000 : 60000,      // 2 minutes in production, 1 minute in dev
-                    browserInitTimeout: isProduction ? 300000 : 180000,  // 5 minutes in production, 3 minutes in dev (increased)
-                    selectorTimeout: isProduction ? 30000 : 15000,       // 30 seconds in production, 15 seconds in dev
-                    assertionTimeout: isProduction ? 30000 : 15000,      // 30 seconds in production, 15 seconds in dev
+                    pageLoadTimeout: isProduction ? 180000 : 60000,
+                    browserInitTimeout: isProduction ? 600000 : 180000,
+                    selectorTimeout: isProduction ? 45000 : 15000,
+                    assertionTimeout: isProduction ? 45000 : 15000,
+                    pageRequestTimeout: isProduction ? 30000 : 10000,
+                    ajaxRequestTimeout: isProduction ? 30000 : 10000,
                     speed: 1,
                     skipJsErrors: true,                                   // Skip JS errors to prevent crashes
                     quarantineMode: false,
