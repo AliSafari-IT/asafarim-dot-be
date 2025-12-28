@@ -660,6 +660,89 @@ public class TestRunsController : ControllerBase
         );
     }
 
+    [HttpDelete("bulk")]
+    [Authorize(Policy = "TesterOnly")]
+    public async Task<IActionResult> BulkDelete([FromQuery] string? status = null, [FromQuery] DateTime? olderThan = null, [FromQuery] bool all = false)
+    {
+        try
+        {
+            var query = _db.TestRuns.AsQueryable();
+
+            if (all)
+            {
+                // Delete all test runs
+                var allRuns = await query.ToListAsync();
+                _db.TestRuns.RemoveRange(allRuns);
+                await _db.SaveChangesAsync();
+
+                _logger.LogInformation("🗑️ Deleted all {Count} test runs", allRuns.Count);
+                return Ok(new { deleted = allRuns.Count, message = $"Deleted all {allRuns.Count} test runs" });
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                // Delete by status
+                if (Enum.TryParse<TestRunStatus>(status, true, out var statusEnum))
+                {
+                    query = query.Where(r => r.Status == statusEnum);
+                }
+                else
+                {
+                    return BadRequest($"Invalid status: {status}");
+                }
+            }
+
+            if (olderThan.HasValue)
+            {
+                // Delete runs older than specified date
+                // Ensure DateTime is treated as UTC to avoid PostgreSQL errors
+                var olderThanUtc = olderThan.Value.Kind == DateTimeKind.Unspecified 
+                    ? DateTime.SpecifyKind(olderThan.Value, DateTimeKind.Utc)
+                    : olderThan.Value.ToUniversalTime();
+                query = query.Where(r => r.StartedAt < olderThanUtc);
+            }
+
+            var runs = await query.ToListAsync();
+            
+            if (!runs.Any())
+            {
+                return Ok(new { deleted = 0, message = "No test runs found matching criteria" });
+            }
+
+            _db.TestRuns.RemoveRange(runs);
+            await _db.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "🗑️ Deleted {Count} test runs (status: {Status}, olderThan: {OlderThan})",
+                runs.Count,
+                status ?? "any",
+                olderThan?.ToString("yyyy-MM-dd") ?? "any"
+            );
+
+            return Ok(new { deleted = runs.Count, message = $"Deleted {runs.Count} test runs" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Error deleting test runs");
+            return StatusCode(500, new { error = "Failed to delete test runs", details = ex.Message });
+        }
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "TesterOnly")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var run = await _db.TestRuns.FindAsync(id);
+        if (run == null)
+            return NotFound();
+
+        _db.TestRuns.Remove(run);
+        await _db.SaveChangesAsync();
+
+        _logger.LogInformation("🗑️ Deleted test run {TestRunId} ({RunName})", id, run.RunName);
+        return Ok(new { success = true, message = "Test run deleted" });
+    }
+
     private string GenerateHtmlReport(TestRun run, List<TestResult> results)
     {
         var passedCount = results.Count(r => r.Status == TestStatus.Passed);
