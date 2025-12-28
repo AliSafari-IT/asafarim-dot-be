@@ -376,11 +376,11 @@ export class TestRunnerService {
 
     private async getTestCafeRunner(): Promise<any> {
         if (!this.testCafe) {
-            logger.info('Creating new TestCafe instance with hostname localhost');
-            // Bind to localhost (resolves to both IPv4 and IPv6)
+            logger.info('Creating new TestCafe instance with hostname 127.0.0.1');
+            // Bind explicitly to IPv4 127.0.0.1 to avoid IPv6 connection issues
             // Use port 0 to let TestCafe pick available ports automatically
-            this.testCafe = await createTestCafe('localhost', 0, 0);
-            logger.info('TestCafe instance created successfully', { hostname: 'localhost' });
+            this.testCafe = await createTestCafe('127.0.0.1', 0, 0);
+            logger.info('TestCafe instance created successfully', { hostname: '127.0.0.1' });
         }
         return this.testCafe.createRunner();
     }
@@ -393,9 +393,9 @@ export class TestRunnerService {
         const forceHeadless = process.env.FORCE_HEADLESS === 'true';
         const defaultBrowser = process.env.BROWSER || 'chrome:headless';
 
-        // Set CHROME_BIN environment variable to help TestCafe find Chromium on Linux
+        // Set CHROME_BIN environment variable to help TestCafe find Chrome on Linux
         if (isLinux && !process.env.CHROME_BIN) {
-            process.env.CHROME_BIN = '/snap/bin/chromium';
+            process.env.CHROME_BIN = '/usr/bin/google-chrome';
             logger.info('🔧 Set CHROME_BIN environment variable', { chromeBin: process.env.CHROME_BIN });
         }
 
@@ -408,13 +408,13 @@ export class TestRunnerService {
                 list.push(`${defaultBrowser} --headless --no-sandbox --disable-dev-shm-usage`);
             } else if (defaultBrowser.includes('chrome')) {
                 // For chrome:headless, append the necessary flags directly
-                // Additional flags for stability in production environments
-                list.push('chrome:headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-software-rasterizer --disable-extensions');
+                // Aggressive flags for low-memory production environments to prevent crashes
+                list.push('chrome:headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-software-rasterizer --disable-extensions --disable-features=VizDisplayCompositor --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-breakpad --disable-component-extensions-with-background-pages --disable-features=TranslateUI,BlinkGenPropertyTrees --disable-ipc-flooding-protection --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --mute-audio --no-first-run --disable-hang-monitor');
             } else {
                 list.push(defaultBrowser);
             }
             // Fallback options for production
-            list.push('chrome:headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-software-rasterizer --disable-extensions');
+            list.push('chrome:headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-software-rasterizer --disable-extensions --disable-features=VizDisplayCompositor --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-breakpad --disable-component-extensions-with-background-pages --disable-features=TranslateUI,BlinkGenPropertyTrees --disable-ipc-flooding-protection --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --mute-audio --no-first-run --disable-hang-monitor');
             return Array.from(new Set(list));
         }
 
@@ -959,14 +959,18 @@ test('${tc.name}', async t => {
                     .browsers(browserConfig)
                     .reporter('json', testCafeReportPath)
                     .run({
-                        pageLoadTimeout: isProduction ? 120000 : 60000,
-                        browserInitTimeout: isProduction ? 300000 : 180000,
-                        selectorTimeout: isProduction ? 30000 : 15000,
-                        assertionTimeout: isProduction ? 30000 : 15000,
+                        pageLoadTimeout: isProduction ? 180000 : 60000,
+                        browserInitTimeout: isProduction ? 600000 : 180000,
+                        selectorTimeout: isProduction ? 45000 : 15000,
+                        assertionTimeout: isProduction ? 45000 : 15000,
+                        pageRequestTimeout: isProduction ? 30000 : 10000,
+                        ajaxRequestTimeout: isProduction ? 30000 : 10000,
                         speed: 1,
                         skipJsErrors: true,
                         quarantineMode: false,
-                        stopOnFirstFail: false
+                        stopOnFirstFail: false,
+                        disablePageCaching: true,
+                        disableScreenshots: false
                     });
 
                 logger.info('⏳ Test execution started, waiting for completion...', this.context(runId, { browserConfig }));
