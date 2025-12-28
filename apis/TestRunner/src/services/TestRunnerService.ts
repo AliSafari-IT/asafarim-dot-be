@@ -376,10 +376,11 @@ export class TestRunnerService {
 
     private async getTestCafeRunner(): Promise<any> {
         if (!this.testCafe) {
-            logger.info('Creating new TestCafe instance with hostname 127.0.0.1');
-            // Bind to localhost to avoid network interface issues causing browser connection errors
-            this.testCafe = await createTestCafe('127.0.0.1', 1337, 1338);
-            logger.info('TestCafe instance created successfully', { hostname: '127.0.0.1', ports: [1337, 1338] });
+            logger.info('Creating new TestCafe instance with hostname localhost');
+            // Bind to localhost (resolves to both IPv4 and IPv6)
+            // Use port 0 to let TestCafe pick available ports automatically
+            this.testCafe = await createTestCafe('localhost', 0, 0);
+            logger.info('TestCafe instance created successfully', { hostname: 'localhost' });
         }
         return this.testCafe.createRunner();
     }
@@ -401,17 +402,19 @@ export class TestRunnerService {
         // In production or when FORCE_HEADLESS is set, only use headless browsers
         if (forceHeadless) {
             logger.info('🎭 Force headless mode enabled', { defaultBrowser });
-            // Use environment variable browser directly
-            // For path-based browsers, append --headless flag
+            // Pass browser arguments directly in the browser string for better compatibility
+            // This approach works reliably with Chrome/Chromium in headless mode
             if (defaultBrowser.startsWith('path:')) {
                 list.push(`${defaultBrowser} --headless --no-sandbox --disable-dev-shm-usage`);
+            } else if (defaultBrowser.includes('chrome')) {
+                // For chrome:headless, append the necessary flags directly
+                // Additional flags for stability in production environments
+                list.push('chrome:headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-software-rasterizer --disable-extensions');
             } else {
                 list.push(defaultBrowser);
             }
             // Fallback options for production
-            if (!defaultBrowser.includes('/snap/bin/chromium')) {
-                list.push('chrome:headless');
-            }
+            list.push('chrome:headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-software-rasterizer --disable-extensions');
             return Array.from(new Set(list));
         }
 
@@ -944,26 +947,16 @@ test('${tc.name}', async t => {
                 // Run all test files together
                 const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_HEADLESS === 'true';
                 
-                // For path-based browsers, extract the path and pass args separately
-                let browserSpec = browserConfig;
-                let browserArgs: string[] = [];
-                
-                if (browserConfig.startsWith('path:')) {
-                    // Extract path and arguments
-                    const parts = browserConfig.split(' ');
-                    browserSpec = parts[0]; // e.g., "path:/snap/bin/chromium"
-                    browserArgs = parts.slice(1); // e.g., ["--headless", "--no-sandbox", "--disable-dev-shm-usage"]
-                    
-                    logger.info('🔧 Parsed browser configuration', {
-                        browserSpec,
-                        browserArgs,
-                        original: browserConfig
-                    });
-                }
+                // Use browserConfig directly - arguments are already included in the browser string
+                // This approach works reliably with TestCafe's browser provider
+                logger.info('🔧 Using browser configuration', {
+                    browserConfig,
+                    isProduction
+                });
                 
                 const runPromise = runner
                     .src(testCafeFilePaths)  // Pass all test files at once
-                    .browsers(browserSpec)
+                    .browsers(browserConfig)
                     .reporter('json', testCafeReportPath)
                     .run({
                         pageLoadTimeout: isProduction ? 120000 : 60000,
@@ -973,8 +966,7 @@ test('${tc.name}', async t => {
                         speed: 1,
                         skipJsErrors: true,
                         quarantineMode: false,
-                        stopOnFirstFail: false,
-                        ...(browserArgs.length > 0 && { browserInitOptions: { args: browserArgs } })
+                        stopOnFirstFail: false
                     });
 
                 logger.info('⏳ Test execution started, waiting for completion...', this.context(runId, { browserConfig }));
