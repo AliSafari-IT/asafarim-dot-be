@@ -1,0 +1,193 @@
+.family-page {
+    padding: 2rem 1rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.page-header p {
+    color: var(--asm-color-text-muted);
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.families-grid {
+    display: grid;
+    gap: 2rem;
+}
+
+.select-all-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--asm-color-surface-secondary);
+    border-radius: var(--asm-radius-md);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.select-all-row input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.family-detail-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background-color: var(--asm-color-surface);
+    border-radius: var(--asm-radius-lg);
+    padding: 2rem;
+    box-shadow: var(--asm-shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.family-detail-card.selected {
+    background-color: var(--asm-color-surface-secondary);
+}
+
+.family-card-checkbox {
+    flex-shrink: 0;
+    padding-top: 0.25rem;
+}
+
+.family-card-checkbox input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.family-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.family-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--asm-color-border);
+}
+
+.family-card-header h2 {
+    font-size: 1.75rem;
+    margin: 0;
+}
+
+.member-count {
+    color: var(--asm-color-text-muted);
+    font-size: 0.875rem;
+}
+
+.members-list h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.member-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--asm-color-background);
+    border-radius: var(--asm-radius-md);
+    margin-bottom: 0.75rem;
+}
+
+.member-item strong {
+    margin-right: 0.75rem;
+}
+
+.role-badge {
+    padding: 0.25rem 0.75rem;
+    background-color: var(--asm-color-primary-100);
+    color: var(--asm-color-primary-700);
+    border-radius: var(--asm-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.member-age {
+    color: var(--asm-color-text-muted);
+    font-size: 0.875rem;
+}
+
+.family-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-radius-md);
+    background-color: var(--asm-color-surface-secondary);
+    color: var(--asm-color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    background-color: var(--asm-color-surface-tertiary);
+    color: var(--asm-color-text-primary);
+}
+
+.btn-action.btn-edit {
+    border-color: var(--asm-color-primary-300);
+    color: var(--asm-color-primary-600);
+}
+
+.btn-action.btn-edit:hover {
+    background-color: var(--asm-color-primary-100);
+}
+
+.btn-action.btn-delete {
+    border-color: var(--asm-color-error-300);
+    color: var(--asm-color-error-600);
+}
+
+.btn-action.btn-delete:hover {
+    background-color: var(--asm-color-error-100);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--asm-color-text-muted);
+}
+
+.empty-state svg {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0.5rem 0;
+}
+
+.empty-state .subtitle {
+    font-size: 0.875rem;
+    color: var(--asm-color-text-muted);
+}

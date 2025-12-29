@@ -245,6 +245,7 @@ var productionOrigins = new[]
     "https://testora.asafarim.be",
     "https://freelance-toolkit.asafarim.be",
     "https://kidcode.asafarim.be",
+    "https://smartpath.asafarim.be",
 };
 
 var developmentOrigins = new[]
@@ -257,6 +258,9 @@ var developmentOrigins = new[]
     "http://localhost:5178",
     "http://localhost:4200",
     "http://localhost:5101",
+    "http://localhost:5180",
+    "http://localhost:5185",
+    "http://localhost:5195",
     "http://asafarim.local",
     "http://ai.asafarim.local:5173",
     "http://ai.asafarim.local",
@@ -275,6 +279,7 @@ var developmentOrigins = new[]
     "http://smartops.asafarim.local:5178",
     "http://testora.asafarim.local:5180",
     "http://freelance-toolkit.asafarim.local:5185",
+    "http://smartpath.asafarim.local:5195",
 };
 
 // Combine origins based on environment

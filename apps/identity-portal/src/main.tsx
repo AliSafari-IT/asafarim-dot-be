@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.tsx'
 import { ThemeProvider } from '@asafarim/react-themes'
 import { initI18n } from '@asafarim/shared-i18n'
-import Root from './theme/Root/index.tsx'
+import Root from './theme/Root'
 
 // Initialize i18n before rendering
 initI18n();

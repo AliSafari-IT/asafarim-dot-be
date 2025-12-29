@@ -106,7 +106,10 @@ export function AppLauncherPanel({
       case ' ':
         e.preventDefault();
         if (focusedIndex >= 0 && focusedIndex < itemCount) {
-          handleItemClick(filteredItems[focusedIndex]);
+          const item = filteredItems[focusedIndex];
+          if (item) {
+            handleItemClick(item);
+          }
         }
         return;
       case 'Escape':

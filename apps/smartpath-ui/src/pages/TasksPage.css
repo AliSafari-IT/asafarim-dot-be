@@ -1,0 +1,242 @@
+.tasks-page {
+    padding: 2rem 1rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.page-header p {
+    color: var(--asm-color-text-muted);
+}
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--asm-color-primary-500);
+    color: white;
+    border-radius: var(--asm-radius-md);
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--asm-color-primary-600);
+}
+
+.family-selector {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.family-selector label {
+    font-weight: 600;
+}
+
+.family-selector select {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-radius-md);
+    background-color: var(--asm-color-surface);
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.tasks-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.select-all-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--asm-color-surface-secondary);
+    border-radius: var(--asm-radius-md);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.select-all-row input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.task-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background-color: var(--asm-color-surface);
+    border-radius: var(--asm-radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--asm-shadow-sm);
+    border-left: 4px solid var(--asm-color-primary-500);
+    transition: all 0.2s ease;
+}
+
+.task-card.selected {
+    background-color: var(--asm-color-surface-secondary);
+    border-left-color: var(--asm-color-primary-600);
+}
+
+.task-checkbox {
+    flex-shrink: 0;
+    padding-top: 0.25rem;
+}
+
+.task-checkbox input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.task-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-card.completed {
+    border-left-color: var(--asm-color-success-500);
+    opacity: 0.7;
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.75rem;
+}
+
+.task-header h3 {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--asm-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.pending {
+    background-color: var(--asm-color-warning-100);
+    color: var(--asm-color-warning-700);
+}
+
+.status-badge.completed {
+    background-color: var(--asm-color-success-100);
+    color: var(--asm-color-success-700);
+}
+
+.task-description {
+    color: var(--asm-color-text-muted);
+    margin-bottom: 1rem;
+}
+
+.task-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--asm-color-text-muted);
+    font-size: 0.875rem;
+}
+
+.btn-complete {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--asm-color-success-500);
+    color: white;
+    border-radius: var(--asm-radius-md);
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+}
+
+.btn-complete:hover {
+    background-color: var(--asm-color-success-600);
+}
+
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-radius-md);
+    background-color: var(--asm-color-surface-secondary);
+    color: var(--asm-color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    background-color: var(--asm-color-surface-tertiary);
+    color: var(--asm-color-text-primary);
+}
+
+.btn-action.btn-complete {
+    border-color: var(--asm-color-success-300);
+    color: var(--asm-color-success-600);
+}
+
+.btn-action.btn-complete:hover {
+    background-color: var(--asm-color-success-100);
+}
+
+.btn-action.btn-edit {
+    border-color: var(--asm-color-primary-300);
+    color: var(--asm-color-primary-600);
+}
+
+.btn-action.btn-edit:hover {
+    background-color: var(--asm-color-primary-100);
+}
+
+.btn-action.btn-delete {
+    border-color: var(--asm-color-error-300);
+    color: var(--asm-color-error-600);
+}
+
+.btn-action.btn-delete:hover {
+    background-color: var(--asm-color-error-100);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--asm-color-text-muted);
+}

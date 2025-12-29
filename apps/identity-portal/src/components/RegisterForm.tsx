@@ -137,7 +137,8 @@ export const RegisterForm = () => {
         const isCrossDomainRedirect = returnUrl && (
           returnUrl.startsWith('http://') || 
           returnUrl.startsWith('https://') || 
-          returnUrl.includes('.asafarim.be')
+          returnUrl.includes('.asafarim.be') ||
+          returnUrl.includes('.asafarim.local')
         );
         
         if (returnUrl && isCrossDomainRedirect) {

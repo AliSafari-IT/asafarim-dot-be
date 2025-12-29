@@ -1,0 +1,9 @@
+.progress-page {
+    padding: 2rem 1rem;
+}
+
+.subtitle {
+    color: var(--asm-color-text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}

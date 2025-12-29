@@ -635,7 +635,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                   ) {
                     // Create and show dialog
                     const dialog = document.createElement("div");
-                    dialog.className = styles.relatedProjectDialog;
+                    if (styles.relatedProjectDialog) {
+                      dialog.className = styles.relatedProjectDialog;
+                    }
 
                     // Build links array from available link properties
                     const allLinks: any[] = [];
