@@ -1,0 +1,212 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: var(--asm-color-surface);
+    border-radius: var(--asm-radius-lg);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--asm-space-6);
+    border-bottom: 1px solid var(--asm-color-border);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--asm-color-text);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--asm-color-text-muted);
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+    color: var(--asm-color-text);
+}
+
+.modal-form {
+    padding: var(--asm-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--asm-space-5);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--asm-space-2);
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--asm-color-text);
+    font-size: 0.875rem;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--asm-space-3);
+    padding: var(--asm-space-3);
+    background: var(--asm-color-surface-muted);
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-radius-md);
+    transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--asm-color-primary-500);
+    background: var(--asm-color-surface);
+    box-shadow: 0 0 0 3px var(--asm-color-primary-100);
+}
+
+.input-wrapper svg {
+    color: var(--asm-color-text-muted);
+    flex-shrink: 0;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--asm-color-text);
+    font-size: 1rem;
+    outline: none;
+    font-family: inherit;
+}
+
+.input-wrapper input::placeholder {
+    color: var(--asm-color-text-muted);
+}
+
+.input-wrapper select {
+    cursor: pointer;
+}
+
+.input-wrapper select option {
+    background: var(--asm-color-surface);
+    color: var(--asm-color-text);
+}
+
+.form-group small {
+    color: var(--asm-color-text-muted);
+    font-size: 0.8125rem;
+}
+
+.error-message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--asm-space-3);
+    padding: var(--asm-space-4);
+    background: var(--asm-color-danger-100, rgba(239, 68, 68, 0.1));
+    border: 1px solid var(--asm-color-danger-500);
+    border-radius: var(--asm-radius-md);
+    color: var(--asm-color-danger-500);
+}
+
+.error-message svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.error-message p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.success-state {
+    padding: var(--asm-space-8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--asm-space-4);
+    text-align: center;
+}
+
+.success-state svg {
+    color: var(--asm-color-primary-500);
+    animation: scaleIn 0.4s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-state p {
+    margin: 0;
+    color: var(--asm-color-text);
+    font-weight: 500;
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--asm-space-3);
+    padding: var(--asm-space-6);
+    border-top: 1px solid var(--asm-color-border);
+}
+
+.modal-actions button {
+    flex: 1;
+}

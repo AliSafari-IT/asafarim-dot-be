@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Home, CheckSquare, BookOpen, TrendingUp, Users, LogOut } from 'lucide-react';
 import './Navbar.css';
+import { ThemeToggle } from '@asafarim/react-themes';
 
 export default function Navbar() {
     const { isAuthenticated, user, signOut } = useAuth();
@@ -39,6 +40,7 @@ export default function Navbar() {
                 </ul>
                 <div className="navbar-user">
                     <span className="user-name">{user?.displayName}</span>
+                    <ThemeToggle variant='ghost'/>
                     <button onClick={() => signOut()} className="logout-btn" title="Logout">
                         <LogOut size={20} />
                     </button>

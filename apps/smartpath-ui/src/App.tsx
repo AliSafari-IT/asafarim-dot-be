@@ -6,6 +6,7 @@ import LearningPage from './pages/LearningPage';
 import LearningFormPage from './pages/LearningFormPage';
 import CourseFormPage from './pages/CourseFormPage';
 import CourseLearningPage from './pages/CourseLearningPage';
+import ChapterFormPage from './pages/ChapterFormPage';
 import ProgressPage from './pages/ProgressPage';
 import FamilyPage from './pages/FamilyPage';
 import FamilyFormPage from './pages/FamilyFormPage';
@@ -83,6 +84,22 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <CourseFormPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/learning/:courseId/chapter/new"
+                        element={
+                            <ProtectedRoute>
+                                <ChapterFormPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/learning/:courseId/chapter/:chapterId/edit"
+                        element={
+                            <ProtectedRoute>
+                                <ChapterFormPage />
                             </ProtectedRoute>
                         }
                     />
