@@ -1,0 +1,173 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import smartpathService from '../api/smartpathService';
+import { Users, Plus, Edit2, Trash2 } from 'lucide-react';
+import { ButtonComponent } from '@asafarim/shared-ui-react';
+import './FamilyPage.css';
+
+export default function FamilyPage() {
+    const navigate = useNavigate();
+    const [families, setFamilies] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedFamilies, setSelectedFamilies] = useState<Set<number>>(new Set());
+
+    useEffect(() => {
+        loadFamilies();
+    }, []);
+
+    const loadFamilies = async () => {
+        try {
+            const response = await smartpathService.families.getMyFamilies();
+            const familiesData = Array.isArray(response.data) ? response.data : [];
+            setFamilies(familiesData);
+            console.info('Families loaded:', familiesData);
+        } catch (error) {
+            console.error('Failed to load families:', error);
+            setFamilies([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const deleteFamily = async (familyId: number) => {
+        if (!confirm('Are you sure you want to delete this family?')) return;
+        try {
+            await smartpathService.families.delete(familyId);
+            loadFamilies();
+        } catch (error) {
+            console.error('Failed to delete family:', error);
+        }
+    };
+
+    const toggleFamilySelection = (familyId: number) => {
+        const newSelected = new Set(selectedFamilies);
+        if (newSelected.has(familyId)) {
+            newSelected.delete(familyId);
+        } else {
+            newSelected.add(familyId);
+        }
+        setSelectedFamilies(newSelected);
+    };
+
+    const toggleAllFamilies = () => {
+        if (selectedFamilies.size === families.length) {
+            setSelectedFamilies(new Set());
+        } else {
+            setSelectedFamilies(new Set(families.map(f => f.familyId)));
+        }
+    };
+
+    const deleteBulkFamilies = async () => {
+        if (selectedFamilies.size === 0) return;
+        if (!confirm(`Delete ${selectedFamilies.size} selected family(ies)?`)) return;
+
+        try {
+            await smartpathService.families.deleteMultiple(Array.from(selectedFamilies));
+            setSelectedFamilies(new Set());
+            loadFamilies();
+        } catch (error) {
+            console.error('Failed to delete families:', error);
+        }
+    };
+
+    if (loading) {
+        return <div className="loading">Loading...</div>;
+    }
+
+    return (
+        <div className="family-page container">
+            <header className="page-header">
+                <div>
+                    <h1>Family</h1>
+                    <p>Manage your family members</p>
+                </div>
+                <div className="header-actions">
+                    {selectedFamilies.size > 0 && (
+                        <ButtonComponent onClick={deleteBulkFamilies} variant="danger">
+                            <Trash2 size={20} />
+                            Delete {selectedFamilies.size}
+                        </ButtonComponent>
+                    )}
+                    <ButtonComponent onClick={() => navigate('/family/new')} variant="primary">
+                        <Plus size={20} />
+                        Create Family
+                    </ButtonComponent>
+                </div>
+            </header>
+
+            <div className="families-grid">
+                {families?.length === 0 ? (
+                    <div className="empty-state">
+                        <Users size={48} />
+                        <p>No families yet.</p>
+                        <p className="subtitle">Create your first family to get started!</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="select-all-row">
+                            <input
+                                type="checkbox"
+                                checked={selectedFamilies.size === families.length && families.length > 0}
+                                onChange={toggleAllFamilies}
+                                title="Select all families"
+                            />
+                            <span>{selectedFamilies.size > 0 ? `${selectedFamilies.size} selected` : 'Select all'}</span>
+                        </div>
+                        {families?.map((family) => (
+                            <div
+                                key={family.familyId}
+                                className={`family-detail-card ${selectedFamilies.has(family.familyId) ? 'selected' : ''}`}
+                            >
+                                <div className="family-card-checkbox">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedFamilies.has(family.familyId)}
+                                        onChange={() => toggleFamilySelection(family.familyId)}
+                                    />
+                                </div>
+                                <div className="family-card-content">
+                                    <div className="family-card-header">
+                                        <h2>{family.familyName}</h2>
+                                        <span className="member-count">{family.memberCount} members</span>
+                                    </div>
+                                    <div className="members-list">
+                                        <h3>Members</h3>
+                                        {family.members?.map((member: any) => (
+                                            <div key={member.familyMemberId} className="member-item">
+                                                <div>
+                                                    <strong>{member.userName}</strong>
+                                                    <span className="role-badge">{member.role}</span>
+                                                </div>
+                                                {member.dateOfBirth && (
+                                                    <span className="member-age">
+                                                        Age: {Math.floor((Date.now() - new Date(member.dateOfBirth).getTime()) / 31557600000)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="family-card-actions">
+                                    <button
+                                        onClick={() => navigate(`/family/${family.familyId}/edit`)}
+                                        className="btn-action btn-edit"
+                                        title="Edit family"
+                                    >
+                                        <Edit2 size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => deleteFamily(family.familyId)}
+                                        className="btn-action btn-delete"
+                                        title="Delete family"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}

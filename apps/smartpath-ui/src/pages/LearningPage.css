@@ -1,0 +1,201 @@
+.learning-page {
+    padding: 2rem 1rem;
+}
+
+.courses-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.course-card {
+    background-color: var(--asm-color-surface);
+    border-radius: var(--asm-radius-lg);
+    padding: 2rem;
+    box-shadow: var(--asm-shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.course-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--asm-shadow-md);
+}
+
+.course-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--asm-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.course-content {
+    flex: 1;
+}
+
+.course-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.course-content p {
+    color: var(--asm-color-text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.course-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--asm-color-text-muted);
+}
+
+.course-action {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--asm-color-primary-500);
+    color: white;
+    border-radius: var(--asm-radius-md);
+    font-weight: 600;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.course-action:hover {
+    background-color: var(--asm-color-primary-600);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.page-header p {
+    color: var(--asm-color-text-muted);
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.select-all-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--asm-color-surface-secondary);
+    border-radius: var(--asm-radius-md);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.select-all-row input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.course-card.selected {
+    background-color: var(--asm-color-surface-secondary);
+}
+
+.course-checkbox {
+    flex-shrink: 0;
+}
+
+.course-checkbox input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.course-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.btn-start {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--asm-color-primary-500);
+    color: white;
+    border-radius: var(--asm-radius-md);
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-start:hover {
+    background-color: var(--asm-color-primary-600);
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-radius-md);
+    background-color: var(--asm-color-surface-secondary);
+    color: var(--asm-color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    background-color: var(--asm-color-surface-tertiary);
+    color: var(--asm-color-text-primary);
+}
+
+.btn-action.btn-edit {
+    border-color: var(--asm-color-primary-300);
+    color: var(--asm-color-primary-600);
+}
+
+.btn-action.btn-edit:hover {
+    background-color: var(--asm-color-primary-100);
+}
+
+.btn-action.btn-delete {
+    border-color: var(--asm-color-error-300);
+    color: var(--asm-color-error-600);
+}
+
+.btn-action.btn-delete:hover {
+    background-color: var(--asm-color-error-100);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--asm-color-text-muted);
+}
+
+.empty-state svg {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0.5rem 0;
+}

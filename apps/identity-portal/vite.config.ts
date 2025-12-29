@@ -57,40 +57,14 @@ function getWorkspaceAliases(appDir: string, packageJson: unknown): Record<strin
     }
   }
 
-  // Scan libs directory
-  if (fs.existsSync(libsDir)) {
-    for (const pkgName of fs.readdirSync(libsDir)) {
-      const pkgPath = path.join(libsDir, pkgName)
-      const pkgJsonPath = path.join(pkgPath, 'package.json')
-
-      if (!fs.existsSync(pkgJsonPath)) continue
-
-      const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'))
-      const name = pkgJson.name
-
-      if (name?.startsWith(scope)) {
-        // Prefer src if it exists
-        const srcPath = path.join(pkgPath, 'src')
-        aliases[name] = fs.existsSync(srcPath) ? srcPath : pkgPath
-      }
-    }
-  }
-
   return aliases
 }
 
-// https://vite.dev/config/
-export default defineConfig(
-  {
+export default defineConfig({
   plugins: [react()],
   server: {
     host: 'identity.asafarim.local',
     port: 5177,
-  },
-  // Do not hardcode VITE_IDENTITY_API_URL here; rely on .env files for dev/prod.
-  // Keep only this convenience flag if needed by the app.
-  define: {
-    'import.meta.env.VITE_IS_PRODUCTION': JSON.stringify(process.env.NODE_ENV === 'production')
   },
   resolve: {
     alias: {
@@ -104,7 +78,7 @@ export default defineConfig(
       'react-dom',
       ...Object.keys(getWorkspaceAliases(__dirname, JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8')))),
     ],
-    force: true, // Force re-optimization for workspace packages
+    force: true,
   },
   build: {
     commonjsOptions: {

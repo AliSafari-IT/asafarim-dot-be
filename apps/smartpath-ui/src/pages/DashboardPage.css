@@ -1,0 +1,121 @@
+.dashboard-page {
+    padding: 2rem 1rem;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    color: var(--asm-color-text);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-header p {
+    color: var(--asm-color-text-muted);
+    font-size: 1.125rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.dashboard-card {
+    background-color: var(--asm-color-surface);
+    border-radius: var(--asm-radius-lg);
+    padding: 2rem;
+    box-shadow: var(--asm-shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--asm-shadow-md);
+}
+
+.card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--asm-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.card-icon.tasks {
+    background-color: var(--asm-color-primary-100);
+    color: var(--asm-color-primary-600);
+}
+
+.card-icon.learning {
+    background-color: var(--asm-color-success-100);
+    color: var(--asm-color-success-600);
+}
+
+.card-icon.progress {
+    background-color: var(--asm-color-warning-100);
+    color: var(--asm-color-warning-600);
+}
+
+.card-icon.family {
+    background-color: var(--asm-color-info-100);
+    color: var(--asm-color-info-600);
+}
+
+.dashboard-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--asm-color-text);
+}
+
+.dashboard-card p {
+    color: var(--asm-color-text-muted);
+    margin-bottom: 1rem;
+}
+
+.card-link {
+    color: var(--asm-color-primary-500);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.families-section {
+    margin-top: 3rem;
+}
+
+.families-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--asm-color-text);
+}
+
+.families-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.family-card {
+    background-color: var(--asm-color-surface);
+    border-radius: var(--asm-radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--asm-shadow-sm);
+}
+
+.family-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--asm-color-text);
+}
+
+.family-card p {
+    color: var(--asm-color-text-muted);
+}

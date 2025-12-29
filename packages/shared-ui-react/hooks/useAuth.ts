@@ -125,7 +125,7 @@ function isTokenExpired(token: string | null): boolean {
     if (parts.length !== 3) return true;
 
     // Decode the payload (second part)
-    const payload = JSON.parse(atob(parts[1]));
+    const payload = JSON.parse(atob(parts[1]!));
 
     // Check if token exists and is expired
     const now = Math.floor(Date.now() / 1000);

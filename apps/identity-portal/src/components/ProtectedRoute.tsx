@@ -9,6 +9,21 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
+function isSafeReturnUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url, window.location.origin);
+    const hostname = parsed.hostname.toLowerCase();
+    return (
+      hostname === 'asafarim.local' ||
+      hostname.endsWith('.asafarim.local') ||
+      hostname === 'asafarim.be' ||
+      hostname.endsWith('.asafarim.be')
+    );
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Protected route component that handles authentication redirects
  * 
@@ -58,8 +73,11 @@ export const ProtectedRoute = ({
     }
 
     // Check for returnUrl in query params (for login/register pages)
+    console.log('[ProtectedRoute] Checking returnUrl. Current URL:', window.location.href);
+    console.log('[ProtectedRoute] location.search:', location.search);
     const searchParams = new URLSearchParams(location.search);
     const returnUrl = searchParams.get('returnUrl');
+    console.log('[ProtectedRoute] Extracted returnUrl:', returnUrl);
     
     let finalRedirect = redirectTo;
     
@@ -78,9 +96,12 @@ export const ProtectedRoute = ({
       if (isReturnUrlAuthPage) {
         console.log('[ProtectedRoute] returnUrl points to auth page, using default redirect:', redirectTo);
         finalRedirect = redirectTo;
-      } else {
-        console.log('[ProtectedRoute] Using returnUrl for redirect:', returnUrl);
+      } else if (isSafeReturnUrl(returnUrl)) {
+        console.log('[ProtectedRoute] Using safe returnUrl for redirect:', returnUrl);
         finalRedirect = returnUrl;
+      } else {
+        console.log('[ProtectedRoute] Unsafe returnUrl rejected, using default redirect:', redirectTo);
+        finalRedirect = redirectTo;
       }
     }
     
@@ -94,11 +115,11 @@ export const ProtectedRoute = ({
       }, 100);
     }
     
-    // If finalRedirect is an external URL, use window.location
+    // If finalRedirect is an external URL, use window.location.assign
     if (finalRedirect.startsWith('http://') || finalRedirect.startsWith('https://')) {
       console.log('[ProtectedRoute] External redirect:', finalRedirect);
-      window.location.href = finalRedirect;
-      return null; // Return null while redirecting
+      window.location.assign(finalRedirect);
+      return null;
     }
     
     return <Navigate to={finalRedirect} replace />;
