@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import smartpathService from '../api/smartpathService';
-import { Users, Plus, Edit2, Trash2 } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, UserPlus, X } from 'lucide-react';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
+import AddMemberModal from '../components/AddMemberModal';
 import './FamilyPage.css';
 
 export default function FamilyPage() {
@@ -10,10 +11,26 @@ export default function FamilyPage() {
     const [families, setFamilies] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedFamilies, setSelectedFamilies] = useState<Set<number>>(new Set());
+    const [addMemberModalOpen, setAddMemberModalOpen] = useState(false);
+    const [selectedFamilyForAddMember, setSelectedFamilyForAddMember] = useState<number | null>(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [currentSmartPathUserId, setCurrentSmartPathUserId] = useState<number | null>(null);
 
     useEffect(() => {
-        loadFamilies();
+        initializeUser();
     }, []);
+
+    const initializeUser = async () => {
+        try {
+            const meResponse = await smartpathService.users.me();
+            setCurrentSmartPathUserId(meResponse.data.userId);
+            setIsAdmin(meResponse.data.isAdmin);
+            await loadFamilies();
+        } catch (error) {
+            console.error('Failed to get current user:', error);
+            setLoading(false);
+        }
+    };
 
     const loadFamilies = async () => {
         try {
@@ -67,6 +84,25 @@ export default function FamilyPage() {
             loadFamilies();
         } catch (error) {
             console.error('Failed to delete families:', error);
+        }
+    };
+
+    const canRemoveMember = (family: any, member: any): boolean => {
+        if (isAdmin) return true;
+        if (!currentSmartPathUserId) return false;
+        
+        const currentUserRole = family.members?.find((m: any) => m.userId === currentSmartPathUserId)?.role;
+        if (currentUserRole !== 'familyManager') return false;
+        return member.role === 'familyMember';
+    };
+
+    const removeMember = async (familyId: number, targetUserId: number) => {
+        if (!confirm('Are you sure you want to remove this member?')) return;
+        try {
+            await smartpathService.families.removeMember(familyId, targetUserId);
+            loadFamilies();
+        } catch (error) {
+            console.error('Failed to remove member:', error);
         }
     };
 
@@ -134,20 +170,41 @@ export default function FamilyPage() {
                                         <h3>Members</h3>
                                         {family.members?.map((member: any) => (
                                             <div key={member.familyMemberId} className="member-item">
-                                                <div>
+                                                <div className="member-info">
                                                     <strong>{member.userName}</strong>
                                                     <span className="role-badge">{member.role}</span>
                                                 </div>
-                                                {member.dateOfBirth && (
-                                                    <span className="member-age">
-                                                        Age: {Math.floor((Date.now() - new Date(member.dateOfBirth).getTime()) / 31557600000)}
-                                                    </span>
-                                                )}
+                                                <div className="member-actions">
+                                                    {member.dateOfBirth && (
+                                                        <span className="member-age">
+                                                            Age: {Math.floor((Date.now() - new Date(member.dateOfBirth).getTime()) / 31557600000)}
+                                                        </span>
+                                                    )}
+                                                    {canRemoveMember(family, member) && (
+                                                        <button
+                                                            onClick={() => removeMember(family.familyId, member.userId)}
+                                                            className="btn-remove-member"
+                                                            title="Remove member"
+                                                        >
+                                                            <X size={16} />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                                 <div className="family-card-actions">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedFamilyForAddMember(family.familyId);
+                                            setAddMemberModalOpen(true);
+                                        }}
+                                        className="btn-action btn-add-member"
+                                        title="Add member"
+                                    >
+                                        <UserPlus size={18} />
+                                    </button>
                                     <button
                                         onClick={() => navigate(`/family/${family.familyId}/edit`)}
                                         className="btn-action btn-edit"
@@ -168,6 +225,19 @@ export default function FamilyPage() {
                     </>
                 )}
             </div>
+
+            {selectedFamilyForAddMember && (
+                <AddMemberModal
+                    familyId={selectedFamilyForAddMember}
+                    isOpen={addMemberModalOpen}
+                    onClose={() => {
+                        setAddMemberModalOpen(false);
+                        setSelectedFamilyForAddMember(null);
+                    }}
+                    onSuccess={loadFamilies}
+                    isAdmin={isAdmin}
+                />
+            )}
         </div>
     );
 }

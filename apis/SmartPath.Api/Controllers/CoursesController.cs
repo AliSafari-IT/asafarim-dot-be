@@ -41,6 +41,44 @@ public class CoursesController : ControllerBase
         return Ok(chapters);
     }
 
+    [HttpPost("chapters")]
+    public async Task<IActionResult> CreateChapter([FromBody] CreateChapterRequest request)
+    {
+        var chapter = await _courseService.CreateChapterAsync(request);
+        return CreatedAtAction(nameof(GetChapter), new { chapterId = chapter.ChapterId }, chapter);
+    }
+
+    [HttpGet("chapters/{chapterId}")]
+    public async Task<IActionResult> GetChapter(int chapterId)
+    {
+        var chapter = await _courseService.GetChapterByIdAsync(chapterId);
+        if (chapter == null)
+            return NotFound();
+        return Ok(chapter);
+    }
+
+    [HttpPut("chapters/{chapterId}")]
+    public async Task<IActionResult> UpdateChapter(int chapterId, [FromBody] UpdateChapterRequest request)
+    {
+        var chapter = await _courseService.GetChapterByIdAsync(chapterId);
+        if (chapter == null)
+            return NotFound();
+
+        var updated = await _courseService.UpdateChapterAsync(chapterId, request);
+        return Ok(updated);
+    }
+
+    [HttpDelete("chapters/{chapterId}")]
+    public async Task<IActionResult> DeleteChapter(int chapterId)
+    {
+        var chapter = await _courseService.GetChapterByIdAsync(chapterId);
+        if (chapter == null)
+            return NotFound();
+
+        await _courseService.DeleteChapterAsync(chapterId);
+        return NoContent();
+    }
+
     [HttpGet("chapters/{chapterId}/lessons")]
     public async Task<IActionResult> GetLessons(int chapterId)
     {
@@ -153,3 +191,15 @@ public record UpdateLessonRequest(
 );
 
 public record DeleteBulkCoursesRequest(List<int> Ids);
+
+public record CreateChapterRequest(
+    int CourseId,
+    string Title,
+    string? Description
+);
+
+public record UpdateChapterRequest(
+    string? Title,
+    string? Description,
+    int? OrderIndex
+);

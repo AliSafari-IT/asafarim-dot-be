@@ -1,3 +1,4 @@
+// D:\repos\asafarim-dot-be\apps\smartpath-ui\src\api\smartpathService.ts
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_SMARTPATH_API_URL || 'http://smartpath.asafarim.local:5109';
@@ -57,6 +58,10 @@ apiClient.interceptors.response.use(
 );
 
 export const smartpathService = {
+  users: {
+    me: () => apiClient.get('/users/me'),
+  },
+
   families: {
     getMyFamilies: () => apiClient.get('/families/my-families'),
     getById: (id: number) => apiClient.get(`/families/${id}`),
@@ -65,7 +70,9 @@ export const smartpathService = {
     delete: (id: number) => apiClient.delete(`/families/${id}`),
     deleteMultiple: (ids: number[]) => apiClient.post('/families/delete-bulk', { ids }),
     addMember: (familyId: number, data: any) => apiClient.post(`/families/${familyId}/members`, data),
-    removeMember: (familyId: number, memberId: number) => apiClient.delete(`/families/${familyId}/members/${memberId}`),
+    addMemberByEmail: (familyId: number, data: { email: string; role?: string }) => 
+      apiClient.post(`/families/${familyId}/members/by-email`, data),
+    removeMember: (familyId: number, targetUserId: number) => apiClient.delete(`/families/${familyId}/members/users/${targetUserId}`),
   },
 
   tasks: {
@@ -88,6 +95,10 @@ export const smartpathService = {
     delete: (id: number) => apiClient.delete(`/courses/${id}`),
     deleteMultiple: (ids: number[]) => apiClient.post('/courses/delete-bulk', { ids }),
     getChapters: (courseId: number) => apiClient.get(`/courses/${courseId}/chapters`),
+    getChapter: (chapterId: number) => apiClient.get(`/courses/chapters/${chapterId}`),
+    createChapter: (data: any) => apiClient.post('/courses/chapters', data),
+    updateChapter: (chapterId: number, data: any) => apiClient.put(`/courses/chapters/${chapterId}`, data),
+    deleteChapter: (chapterId: number) => apiClient.delete(`/courses/chapters/${chapterId}`),
     getLessons: (chapterId: number) => apiClient.get(`/courses/chapters/${chapterId}/lessons`),
     getLesson: (lessonId: number) => apiClient.get(`/courses/lessons/${lessonId}`),
     createLesson: (data: any) => apiClient.post('/courses/lessons', data),

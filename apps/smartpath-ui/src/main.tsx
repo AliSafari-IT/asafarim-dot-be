@@ -9,16 +9,20 @@ import {
   NotificationContainer,
   NotificationProvider,
 } from "@asafarim/shared-ui-react";
+import { ThemeProvider } from "@asafarim/react-themes";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Root>
-      <NotificationProvider>
-        <NotificationContainer position="top-right" />
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </NotificationProvider>
+      <ThemeProvider defaultMode="auto" persistMode={true}>
+
+        <NotificationProvider>
+          <NotificationContainer position="top-right" />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </NotificationProvider>
+      </ThemeProvider>
     </Root>
   </React.StrictMode>
 );

@@ -5,7 +5,7 @@ public class FamilyMember
     public int FamilyMemberId { get; set; }
     public int FamilyId { get; set; }
     public int UserId { get; set; }
-    public string Role { get; set; } = "Child";
+    public string Role { get; set; } = "familyMember";
     public DateTime? DateOfBirth { get; set; }
     public DateTime JoinedAt { get; set; }
 

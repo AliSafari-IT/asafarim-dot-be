@@ -16,9 +16,10 @@ public class FamiliesController : ControllerBase
         _familyService = familyService;
     }
 
-    private IActionResult? ValidateUserContext(out int userId)
+    private IActionResult? ValidateUserContext(out int userId, out bool isAdmin)
     {
         userId = 0;
+        isAdmin = false;
         if (!HttpContext.Items.TryGetValue("UserId", out var userIdObj) || userIdObj == null)
         {
             if (HttpContext.Items.TryGetValue("UserSyncError", out var errorObj))
@@ -29,13 +30,14 @@ public class FamiliesController : ControllerBase
         }
 
         userId = (int)userIdObj;
+        isAdmin = User.IsInRole("admin");
         return null;
     }
 
     [HttpGet("my-families")]
     public async Task<IActionResult> GetMyFamilies()
     {
-        var validationError = ValidateUserContext(out var userId);
+        var validationError = ValidateUserContext(out var userId, out _);
         if (validationError != null) return validationError;
 
         var families = await _familyService.GetUserFamiliesAsync(userId);
@@ -63,14 +65,14 @@ public class FamiliesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetFamily(int id)
     {
-        var validationError = ValidateUserContext(out var userId);
+        var validationError = ValidateUserContext(out var userId, out var isAdmin);
         if (validationError != null) return validationError;
         var family = await _familyService.GetByIdAsync(id);
 
         if (family == null)
             return NotFound();
 
-        if (!await _familyService.IsMemberAsync(id, userId))
+        if (!isAdmin && !await _familyService.IsMemberAsync(id, userId))
             return Forbid();
 
         return Ok(family);
@@ -79,7 +81,7 @@ public class FamiliesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateFamily([FromBody] CreateFamilyRequest request)
     {
-        var validationError = ValidateUserContext(out var userId);
+        var validationError = ValidateUserContext(out var userId, out _);
         if (validationError != null) return validationError;
 
         try
@@ -99,46 +101,106 @@ public class FamiliesController : ControllerBase
     [HttpPost("{familyId}/members")]
     public async Task<IActionResult> AddMember(int familyId, [FromBody] AddMemberRequest request)
     {
-        var validationError = ValidateUserContext(out var userId);
+        var validationError = ValidateUserContext(out var userId, out var isAdmin);
         if (validationError != null) return validationError;
-        var userRole = await _familyService.GetUserRoleAsync(familyId, userId);
 
-        if (userRole != "FamilyAdmin" && userRole != "Parent")
+        try
+        {
+            var member = await _familyService.AddMemberAsync(
+                familyId,
+                userId,
+                request.UserId,
+                request.Role,
+                request.DateOfBirth,
+                isAdmin
+            );
+
+            return Ok(member);
+        }
+        catch (UnauthorizedAccessException)
+        {
             return Forbid();
-
-        var member = await _familyService.AddMemberAsync(
-            familyId,
-            request.UserId,
-            request.Role,
-            request.DateOfBirth
-        );
-
-        return Ok(member);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { error = ex.Message });
+        }
     }
 
-    [HttpDelete("{familyId}/members/{memberId}")]
-    public async Task<IActionResult> RemoveMember(int familyId, int memberId)
+    [HttpPost("{familyId}/members/by-email")]
+    public async Task<IActionResult> AddMemberByEmail(int familyId, [FromBody] AddMemberByEmailRequest request)
     {
-        var validationError = ValidateUserContext(out var userId);
+        var validationError = ValidateUserContext(out var userId, out var isAdmin);
         if (validationError != null) return validationError;
-        var userRole = await _familyService.GetUserRoleAsync(familyId, userId);
 
-        if (userRole != "FamilyAdmin" && userRole != "Parent")
+        try
+        {
+            var member = await _familyService.AddMemberByEmailAsync(
+                familyId,
+                userId,
+                request.Email,
+                request.Role,
+                isAdmin
+            );
+
+            return CreatedAtAction(nameof(GetFamily), new { id = familyId }, new
+            {
+                member.FamilyMemberId,
+                member.UserId,
+                member.Role,
+                member.JoinedAt,
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { error = ex.Message });
+        }
+        catch (UnauthorizedAccessException)
+        {
             return Forbid();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
 
-        await _familyService.RemoveMemberAsync(familyId, memberId);
+    [HttpDelete("{familyId}/members/users/{targetUserId:int}")]
+    public async Task<IActionResult> RemoveMember(int familyId, int targetUserId)
+    {
+        var validationError = ValidateUserContext(out var userId, out var isAdmin);
+        if (validationError != null) return validationError;
 
-        return NoContent();
+        try
+        {
+            await _familyService.RemoveMemberAsync(familyId, userId, targetUserId, isAdmin);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { error = "Member not found" });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid();
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFamily(int id, [FromBody] UpdateFamilyRequest request)
     {
-        var validationError = ValidateUserContext(out var userId);
+        var validationError = ValidateUserContext(out var userId, out var isAdmin);
         if (validationError != null) return validationError;
-        var userRole = await _familyService.GetUserRoleAsync(id, userId);
 
-        if (userRole != "FamilyAdmin")
+        if (!await _familyService.CanManageMembersAsync(id, userId, isAdmin))
             return Forbid();
 
         var family = await _familyService.GetByIdAsync(id);
@@ -154,11 +216,10 @@ public class FamiliesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteFamily(int id)
     {
-        var validationError = ValidateUserContext(out var userId);
+        var validationError = ValidateUserContext(out var userId, out var isAdmin);
         if (validationError != null) return validationError;
-        var userRole = await _familyService.GetUserRoleAsync(id, userId);
 
-        if (userRole != "FamilyAdmin")
+        if (!await _familyService.CanManageMembersAsync(id, userId, isAdmin))
             return Forbid();
 
         await _familyService.DeleteAsync(id);
@@ -169,13 +230,12 @@ public class FamiliesController : ControllerBase
     [HttpPost("delete-bulk")]
     public async Task<IActionResult> DeleteBulkFamilies([FromBody] DeleteBulkRequest request)
     {
-        var validationError = ValidateUserContext(out var userId);
+        var validationError = ValidateUserContext(out var userId, out var isAdmin);
         if (validationError != null) return validationError;
 
         foreach (var familyId in request.Ids)
         {
-            var userRole = await _familyService.GetUserRoleAsync(familyId, userId);
-            if (userRole != "FamilyAdmin")
+            if (!await _familyService.CanManageMembersAsync(familyId, userId, isAdmin))
                 return Forbid();
         }
 
@@ -189,6 +249,8 @@ public record CreateFamilyRequest(string FamilyName);
 
 public record UpdateFamilyRequest(string FamilyName);
 
-public record AddMemberRequest(int UserId, string Role, DateTime? DateOfBirth);
+public record AddMemberRequest(int UserId, string? Role = null, DateTime? DateOfBirth = null);
+
+public record AddMemberByEmailRequest(string Email, string? Role = null);
 
 public record DeleteBulkRequest(List<int> Ids);

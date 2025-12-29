@@ -35,6 +35,20 @@ public class AdminController : ControllerBase
         _logger = logger;
     }
 
+    [HttpGet("users/by-email")]
+    [Authorize]
+    public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return BadRequest(new { error = "Email is required" });
+
+        var user = await _userManager.FindByEmailAsync(email.Trim().ToLowerInvariant());
+        if (user == null)
+            return NotFound(new { error = "User not found" });
+
+        return Ok(new { id = user.Id.ToString(), email = user.Email, userName = user.UserName });
+    }
+
     [HttpGet("users")]
     [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetAllUsers()

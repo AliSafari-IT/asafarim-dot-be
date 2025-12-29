@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, BookOpen, ChevronRight, Play } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, Play, Plus, Edit2, Trash2 } from 'lucide-react';
 import smartpathService from '../api/smartpathService';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
 import './CourseLearningPage.css';
@@ -88,6 +88,16 @@ export default function CourseLearningPage() {
         }
     };
 
+    const handleDeleteChapter = async (chapterId: number) => {
+        if (!confirm('Are you sure you want to delete this chapter? All lessons will be deleted.')) return;
+        try {
+            await smartpathService.courses.deleteChapter(chapterId);
+            loadCourseAndChapters();
+        } catch (error) {
+            console.error('Failed to delete chapter:', error);
+        }
+    };
+
     if (loading) {
         return <div className="loading">Loading course...</div>;
     }
@@ -123,6 +133,14 @@ export default function CourseLearningPage() {
                         <span className="grade-badge">Grade {course.gradeLevel}</span>
                     </div>
                 </div>
+                <button 
+                    onClick={() => navigate(`/learning/${courseId}/chapter/new`)}
+                    className="btn-add-chapter"
+                    title="Add new chapter"
+                >
+                    <Plus size={20} />
+                    Add Chapter
+                </button>
             </div>
 
             <div className="chapters-container">
@@ -150,6 +168,22 @@ export default function CourseLearningPage() {
                                         {chapter.lessons?.length || 0} lessons
                                     </span>
                                 </button>
+                                <div className="chapter-actions">
+                                    <button
+                                        onClick={() => navigate(`/learning/${courseId}/chapter/${chapter.chapterId}/edit`)}
+                                        className="btn-action btn-edit"
+                                        title="Edit chapter"
+                                    >
+                                        <Edit2 size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteChapter(chapter.chapterId)}
+                                        className="btn-action btn-delete"
+                                        title="Delete chapter"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
 
                                 {expandedChapter === chapter.chapterId && chapter.lessons && chapter.lessons.length > 0 && (
                                     <div className="lessons-list">

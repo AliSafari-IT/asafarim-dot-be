@@ -34,13 +34,73 @@ public class CourseService : ICourseService
             .FirstOrDefaultAsync(c => c.CourseId == courseId);
     }
 
-    public async Task<List<Chapter>> GetChaptersAsync(int courseId)
+    public async System.Threading.Tasks.Task<List<Chapter>> GetChaptersAsync(int courseId)
     {
         return await _context
             .Chapters.Include(c => c.Lessons)
             .Where(c => c.CourseId == courseId)
             .OrderBy(c => c.OrderIndex)
             .ToListAsync();
+    }
+
+    public async System.Threading.Tasks.Task<Chapter?> GetChapterByIdAsync(int chapterId)
+    {
+        return await _context
+            .Chapters.Include(c => c.Lessons)
+            .FirstOrDefaultAsync(c => c.ChapterId == chapterId);
+    }
+
+    public async System.Threading.Tasks.Task<Chapter> CreateChapterAsync(CreateChapterRequest request)
+    {
+        var maxOrderIndex = await _context
+            .Chapters.Where(c => c.CourseId == request.CourseId)
+            .MaxAsync(c => (int?)c.OrderIndex) ?? 0;
+
+        var chapter = new Chapter
+        {
+            CourseId = request.CourseId,
+            Title = request.Title,
+            Description = request.Description,
+            OrderIndex = maxOrderIndex + 1,
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        _context.Chapters.Add(chapter);
+        await _context.SaveChangesAsync();
+
+        return chapter;
+    }
+
+    public async System.Threading.Tasks.Task<Chapter> UpdateChapterAsync(
+        int chapterId,
+        UpdateChapterRequest request
+    )
+    {
+        var chapter = await _context.Chapters.FindAsync(chapterId);
+        if (chapter == null)
+            throw new KeyNotFoundException($"Chapter {chapterId} not found");
+
+        if (request.Title != null)
+            chapter.Title = request.Title;
+        if (request.Description != null)
+            chapter.Description = request.Description;
+        if (request.OrderIndex.HasValue)
+            chapter.OrderIndex = request.OrderIndex.Value;
+
+        _context.Chapters.Update(chapter);
+        await _context.SaveChangesAsync();
+
+        return chapter;
+    }
+
+    public async System.Threading.Tasks.Task DeleteChapterAsync(int chapterId)
+    {
+        var chapter = await _context.Chapters.FindAsync(chapterId);
+        if (chapter != null)
+        {
+            _context.Chapters.Remove(chapter);
+            await _context.SaveChangesAsync();
+        }
     }
 
     public async Task<List<Lesson>> GetLessonsAsync(int chapterId)
