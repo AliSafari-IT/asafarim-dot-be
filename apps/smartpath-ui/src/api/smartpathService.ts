@@ -2,12 +2,12 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_SMARTPATH_API_URL || 'http://smartpath.asafarim.local:5109';
+const IDENTITY_API_URL = import.meta.env.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101';
 
-console.log('🔧 SmartPath API Base URL:', API_BASE_URL);
-console.log('🔧 Environment variables:', {
-  VITE_SMARTPATH_API_URL: import.meta.env.VITE_SMARTPATH_API_URL,
-  VITE_IDENTITY_API_URL: import.meta.env.VITE_IDENTITY_API_URL,
-});
+if (import.meta.env.DEV) {
+  console.log('🔧 SmartPath API Base URL:', API_BASE_URL);
+  console.log('🔧 Identity API Base URL:', IDENTITY_API_URL);
+}
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -17,17 +17,13 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  // The shared auth system stores the JWT token as 'auth_token'
   const token = localStorage.getItem('auth_token');
-  console.log('🔑 Request interceptor - Token exists:', !!token);
   if (token) {
-    console.log('🔑 Token preview:', token.substring(0, 50) + '...');
     config.headers.Authorization = `Bearer ${token}`;
-  } else {
-    console.warn('⚠️ No auth_token found in localStorage');
-    console.warn('⚠️ Available localStorage keys:', Object.keys(localStorage));
+    if (import.meta.env.DEV) {
+      console.log('🔑 Request with token:', token.substring(0, 30) + '...');
+    }
   }
-  console.log('📤 Request headers:', config.headers);
   return config;
 });
 
@@ -38,19 +34,22 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
         const response = await axios.post(
-          `${import.meta.env.VITE_IDENTITY_API_URL}/auth/refresh`,
+          `${IDENTITY_API_URL}/auth/refresh`,
           { refreshToken }
         );
         const { accessToken } = response.data;
-        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('auth_token', accessToken);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return apiClient(originalRequest);
-      } catch {
-        localStorage.clear();
-        // Redirect to Identity Portal login page
-        window.location.href = 'http://identity.asafarim.local:5177/login';
+      } catch (err) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
+        window.location.href = `${IDENTITY_API_URL.replace('/auth', '')}/login?returnUrl=${encodeURIComponent(window.location.href)}`;
       }
     }
     return Promise.reject(error);

@@ -82,17 +82,17 @@ export default function LearningPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return <div className="loading" data-testid="learning-loading">Loading...</div>;
     }
 
     return (
-        <div className="learning-page container">
-            <header className="page-header">
+        <div className="learning-page container" data-testid="learning-page">
+            <header className="page-header" data-testid="learning-header">
                 <div>
                     <h1>Learning</h1>
                     <p>Explore courses and start learning</p>
                 </div>
-                <div className="header-actions">
+                <div className="header-actions" data-testid="learning-header-actions">
                     {selectedCourses.size > 0 && (
                         <ButtonComponent onClick={deleteBulkCourses} variant="danger">
                             <Trash2 size={20} />
@@ -106,20 +106,21 @@ export default function LearningPage() {
                 </div>
             </header>
 
-            <div className="courses-grid">
-                {courses.length === 0 ? (
-                    <div className="empty-state">
+            <div className="courses-grid" data-testid="courses-grid">
+                {courses?.length === 0 ? (
+                    <div className="empty-state" data-testid="courses-empty-state">
                         <BookOpen size={48} />
                         <p>No courses available yet.</p>
                     </div>
                 ) : (
                     <>
-                        <div className="select-all-row">
+                        <div className="select-all-row" data-testid="course-select-all-row">
                             <input
                                 type="checkbox"
                                 checked={selectedCourses.size === courses.length && courses.length > 0}
                                 onChange={toggleAllCourses}
                                 title="Select all courses"
+                                data-testid="course-select-all-checkbox"
                             />
                             <span>{selectedCourses.size > 0 ? `${selectedCourses.size} selected` : 'Select all'}</span>
                         </div>
@@ -127,6 +128,7 @@ export default function LearningPage() {
                             <div
                                 key={course.courseId}
                                 className={`course-card ${selectedCourses.has(course.courseId) ? 'selected' : ''}`}
+                                data-testid={`course-card-${course.courseId}`}
                             >
                                 <div className="course-checkbox">
                                     <input

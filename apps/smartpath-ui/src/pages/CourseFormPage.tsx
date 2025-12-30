@@ -94,12 +94,12 @@ export default function CourseFormPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return <div className="loading" data-testid="course-form-loading">Loading...</div>;
     }
 
     return (
-        <div className="form-page container">
-            <div className="form-header">
+        <div className="form-page container" data-testid="course-form-page">
+            <div className="form-header" data-testid="course-form-header">
                 <button onClick={() => navigate('/learning')} className="btn-back">
                     <ArrowLeft size={20} />
                     Back
@@ -114,7 +114,7 @@ export default function CourseFormPage() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="form-container">
+            <form onSubmit={handleSubmit} className="form-container" data-testid="course-form">
                 <div className="form-group">
                     <label htmlFor="name">Course Name *</label>
                     <input
@@ -124,6 +124,7 @@ export default function CourseFormPage() {
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                         placeholder="Enter course name"
                         required
+                        data-testid="course-name-input"
                     />
                 </div>
 

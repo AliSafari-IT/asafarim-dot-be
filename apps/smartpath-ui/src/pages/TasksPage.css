@@ -6,7 +6,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin: 2rem;
 }
 
 .page-header h1 {
@@ -39,6 +39,9 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    background-color: var(--asm-color-surface);
+    border-radius: var(--asm-radius-md);
+    padding: 0.75rem 1rem;
 }
 
 .family-selector label {
@@ -49,7 +52,6 @@
     padding: 0.5rem 1rem;
     border: 1px solid var(--asm-color-border);
     border-radius: var(--asm-radius-md);
-    background-color: var(--asm-color-surface);
 }
 
 .header-actions {

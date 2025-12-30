@@ -92,12 +92,12 @@ export default function ChapterFormPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading chapter...</div>;
+        return <div className="loading" data-testid="chapter-form-loading">Loading...</div>;
     }
 
     return (
-        <div className="form-page container">
-            <div className="form-header">
+        <div className="form-page container" data-testid="chapter-form-page">
+            <div className="form-header" data-testid="chapter-form-header">
                 <button onClick={() => navigate(`/learning/${courseId}`)} className="btn-back">
                     <ArrowLeft size={20} />
                     Back to Course
@@ -112,7 +112,7 @@ export default function ChapterFormPage() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="form-container">
+            <form onSubmit={handleSubmit} className="form-container" data-testid="chapter-form">
                 <div className="form-group">
                     <label htmlFor="title">Chapter Title *</label>
                     <input
@@ -122,6 +122,7 @@ export default function ChapterFormPage() {
                         onChange={(e) => setForm({ ...form, title: e.target.value })}
                         placeholder="Enter chapter title"
                         required
+                        data-testid="chapter-title-input"
                     />
                 </div>
 

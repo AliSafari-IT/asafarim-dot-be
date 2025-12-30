@@ -68,7 +68,7 @@ export default function CourseLearningPage() {
             
             setChapters(chaptersWithLessons);
             if (chaptersWithLessons.length > 0) {
-                setExpandedChapter(chaptersWithLessons[0].chapterId);
+                setExpandedChapter(chaptersWithLessons[0]!.chapterId);
             }
         } catch (error) {
             console.error('Failed to load course:', error);
@@ -99,16 +99,16 @@ export default function CourseLearningPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading course...</div>;
+        return <div className="loading" data-testid="course-learning-loading">Loading...</div>;
     }
 
     if (!course) {
         return (
-            <div className="course-learning-page container">
-                <button onClick={() => navigate('/learning')} className="btn-back">
+            <div className="course-learning-page container" data-testid="course-learning-page">
+                <ButtonComponent onClick={() => navigate('/learning')} variant="primary">
                     <ArrowLeft size={20} />
                     Back to Courses
-                </button>
+                </ButtonComponent>
                 <div className="error-state">
                     <p>Course not found</p>
                 </div>
@@ -117,8 +117,8 @@ export default function CourseLearningPage() {
     }
 
     return (
-        <div className="course-learning-page container">
-            <div className="course-header">
+        <div className="course-learning-page container" data-testid="course-learning-page">
+            <div className="course-header" data-testid="course-header">
                 <button onClick={() => navigate('/learning')} className="btn-back">
                     <ArrowLeft size={20} />
                     Back to Courses

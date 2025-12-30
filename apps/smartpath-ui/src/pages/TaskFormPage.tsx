@@ -123,12 +123,12 @@ export default function TaskFormPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return <div className="loading" data-testid="task-form-loading">Loading...</div>;
     }
 
     return (
-        <div className="form-page container">
-            <div className="form-header">
+        <div className="form-page container" data-testid="task-form-page">
+            <div className="form-header" data-testid="task-form-header">
                 <button onClick={() => navigate('/tasks')} className="btn-back">
                     <ArrowLeft size={20} />
                     Back
@@ -143,7 +143,7 @@ export default function TaskFormPage() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="form-container">
+            <form onSubmit={handleSubmit} className="form-container" data-testid="task-form">
                 <div className="form-group">
                     <label htmlFor="title">Title *</label>
                     <input
@@ -153,6 +153,7 @@ export default function TaskFormPage() {
                         onChange={(e) => setForm({ ...form, title: e.target.value })}
                         placeholder="Enter task title"
                         required
+                        data-testid="task-title-input"
                     />
                 </div>
 
@@ -163,6 +164,7 @@ export default function TaskFormPage() {
                         value={form.familyId}
                         onChange={(e) => setForm({ ...form, familyId: Number(e.target.value) })}
                         required
+                        data-testid="task-family-select"
                     >
                         <option value="">Select a family</option>
                         {families.map((family) => (
