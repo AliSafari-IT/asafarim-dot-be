@@ -27,7 +27,7 @@ export const Dashboard = () => {
   const roles = (user?.roles || ["Viewer"]).join(", ");
 
   return (
-    <div className="dash">
+    <div className="dash" data-testid="dashboard-component">
       <header className="dash-header">
         <div className="dash-header-inner">
           <h1 className="dash-title">{t("dashboard.title")}</h1>

@@ -29,16 +29,18 @@ export const RegisterHero = () => {
   );
 
   return (
-    <Hero
-      className="login-hero"
-      kicker={kicker}
-      title={title}
-      subtitle={subtitle}
-      bullets={bullets}
-      primaryCta={primaryCta}
-      secondaryCta={secondaryCta}
-      media={mediaContent}
-    />
+    <div data-testid="register-hero">
+      <Hero
+        className="login-hero"
+        kicker={kicker}
+        title={title}
+        subtitle={subtitle}
+        bullets={bullets}
+        primaryCta={primaryCta}
+        secondaryCta={secondaryCta}
+        media={mediaContent}
+      />
+    </div>
   );
 };
 

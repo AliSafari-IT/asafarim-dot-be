@@ -134,7 +134,7 @@ export default function AddNewUser() {
   };
 
   return (
-    <div className="admin-container">
+    <div className="admin-container" data-testid="add-new-user-component">
       <div className="admin-header">
         <button 
           onClick={() => navigate('/admin-area/users')} 

@@ -174,7 +174,7 @@ export const RegisterForm = () => {
   const errorInfo = getErrorMessage(error);
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
+    <form className="auth-form" data-testid="register-form" onSubmit={handleSubmit}>
       {errorInfo && (
         <div className="message message-error">
           <div className="message-header">

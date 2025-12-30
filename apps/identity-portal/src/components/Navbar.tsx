@@ -111,6 +111,7 @@ export default function Navbar() {
         isOpen ? "mobile-menu-open" : ""
       }`}
       role="banner"
+      data-testid="navbar"
     >
       <CentralNavbar
         appId="identity-portal"

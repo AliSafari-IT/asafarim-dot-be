@@ -13,7 +13,10 @@ export const AuthLayout = ({ children, title }: AuthLayoutProps) => {
   document.title = title || "Identity Portal";
 
   return (
-    <div className={`auth-container ${title ? "auth-container--with-title" : ""}`}>     
+    <div
+      className={`auth-container ${title ? "auth-container--with-title" : ""}`}
+      data-testid="auth-layout"
+    >
       {children}
       <FooterContainer />
     </div>

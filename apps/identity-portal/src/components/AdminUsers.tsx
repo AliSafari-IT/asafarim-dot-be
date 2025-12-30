@@ -178,7 +178,7 @@ export default function AdminUsers() {
     return <div className="admin-loading">Loading users and roles...</div>;
 
   return (
-    <div className="admin-container">
+    <div className="admin-container" data-testid="admin-users-component">
       {/* Header Section */}
       <header className="admin-header">
         <div>

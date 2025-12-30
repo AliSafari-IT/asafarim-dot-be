@@ -84,7 +84,7 @@ export default function PasswordSetupForm({ userId, email, onSuccess, onCancel }
   };
 
   return (
-    <div className="auth-form-container">
+    <div className="auth-form-container" data-testid="password-setup-form">
       <h2>Set Your Password</h2>
       <p className="auth-subtitle">
         Please create a password for your account: <strong>{email}</strong>

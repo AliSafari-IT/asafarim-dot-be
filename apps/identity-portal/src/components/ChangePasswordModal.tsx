@@ -76,7 +76,7 @@ export const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProp
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay" data-testid="change-password-modal">
       <div className="modal-content">
         <div className="modal-header">
           <h2>Change Password</h2>

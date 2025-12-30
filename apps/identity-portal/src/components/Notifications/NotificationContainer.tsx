@@ -12,7 +12,7 @@ const NotificationContainer = () => {
   );
 
   return (
-    <div className="notification-container">
+    <div className="notification-container" data-testid="notification-container">
 
       {uniqueNotifications.map((notification) => (
         <Notification
