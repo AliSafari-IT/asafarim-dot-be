@@ -1055,14 +1055,71 @@ public class TestCafeGeneratorService
         if (string.IsNullOrEmpty(input))
             return input;
 
-        // Remove TypeScript type annotations from function parameters
-        // Pattern: (paramName: Type) => (paramName)
-        // Only match if the type starts with uppercase letter (Type, Array, etc.) or is a generic type
-        // This avoids matching object properties like { timeout: 5000 }
-        var result = System.Text.RegularExpressions.Regex.Replace(
-            input,
-            @"\b(\w+)\s*:\s*(?:[A-Z]\w*|[a-z]+<[^>]*>)(?:<[^>]*>)?(?:\[\])?\s*(?=\s*[,)])",
-            "$1",
+        // IMPORTANT: Be extremely conservative to avoid breaking valid JavaScript
+        // Only remove clear TypeScript-only syntax patterns
+        
+        var result = input;
+        
+        // Remove function parameter type annotations: function(param: Type) or (param: Type) =>
+        // Only match when we can clearly identify it's a function parameter, not an object property
+        // Match pattern: (identifier: TypeName) where TypeName starts with uppercase or is a known TS type
+        // But ONLY when it's in a function parameter context (after 'function' keyword or before '=>')
+        
+        // Pattern 1: function name(param: Type) - named functions
+        result = System.Text.RegularExpressions.Regex.Replace(
+            result,
+            @"\bfunction\s+\w+\s*\(([^)]*)\)",
+            match => {
+                var params_str = match.Groups[1].Value;
+                // Strip type annotations from parameters
+                var cleaned = System.Text.RegularExpressions.Regex.Replace(
+                    params_str,
+                    @"(\w+)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]*",
+                    "$1"
+                );
+                return match.Value.Replace(params_str, cleaned);
+            },
+            System.Text.RegularExpressions.RegexOptions.Multiline
+        );
+        
+        // Pattern 2: async function name(param: Type)
+        result = System.Text.RegularExpressions.Regex.Replace(
+            result,
+            @"\basync\s+function\s+\w+\s*\(([^)]*)\)",
+            match => {
+                var params_str = match.Groups[1].Value;
+                var cleaned = System.Text.RegularExpressions.Regex.Replace(
+                    params_str,
+                    @"(\w+)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]*",
+                    "$1"
+                );
+                return match.Value.Replace(params_str, cleaned);
+            },
+            System.Text.RegularExpressions.RegexOptions.Multiline
+        );
+        
+        // Pattern 3: Arrow functions with single typed parameter: (param: Type) =>
+        // Be very careful here - only match if followed by =>
+        result = System.Text.RegularExpressions.Regex.Replace(
+            result,
+            @"\((\w+)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]*\)\s*=>",
+            "($1) =>",
+            System.Text.RegularExpressions.RegexOptions.Multiline
+        );
+        
+        // Pattern 4: Remove return type annotations: ): Type {
+        result = System.Text.RegularExpressions.Regex.Replace(
+            result,
+            @"\)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]+\s*\{",
+            ") {",
+            System.Text.RegularExpressions.RegexOptions.Multiline
+        );
+        
+        // Pattern 5: Remove return type annotations for arrow functions: ): Type =>
+        result = System.Text.RegularExpressions.Regex.Replace(
+            result,
+            @"\)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]+\s*=>",
+            ") =>",
             System.Text.RegularExpressions.RegexOptions.Multiline
         );
 
