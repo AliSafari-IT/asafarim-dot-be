@@ -1055,76 +1055,522 @@ public class TestCafeGeneratorService
         if (string.IsNullOrEmpty(input))
             return input;
 
-        // IMPORTANT: Be extremely conservative to avoid breaking valid JavaScript
-        // Only remove clear TypeScript-only syntax patterns
-        
-        var result = input;
-        
-        // Remove function parameter type annotations: function(param: Type) or (param: Type) =>
-        // Only match when we can clearly identify it's a function parameter, not an object property
-        // Match pattern: (identifier: TypeName) where TypeName starts with uppercase or is a known TS type
-        // But ONLY when it's in a function parameter context (after 'function' keyword or before '=>')
-        
-        // Pattern 1: function name(param: Type) - named functions
-        result = System.Text.RegularExpressions.Regex.Replace(
-            result,
-            @"\bfunction\s+\w+\s*\(([^)]*)\)",
-            match => {
-                var params_str = match.Groups[1].Value;
-                // Strip type annotations from parameters
-                var cleaned = System.Text.RegularExpressions.Regex.Replace(
-                    params_str,
-                    @"(\w+)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]*",
-                    "$1"
-                );
-                return match.Value.Replace(params_str, cleaned);
-            },
-            System.Text.RegularExpressions.RegexOptions.Multiline
-        );
-        
-        // Pattern 2: async function name(param: Type)
-        result = System.Text.RegularExpressions.Regex.Replace(
-            result,
-            @"\basync\s+function\s+\w+\s*\(([^)]*)\)",
-            match => {
-                var params_str = match.Groups[1].Value;
-                var cleaned = System.Text.RegularExpressions.Regex.Replace(
-                    params_str,
-                    @"(\w+)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]*",
-                    "$1"
-                );
-                return match.Value.Replace(params_str, cleaned);
-            },
-            System.Text.RegularExpressions.RegexOptions.Multiline
-        );
-        
-        // Pattern 3: Arrow functions with single typed parameter: (param: Type) =>
-        // Be very careful here - only match if followed by =>
-        result = System.Text.RegularExpressions.Regex.Replace(
-            result,
-            @"\((\w+)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]*\)\s*=>",
-            "($1) =>",
-            System.Text.RegularExpressions.RegexOptions.Multiline
-        );
-        
-        // Pattern 4: Remove return type annotations: ): Type {
-        result = System.Text.RegularExpressions.Regex.Replace(
-            result,
-            @"\)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]+\s*\{",
-            ") {",
-            System.Text.RegularExpressions.RegexOptions.Multiline
-        );
-        
-        // Pattern 5: Remove return type annotations for arrow functions: ): Type =>
-        result = System.Text.RegularExpressions.Regex.Replace(
-            result,
-            @"\)\s*:\s*[A-Za-z_$][\w<>\[\]|&\s]+\s*=>",
-            ") =>",
-            System.Text.RegularExpressions.RegexOptions.Multiline
-        );
+        // String/comment-aware, conservative TS stripper:
+        // - Removes parameter type annotations inside function(...) and (...)=> signatures
+        // - Removes return type annotations: ) : Type {  and  ) : Type =>
+        // - Removes "as Type" assertions (not inside strings/comments)
+        //
+        // It does NOT attempt to parse full TS. It only handles safe, common patterns.
 
-        return result;
+        var s = input;
+
+        // 1) Strip function(...) parameter annotations
+        s = StripFunctionParamTypes(s);
+
+        // 2) Strip arrow function (...)=> parameter annotations
+        s = StripArrowParamTypes(s);
+
+        // 3) Strip return type annotations after ')'
+        s = StripReturnTypes(s);
+
+        // 4) Strip "as Type" assertions
+        s = StripAsAssertions(s);
+
+        return s;
     }
+
+    private static string StripFunctionParamTypes(string s)
+    {
+        var sb = new StringBuilder(s.Length);
+        int i = 0;
+
+        while (i < s.Length)
+        {
+            if (IsAtKeyword(s, i, "function") && IsWordBoundary(s, i - 1) && IsWordBoundary(s, i + 8))
+            {
+                // Copy "function"
+                sb.Append("function");
+                i += 8;
+
+                // Copy until we reach the next '(' (skipping strings/comments safely)
+                int parenIndex = FindNextCharOutsideStringsAndComments(s, i, '(');
+                if (parenIndex < 0)
+                {
+                    sb.Append(s.AsSpan(i));
+                    break;
+                }
+
+                sb.Append(s.AsSpan(i, parenIndex - i)); // copy up to '('
+                int closeIndex = FindMatchingParenOutsideStringsAndComments(s, parenIndex);
+                if (closeIndex < 0)
+                {
+                    // unmatched - copy rest
+                    sb.Append(s.AsSpan(parenIndex));
+                    break;
+                }
+
+                sb.Append('(');
+                var paramList = s.Substring(parenIndex + 1, closeIndex - parenIndex - 1);
+                sb.Append(StripParamListTypes(paramList));
+                sb.Append(')');
+
+                i = closeIndex + 1;
+                continue;
+            }
+
+            // normal char
+            sb.Append(s[i]);
+            i++;
+        }
+
+        return sb.ToString();
+    }
+
+    private static string StripArrowParamTypes(string s)
+    {
+        // Finds occurrences of "( ... ) =>" outside strings/comments and strips types inside the parens.
+        var sb = new StringBuilder(s.Length);
+        int i = 0;
+
+        while (i < s.Length)
+        {
+            if (s[i] == '(' && !IsInsideStringOrComment(s, i))
+            {
+                int closeIndex = FindMatchingParenOutsideStringsAndComments(s, i);
+                if (closeIndex > i)
+                {
+                    int j = SkipWhitespace(s, closeIndex + 1);
+                    if (j + 1 < s.Length && s[j] == '=' && s[j + 1] == '>')
+                    {
+                        // It's an arrow params group
+                        sb.Append('(');
+                        var paramList = s.Substring(i + 1, closeIndex - i - 1);
+                        sb.Append(StripParamListTypes(paramList));
+                        sb.Append(')');
+                        // copy " =>" (with original whitespace)
+                        sb.Append(s.AsSpan(closeIndex + 1, j - (closeIndex + 1)));
+                        sb.Append("=>");
+                        i = j + 2;
+                        continue;
+                    }
+                }
+            }
+
+            sb.Append(s[i]);
+            i++;
+        }
+
+        return sb.ToString();
+    }
+
+    private static string StripReturnTypes(string s)
+    {
+        // Rewrites: ") : Type {" -> ") {"
+        // and:      ") : Type =>" -> ") =>"
+        // Only outside strings/comments.
+        var sb = new StringBuilder(s.Length);
+        int i = 0;
+
+        while (i < s.Length)
+        {
+            if (s[i] == ')' && !IsInsideStringOrComment(s, i))
+            {
+                sb.Append(')');
+                int j = SkipWhitespace(s, i + 1);
+
+                if (j < s.Length && s[j] == ':')
+                {
+                    int k = SkipWhitespace(s, j + 1);
+
+                    // Parse a type token sequence (very conservative) until we hit '{' or '=>'
+                    int typeEnd = FindTypeAnnotationEnd(s, k);
+                    if (typeEnd > k)
+                    {
+                        int afterType = SkipWhitespace(s, typeEnd);
+
+                        // If next is '{' -> drop the ": Type"
+                        if (afterType < s.Length && s[afterType] == '{')
+                        {
+                            sb.Append(' ');
+                            sb.Append('{');
+                            i = afterType + 1;
+                            continue;
+                        }
+
+                        // If next is "=>"
+                        if (afterType + 1 < s.Length && s[afterType] == '=' && s[afterType + 1] == '>')
+                        {
+                            sb.Append(' ');
+                            sb.Append("=>");
+                            i = afterType + 2;
+                            continue;
+                        }
+                    }
+                }
+
+                i++;
+                continue;
+            }
+
+            sb.Append(s[i]);
+            i++;
+        }
+
+        return sb.ToString();
+    }
+
+    private static string StripAsAssertions(string s)
+    {
+        // Remove " as Type" outside strings/comments, conservatively.
+        var sb = new StringBuilder(s.Length);
+        int i = 0;
+
+        while (i < s.Length)
+        {
+            if (!IsInsideStringOrComment(s, i) && IsAtKeyword(s, i, "as") && IsWordBoundary(s, i - 1) && IsWordBoundary(s, i + 2))
+            {
+                // Ensure there's whitespace before "as" in output already (common pattern " x as T")
+                // We remove from current position up to the end of the type.
+                int prev = i - 1;
+                if (prev >= 0 && char.IsWhiteSpace(s[prev]))
+                {
+                    int k = SkipWhitespace(s, i + 2);
+                    int typeEnd = FindTypeAnnotationEnd(s, k);
+                    if (typeEnd > k)
+                    {
+                        // Drop " as Type"
+                        i = typeEnd;
+                        continue;
+                    }
+                }
+            }
+
+            sb.Append(s[i]);
+            i++;
+        }
+
+        return sb.ToString();
+    }
+
+    private static string StripParamListTypes(string paramList)
+    {
+        // Only remove "name: Type" when Type looks like a TS type (not a value like true/false/"x"/123/{...})
+        // Also handles optional params "name?: Type" and rest "...args: Type[]"
+        var sb = new StringBuilder(paramList.Length);
+        int i = 0;
+
+        while (i < paramList.Length)
+        {
+            // Copy strings/comments verbatim inside the param list
+            if (TryCopyStringOrComment(paramList, ref i, sb))
+                continue;
+
+            // Handle rest operator
+            if (i + 2 < paramList.Length && paramList[i] == '.' && paramList[i + 1] == '.' && paramList[i + 2] == '.')
+            {
+                sb.Append("...");
+                i += 3;
+                continue;
+            }
+
+            // Identifier start?
+            if (IsIdentStart(paramList[i]))
+            {
+                int start = i;
+                i++;
+                while (i < paramList.Length && IsIdentPart(paramList[i])) i++;
+
+                // Optional param marker '?'
+                int opt = i;
+                if (opt < paramList.Length && paramList[opt] == '?')
+                {
+                    i++;
+                }
+
+                int ws = SkipWhitespace(paramList, i);
+                if (ws < paramList.Length && paramList[ws] == ':')
+                {
+                    int afterColon = SkipWhitespace(paramList, ws + 1);
+
+                    // Only strip if it looks like a TYPE start (not a value start)
+                    if (LooksLikeTypeStart(paramList, afterColon))
+                    {
+                        // Emit identifier (and optional '?') but skip ": Type"
+                        sb.Append(paramList.AsSpan(start, i - start)); // includes '?' if present
+                        // Skip ":"
+                        int typeEnd = FindTypeAnnotationEnd(paramList, afterColon);
+                        if (typeEnd <= afterColon)
+                        {
+                            // Failed to parse type safely, fall back to original
+                            sb.Append(paramList.AsSpan(i, 0));
+                        }
+                        // Continue from typeEnd (do not swallow default value "= ...")
+                        i = typeEnd;
+                        continue;
+                    }
+                }
+
+                // Not a type annotation -> emit original identifier chunk and continue
+                sb.Append(paramList.AsSpan(start, i - start));
+                continue;
+            }
+
+            sb.Append(paramList[i]);
+            i++;
+        }
+
+        return sb.ToString();
+    }
+
+    // ---------------- helpers ----------------
+
+    private static bool LooksLikeTypeStart(string s, int i)
+    {
+        if (i >= s.Length) return false;
+
+        char c = s[i];
+
+        // Value starts we must NOT treat as type
+        if (c == '"' || c == '\'' || c == '`') return false;
+        if (c == '{' || c == '[' || c == '(') return false;
+        if (char.IsDigit(c)) return false;
+
+        // Keywords that are likely values in defaults
+        if (IsAtKeyword(s, i, "true") || IsAtKeyword(s, i, "false") || IsAtKeyword(s, i, "null") || IsAtKeyword(s, i, "undefined"))
+            return false;
+
+        // Common TS primitive types (lowercase)
+        if (IsAtKeyword(s, i, "string") || IsAtKeyword(s, i, "number") || IsAtKeyword(s, i, "boolean")
+            || IsAtKeyword(s, i, "any") || IsAtKeyword(s, i, "unknown") || IsAtKeyword(s, i, "void")
+            || IsAtKeyword(s, i, "never") || IsAtKeyword(s, i, "object"))
+            return true;
+
+        // Uppercase types / generics / namespaces often start with letter/_/$
+        return IsIdentStart(c);
+    }
+
+    private static int FindTypeAnnotationEnd(string s, int i)
+    {
+        // Consume a conservative TS type expression:
+        // Identifiers, dots, generics <>, unions |, intersections &, arrays [], spaces.
+        // Stop before '=', ',', ')', '}', ']', ';', or newline.
+        int depthAngle = 0;
+        int depthBrack = 0;
+
+        int start = i;
+        while (i < s.Length)
+        {
+            if (TrySkipStringOrComment(s, ref i))
+                continue;
+
+            char c = s[i];
+
+            if (c == '<') { depthAngle++; i++; continue; }
+            if (c == '>' && depthAngle > 0) { depthAngle--; i++; continue; }
+            if (c == '[') { depthBrack++; i++; continue; }
+            if (c == ']' && depthBrack > 0) { depthBrack--; i++; continue; }
+
+            if (depthAngle == 0 && depthBrack == 0)
+            {
+                if (c == '=' || c == ',' || c == ')' || c == '}' || c == ';')
+                    break;
+                // For arrow return parsing we also stop before "=>", handled by caller after whitespace.
+            }
+
+            // Allow typical type tokens
+            if (char.IsWhiteSpace(c) || IsIdentPart(c) || c == '.' || c == '|' || c == '&' || c == '?' || c == ':')
+            {
+                i++;
+                continue;
+            }
+
+            // Anything else: stop (too risky)
+            break;
+        }
+
+        // Must have consumed something meaningful
+        return i > start ? i : start;
+    }
+
+    private static int FindNextCharOutsideStringsAndComments(string s, int start, char target)
+    {
+        int i = start;
+        while (i < s.Length)
+        {
+            if (TrySkipStringOrComment(s, ref i))
+                continue;
+
+            if (s[i] == target)
+                return i;
+
+            i++;
+        }
+        return -1;
+    }
+
+    private static int FindMatchingParenOutsideStringsAndComments(string s, int openParenIndex)
+    {
+        int depth = 0;
+        for (int i = openParenIndex; i < s.Length; i++)
+        {
+            if (TrySkipStringOrComment(s, ref i))
+                continue;
+
+            if (s[i] == '(') depth++;
+            else if (s[i] == ')')
+            {
+                depth--;
+                if (depth == 0) return i;
+            }
+        }
+        return -1;
+    }
+
+    private static int SkipWhitespace(string s, int i)
+    {
+        while (i < s.Length && char.IsWhiteSpace(s[i])) i++;
+        return i;
+    }
+
+    private static bool IsInsideStringOrComment(string s, int index)
+    {
+        // Lightweight check by scanning from start to index.
+        // Used only in a few spots; acceptable for generated test sizes.
+        bool inSingle = false, inDouble = false, inTemplate = false, inLine = false, inBlock = false;
+        for (int i = 0; i < index && i < s.Length; i++)
+        {
+            char c = s[i];
+            char n = i + 1 < s.Length ? s[i + 1] : '\0';
+
+            if (inLine)
+            {
+                if (c == '\n') inLine = false;
+                continue;
+            }
+            if (inBlock)
+            {
+                if (c == '*' && n == '/') { inBlock = false; i++; }
+                continue;
+            }
+            if (inSingle)
+            {
+                if (c == '\\') { i++; continue; }
+                if (c == '\'') inSingle = false;
+                continue;
+            }
+            if (inDouble)
+            {
+                if (c == '\\') { i++; continue; }
+                if (c == '"') inDouble = false;
+                continue;
+            }
+            if (inTemplate)
+            {
+                if (c == '\\') { i++; continue; }
+                if (c == '`') inTemplate = false;
+                continue;
+            }
+
+            if (c == '/' && n == '/') { inLine = true; i++; continue; }
+            if (c == '/' && n == '*') { inBlock = true; i++; continue; }
+            if (c == '\'') { inSingle = true; continue; }
+            if (c == '"') { inDouble = true; continue; }
+            if (c == '`') { inTemplate = true; continue; }
+        }
+
+        return inSingle || inDouble || inTemplate || inLine || inBlock;
+    }
+
+    private static bool TrySkipStringOrComment(string s, ref int i)
+    {
+        if (i >= s.Length) return false;
+        char c = s[i];
+        char n = i + 1 < s.Length ? s[i + 1] : '\0';
+
+        // line comment
+        if (c == '/' && n == '/')
+        {
+            i += 2;
+            while (i < s.Length && s[i] != '\n') i++;
+            return true;
+        }
+        // block comment
+        if (c == '/' && n == '*')
+        {
+            i += 2;
+            while (i + 1 < s.Length && !(s[i] == '*' && s[i + 1] == '/')) i++;
+            if (i + 1 < s.Length) i += 2;
+            return true;
+        }
+        // single quote
+        if (c == '\'')
+        {
+            i++;
+            while (i < s.Length)
+            {
+                if (s[i] == '\\') { i += 2; continue; }
+                if (s[i] == '\'') { i++; break; }
+                i++;
+            }
+            return true;
+        }
+        // double quote
+        if (c == '"')
+        {
+            i++;
+            while (i < s.Length)
+            {
+                if (s[i] == '\\') { i += 2; continue; }
+                if (s[i] == '"') { i++; break; }
+                i++;
+            }
+            return true;
+        }
+        // template
+        if (c == '`')
+        {
+            i++;
+            while (i < s.Length)
+            {
+                if (s[i] == '\\') { i += 2; continue; }
+                if (s[i] == '`') { i++; break; }
+                i++;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryCopyStringOrComment(string s, ref int i, StringBuilder sb)
+    {
+        int start = i;
+        if (TrySkipStringOrComment(s, ref i))
+        {
+            sb.Append(s.AsSpan(start, i - start));
+            return true;
+        }
+        return false;
+    }
+
+    private static bool IsAtKeyword(string s, int i, string kw)
+    {
+        if (i < 0 || i + kw.Length > s.Length) return false;
+        for (int k = 0; k < kw.Length; k++)
+        {
+            if (s[i + k] != kw[k]) return false;
+        }
+        return true;
+    }
+
+    private static bool IsWordBoundary(string s, int i)
+    {
+        if (i < 0 || i >= s.Length) return true;
+        return !IsIdentPart(s[i]);
+    }
+
+    private static bool IsIdentStart(char c) => char.IsLetter(c) || c == '_' || c == '$';
+    private static bool IsIdentPart(char c) => char.IsLetterOrDigit(c) || c == '_' || c == '$';
 
     private static List<string> MergeImports(
         List<string> existingImports,
