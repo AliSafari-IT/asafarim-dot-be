@@ -81,12 +81,12 @@ export default function FamilyFormPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return <div className="loading" data-testid="family-form-loading">Loading...</div>;
     }
 
     return (
-        <div className="form-page container">
-            <div className="form-header">
+        <div className="form-page container" data-testid="family-form-page">
+            <div className="form-header" data-testid="family-form-header">
                 <button onClick={() => navigate('/family')} className="btn-back">
                     <ArrowLeft size={20} />
                     Back
@@ -101,7 +101,7 @@ export default function FamilyFormPage() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="form-container">
+            <form onSubmit={handleSubmit} className="form-container" data-testid="family-form">
                 <div className="form-group">
                     <label htmlFor="familyName">Family Name *</label>
                     <input
@@ -111,6 +111,7 @@ export default function FamilyFormPage() {
                         onChange={(e) => setForm({ ...form, familyName: e.target.value })}
                         placeholder="Enter family name"
                         required
+                        data-testid="family-name-input"
                     />
                 </div>
 

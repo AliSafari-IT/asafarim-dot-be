@@ -52,7 +52,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         minHeight: '100vh',
         flexDirection: 'column',
         gap: '1rem'
-      }}>
+      }} data-testid="protected-route-loading">
         <div className="spinner" style={{
           width: '40px',
           height: '40px',

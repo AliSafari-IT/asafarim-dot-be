@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import smartpathService from '../api/smartpathService';
-import { Users, Plus, Edit2, Trash2, UserPlus, X } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, UserPlus, X, Users2 } from 'lucide-react';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
 import AddMemberModal from '../components/AddMemberModal';
 import './FamilyPage.css';
@@ -107,17 +107,17 @@ export default function FamilyPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return <div className="loading" data-testid="family-loading">Loading...</div>;
     }
 
     return (
-        <div className="family-page container">
-            <header className="page-header">
+        <div className="family-page container" data-testid="family-page">
+            <header className="page-header" data-testid="family-header">
                 <div>
                     <h1>Family</h1>
                     <p>Manage your family members</p>
                 </div>
-                <div className="header-actions">
+                <div className="header-actions" data-testid="family-header-actions">
                     {selectedFamilies.size > 0 && (
                         <ButtonComponent onClick={deleteBulkFamilies} variant="danger">
                             <Trash2 size={20} />
@@ -131,21 +131,22 @@ export default function FamilyPage() {
                 </div>
             </header>
 
-            <div className="families-grid">
+            <div className="families-grid" data-testid="families-grid">
                 {families?.length === 0 ? (
-                    <div className="empty-state">
+                    <div className="empty-state" data-testid="families-empty-state">
                         <Users size={48} />
                         <p>No families yet.</p>
                         <p className="subtitle">Create your first family to get started!</p>
                     </div>
                 ) : (
                     <>
-                        <div className="select-all-row">
+                        <div className="select-all-row" data-testid="family-select-all-row">
                             <input
                                 type="checkbox"
                                 checked={selectedFamilies.size === families.length && families.length > 0}
                                 onChange={toggleAllFamilies}
                                 title="Select all families"
+                                data-testid="family-select-all-checkbox"
                             />
                             <span>{selectedFamilies.size > 0 ? `${selectedFamilies.size} selected` : 'Select all'}</span>
                         </div>
@@ -153,6 +154,7 @@ export default function FamilyPage() {
                             <div
                                 key={family.familyId}
                                 className={`family-detail-card ${selectedFamilies.has(family.familyId) ? 'selected' : ''}`}
+                                data-testid={`family-card-${family.familyId}`}
                             >
                                 <div className="family-card-checkbox">
                                     <input
@@ -168,30 +170,34 @@ export default function FamilyPage() {
                                     </div>
                                     <div className="members-list">
                                         <h3>Members</h3>
-                                        {family.members?.map((member: any) => (
-                                            <div key={member.familyMemberId} className="member-item">
-                                                <div className="member-info">
-                                                    <strong>{member.userName}</strong>
-                                                    <span className="role-badge">{member.role}</span>
+                                        {family.members?.map((member: any) => {
+                                            const roleLabel = member.role === 'familyManager' ? 'Family Manager' : 'Family Member';
+                                            const age = member.dateOfBirth ? Math.floor((Date.now() - new Date(member.dateOfBirth).getTime()) / 31557600000) : null;
+                                            return (
+                                                <div key={member.familyMemberId} className="member-item">
+                                                    <div className="member-info">
+                                                        <strong>{member.userName}</strong>
+                                                        <span className="role-badge">{roleLabel}</span>
+                                                    </div>
+                                                    <div className="member-actions">
+                                                        {age !== null && (
+                                                            <span className="member-age">
+                                                                {age} years old
+                                                            </span>
+                                                        )}
+                                                        {canRemoveMember(family, member) && (
+                                                            <button
+                                                                onClick={() => removeMember(family.familyId, member.userId)}
+                                                                className="btn-remove-member"
+                                                                title="Remove member"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                <div className="member-actions">
-                                                    {member.dateOfBirth && (
-                                                        <span className="member-age">
-                                                            Age: {Math.floor((Date.now() - new Date(member.dateOfBirth).getTime()) / 31557600000)}
-                                                        </span>
-                                                    )}
-                                                    {canRemoveMember(family, member) && (
-                                                        <button
-                                                            onClick={() => removeMember(family.familyId, member.userId)}
-                                                            className="btn-remove-member"
-                                                            title="Remove member"
-                                                        >
-                                                            <X size={16} />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                                 <div className="family-card-actions">

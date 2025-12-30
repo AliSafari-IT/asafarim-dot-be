@@ -1,9 +1,8 @@
 :root {
-    font-family: var(--asm-font-family-system);
+    font-family: var(--asm-font-family-lato);
     line-height: 1.5;
     font-weight: 400;
     color: var(--asm-color-text);
-    background-color: var(--asm-color-background);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;

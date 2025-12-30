@@ -47,7 +47,7 @@ export default function AddMemberModal({ familyId, isOpen, onClose, onSuccess, i
 
             setSuccess(true);
             setEmail('');
-            setRole('FamilyMember');
+            setRole('familyMember');
 
             setTimeout(() => {
                 onSuccess();
@@ -75,20 +75,20 @@ export default function AddMemberModal({ familyId, isOpen, onClose, onSuccess, i
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
+        <div className="modal-overlay" onClick={onClose} data-testid="add-member-modal-overlay">
+            <div className="modal-content" onClick={(e) => e.stopPropagation()} data-testid="add-member-modal-content">
+                <div className="modal-header" data-testid="add-member-modal-header">
                     <h2>Add Family Member</h2>
-                    <button className="modal-close" onClick={onClose}>×</button>
+                    <button className="modal-close" onClick={onClose} data-testid="add-member-modal-close">×</button>
                 </div>
 
                 {success ? (
-                    <div className="success-state">
+                    <div className="success-state" data-testid="add-member-success-state">
                         <CheckCircle size={48} />
                         <p>Member added successfully!</p>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="modal-form">
+                    <form onSubmit={handleSubmit} data-testid="add-member-form" className="modal-form">
                         {error && (
                             <div className="error-message">
                                 <AlertCircle size={20} />
@@ -108,6 +108,7 @@ export default function AddMemberModal({ familyId, isOpen, onClose, onSuccess, i
                                     placeholder="member@example.com"
                                     disabled={loading}
                                     autoFocus
+                                    data-testid="add-member-email-input"
                                 />
                             </div>
                         </div>
@@ -122,6 +123,7 @@ export default function AddMemberModal({ familyId, isOpen, onClose, onSuccess, i
                                         value={role}
                                         onChange={(e) => setRole(e.target.value)}
                                         disabled={loading}
+                                        data-testid="add-member-role-select"
                                     >
                                         <option value="familyMember">Family Member</option>
                                         <option value="familyManager">Family Manager</option>

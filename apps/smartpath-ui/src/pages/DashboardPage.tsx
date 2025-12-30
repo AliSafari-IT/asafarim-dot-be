@@ -25,18 +25,18 @@ export default function DashboardPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return <div className="loading" data-testid="dashboard-loading">Loading...</div>;
     }
 
     return (
-        <div className="dashboard-page container">
-            <header className="dashboard-header">
+        <div className="dashboard-page container" data-testid="dashboard-page">
+            <header className="dashboard-header" data-testid="dashboard-header">
                 <h1>Welcome to SmartPath</h1>
                 <p>Your family learning companion</p>
             </header>
 
-            <div className="dashboard-grid">
-                <div className="dashboard-card">
+            <div className="dashboard-grid" data-testid="dashboard-grid">
+                <div className="dashboard-card" data-testid="dashboard-card-tasks">
                     <div className="card-icon tasks">
                         <CheckSquare size={32} />
                     </div>
@@ -45,7 +45,7 @@ export default function DashboardPage() {
                     <a href="/tasks" className="card-link">View Tasks →</a>
                 </div>
 
-                <div className="dashboard-card">
+                <div className="dashboard-card" data-testid="dashboard-card-learning">
                     <div className="card-icon learning">
                         <BookOpen size={32} />
                     </div>
@@ -54,7 +54,7 @@ export default function DashboardPage() {
                     <a href="/learning" className="card-link">Start Learning →</a>
                 </div>
 
-                <div className="dashboard-card">
+                <div className="dashboard-card" data-testid="dashboard-card-progress">
                     <div className="card-icon progress">
                         <TrendingUp size={32} />
                     </div>
@@ -63,7 +63,7 @@ export default function DashboardPage() {
                     <a href="/progress" className="card-link">View Progress →</a>
                 </div>
 
-                <div className="dashboard-card">
+                <div className="dashboard-card" data-testid="dashboard-card-family">
                     <div className="card-icon family">
                         <Users size={32} />
                     </div>
@@ -74,11 +74,11 @@ export default function DashboardPage() {
             </div>
 
             {families.length > 0 && (
-                <section className="families-section">
+                <section className="families-section" data-testid="families-section">
                     <h2>Your Families</h2>
-                    <div className="families-list">
+                    <div className="families-list" data-testid="families-list">
                         {families.map((family) => (
-                            <div key={family.familyId} className="family-card">
+                            <div key={family.familyId} className="family-card" data-testid={`family-card-${family.familyId}`}>
                                 <h3>{family.familyName}</h3>
                                 <p>{family.memberCount} members</p>
                             </div>

@@ -102,17 +102,17 @@ export default function TasksPage() {
     };
 
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return <div className="loading" data-testid="tasks-loading">Loading...</div>;
     }
 
     return (
-        <div className="tasks-page container">
-            <header className="page-header">
+        <div className="tasks-page container" data-testid="tasks-page">
+            <header className="page-header" data-testid="tasks-header">
                 <div>
                     <h1>Tasks</h1>
                     <p>Manage homework and activities</p>
                 </div>
-                <div className="header-actions">
+                <div className="header-actions" data-testid="tasks-header-actions">
                     {selectedTasks.size > 0 && (
                         <ButtonComponent onClick={deleteBulkTasks} variant="danger">
                             <Trash2 size={20} />
@@ -127,9 +127,9 @@ export default function TasksPage() {
             </header>
 
             {families?.length > 0 && (
-                <div className="family-selector">
+                <div className="family-selector" data-testid="family-selector">
                     <label>Family:</label>
-                    <select value={selectedFamily || ''} onChange={(e) => setSelectedFamily(Number(e.target.value))}>
+                    <select value={selectedFamily || ''} onChange={(e) => setSelectedFamily(Number(e.target.value))} data-testid="family-select">
                         {families?.map((family) => (
                             <option key={family.familyId} value={family.familyId}>
                                 {family.familyName}
@@ -139,19 +139,20 @@ export default function TasksPage() {
                 </div>
             )}
 
-            <div className="tasks-grid">
+            <div className="tasks-grid" data-testid="tasks-grid">
                 {tasks?.length === 0 ? (
-                    <div className="empty-state">
+                    <div className="empty-state" data-testid="tasks-empty-state">
                         <p>No tasks yet. Create your first task to get started!</p>
                     </div>
                 ) : (
                     <>
-                        <div className="select-all-row">
+                        <div className="select-all-row" data-testid="select-all-row">
                             <input
                                 type="checkbox"
                                 checked={selectedTasks.size === tasks.length && tasks.length > 0}
                                 onChange={toggleAllTasks}
                                 title="Select all tasks"
+                                data-testid="select-all-checkbox"
                             />
                             <span>{selectedTasks.size > 0 ? `${selectedTasks.size} selected` : 'Select all'}</span>
                         </div>
@@ -159,18 +160,20 @@ export default function TasksPage() {
                             <div
                                 key={task.taskId}
                                 className={`task-card ${task.status.toLowerCase()} ${selectedTasks.has(task.taskId) ? 'selected' : ''}`}
+                                data-testid={`task-card-${task.taskId}`}
                             >
-                                <div className="task-checkbox">
+                                <div className="task-checkbox" data-testid={`task-checkbox-${task.taskId}`}>
                                     <input
                                         type="checkbox"
                                         checked={selectedTasks.has(task.taskId)}
                                         onChange={() => toggleTaskSelection(task.taskId)}
+                                        data-testid={`task-checkbox-input-${task.taskId}`}
                                     />
                                 </div>
-                                <div className="task-content">
-                                    <div className="task-header">
+                                <div className="task-content" data-testid={`task-content-${task.taskId}`}>
+                                    <div className="task-header" data-testid={`task-header-${task.taskId}`}>
                                         <h3>{task.title}</h3>
-                                        <span className={`status-badge ${task.status.toLowerCase()}`}>
+                                        <span className={`status-badge ${task.status.toLowerCase()}`} data-testid={`task-status-${task.taskId}`}>
                                             {task.status}
                                         </span>
                                     </div>
@@ -184,12 +187,13 @@ export default function TasksPage() {
                                         )}
                                     </div>
                                 </div>
-                                <div className="task-actions">
+                                <div className="task-actions" data-testid={`task-actions-${task.taskId}`}>
                                     {task.status !== 'Completed' && (
                                         <button
                                             onClick={() => completeTask(task.taskId)}
                                             className="btn-action btn-complete"
                                             title="Mark as complete"
+                                            data-testid={`task-complete-btn-${task.taskId}`}
                                         >
                                             <CheckCircle size={18} />
                                         </button>
@@ -198,6 +202,7 @@ export default function TasksPage() {
                                         onClick={() => navigate(`/tasks/${task.taskId}/edit`)}
                                         className="btn-action btn-edit"
                                         title="Edit task"
+                                        data-testid={`task-edit-btn-${task.taskId}`}
                                     >
                                         <Edit2 size={18} />
                                     </button>
@@ -205,6 +210,7 @@ export default function TasksPage() {
                                         onClick={() => deleteTask(task.taskId)}
                                         className="btn-action btn-delete"
                                         title="Delete task"
+                                        data-testid={`task-delete-btn-${task.taskId}`}
                                     >
                                         <Trash2 size={18} />
                                     </button>

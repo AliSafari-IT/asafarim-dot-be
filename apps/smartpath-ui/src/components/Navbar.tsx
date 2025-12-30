@@ -21,16 +21,16 @@ export default function Navbar() {
     ];
 
     return (
-        <nav className="navbar">
-            <div className="navbar-container">
-                <div className="navbar-brand">
+        <nav className="navbar" data-testid="navbar">
+            <div className="navbar-container" data-testid="navbar-container">
+                <div className="navbar-brand" data-testid="navbar-brand">
                     <Link to="/">
                         <h1>SmartPath</h1>
                     </Link>
                 </div>
-                <ul className="navbar-menu">
+                <ul className="navbar-menu" data-testid="navbar-menu">
                     {navItems.map((item) => (
-                        <li key={item.path} className={location.pathname === item.path ? 'active' : ''}>
+                        <li key={item.path} className={location.pathname === item.path ? 'active' : ''} data-testid={`navbar-item-${item.path}`}>
                             <Link to={item.path}>
                                 <item.icon size={20} />
                                 <span>{item.label}</span>
@@ -38,10 +38,10 @@ export default function Navbar() {
                         </li>
                     ))}
                 </ul>
-                <div className="navbar-user">
-                    <span className="user-name">{user?.displayName}</span>
+                <div className="navbar-user" data-testid="navbar-user">
+                    <span className="user-name" data-testid="user-name">{user?.displayName}</span>
                     <ThemeToggle variant='ghost'/>
-                    <button onClick={() => signOut()} className="logout-btn" title="Logout">
+                    <button onClick={() => signOut()} className="logout-btn" title="Logout" data-testid="logout-btn">
                         <LogOut size={20} />
                     </button>
                 </div>

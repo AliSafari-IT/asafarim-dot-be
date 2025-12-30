@@ -22,7 +22,7 @@
     cursor: pointer;
     font-size: 0.875rem;
     color: var(--asm-color-text-muted);
-    transition: all 0.2s ease;
+    transition: all var(--asm-motion-duration-200, 0.2s) var(--asm-motion-easing-ease, ease);
 }
 
 .btn-back:hover {
@@ -42,10 +42,10 @@
     align-items: center;
     padding: var(--asm-space-4);
     margin-bottom: var(--asm-space-4);
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid var(--asm-color-danger-500);
+    background: var(--asm-color-danger-50);
+    border: 1px solid var(--asm-color-danger-300);
     border-radius: var(--asm-radius-md);
-    color: var(--asm-color-danger-500);
+    color: var(--asm-color-danger-700);
 }
 
 .error-banner p {
@@ -58,7 +58,7 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--asm-color-danger-500);
+    color: var(--asm-color-danger-600);
     padding: 0;
     width: 24px;
     height: 24px;
@@ -72,7 +72,7 @@
     border: 1px solid var(--asm-color-border);
     border-radius: var(--asm-radius-lg);
     padding: var(--asm-space-6);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--asm-effect-shadow-sm);
 }
 
 .form-group {
@@ -98,7 +98,7 @@
     background: var(--asm-color-surface-muted);
     color: var(--asm-color-text);
     font-family: inherit;
-    transition: all 0.2s ease;
+    transition: all var(--asm-motion-duration-200, 0.2s) var(--asm-motion-easing-ease, ease);
 }
 
 .form-group input:focus,
@@ -107,7 +107,7 @@
     outline: none;
     border-color: var(--asm-color-primary-500);
     background: var(--asm-color-surface);
-    box-shadow: 0 0 0 3px rgba(58, 90, 254, 0.1);
+    box-shadow: 0 0 0 3px var(--asm-color-primary-100);
 }
 
 .form-group textarea {
@@ -162,7 +162,7 @@
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--asm-motion-duration-200, 0.2s) var(--asm-motion-easing-ease, ease);
     border: none;
 }
 

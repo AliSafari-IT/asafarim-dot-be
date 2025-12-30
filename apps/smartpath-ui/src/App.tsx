@@ -3,7 +3,6 @@ import DashboardPage from './pages/DashboardPage';
 import TasksPage from './pages/TasksPage';
 import TaskFormPage from './pages/TaskFormPage';
 import LearningPage from './pages/LearningPage';
-import LearningFormPage from './pages/LearningFormPage';
 import CourseFormPage from './pages/CourseFormPage';
 import CourseLearningPage from './pages/CourseLearningPage';
 import ChapterFormPage from './pages/ChapterFormPage';
@@ -15,9 +14,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
     return (
-        <div className="app">
+        <div className="app" data-testid="app">
             <Navbar />
-            <main className="main-content">
+            <main className="main-content" data-testid="main-content">
                 <Routes>
                     <Route
                         path="/"
