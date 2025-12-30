@@ -479,19 +479,40 @@ test('${tc.name}', async t => {
     private stripTypeScriptSyntax(source: string): string {
         let s = source;
 
+        // Remove TypeScript-only constructs (interfaces, type aliases)
         s = s.replace(/^\s*(export\s+)?interface\s+[A-Za-z0-9_$]+\s*\{[\s\S]*?^\s*\}\s*\n?/gm, '');
         s = s.replace(/^\s*(export\s+)?type\s+[A-Za-z0-9_$]+\s*=\s*[\s\S]*?;\s*\n?/gm, '');
 
+        // Remove access modifiers (public, private, protected, readonly)
         s = s.replace(/^\s*(public|private|protected|readonly)\s+/gm, '');
 
+        // Remove implements clauses
         s = s.replace(/\b(implements)\s+[A-Za-z0-9_$<>,\s.]+/g, '');
 
-        s = s.replace(/([,(]\s*[A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*[^,)=]+/g, '$1');
-        s = s.replace(/\)\s*:\s*[^({=>]+(?=\s*(\{|=>))/g, ')');
-        s = s.replace(/(\b(?:const|let|var)\s+[A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*[^=;]+/g, '$1');
-        s = s.replace(/(^\s*[A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*[^=;{]+(?=\s*[=;{])/gm, '$1');
+        // Remove 'as' type assertions - but be careful with 'as' in strings
+        s = s.replace(/\s+as\s+[A-Za-z0-9_$<>,\s.\[\]]+(?=[,;)\]}])/g, '');
 
-        s = s.replace(/\s+as\s+[A-Za-z0-9_$<>,\s.\[\]]+/g, '');
+        // Remove function return type annotations: ): Type {
+        s = s.replace(/\)\s*:\s*[^{=]+(?=\s*\{)/g, ')');
+        
+        // Remove arrow function return type annotations: ): Type =>
+        s = s.replace(/\)\s*:\s*[^=]+(?=\s*=>)/g, ')');
+
+        // Remove variable type annotations: const x: Type = 
+        // But ONLY when followed by = (assignment), not : (object property)
+        s = s.replace(/(\b(?:const|let|var)\s+[A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*[^=]+(?==)/g, '$1');
+
+        // Remove function parameter type annotations
+        // Match only in function parameter context: (param: Type) or (param: Type, param2: Type2)
+        // This is complex - only handle simple cases to avoid breaking object literals
+        s = s.replace(/\bfunction\s+[A-Za-z_$][A-Za-z0-9_$]*\s*\(([^)]*)\)/g, (match, params) => {
+            const cleaned = params.replace(/([A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*[A-Za-z0-9_$<>\[\]|&\s]+/g, '$1');
+            return match.replace(params, cleaned);
+        });
+
+        // For arrow functions and async functions - be very conservative
+        // Only strip if we can clearly identify it's a function parameter, not object property
+        s = s.replace(/(\basync\s+)?\(([A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*([A-Za-z0-9_$<>\[\]|&\s]+)\)\s*=>/g, '$1($2) =>');
 
         return s;
     }
