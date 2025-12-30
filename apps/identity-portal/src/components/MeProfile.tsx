@@ -52,7 +52,7 @@ export default function MeProfile() {
   };
 
   return (
-    <div className="admin-container">
+    <div className="admin-container" data-testid="me-profile-component">
       <div className="admin-header">
         <h1>My Profile</h1>
         <p className="admin-subtitle">Update your account information</p>

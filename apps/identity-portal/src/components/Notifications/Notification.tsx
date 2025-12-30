@@ -33,6 +33,7 @@ const Notification = ({ notification, onClose }: NotificationProps) => {
     <div
       className={`notification notification-${type} ${isExiting ? 'notification-exit' : ''}`}
       role="alert"
+      data-testid={`notification-${type}`}
     >
       <div className="notification-content">
         <span className="notification-message">{message}</span>

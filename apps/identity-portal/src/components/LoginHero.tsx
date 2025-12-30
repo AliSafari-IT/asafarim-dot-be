@@ -77,16 +77,18 @@ export const LoginHero = ({ passwordSetupRequired, returnUrl }: LoginHeroProps) 
   );
 
   return (
-    <Hero
-      className="login-hero"
-      kicker={kicker}
-      title={title}
-      subtitle={subtitle}
-      bullets={bullets}
-      primaryCta={primaryCta}
-      secondaryCta={secondaryCta}
-      media={mediaContent}
-    />
+    <div data-testid="login-hero">
+      <Hero
+        className="login-hero"
+        kicker={kicker}
+        title={title}
+        subtitle={subtitle}
+        bullets={bullets}
+        primaryCta={primaryCta}
+        secondaryCta={secondaryCta}
+        media={mediaContent}
+      />
+    </div>
   );
 };
 

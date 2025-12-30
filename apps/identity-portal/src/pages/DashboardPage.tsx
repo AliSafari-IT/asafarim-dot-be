@@ -64,8 +64,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <AuthLayout>
-      <Dashboard />
-    </AuthLayout>
+    <div data-testid="dashboard-page">
+      <AuthLayout>
+        <Dashboard />
+      </AuthLayout>
+    </div>
   );
 }

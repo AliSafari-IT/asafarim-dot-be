@@ -184,7 +184,7 @@ export default function EditUser() {
   }
 
   return (
-    <div className="admin-user-edit-container">
+    <div className="admin-user-edit-container" data-testid="edit-user-component">
       <div className="admin-user-edit-header">
         <h2>Edit User: {email || userName || user.id}</h2>
       </div>
