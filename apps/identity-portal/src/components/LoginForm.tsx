@@ -244,6 +244,7 @@ export const LoginForm = () => {
           type="email"
           id="email"
           name="email"
+          data-testid="login-email-input"
           className={`form-input ${errors.email ? 'input-error' : ''}`}
           value={formData.email}
           onChange={handleChange}
@@ -270,6 +271,7 @@ export const LoginForm = () => {
           type="password"
           id="password"
           name="password"
+          data-testid="login-password-input"
           className={`form-input ${errors.password ? 'input-error' : ''}`}
           value={formData.password}
           onChange={handleChange}
@@ -295,7 +297,13 @@ export const LoginForm = () => {
         </label>
       </div>
 
-      <Button type="submit" disabled={isLoading} rightIcon={<Lock />} variant="success">
+      <Button
+        type="submit"
+        disabled={isLoading}
+        rightIcon={<Lock />}
+        variant="success"
+        data-testid="login-submit-button"
+      >
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>
 
