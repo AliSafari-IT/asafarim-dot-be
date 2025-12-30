@@ -6,6 +6,7 @@ import { useToast } from '@asafarim/toast';
 import { Play } from 'lucide-react';
 import { api } from '../config/api';
 import './RunTestsPage-Token.css';
+import { useNavigate } from 'react-router-dom';
 
 interface ApiTestSuite {
   id: string;
@@ -48,7 +49,7 @@ const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
   const [lastRunId, setLastRunId] = useState<string | null>(null);
   const { isAuthenticated } = useAuth();
   const toast = useToast();
-
+  const navigate = useNavigate();
   useEffect(() => {
     loadTestSuites();
   }, []);
@@ -322,7 +323,7 @@ const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
 
   const handleEdit = (suiteId: string) => {
     // Navigate to test suites page with edit mode and suite ID
-    window.location.href = `http://testora.asafarim.local:5180/test-suites?edit=${suiteId}&focus=name`;
+    navigate(`/test-suites?edit=${suiteId}&focus=name`);
   };
 
   const handleDelete = async (suiteId: string) => {
