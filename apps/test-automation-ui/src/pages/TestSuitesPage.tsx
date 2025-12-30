@@ -435,6 +435,11 @@ export default function TestSuitesPage() {
         }}
         onEdit={(item) => {
           setEditSuiteId(item.id);
+          // Update URL with query parameters to maintain edit state
+          const url = new URL(window.location.href);
+          url.searchParams.set('edit', item.id);
+          url.searchParams.set('focus', 'name');
+          window.history.pushState({}, '', url.toString());
         }}
       />
 
