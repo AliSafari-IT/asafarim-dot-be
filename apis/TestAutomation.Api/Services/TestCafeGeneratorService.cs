@@ -398,7 +398,26 @@ public class TestCafeGeneratorService
         if (scriptTests.Any() || stepTests.Any())
         {
             sb.AppendLine($"fixture('{EscapeString(testSuite.Name)}')");
-            sb.AppendLine($"    .page('{EscapeString(testSuite.Fixture.PageUrl)}')");
+            
+            // Check if PageUrl is a variable reference (no protocol, uppercase/snake_case pattern)
+            var pageUrl = testSuite.Fixture.PageUrl;
+            var isVariableReference = !string.IsNullOrEmpty(pageUrl) && 
+                                     !pageUrl.StartsWith("http://") && 
+                                     !pageUrl.StartsWith("https://") &&
+                                     !pageUrl.StartsWith("/") &&
+                                     (pageUrl.All(c => char.IsUpper(c) || c == '_') || // UPPER_CASE
+                                      (char.IsUpper(pageUrl[0]) && pageUrl.Contains("Url"))); // CamelCase with Url
+            
+            if (isVariableReference)
+            {
+                // Output as variable reference without quotes
+                sb.AppendLine($"    .page({pageUrl})");
+            }
+            else
+            {
+                // Output as string literal with quotes
+                sb.AppendLine($"    .page('{EscapeString(pageUrl)}')");
+            }
 
             // Add HTTP authentication if configured
             if (
@@ -1769,7 +1788,7 @@ public class TestCafeGeneratorService
             var trimmed = line.Trim();
 
             // Check for ANY function declaration BEFORE updating brace depth
-            // This includes test(), hooks, and helper functions like async function login()
+            // Track function starts (tests, hooks, helper functions, and Role declarations)
             if (
                 trimmed.StartsWith("test(")
                 || trimmed.StartsWith("test.skip(")
@@ -1797,6 +1816,7 @@ public class TestCafeGeneratorService
                     && trimmed.Contains("async ")
                     && trimmed.Contains("=>")
                 )
+                || trimmed.Contains("Role(") // TestCafe Role declarations contain async functions
             )
             {
                 functionDepthStack.Push(braceDepth);
