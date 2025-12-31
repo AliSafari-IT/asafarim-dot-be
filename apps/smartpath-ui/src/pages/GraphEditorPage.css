@@ -1,0 +1,217 @@
+.graph-editor-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--asm-color-background);
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  gap: var(--asm-space-md);
+  padding: var(--asm-space-md) var(--asm-space-lg);
+  background: white;
+  border-bottom: 1px solid var(--asm-color-border);
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--asm-space-sm);
+  color: var(--asm-color-text-primary);
+  font-size: 1rem;
+  padding: var(--asm-space-sm);
+}
+
+.btn-back:hover {
+  color: var(--asm-color-primary);
+}
+
+.header-content {
+  flex: 1;
+}
+
+.graph-name-input {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--asm-space-sm) var(--asm-space-md);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.graph-name-input:focus {
+  outline: none;
+  border-color: var(--asm-color-primary);
+  box-shadow: 0 0 0 3px var(--asm-color-primary-light);
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--asm-space-md);
+}
+
+.error-banner {
+  background-color: var(--asm-color-error-light);
+  border: 1px solid var(--asm-color-error);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-md);
+  margin: var(--asm-space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-banner p {
+  margin: 0;
+  color: var(--asm-color-error);
+}
+
+.error-banner button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--asm-color-error);
+}
+
+.editor-container {
+  display: flex;
+  flex: 1;
+  gap: var(--asm-space-md);
+  padding: var(--asm-space-md);
+  overflow: hidden;
+}
+
+.editor-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-md);
+  min-width: 0;
+}
+
+.editor-right {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-md);
+  overflow-y: auto;
+}
+
+.editor-controls {
+  display: flex;
+  gap: var(--asm-space-md);
+}
+
+.edges-panel {
+  background: white;
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-md);
+}
+
+.edges-panel h3 {
+  margin: 0 0 var(--asm-space-md);
+  font-size: 1rem;
+  color: var(--asm-color-text-primary);
+}
+
+.edge-creator {
+  background: var(--asm-color-background-secondary);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
+  padding: var(--asm-space-md);
+  margin-bottom: var(--asm-space-md);
+}
+
+.edge-creator p {
+  margin: 0 0 var(--asm-space-sm);
+  font-size: 0.9rem;
+  color: var(--asm-color-text-secondary);
+}
+
+.edge-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-sm);
+}
+
+.edge-form input[type="number"] {
+  padding: var(--asm-space-sm);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
+  font-size: 0.9rem;
+}
+
+.edge-form label {
+  display: flex;
+  align-items: center;
+  gap: var(--asm-space-sm);
+  font-size: 0.9rem;
+}
+
+.edge-form input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.btn-cancel {
+  padding: var(--asm-space-sm);
+  background: var(--asm-color-background);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn-cancel:hover {
+  background: var(--asm-color-background-secondary);
+}
+
+.edges-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-sm);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.edge-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--asm-space-sm);
+  background: var(--asm-color-background-secondary);
+  border-radius: var(--asm-radius-sm);
+  font-size: 0.85rem;
+}
+
+.edge-item span {
+  color: var(--asm-color-text-primary);
+}
+
+.btn-delete-edge {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--asm-color-error);
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.btn-delete-edge:hover {
+  color: var(--asm-color-error-dark);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: var(--asm-color-text-secondary);
+}

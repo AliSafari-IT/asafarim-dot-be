@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Home, CheckSquare, BookOpen, TrendingUp, Users, LogOut } from 'lucide-react';
+import { Home, CheckSquare, BookOpen, TrendingUp, Users, LogOut, Network, Zap, Award, Settings, BarChart3 } from 'lucide-react';
 import './Navbar.css';
 import { ThemeToggle } from '@asafarim/react-themes';
 
@@ -16,8 +16,13 @@ export default function Navbar() {
         { path: '/', icon: Home, label: 'Dashboard' },
         { path: '/tasks', icon: CheckSquare, label: 'Tasks' },
         { path: '/learning', icon: BookOpen, label: 'Learn' },
+        { path: '/practice', icon: Zap, label: 'Practice' },
+        { path: '/rewards', icon: Award, label: 'Rewards' },
+        { path: '/practice-manager', icon: Settings, label: 'Practice Manager' },
+        { path: '/practice-dashboard', icon: BarChart3, label: 'Practice Dashboard' },
         { path: '/progress', icon: TrendingUp, label: 'Progress' },
         { path: '/family', icon: Users, label: 'Family' },
+        { path: '/graphs', icon: Network, label: 'Graphs' },
     ];
 
     return (

@@ -29,13 +29,24 @@ public class UserContextMiddleware
                     var name = context.User.FindFirst(ClaimTypes.Name)?.Value;
 
                     var localUser = await userService.GetOrCreateLocalUserAsync(identityUserId, email, name);
-                    context.Items["UserId"] = localUser.UserId;
-                    context.Items["IdentityUserId"] = identityUserId;
+                    if (localUser != null)
+                    {
+                        context.Items["UserId"] = localUser.UserId;
+                        context.Items["IdentityUserId"] = identityUserId;
+                    }
+                    else
+                    {
+                        context.Items["UserSyncError"] = "Failed to create or retrieve local user";
+                    }
                 }
                 catch (Exception ex)
                 {
-                    context.Items["UserSyncError"] = ex.Message;
+                    context.Items["UserSyncError"] = $"User sync error: {ex.Message}";
                 }
+            }
+            else
+            {
+                context.Items["UserSyncError"] = "No identity user ID found in JWT claims";
             }
         }
 

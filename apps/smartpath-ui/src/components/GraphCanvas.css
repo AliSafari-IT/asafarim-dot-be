@@ -1,0 +1,13 @@
+.graph-canvas {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  background: white;
+  cursor: crosshair;
+  box-shadow: var(--asm-effect-shadow-sm);
+}
+
+.graph-canvas:hover {
+  box-shadow: var(--asm-effect-shadow-md);
+}

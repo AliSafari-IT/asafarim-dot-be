@@ -2,6 +2,8 @@
 
 Backend API for SmartPath - Family Learning & Homework Tracker for children aged 9-14.
 
+Provides comprehensive endpoints for family management, course learning, practice sessions, rewards tracking, and graph-based pathfinding.
+
 ## Quick Start
 
 ### Prerequisites
@@ -43,9 +45,9 @@ Update `appsettings.Development.json`:
 
 ```
 SmartPath.Api/
-├── Controllers/       # API endpoints
-├── Services/          # Business logic (Family, Task, Course, Progress)
-├── Entities/          # Database models
+├── Controllers/       # API endpoints (Practice, PracticeItems, PracticeDashboard, Graphs, etc.)
+├── Services/          # Business logic (Practice, PracticeItem, Pathfinding, Graph, etc.)
+├── Entities/          # Database models (PracticeItem, PracticeSession, Graph, etc.)
 ├── Data/             # DbContext and migrations
 ├── Middleware/       # User context middleware
 ├── DTOs/             # Data transfer objects
@@ -107,6 +109,37 @@ All endpoints require JWT Bearer token from Identity.Api. Token passed in `Autho
 - `POST /progress/lessons/{lessonId}/complete` - Complete lesson
 - `GET /progress/children/{childId}/progress` - Get child progress
 
+### Practice Sessions
+
+- `POST /practice/sessions` - Create practice session
+- `POST /practice/sessions/{sessionId}/complete` - Complete session
+- `POST /practice/sessions/{sessionId}/next-item` - Get next practice item
+- `POST /practice/attempts` - Submit practice attempt
+- `GET /practice/children/{childId}/summary` - Get child practice summary
+- `GET /practice/families/{familyId}/summary` - Get family children summaries
+- `GET /practice/children/{childId}/achievements` - Get child achievements
+- `GET /practice/achievements` - Get available achievements
+
+### Practice Items (Manager Only)
+
+- `GET /practice-items/lessons/{lessonId}` - Get items for lesson
+- `POST /practice-items` - Create practice item (familyManager, admin)
+- `PUT /practice-items/{itemId}` - Update practice item (familyManager, admin)
+- `DELETE /practice-items/{itemId}` - Soft delete practice item (familyManager, admin)
+
+### Practice Dashboard (Manager Only)
+
+- `GET /practice-dashboard/families/{familyId}` - Get family practice dashboard with child analytics
+
+### Graphs & Pathfinding
+
+- `GET /graphs` - List all graphs
+- `GET /graphs/{graphId}` - Get graph details
+- `POST /graphs` - Create graph
+- `PUT /graphs/{graphId}` - Update graph
+- `DELETE /graphs/{graphId}` - Delete graph
+- `POST /graphs/{graphId}/find-path` - Find shortest path (A* or Dijkstra)
+
 ## Database Schema
 
 ### Core Tables
@@ -119,9 +152,27 @@ All endpoints require JWT Bearer token from Identity.Api. Token passed in `Autho
 - **Chapters** - Course chapters
 - **Lessons** - Individual lessons within chapters
 - **LessonProgress** - Learning progress tracking per lesson
-- **PracticeAttempts** - Practice history and attempts
-- **Achievements** - Badges and rewards
-- **Streaks** - Study streak tracking
+
+### Practice & Rewards Tables
+
+- **PracticeItems** - Question/answer items for lessons (created by managers)
+  - Properties: Id, LessonId, CreatedByUserId, QuestionText, ExpectedAnswer, Points, Difficulty, IsActive, CreatedAt, UpdatedAt
+  - Soft-deleted via IsActive flag
+- **PracticeSessions** - Practice session instances for children
+  - Properties: Id, FamilyId, ChildUserId, LessonId, StartedAt, EndedAt, TotalPoints, Status
+- **PracticeAttempts** - Individual attempt records
+  - Properties: AttemptId, SessionId, ChildUserId, PracticeItemId, LessonId, Answer, IsCorrect, TimeSpentSeconds, HintsUsed, SelfRating, AttemptedAt
+  - SessionId tracks which practice session each attempt belongs to (prevents cross-session item reuse)
+- **Achievements** - Badge definitions and reward criteria
+- **UserAchievements** - Earned achievements per user
+- **Streaks** - Study streak tracking per user
+
+### Graph & Pathfinding Tables
+
+- **Graphs** - Graph definitions for pathfinding
+- **GraphNodes** - Nodes within graphs (with X, Y coordinates)
+- **GraphEdges** - Edges connecting nodes (with weight and direction)
+- **PathRuns** - Pathfinding execution results
 
 ### Key Relationships
 
@@ -129,14 +180,20 @@ All endpoints require JWT Bearer token from Identity.Api. Token passed in `Autho
 - Course → Chapters (one-to-many)
 - Chapter → Lessons (one-to-many)
 - User → LessonProgress (one-to-many)
+- Lesson → PracticeItems (one-to-many)
+- PracticeSession → PracticeAttempts (one-to-many)
+- User → PracticeAttempts (one-to-many)
+- Graph → GraphNodes (one-to-many)
+- Graph → GraphEdges (one-to-many)
+- Graph → PathRuns (one-to-many)
 
 ## Authorization & RBAC
 
 ### Family Roles
 
-- **familyManager** - Can add/remove familyMember members, manage family data
-- **familyMember** - Read-only access to family data
-- **admin** (global) - Can override family-level restrictions
+- **familyManager** - Can manage family data, create/edit practice items, view practice dashboard
+- **familyMember** - Read-only access to family data, can participate in practice sessions
+- **admin** (global) - Can override family-level restrictions, manage all resources
 
 ### Authorization Rules
 
@@ -144,6 +201,17 @@ All endpoints require JWT Bearer token from Identity.Api. Token passed in `Autho
 - Non-admin users can only remove `familyMember` members
 - Admin users can add/remove both roles
 - Family managers can manage their own families
+- Practice item CRUD restricted to `familyManager` and `admin` roles
+- Practice dashboard analytics restricted to `familyManager` and `admin` roles
+- Children can create practice sessions and submit attempts for lessons in their family
+
+### Practice Item Management
+
+- Only family managers and admins can create, edit, or delete practice items
+- Practice items are soft-deleted (IsActive flag)
+- Items are indexed by (LessonId, IsActive) for efficient querying
+- Answer normalization (lowercase, trimmed) for case-insensitive comparison
+- Points awarded based on item configuration
 
 ## Development
 
@@ -219,6 +287,35 @@ dotnet ef migrations list
 
 ## Recent Updates
 
+### Practice Session Loop Fix (Latest)
+
+- **SessionId Tracking**: Added SessionId to PracticeAttempt entity to track attempts per session
+- **Session-Scoped Items**: GetNextItemAsync now tracks attempted items per session, preventing infinite loops
+- **Session Completion**: When all items in a session are attempted, API returns "No more practice items available for this session"
+- **Frontend Session Handling**: Frontend properly completes session and shows completion screen when no more items available
+- **Migration**: Added migration to add SessionId column and foreign key relationship to PracticeSessions table
+
+### Practice Content & Manager Dashboard
+
+- **Practice Items**: Managers can create/edit/delete practice items with questions, expected answers, points, and difficulty levels
+- **Practice Sessions**: Children can start practice sessions for lessons and receive next items dynamically
+- **Answer Scoring**: Automatic answer normalization and scoring based on item configuration
+- **Practice Dashboard**: Managers can view child performance analytics including:
+  - Total points earned
+  - Current streak days
+  - Accuracy percentage
+  - Recent attempts with results
+  - Weak lessons (low accuracy areas)
+- **Soft Delete**: Practice items use IsActive flag for soft deletion
+- **Timestamps**: Auto-updated CreatedAt/UpdatedAt on practice items
+
+### Graph Pathfinding MVP
+
+- **Graph Management**: Create, edit, delete graphs with nodes and edges
+- **Pathfinding Algorithms**: A* and Dijkstra implementations
+- **Path Visualization**: Step-by-step path reconstruction with cost tracking
+- **Graph Persistence**: Full CRUD operations with cascade delete
+
 ### Authentication & Authorization
 
 - Consistent token key usage (`auth_token`, `refresh_token`)
@@ -235,10 +332,10 @@ dotnet ef migrations list
 
 ### Database
 
-- Proper foreign key relationships
-- Cascade delete for dependent entities
-- Indexes on frequently queried columns
+- Proper foreign key relationships with cascade delete
+- Indexes on frequently queried columns (LessonId, IsActive)
 - Automatic migration on startup
+- Timestamp auto-update in DbContext SaveChanges override
 
 ### Code Quality
 
@@ -246,6 +343,7 @@ dotnet ef migrations list
 - DTOs for API contracts
 - Middleware for user context extraction
 - Comprehensive error handling
+- Serilog structured logging throughout
 
 ## License
 

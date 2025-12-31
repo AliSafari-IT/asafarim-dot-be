@@ -3,6 +3,7 @@ namespace SmartPath.Api.Entities;
 public class PracticeAttempt
 {
     public int AttemptId { get; set; }
+    public int? PracticeSessionId { get; set; }
     public int ChildUserId { get; set; }
     public int PracticeItemId { get; set; }
     public int LessonId { get; set; }
@@ -15,4 +16,5 @@ public class PracticeAttempt
 
     public User? Child { get; set; }
     public PracticeItem? PracticeItem { get; set; }
+    public PracticeSession? PracticeSession { get; set; }
 }

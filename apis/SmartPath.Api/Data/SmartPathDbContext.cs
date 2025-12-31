@@ -23,6 +23,40 @@ public class SmartPathDbContext : DbContext
     public DbSet<Achievement> Achievements { get; set; }
     public DbSet<UserAchievement> UserAchievements { get; set; }
     public DbSet<Streak> Streaks { get; set; }
+    public DbSet<Graph> Graphs { get; set; }
+    public DbSet<GraphNode> GraphNodes { get; set; }
+    public DbSet<GraphEdge> GraphEdges { get; set; }
+    public DbSet<PathRun> PathRuns { get; set; }
+    public DbSet<PracticeSession> PracticeSessions { get; set; }
+    public DbSet<StreakEntity> StreakEntities { get; set; }
+
+    public override int SaveChanges()
+    {
+        UpdateTimestamps();
+        return base.SaveChanges();
+    }
+
+    public override async System.Threading.Tasks.Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default
+    )
+    {
+        UpdateTimestamps();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void UpdateTimestamps()
+    {
+        var entries = ChangeTracker
+            .Entries()
+            .Where(e => e.Entity is PracticeItem && e.State == EntityState.Modified);
+        foreach (var entry in entries)
+        {
+            if (entry.Entity is PracticeItem item)
+            {
+                item.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -78,19 +112,86 @@ public class SmartPathDbContext : DbContext
 
         modelBuilder
             .Entity<Entities.Task>()
+            .HasOne(t => t.AssignedBy)
+            .WithMany()
+            .HasForeignKey(t => t.AssignedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder
+            .Entity<Entities.Task>()
             .HasOne(t => t.CreatedBy)
             .WithMany()
             .HasForeignKey(t => t.CreatedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder
+            .Entity<Entities.Task>()
+            .HasOne(t => t.LastEditedBy)
+            .WithMany()
+            .HasForeignKey(t => t.LastEditedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         modelBuilder.Entity<Entities.Task>().HasIndex(t => t.DueDate);
 
         modelBuilder.Entity<Entities.Task>().HasIndex(t => t.Status);
 
-        // TaskComment configurations
+        modelBuilder.Entity<Entities.Task>().HasIndex(t => new { t.FamilyId, t.CreatedByUserId });
+
+        modelBuilder.Entity<Entities.Task>().HasIndex(t => new { t.FamilyId, t.AssignedToUserId });
+
+        // Course configurations
         modelBuilder
-            .Entity<TaskComment>()
-            .HasKey(tc => tc.CommentId);
+            .Entity<Course>()
+            .HasOne(c => c.Family)
+            .WithMany()
+            .HasForeignKey(c => c.FamilyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<Course>()
+            .HasOne(c => c.CreatedBy)
+            .WithMany()
+            .HasForeignKey(c => c.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Course>().HasIndex(c => new { c.FamilyId, c.CreatedByUserId });
+
+        // Chapter configurations
+        modelBuilder
+            .Entity<Chapter>()
+            .HasOne(ch => ch.Family)
+            .WithMany()
+            .HasForeignKey(ch => ch.FamilyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<Chapter>()
+            .HasOne(ch => ch.CreatedBy)
+            .WithMany()
+            .HasForeignKey(ch => ch.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Chapter>().HasIndex(ch => new { ch.FamilyId, ch.CreatedByUserId });
+
+        // Lesson configurations
+        modelBuilder
+            .Entity<Lesson>()
+            .HasOne(l => l.Family)
+            .WithMany()
+            .HasForeignKey(l => l.FamilyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<Lesson>()
+            .HasOne(l => l.CreatedBy)
+            .WithMany()
+            .HasForeignKey(l => l.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Lesson>().HasIndex(l => new { l.FamilyId, l.CreatedByUserId });
+
+        // TaskComment configurations
+        modelBuilder.Entity<TaskComment>().HasKey(tc => tc.CommentId);
 
         modelBuilder
             .Entity<TaskComment>()
@@ -232,5 +333,85 @@ public class SmartPathDbContext : DbContext
             .Entity<ChildCourseEnrollment>()
             .Property(e => e.AverageMastery)
             .HasPrecision(5, 2);
+
+        // Graph configurations
+        modelBuilder
+            .Entity<Graph>()
+            .HasMany(g => g.Nodes)
+            .WithOne(n => n.Graph)
+            .HasForeignKey(n => n.GraphId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<Graph>()
+            .HasMany(g => g.Edges)
+            .WithOne(e => e.Graph)
+            .HasForeignKey(e => e.GraphId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<Graph>()
+            .HasMany(g => g.PathRuns)
+            .WithOne(pr => pr.Graph)
+            .HasForeignKey(pr => pr.GraphId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<GraphEdge>()
+            .HasOne(e => e.FromNode)
+            .WithMany()
+            .HasForeignKey(e => e.FromNodeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder
+            .Entity<GraphEdge>()
+            .HasOne(e => e.ToNode)
+            .WithMany()
+            .HasForeignKey(e => e.ToNodeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // PracticeItem configurations
+        modelBuilder.Entity<PracticeItem>().HasIndex(p => new { p.LessonId, p.IsActive });
+
+        modelBuilder
+            .Entity<PracticeItem>()
+            .HasOne(p => p.CreatedBy)
+            .WithMany()
+            .HasForeignKey(p => p.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // PracticeSession configurations
+        modelBuilder
+            .Entity<PracticeSession>()
+            .HasOne(s => s.Child)
+            .WithMany()
+            .HasForeignKey(s => s.ChildUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<PracticeSession>()
+            .HasOne(s => s.Family)
+            .WithMany()
+            .HasForeignKey(s => s.FamilyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<PracticeSession>()
+            .HasOne(s => s.Lesson)
+            .WithMany()
+            .HasForeignKey(s => s.LessonId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // PracticeAttempt does not have SessionId, so no direct session relationship
+
+        // StreakEntity configurations
+        modelBuilder
+            .Entity<StreakEntity>()
+            .HasOne(s => s.Child)
+            .WithMany()
+            .HasForeignKey(s => s.ChildUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<StreakEntity>().HasIndex(s => s.ChildUserId).IsUnique();
     }
 }

@@ -15,9 +15,10 @@ interface CourseForm {
 export default function CourseFormPage() {
     const navigate = useNavigate();
     const { courseId } = useParams();
-    const [loading, setLoading] = useState(!!courseId);
+    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [familyId, setFamilyId] = useState<number | null>(null);
     const [form, setForm] = useState<CourseForm>({
         name: '',
         description: '',
@@ -26,10 +27,28 @@ export default function CourseFormPage() {
     });
 
     useEffect(() => {
-        if (courseId) {
-            loadCourse();
-        }
+        initializePage();
     }, [courseId]);
+
+    const initializePage = async () => {
+        try {
+            const me = await smartpathService.users.me();
+            const families = await smartpathService.families.getMyFamilies();
+            const familiesData = families.data || [];
+            if (familiesData.length > 0) {
+                setFamilyId(familiesData[0].familyId);
+            }
+            if (courseId) {
+                loadCourse();
+            } else {
+                setLoading(false);
+            }
+        } catch (err) {
+            console.error('Failed to initialize:', err);
+            setError('Failed to load family information');
+            setLoading(false);
+        }
+    };
 
     const loadCourse = async () => {
         try {
@@ -59,6 +78,10 @@ export default function CourseFormPage() {
             setError('Grade level must be between 1 and 12');
             return;
         }
+        if (!courseId && !familyId) {
+            setError('Family information is required');
+            return;
+        }
 
         setSaving(true);
         setError(null);
@@ -66,7 +89,8 @@ export default function CourseFormPage() {
             if (courseId) {
                 await smartpathService.courses.update(Number(courseId), form);
             } else {
-                await smartpathService.courses.create(form);
+                const courseData = { ...form, familyId };
+                await smartpathService.courses.create(courseData);
             }
             navigate('/learning');
         } catch (err) {

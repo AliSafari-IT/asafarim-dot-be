@@ -104,6 +104,12 @@ builder.Services.AddScoped<IFamilyService, FamilyService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
+builder.Services.AddScoped<IGraphService, GraphService>();
+builder.Services.AddScoped<IPathfindingService, PathfindingService>();
+builder.Services.AddScoped<IPracticeService, PracticeService>();
+builder.Services.AddScoped<IPracticeItemService, PracticeItemService>();
+builder.Services.AddScoped<IRewardsService, RewardsService>();
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 
 var app = builder.Build();
 
@@ -124,6 +130,17 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         Log.Error(ex, "An error occurred while migrating the database");
+    }
+
+    var rewardsService = scope.ServiceProvider.GetRequiredService<IRewardsService>();
+    try
+    {
+        await rewardsService.SeedAchievementsAsync();
+        Log.Information("Achievements seeded successfully");
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "An error occurred while seeding achievements");
     }
 }
 

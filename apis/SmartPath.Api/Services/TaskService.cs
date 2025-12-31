@@ -6,13 +6,15 @@ namespace SmartPath.Api.Services;
 public class TaskService : ITaskService
 {
     private readonly SmartPathDbContext _context;
+    private readonly ILogger<TaskService> _logger;
 
-    public TaskService(SmartPathDbContext context)
+    public TaskService(SmartPathDbContext context, ILogger<TaskService> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
-    public async Task<List<Entities.Task>> GetFamilyTasksAsync(
+    public async System.Threading.Tasks.Task<List<Entities.Task>> GetFamilyTasksAsync(
         int familyId,
         int? assignedToUserId = null,
         string? status = null
@@ -21,6 +23,8 @@ public class TaskService : ITaskService
         var query = _context
             .Tasks.Include(t => t.AssignedTo)
             .Include(t => t.CreatedBy)
+            .Include(t => t.AssignedBy)
+            .Include(t => t.LastEditedBy)
             .Include(t => t.Comments)
             .Where(t => t.FamilyId == familyId);
 
@@ -37,16 +41,18 @@ public class TaskService : ITaskService
         return await query.OrderBy(t => t.DueDate).ToListAsync();
     }
 
-    public async Task<Entities.Task?> GetByIdAsync(int taskId)
+    public async System.Threading.Tasks.Task<Entities.Task?> GetByIdAsync(int taskId)
     {
         return await _context
             .Tasks.Include(t => t.AssignedTo)
             .Include(t => t.CreatedBy)
+            .Include(t => t.AssignedBy)
+            .Include(t => t.LastEditedBy)
             .Include(t => t.Comments)
             .FirstOrDefaultAsync(t => t.TaskId == taskId);
     }
 
-    public async Task<Entities.Task> CreateAsync(Entities.Task task)
+    public async System.Threading.Tasks.Task<Entities.Task> CreateAsync(Entities.Task task)
     {
         task.CreatedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
@@ -57,11 +63,38 @@ public class TaskService : ITaskService
         return task;
     }
 
-    public async System.Threading.Tasks.Task<Entities.Task> UpdateAsync(Entities.Task task)
+    public async System.Threading.Tasks.Task<Entities.Task> UpdateAsync(Entities.Task task, int? editingUserId = null)
     {
         task.UpdatedAt = DateTime.UtcNow;
+        if (editingUserId.HasValue)
+        {
+            task.LastEditedAt = DateTime.UtcNow;
+            task.LastEditedByUserId = editingUserId.Value;
+        }
         _context.Tasks.Update(task);
         await _context.SaveChangesAsync();
+
+        return task;
+    }
+
+    public async System.Threading.Tasks.Task<Entities.Task> AssignTaskAsync(int taskId, int? assignedToUserId, int assigningUserId)
+    {
+        var task = await GetByIdAsync(taskId);
+        if (task == null)
+            throw new KeyNotFoundException($"Task {taskId} not found");
+
+        task.AssignedToUserId = assignedToUserId;
+        task.AssignedByUserId = assigningUserId;
+        task.AssignedAt = DateTime.UtcNow;
+        task.LastEditedAt = DateTime.UtcNow;
+        task.LastEditedByUserId = assigningUserId;
+        task.UpdatedAt = DateTime.UtcNow;
+
+        _context.Tasks.Update(task);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Task {TaskId} assigned to user {AssignedToUserId} by {AssigningUserId}", 
+            taskId, assignedToUserId, assigningUserId);
 
         return task;
     }

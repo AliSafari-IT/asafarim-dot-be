@@ -11,7 +11,8 @@ public interface ITaskService
     );
     System.Threading.Tasks.Task<Entities.Task?> GetByIdAsync(int taskId);
     System.Threading.Tasks.Task<Entities.Task> CreateAsync(Entities.Task task);
-    System.Threading.Tasks.Task<Entities.Task> UpdateAsync(Entities.Task task);
+    System.Threading.Tasks.Task<Entities.Task> UpdateAsync(Entities.Task task, int? editingUserId = null);
+    System.Threading.Tasks.Task<Entities.Task> AssignTaskAsync(int taskId, int? assignedToUserId, int assigningUserId);
     System.Threading.Tasks.Task DeleteAsync(int taskId);
     System.Threading.Tasks.Task DeleteBulkAsync(List<int> taskIds);
     System.Threading.Tasks.Task DeleteByFamilyAsync(int familyId);

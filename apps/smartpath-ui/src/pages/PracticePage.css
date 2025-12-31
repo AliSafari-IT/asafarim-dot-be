@@ -1,0 +1,553 @@
+/* D:\repos\asafarim-dot-be\apps\smartpath-ui\src\pages\PracticePage.css */
+
+.practice-page {
+  min-height: calc(100vh - 72px);
+  padding: 2rem 1rem 3rem;
+  background: var(--asm-color-bg, transparent);
+  color: var(--asm-color-text, inherit);
+}
+
+.practice-page.container {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.practice-header {
+  max-width: 1080px;
+  margin: 0 auto 1.25rem;
+}
+
+.practice-header h1 {
+  margin: 0;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.practice-header p {
+  margin: 0.5rem 0 0;
+  color: var(--asm-color-text-muted);
+  font-size: 0.95rem;
+}
+
+/* Error banner (fix overlap + better layout) */
+.error-banner {
+  max-width: 1080px;
+  margin: 1rem auto 1.25rem;
+  border: 1px solid var(--asm-color-danger, #c0392b);
+  background: color-mix(in oklab, var(--asm-color-danger, #c0392b) 22%, transparent);
+  border-radius: 12px;
+  padding: 0.9rem 0.9rem;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.error-banner p {
+  margin: 0;
+  color: var(--asm-color-text, #fff);
+  font-size: 0.95rem;
+}
+
+.error-link {
+  border: 1px solid color-mix(in oklab, var(--asm-color-danger, #c0392b) 60%, #fff);
+  background: color-mix(in oklab, var(--asm-color-danger, #c0392b) 40%, transparent);
+  color: var(--asm-color-text, #fff);
+  border-radius: 10px;
+  padding: 0.55rem 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.error-link:hover {
+  filter: brightness(1.05);
+}
+
+.error-close {
+  border: 1px solid color-mix(in oklab, var(--asm-color-danger, #c0392b) 70%, #fff);
+  background: transparent;
+  color: var(--asm-color-text, #fff);
+  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-close:hover {
+  background: color-mix(in oklab, var(--asm-color-danger, #c0392b) 25%, transparent);
+}
+
+/* Family selector */
+.family-selector-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  place-items: start center;
+  padding-top: 1rem;
+}
+
+.selector-card {
+  width: min(520px, 100%);
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.08));
+  background: var(--asm-color-surface, rgba(255, 255, 255, 0.03));
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: var(--asm-shadow-sm, 0 10px 30px rgba(0, 0, 0, 0.25));
+}
+
+.selector-card label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+
+/* PracticePage.css */
+
+.selector-card select {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.12));
+  background: var(--asm-color-bg-elevated, rgba(0, 0, 0, 0.15));
+  color: var(--asm-color-text, inherit);
+  outline: none;
+
+  color-scheme: dark; /* 🔑 hints native UI to use dark palette */
+}
+
+.selector-card select option {
+  background-color: var(--asm-color-bg, #0b1220);
+  color: var(--asm-color-text, #ffffff);
+}
+
+
+/* Main content wrapper */
+.practice-content {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* Family header row */
+.family-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.25rem 0 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.08));
+}
+
+.family-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+}
+
+.back-btn {
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.12));
+  background: var(--asm-color-surface, rgba(255, 255, 255, 0.03));
+  color: var(--asm-color-text, inherit);
+  padding: 0.6rem 0.85rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.back-btn:hover {
+  background: var(--asm-color-surface-hover, rgba(255, 255, 255, 0.06));
+}
+
+/* Courses list */
+.lessons-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* Course card */
+.course-section {
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.08));
+  background: var(--asm-color-surface, rgba(255, 255, 255, 0.03));
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: var(--asm-shadow-xs, 0 8px 18px rgba(0, 0, 0, 0.22));
+}
+
+.course-header-minimal {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.25rem 0.25rem 0.8rem;
+  border-bottom: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.06));
+  margin-bottom: 0.9rem;
+}
+
+.course-badge,
+.lesson-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+  flex-shrink: 0; /* 🔑 prevents compression */
+}
+
+.course-badge svg,
+.lesson-icon svg {
+  width: 22px;
+  height: 22px;
+  aspect-ratio: 1 / 1;
+}
+
+.course-meta h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.course-meta p {
+  margin: 0.25rem 0 0;
+  color: var(--asm-color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* Chapter group */
+.chapter-group {
+  padding: 0.25rem 0.25rem 0.75rem;
+}
+
+.chapter-group h4 {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  color: var(--asm-color-text, inherit);
+  opacity: 0.95;
+}
+
+/* Lessons stack */
+.lessons-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
+/* Lesson button as a card */
+.lesson-button {
+  width: 100%;
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.10));
+  background: var(--asm-color-bg-elevated, rgba(0, 0, 0, 0.14));
+  color: var(--asm-color-text, inherit);
+  border-radius: 14px;
+  padding: 0.85rem 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.lesson-button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--asm-color-brand, #3b82f6) 35%, var(--asm-color-border, rgba(255,255,255,0.12)));
+  background: var(--asm-color-surface-hover, rgba(255, 255, 255, 0.05));
+}
+
+.lesson-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.lesson-info {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.lesson-title {
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.lesson-desc {
+  color: var(--asm-color-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.play-icon {
+  opacity: 0.9;
+}
+
+/* Empty states */
+.empty-state {
+  border: 1px dashed var(--asm-color-border, rgba(255, 255, 255, 0.18));
+  border-radius: 16px;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--asm-color-text-muted);
+  background: color-mix(in oklab, var(--asm-color-surface, rgba(255,255,255,0.03)) 70%, transparent);
+}
+
+.no-lessons-msg {
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  color: var(--asm-color-text-muted);
+  border: 1px dashed var(--asm-color-border, rgba(255, 255, 255, 0.14));
+}
+
+/* Practice session UI (in-session) */
+.practice-session {
+  max-width: 720px;
+  margin: 0 auto;
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.08));
+  background: var(--asm-color-surface, rgba(255, 255, 255, 0.03));
+  border-radius: 18px;
+  padding: 1.25rem;
+  box-shadow: var(--asm-shadow-sm, 0 10px 30px rgba(0, 0, 0, 0.25));
+}
+
+.practice-session h3 {
+  margin: 0 0 0.75rem;
+}
+
+.question-card {
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.08));
+  background: var(--asm-color-bg-elevated, rgba(0, 0, 0, 0.12));
+  border-radius: 14px;
+  padding: 1rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.question-card h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  color: var(--asm-color-text-muted);
+  font-weight: 700;
+}
+
+.question-card p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.form-group {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.form-group label {
+  font-weight: 650;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.12));
+  background: var(--asm-color-bg-elevated, rgba(0, 0, 0, 0.15));
+  color: var(--asm-color-text, inherit);
+  outline: none;
+}
+
+.practice-session button {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--asm-color-brand, #3b82f6) 40%, rgba(255, 255, 255, 0.12));
+  background: color-mix(in oklab, var(--asm-color-brand, #3b82f6) 25%, transparent);
+  color: var(--asm-color-text, inherit);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.practice-session button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Session complete */
+.session-complete {
+  max-width: 720px;
+  margin: 2rem auto 0;
+  text-align: center;
+  border: 1px solid var(--asm-color-border, rgba(255, 255, 255, 0.08));
+  background: var(--asm-color-surface, rgba(255, 255, 255, 0.03));
+  border-radius: 18px;
+  padding: 1.5rem 1.25rem;
+  box-shadow: var(--asm-shadow-sm, 0 10px 30px rgba(0, 0, 0, 0.25));
+}
+
+.success-icon {
+  color: var(--asm-color-success, #27ae60);
+  margin-bottom: 0.75rem;
+}
+
+/* Responsive tweaks */
+@media (min-width: 860px) {
+  .lessons-list {
+    gap: 1.25rem;
+  }
+
+  .lessons-stack {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .practice-header h1 {
+    font-size: 1.85rem;
+  }
+
+  .family-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .error-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .error-link,
+  .error-close {
+    width: 100%;
+  }
+}
+
+/* Error banner - professional, stable */
+/* Error block (banner + helper bar) */
+.error-block {
+  margin: 1rem 0 1.25rem;
+}
+
+/* Message-only banner */
+/* Error block (banner + helper bar) */
+.error-block {
+  margin: 1rem 0 1.25rem;
+}
+
+/* Message-only banner */
+.error-banner {
+  border: 1px solid var(--asm-color-danger, #c0392b);
+  background: color-mix(in oklab, var(--asm-color-danger, #c0392b) 18%, transparent);
+  border-radius: 12px;
+
+  padding: 0.9rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  box-shadow: var(--asm-shadow-xs, 0 8px 18px rgba(0, 0, 0, 0.18));
+}
+
+.error-text {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--asm-color-text, #fff);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.error-dismiss {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+
+  border: 1px solid color-mix(in oklab, var(--asm-color-danger, #c0392b) 65%, #fff);
+  background: transparent;
+  color: color-mix(in oklab, var(--asm-color-text, #fff) 85%, var(--asm-color-danger, #c0392b));
+
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-dismiss:hover {
+  background: color-mix(in oklab, var(--asm-color-danger, #c0392b) 16%, transparent);
+}
+
+/* Helper bar under banner (actions live here) */
+.error-actions-row {
+  margin-top: 0.6rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  padding: 0.5rem 0.25rem;
+}
+
+.error-actions-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-cta {
+  border: 1px solid color-mix(in oklab, var(--asm-color-brand, #3b82f6) 40%, rgba(255, 255, 255, 0.14));
+  background: color-mix(in oklab, var(--asm-color-brand, #3b82f6) 18%, transparent);
+  color: var(--asm-color-text, #fff);
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+  font-weight: 750;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.error-cta:hover {
+  filter: brightness(1.05);
+}
+
+.error-actions-right {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.error-hint {
+  color: var(--asm-color-text-muted);
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mobile: stack cleanly */
+@media (max-width: 720px) {
+  .error-actions-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .error-actions-right {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .error-hint {
+    white-space: normal;
+  }
+}

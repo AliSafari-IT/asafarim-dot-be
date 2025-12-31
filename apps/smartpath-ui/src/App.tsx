@@ -6,9 +6,16 @@ import LearningPage from './pages/LearningPage';
 import CourseFormPage from './pages/CourseFormPage';
 import CourseLearningPage from './pages/CourseLearningPage';
 import ChapterFormPage from './pages/ChapterFormPage';
+import LessonFormPage from './pages/LessonFormPage';
 import ProgressPage from './pages/ProgressPage';
 import FamilyPage from './pages/FamilyPage';
 import FamilyFormPage from './pages/FamilyFormPage';
+import GraphsPage from './pages/GraphsPage';
+import GraphEditorPage from './pages/GraphEditorPage';
+import PracticePage from './pages/PracticePage';
+import RewardsPage from './pages/RewardsPage';
+import PracticeManagerPage from './pages/PracticeManagerPage';
+import PracticeDashboardPage from './pages/PracticeDashboardPage';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -102,6 +109,30 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                        path="/learning/:courseId/chapter/:chapterId/lesson/new"
+                        element={
+                            <ProtectedRoute>
+                                <LessonFormPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/learning/:courseId/chapter/:chapterId/lesson/:lessonId/edit"
+                        element={
+                            <ProtectedRoute>
+                                <LessonFormPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/learning/lesson/:lessonId"
+                        element={
+                            <ProtectedRoute>
+                                <PracticePage />
+                            </ProtectedRoute>
+                        }
+                    />
 
                     {/* Family Routes */}
                     <Route
@@ -135,6 +166,66 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ProgressPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Graphs Routes */}
+                    <Route
+                        path="/graphs"
+                        element={
+                            <ProtectedRoute>
+                                <GraphsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/graphs/new"
+                        element={
+                            <ProtectedRoute>
+                                <GraphEditorPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/graphs/:id"
+                        element={
+                            <ProtectedRoute>
+                                <GraphEditorPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Practice Routes */}
+                    <Route
+                        path="/practice"
+                        element={
+                            <ProtectedRoute>
+                                <PracticePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/rewards"
+                        element={
+                            <ProtectedRoute>
+                                <RewardsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/practice-manager"
+                        element={
+                            <ProtectedRoute>
+                                <PracticeManagerPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/practice-dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <PracticeDashboardPage />
                             </ProtectedRoute>
                         }
                     />

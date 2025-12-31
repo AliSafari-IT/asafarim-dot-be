@@ -190,12 +190,47 @@
     flex-shrink: 0;
 }
 
+.lessons-container {
+    padding: 1rem;
+    border-top: 1px solid var(--asm-color-border);
+}
+
+.btn-add-lesson {
+    padding: 0.5rem 1rem;
+    background: var(--asm-color-primary-600);
+    color: white;
+    border: none;
+    border-radius: var(--asm-radius-md);
+    cursor: pointer;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all var(--asm-motion-duration-200, 0.2s) var(--asm-motion-easing-ease, ease);
+    margin-bottom: 1rem;
+}
+
+.btn-add-lesson:hover {
+    background: var(--asm-color-primary-700);
+    transform: translateY(-1px);
+    box-shadow: var(--asm-effect-shadow-sm);
+}
+
+.empty-lessons {
+    text-align: center;
+    padding: 2rem;
+    color: var(--asm-color-text-muted);
+    font-size: 0.875rem;
+}
+
+.empty-lessons p {
+    margin: 0;
+}
+
 .lessons-list {
-    padding: 0 1rem 1rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    border-top: 1px solid var(--asm-color-border);
 }
 
 .lesson-item {
@@ -227,6 +262,12 @@
     margin: 0;
     font-size: 0.875rem;
     color: var(--asm-color-text-muted);
+}
+
+.lesson-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .btn-start-lesson {

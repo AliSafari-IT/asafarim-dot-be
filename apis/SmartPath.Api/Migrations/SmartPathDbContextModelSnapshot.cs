@@ -69,8 +69,14 @@ namespace SmartPath.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<int>("FamilyId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("OrderIndex")
                         .HasColumnType("integer");
@@ -79,9 +85,16 @@ namespace SmartPath.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("ChapterId");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FamilyId", "CreatedByUserId");
 
                     b.ToTable("Chapters");
                 });
@@ -150,8 +163,14 @@ namespace SmartPath.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<int>("FamilyId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("GradeLevel")
                         .HasColumnType("integer");
@@ -166,7 +185,14 @@ namespace SmartPath.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("CourseId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FamilyId", "CreatedByUserId");
 
                     b.ToTable("Courses");
                 });
@@ -233,6 +259,97 @@ namespace SmartPath.Api.Migrations
                     b.ToTable("FamilyMembers");
                 });
 
+            modelBuilder.Entity("SmartPath.Api.Entities.Graph", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Graphs");
+                });
+
+            modelBuilder.Entity("SmartPath.Api.Entities.GraphEdge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FromNodeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GraphId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDirected")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ToNodeId")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromNodeId");
+
+                    b.HasIndex("GraphId");
+
+                    b.HasIndex("ToNodeId");
+
+                    b.ToTable("GraphEdges");
+                });
+
+            modelBuilder.Entity("SmartPath.Api.Entities.GraphNode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GraphId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text");
+
+                    b.Property<double>("X")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Y")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GraphId");
+
+                    b.ToTable("GraphNodes");
+                });
+
             modelBuilder.Entity("SmartPath.Api.Entities.Lesson", b =>
                 {
                     b.Property<int>("LessonId")
@@ -247,10 +364,16 @@ namespace SmartPath.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<int>("EstimatedMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FamilyId")
                         .HasColumnType("integer");
 
                     b.Property<string>("LearningObjectives")
@@ -263,9 +386,16 @@ namespace SmartPath.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("LessonId");
 
                     b.HasIndex("ChapterId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FamilyId", "CreatedByUserId");
 
                     b.ToTable("Lessons");
                 });
@@ -334,6 +464,40 @@ namespace SmartPath.Api.Migrations
                     b.ToTable("LessonProgress");
                 });
 
+            modelBuilder.Entity("SmartPath.Api.Entities.PathRun", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Algorithm")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EndNodeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GraphId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StartNodeId")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("TotalCost")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GraphId");
+
+                    b.ToTable("PathRuns");
+                });
+
             modelBuilder.Entity("SmartPath.Api.Entities.PracticeAttempt", b =>
                 {
                     b.Property<int>("AttemptId")
@@ -363,6 +527,9 @@ namespace SmartPath.Api.Migrations
                     b.Property<int>("PracticeItemId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("PracticeSessionId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("SelfRating")
                         .HasColumnType("integer");
 
@@ -377,6 +544,8 @@ namespace SmartPath.Api.Migrations
 
                     b.HasIndex("PracticeItemId");
 
+                    b.HasIndex("PracticeSessionId");
+
                     b.ToTable("PracticeAttempts");
                 });
 
@@ -388,44 +557,84 @@ namespace SmartPath.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PracticeItemId"));
 
-                    b.Property<string>("AnswerChoices")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CorrectAnswer")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Difficulty")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ExplanationText")
+                    b.Property<string>("ExpectedAnswer")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Hints")
-                        .HasColumnType("text");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("LessonId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Points")
                         .HasColumnType("integer");
 
                     b.Property<string>("QuestionText")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("TimeEstimateSeconds")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("PracticeItemId");
 
-                    b.HasIndex("LessonId");
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LessonId", "IsActive");
 
                     b.ToTable("PracticeItems");
+                });
+
+            modelBuilder.Entity("SmartPath.Api.Entities.PracticeSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChildUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FamilyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TotalPoints")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChildUserId");
+
+                    b.HasIndex("FamilyId");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("PracticeSessions");
                 });
 
             modelBuilder.Entity("SmartPath.Api.Entities.Streak", b =>
@@ -465,6 +674,34 @@ namespace SmartPath.Api.Migrations
                     b.ToTable("Streaks");
                 });
 
+            modelBuilder.Entity("SmartPath.Api.Entities.StreakEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BestDays")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChildUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CurrentDays")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastActivityDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChildUserId")
+                        .IsUnique();
+
+                    b.ToTable("StreakEntities");
+                });
+
             modelBuilder.Entity("SmartPath.Api.Entities.Task", b =>
                 {
                     b.Property<int>("TaskId")
@@ -472,6 +709,12 @@ namespace SmartPath.Api.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TaskId"));
+
+                    b.Property<DateTime?>("AssignedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("AssignedByUserId")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("AssignedToUserId")
                         .HasColumnType("integer");
@@ -504,6 +747,12 @@ namespace SmartPath.Api.Migrations
                     b.Property<bool>("IsRecurring")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("LastEditedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("LastEditedByUserId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Priority")
                         .IsRequired()
                         .HasColumnType("text");
@@ -524,15 +773,21 @@ namespace SmartPath.Api.Migrations
 
                     b.HasKey("TaskId");
 
+                    b.HasIndex("AssignedByUserId");
+
                     b.HasIndex("AssignedToUserId");
 
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("DueDate");
 
-                    b.HasIndex("FamilyId");
+                    b.HasIndex("LastEditedByUserId");
 
                     b.HasIndex("Status");
+
+                    b.HasIndex("FamilyId", "AssignedToUserId");
+
+                    b.HasIndex("FamilyId", "CreatedByUserId");
 
                     b.ToTable("Tasks");
                 });
@@ -648,7 +903,23 @@ namespace SmartPath.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SmartPath.Api.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartPath.Api.Entities.Family", "Family")
+                        .WithMany()
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Course");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Family");
                 });
 
             modelBuilder.Entity("SmartPath.Api.Entities.ChildCourseEnrollment", b =>
@@ -668,6 +939,25 @@ namespace SmartPath.Api.Migrations
                     b.Navigation("Child");
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("SmartPath.Api.Entities.Course", b =>
+                {
+                    b.HasOne("SmartPath.Api.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartPath.Api.Entities.Family", "Family")
+                        .WithMany()
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Family");
                 });
 
             modelBuilder.Entity("SmartPath.Api.Entities.Family", b =>
@@ -700,6 +990,44 @@ namespace SmartPath.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SmartPath.Api.Entities.GraphEdge", b =>
+                {
+                    b.HasOne("SmartPath.Api.Entities.GraphNode", "FromNode")
+                        .WithMany()
+                        .HasForeignKey("FromNodeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartPath.Api.Entities.Graph", "Graph")
+                        .WithMany("Edges")
+                        .HasForeignKey("GraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartPath.Api.Entities.GraphNode", "ToNode")
+                        .WithMany()
+                        .HasForeignKey("ToNodeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromNode");
+
+                    b.Navigation("Graph");
+
+                    b.Navigation("ToNode");
+                });
+
+            modelBuilder.Entity("SmartPath.Api.Entities.GraphNode", b =>
+                {
+                    b.HasOne("SmartPath.Api.Entities.Graph", "Graph")
+                        .WithMany("Nodes")
+                        .HasForeignKey("GraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Graph");
+                });
+
             modelBuilder.Entity("SmartPath.Api.Entities.Lesson", b =>
                 {
                     b.HasOne("SmartPath.Api.Entities.Chapter", "Chapter")
@@ -708,7 +1036,23 @@ namespace SmartPath.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SmartPath.Api.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartPath.Api.Entities.Family", "Family")
+                        .WithMany()
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Chapter");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Family");
                 });
 
             modelBuilder.Entity("SmartPath.Api.Entities.LessonProgress", b =>
@@ -730,6 +1074,17 @@ namespace SmartPath.Api.Migrations
                     b.Navigation("Lesson");
                 });
 
+            modelBuilder.Entity("SmartPath.Api.Entities.PathRun", b =>
+                {
+                    b.HasOne("SmartPath.Api.Entities.Graph", "Graph")
+                        .WithMany("PathRuns")
+                        .HasForeignKey("GraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Graph");
+                });
+
             modelBuilder.Entity("SmartPath.Api.Entities.PracticeAttempt", b =>
                 {
                     b.HasOne("SmartPath.Api.Entities.User", "Child")
@@ -744,6 +1099,10 @@ namespace SmartPath.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SmartPath.Api.Entities.PracticeSession", null)
+                        .WithMany("Attempts")
+                        .HasForeignKey("PracticeSessionId");
+
                     b.Navigation("Child");
 
                     b.Navigation("PracticeItem");
@@ -751,11 +1110,46 @@ namespace SmartPath.Api.Migrations
 
             modelBuilder.Entity("SmartPath.Api.Entities.PracticeItem", b =>
                 {
+                    b.HasOne("SmartPath.Api.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("SmartPath.Api.Entities.Lesson", "Lesson")
                         .WithMany("PracticeItems")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("SmartPath.Api.Entities.PracticeSession", b =>
+                {
+                    b.HasOne("SmartPath.Api.Entities.User", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartPath.Api.Entities.Family", "Family")
+                        .WithMany()
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartPath.Api.Entities.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Child");
+
+                    b.Navigation("Family");
 
                     b.Navigation("Lesson");
                 });
@@ -771,8 +1165,24 @@ namespace SmartPath.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SmartPath.Api.Entities.StreakEntity", b =>
+                {
+                    b.HasOne("SmartPath.Api.Entities.User", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Child");
+                });
+
             modelBuilder.Entity("SmartPath.Api.Entities.Task", b =>
                 {
+                    b.HasOne("SmartPath.Api.Entities.User", "AssignedBy")
+                        .WithMany()
+                        .HasForeignKey("AssignedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("SmartPath.Api.Entities.User", "AssignedTo")
                         .WithMany()
                         .HasForeignKey("AssignedToUserId")
@@ -790,11 +1200,20 @@ namespace SmartPath.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SmartPath.Api.Entities.User", "LastEditedBy")
+                        .WithMany()
+                        .HasForeignKey("LastEditedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("AssignedBy");
+
                     b.Navigation("AssignedTo");
 
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Family");
+
+                    b.Navigation("LastEditedBy");
                 });
 
             modelBuilder.Entity("SmartPath.Api.Entities.TaskComment", b =>
@@ -859,6 +1278,15 @@ namespace SmartPath.Api.Migrations
                     b.Navigation("Tasks");
                 });
 
+            modelBuilder.Entity("SmartPath.Api.Entities.Graph", b =>
+                {
+                    b.Navigation("Edges");
+
+                    b.Navigation("Nodes");
+
+                    b.Navigation("PathRuns");
+                });
+
             modelBuilder.Entity("SmartPath.Api.Entities.Lesson", b =>
                 {
                     b.Navigation("PracticeItems");
@@ -867,6 +1295,11 @@ namespace SmartPath.Api.Migrations
                 });
 
             modelBuilder.Entity("SmartPath.Api.Entities.PracticeItem", b =>
+                {
+                    b.Navigation("Attempts");
+                });
+
+            modelBuilder.Entity("SmartPath.Api.Entities.PracticeSession", b =>
                 {
                     b.Navigation("Attempts");
                 });

@@ -11,10 +11,12 @@ interface TaskForm {
     dueDate: string;
     status: 'Pending' | 'In Progress' | 'Completed';
     familyId: number;
-    assignedToUserId: number;
+    assignedToUserId?: number;
     category?: string;
     priority?: string;
     estimatedMinutes?: number;
+    isRecurring?: boolean;
+    recurrencePattern?: string;
 }
 
 export default function TaskFormPage() {
@@ -30,7 +32,7 @@ export default function TaskFormPage() {
         dueDate: '',
         status: 'Pending',
         familyId: 0,
-        assignedToUserId: 0,
+        assignedToUserId: undefined,
         category: 'Homework',
         priority: 'Medium',
     });
@@ -246,8 +248,8 @@ export default function TaskFormPage() {
                         id="assignedToUserId"
                         type="number"
                         value={form.assignedToUserId || ''}
-                        onChange={(e) => setForm({ ...form, assignedToUserId: e.target.value ? Number(e.target.value) : 0 })}
-                        placeholder="Enter user ID (leave blank if unassigned)"
+                        onChange={(e) => setForm({ ...form, assignedToUserId: e.target.value ? Number(e.target.value) : undefined })}
+                        placeholder="Leave blank to assign to yourself"
                     />
                 </div>
 

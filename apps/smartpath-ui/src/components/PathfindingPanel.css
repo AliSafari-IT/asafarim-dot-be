@@ -1,0 +1,214 @@
+.pathfinding-panel {
+  background: white;
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-md);
+}
+
+.pathfinding-panel h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--asm-color-text-primary);
+}
+
+.error-message {
+  background-color: var(--asm-color-error-light);
+  border: 1px solid var(--asm-color-error);
+  border-radius: var(--asm-radius-sm);
+  padding: var(--asm-space-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-message p {
+  margin: 0;
+  color: var(--asm-color-error);
+  font-size: 0.9rem;
+}
+
+.error-message button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--asm-color-error);
+  font-size: 1.2rem;
+}
+
+.pathfinding-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-md);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-xs);
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--asm-color-text-primary);
+}
+
+.form-group select {
+  padding: var(--asm-space-sm);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-sm);
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--asm-color-primary);
+  box-shadow: 0 0 0 3px var(--asm-color-primary-light);
+}
+
+.pathfinding-result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-md);
+  padding: var(--asm-space-md);
+  background: var(--asm-color-background-secondary);
+  border-radius: var(--asm-radius-sm);
+}
+
+.result-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-sm);
+}
+
+.result-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--asm-color-text-primary);
+}
+
+.result-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-xs);
+  font-size: 0.85rem;
+  color: var(--asm-color-text-secondary);
+}
+
+.path-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-sm);
+}
+
+.path-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--asm-color-text-primary);
+}
+
+.path-nodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--asm-space-sm);
+  align-items: center;
+}
+
+.path-node-item {
+  display: flex;
+  align-items: center;
+  gap: var(--asm-space-xs);
+}
+
+.path-node-label {
+  background: var(--asm-color-primary);
+  color: white;
+  padding: var(--asm-space-xs) var(--asm-space-sm);
+  border-radius: var(--asm-radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.path-arrow {
+  color: var(--asm-color-text-secondary);
+  font-weight: bold;
+}
+
+.visited-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-sm);
+}
+
+.visited-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--asm-space-sm);
+}
+
+.visited-header p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--asm-color-text-primary);
+}
+
+.visited-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-xs);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.visited-item {
+  display: flex;
+  align-items: center;
+  gap: var(--asm-space-sm);
+  padding: var(--asm-space-xs) var(--asm-space-sm);
+  background: white;
+  border-radius: var(--asm-radius-sm);
+  font-size: 0.85rem;
+  border-left: 3px solid var(--asm-color-border);
+  transition: all var(--asm-motion-duration-fast) var(--asm-motion-easing-ease);
+}
+
+.visited-item.visited {
+  background: var(--asm-color-primary-light);
+  border-left-color: var(--asm-color-primary);
+}
+
+.visited-item.in-path {
+  background: var(--asm-color-success-light);
+  border-left-color: var(--asm-color-success);
+}
+
+.visited-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--asm-color-primary);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.visited-item.in-path .visited-index {
+  background: var(--asm-color-success);
+}
+
+.visited-label {
+  color: var(--asm-color-text-primary);
+  font-weight: 500;
+}

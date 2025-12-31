@@ -72,3 +72,9 @@ select {
     border-radius: var(--asm-radius-md);
     margin: 1rem 0;
 }
+
+svg.lucide {
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+}
+

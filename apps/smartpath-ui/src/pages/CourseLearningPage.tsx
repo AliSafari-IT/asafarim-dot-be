@@ -41,6 +41,16 @@ export default function CourseLearningPage() {
         loadCourseAndChapters();
     }, [courseId]);
 
+    useEffect(() => {
+        if (!loading && !course) {
+            console.log('❌ Course not found, redirecting to /learning');
+            const timer = setTimeout(() => {
+                navigate('/learning');
+            }, 1500);
+            return () => clearTimeout(timer);
+        }
+    }, [loading, course, navigate]);
+
     const loadCourseAndChapters = async () => {
         try {
             if (!courseId) return;
@@ -70,8 +80,13 @@ export default function CourseLearningPage() {
             if (chaptersWithLessons.length > 0) {
                 setExpandedChapter(chaptersWithLessons[0]!.chapterId);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to load course:', error);
+            if (error?.response?.status === 403) {
+                console.log('❌ Access forbidden to this course');
+            } else if (error?.response?.status === 404) {
+                console.log('❌ Course not found');
+            }
         } finally {
             setLoading(false);
         }
@@ -105,12 +120,8 @@ export default function CourseLearningPage() {
     if (!course) {
         return (
             <div className="course-learning-page container" data-testid="course-learning-page">
-                <ButtonComponent onClick={() => navigate('/learning')} variant="primary">
-                    <ArrowLeft size={20} />
-                    Back to Courses
-                </ButtonComponent>
                 <div className="error-state">
-                    <p>Course not found</p>
+                    <p>Course not found. Redirecting...</p>
                 </div>
             </div>
         );
@@ -185,24 +196,49 @@ export default function CourseLearningPage() {
                                     </button>
                                 </div>
 
-                                {expandedChapter === chapter.chapterId && chapter.lessons && chapter.lessons.length > 0 && (
-                                    <div className="lessons-list">
-                                        {chapter.lessons.map((lesson) => (
-                                            <div key={lesson.lessonId} className="lesson-item">
-                                                <div className="lesson-content">
-                                                    <h4>{lesson.title}</h4>
-                                                    {lesson.description && <p>{lesson.description}</p>}
-                                                </div>
-                                                <button
-                                                    onClick={() => handleStartLesson(lesson.lessonId)}
-                                                    disabled={startingLesson === lesson.lessonId}
-                                                    className="btn-start-lesson"
-                                                >
-                                                    <Play size={16} />
-                                                    {startingLesson === lesson.lessonId ? 'Starting...' : 'Start'}
-                                                </button>
+                                {expandedChapter === chapter.chapterId && (
+                                    <div className="lessons-container">
+                                        <button
+                                            onClick={() => navigate(`/learning/${courseId}/chapter/${chapter.chapterId}/lesson/new`)}
+                                            className="btn-add-lesson"
+                                            title="Add new lesson"
+                                        >
+                                            <Plus size={16} />
+                                            Add Lesson
+                                        </button>
+                                        {chapter.lessons && chapter.lessons.length > 0 ? (
+                                            <div className="lessons-list">
+                                                {chapter.lessons.map((lesson) => (
+                                                    <div key={lesson.lessonId} className="lesson-item">
+                                                        <div className="lesson-content">
+                                                            <h4>{lesson.title}</h4>
+                                                            {lesson.description && <p>{lesson.description}</p>}
+                                                        </div>
+                                                        <div className="lesson-actions">
+                                                            <button
+                                                                onClick={() => navigate(`/learning/${courseId}/chapter/${chapter.chapterId}/lesson/${lesson.lessonId}/edit`)}
+                                                                className="btn-action btn-edit"
+                                                                title="Edit lesson"
+                                                            >
+                                                                <Edit2 size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleStartLesson(lesson.lessonId)}
+                                                                disabled={startingLesson === lesson.lessonId}
+                                                                className="btn-start-lesson"
+                                                            >
+                                                                <Play size={16} />
+                                                                {startingLesson === lesson.lessonId ? 'Starting...' : 'Start'}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
+                                        ) : (
+                                            <div className="empty-lessons">
+                                                <p>No lessons in this chapter yet.</p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
