@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ExportOptions } from '@asafarim/md-exporter';
-import { runExport, downloadMarkdown } from './api';
+import { runExport, downloadMarkdown, getMarkdownContent } from './api';
 import './styles.css';
 
 export default function App() {
@@ -58,10 +58,17 @@ export default function App() {
         }
     };
 
-    const handleCopy = () => {
+    const handleCopyContent = async () => {
         if (!result?.outputPath) return;
 
-        navigator.clipboard.writeText(result.outputPath);
+        try {
+            const filename = result.outputPath.split('\\').pop() || 'export.md';
+            const content = await getMarkdownContent(filename);
+            await navigator.clipboard.writeText(content);
+            alert('Markdown content copied to clipboard!');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to copy content');
+        }
     };
 
     return (
@@ -136,7 +143,7 @@ export default function App() {
                     <p><strong>Bytes Written:</strong> {result.report?.bytesWritten}</p>
                     <div className="action-buttons">
                         <button onClick={handleDownload} className="download-button">Download Markdown</button>
-                        <button onClick={handleCopy} className="copy-button">Copy Markdown</button>
+                        <button onClick={handleCopyContent} className="copy-button">Copy Markdown content to clipboard</button>
                     </div>
                 </div>
             )}

@@ -7,6 +7,7 @@ export interface RunExportRequest {
 export interface RunExportResponse {
     outputPath: string;
     report: any;
+    content?: string;
 }
 
 export async function runExport(options: ExportOptions): Promise<RunExportResponse> {
@@ -31,4 +32,14 @@ export async function downloadMarkdown(filename: string): Promise<Blob> {
     }
 
     return response.blob();
+}
+
+export async function getMarkdownContent(filename: string): Promise<string> {
+    const response = await fetch(`/api/download/${filename}`);
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch content: ${response.statusText}`);
+    }
+
+    return response.text();
 }
