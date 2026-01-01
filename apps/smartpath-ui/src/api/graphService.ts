@@ -74,27 +74,27 @@ export interface PathfindingResult {
 
 const graphService = {
   async getGraphs(): Promise<Graph[]> {
-    const response = await apiClient.get('/graphs');
+    const response = await apiClient.get('/api/graphs');
     return response.data;
   },
 
   async getGraph(id: number): Promise<Graph> {
-    const response = await apiClient.get(`/graphs/${id}`);
+    const response = await apiClient.get(`/api/graphs/${id}`);
     return response.data;
   },
 
   async createGraph(request: CreateGraphRequest): Promise<Graph> {
-    const response = await apiClient.post('/graphs', request);
+    const response = await apiClient.post('/api/graphs', request);
     return response.data;
   },
 
   async updateGraph(id: number, request: UpdateGraphRequest): Promise<Graph> {
-    const response = await apiClient.put(`/graphs/${id}`, request);
+    const response = await apiClient.put(`/api/graphs/${id}`, request);
     return response.data;
   },
 
   async deleteGraph(id: number): Promise<void> {
-    await apiClient.delete(`/graphs/${id}`);
+    await apiClient.delete(`/api/graphs/${id}`);
   },
 
   async findShortestPath(
@@ -102,7 +102,7 @@ const graphService = {
     request: PathfindingRequest
   ): Promise<PathfindingResult> {
     const response = await apiClient.post(
-      `/graphs/${graphId}/shortest-path`,
+      `/api/graphs/${graphId}/shortest-path`,
       request
     );
     return response.data;

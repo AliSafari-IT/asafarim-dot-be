@@ -1,0 +1,15 @@
+{
+    "name": "export-to-md",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "concurrently \"pnpm run exmd:web\" \"pnpm run exmd:server\"",
+        "exmd:web": "pnpm -F demo-web dev",
+        "exmd:server": "pnpm -F demo-server dev",
+        "exmd:build": "pnpm -r build"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

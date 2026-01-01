@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp, Flame, Target } from 'lucide-react';
+import { TrendingUp, Flame, Target, ChevronDown, ChevronUp, Maximize2 } from 'lucide-react';
 import practiceApi, { PracticeDashboard, ChildDashboard } from '../api/practiceApi';
 import smartpathService from '../api/smartpathService';
 import './PracticeDashboardPage.css';
@@ -10,6 +10,8 @@ export default function PracticeDashboardPage() {
   const [dashboard, setDashboard] = useState<PracticeDashboard | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedAttempts, setExpandedAttempts] = useState<Set<number>>(new Set());
+  const [modalChild, setModalChild] = useState<ChildDashboard | null>(null);
 
   useEffect(() => {
     loadFamilies();
@@ -40,8 +42,40 @@ export default function PracticeDashboardPage() {
 
   const handleSelectFamily = (familyId: number) => {
     setSelectedFamily(familyId);
+    setExpandedAttempts(new Set());
+    setModalChild(null);
     loadDashboard(familyId);
   };
+
+  const toggleAttempts = (childId: number) => {
+    setExpandedAttempts(prev => {
+      const next = new Set(prev);
+      if (next.has(childId)) {
+        next.delete(childId);
+      } else {
+        next.add(childId);
+      }
+      return next;
+    });
+  };
+
+  const openModal = (child: ChildDashboard) => {
+    setModalChild(child);
+  };
+
+  const closeModal = () => {
+    setModalChild(null);
+  };
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && modalChild) {
+        closeModal();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [modalChild]);
 
   return (
     <div className="practice-dashboard-page container" data-testid="practice-dashboard-page">
@@ -97,7 +131,14 @@ export default function PracticeDashboardPage() {
                   </div>
                   <div className="stat-content">
                     <p className="stat-label">Total Points</p>
-                    <p className="stat-value">{child.totalPoints}</p>
+                    <p className="stat-value">
+                      {child.totalPoints} / {child.maxPossiblePoints}
+                      {child.maxPossiblePoints > 0 && (
+                        <span className="stat-percentage">
+                          {' '}({Math.round((child.totalPoints / child.maxPossiblePoints) * 100)}%)
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
 
@@ -123,12 +164,35 @@ export default function PracticeDashboardPage() {
               </div>
 
               <div className="attempts-section" data-testid={`attempts-${child.childUserId}`}>
-                <h3>Recent Attempts</h3>
+                <div className="attempts-header">
+                  <h3>Recent Attempts</h3>
+                  <div className="attempts-actions">
+                    {child.recentAttempts.length > 5 && (
+                      <button
+                        className="btn-icon"
+                        onClick={() => openModal(child)}
+                        title="View all attempts"
+                        aria-label="View all attempts"
+                      >
+                        <Maximize2 size={18} />
+                      </button>
+                    )}
+                    {child.recentAttempts.length > 0 && (
+                      <button
+                        className="btn-icon"
+                        onClick={() => toggleAttempts(child.childUserId)}
+                        aria-label={expandedAttempts.has(child.childUserId) ? 'Collapse attempts' : 'Expand attempts'}
+                      >
+                        {expandedAttempts.has(child.childUserId) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                      </button>
+                    )}
+                  </div>
+                </div>
                 {child.recentAttempts.length === 0 ? (
                   <p className="empty-state">No attempts yet</p>
                 ) : (
-                  <div className="attempts-list">
-                    {child.recentAttempts.map((attempt) => (
+                  <div className={`attempts-list ${expandedAttempts.has(child.childUserId) ? 'expanded' : 'collapsed'}`}>
+                    {child.recentAttempts.slice(0, expandedAttempts.has(child.childUserId) ? undefined : 5).map((attempt) => (
                       <div key={attempt.attemptId} className="attempt-item" data-testid={`attempt-${attempt.attemptId}`}>
                         <div className="attempt-info">
                           <p className="attempt-question">{attempt.questionPreview}</p>
@@ -180,6 +244,35 @@ export default function PracticeDashboardPage() {
           <p>No practice data available for this family yet.</p>
         </div>
       ) : null}
+
+      {modalChild && (
+        <div className="modal-overlay" onClick={closeModal} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 id="modal-title">{modalChild.childName} - All Attempts</h2>
+              <button className="modal-close" onClick={closeModal} aria-label="Close modal">×</button>
+            </div>
+            <div className="modal-body">
+              <div className="attempts-list-modal">
+                {modalChild.recentAttempts.map((attempt) => (
+                  <div key={attempt.attemptId} className="attempt-item" data-testid={`modal-attempt-${attempt.attemptId}`}>
+                    <div className="attempt-info">
+                      <p className="attempt-question">{attempt.questionPreview}</p>
+                      <p className="attempt-lesson">{attempt.lessonTitle}</p>
+                    </div>
+                    <div className="attempt-result">
+                      <span className={`badge ${attempt.isCorrect ? 'correct' : 'incorrect'}`}>
+                        {attempt.isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                      </span>
+                      <span className="attempt-points">+{attempt.pointsAwarded}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

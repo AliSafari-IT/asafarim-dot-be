@@ -77,7 +77,8 @@
     "app:studynotes": "pnpm kill:identity && pnpm kill:core && pnpm kill:studynotes && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:core\" \"pnpm api:core\" \"pnpm dev:studynotes\" \"pnpm api:studynotes\"",
     "app:kc": "pnpm kill:identity && pnpm rm:nm && pnpm i && pnpm dev:shared && concurrently \"pnpm dev:identity\" \"pnpm api:identity\" \"pnpm dev:kc\" \"pnpm api:kc\"",
     "deploy": "sudo bash -x /var/repos/asafarim-dot-be/scripts/deploy-local.sh",
-    "sd": "sudo bash /var/repos/asafarim-dot-be/scripts/selective-deploy.sh"
+    "sd": "sudo bash /var/repos/asafarim-dot-be/scripts/selective-deploy.sh",
+    "exmd": "pnpm -F export-to-md dev"
   },
   "devDependencies": {
     "concurrently": "^9.2.0",

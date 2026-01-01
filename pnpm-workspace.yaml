@@ -13,3 +13,5 @@ packages:
   - "showcases/*/*"
   - "learn/*/*"
   - "libs/*"
+  - "tools/export-to-md"
+  - "tools/export-to-md/*"

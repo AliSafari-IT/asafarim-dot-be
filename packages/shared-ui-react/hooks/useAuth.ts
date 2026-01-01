@@ -21,15 +21,11 @@ export interface UseAuthResult<TUser = any> {
 }
 
 async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> {
-  // Block during logout
   if (localStorage.getItem('logout_in_progress') === 'true') {
-    console.log('🛑 fetchIsAuthenticated blocked - logout in progress');
     return false;
   }
   
   try {
-    console.log(`🔍 fetchIsAuthenticated: ${base}${me}`);
-    console.log(`🍪 Current cookies:`, document.cookie || '(none)');
     const res = await fetch(`${base}${me}`, {
       method: 'GET',
       credentials: 'include',
@@ -38,31 +34,19 @@ async function fetchIsAuthenticated(base: string, me: string): Promise<boolean> 
         'Cache-Control': 'no-cache'
       }
     });
-    console.log(`🔍 fetchIsAuthenticated response: ${res.status}`);
-    if (res.status === 401) {
-      console.warn('⚠️ 401 Unauthorized - auth cookies may not be present or invalid');
-    } else if (res.status === 404) {
-      console.warn('⚠️ 404 Not Found - auth endpoint does not exist');
-    } else if (!res.ok) {
-      console.warn(`⚠️ ${res.status} ${res.statusText} - unexpected auth check response`);
-    }
-    // Only 200 OK means authenticated
     return res.ok;
   } catch (error) {
-    console.error('❌ fetchIsAuthenticated failed:', error);
+    console.error('Auth check failed:', error);
     return false;
   }
 }
 
 async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | null> {
-  // Block during logout
   if (localStorage.getItem('logout_in_progress') === 'true') {
-    console.log('🛑 fetchUserInfo blocked - logout in progress');
     return null;
   }
   
   try {
-    console.log(`👤 fetchUserInfo: ${base}${me}`);
     const res = await fetch(`${base}${me}`, {
       method: 'GET',
       credentials: 'include',
@@ -71,25 +55,19 @@ async function fetchUserInfo<TUser>(base: string, me: string): Promise<TUser | n
         'Cache-Control': 'no-cache'
       }
     });
-    console.log(`👤 fetchUserInfo response: ${res.status}`);
     if (!res.ok) {
-      console.error('❌ User info fetch failed:', res.status, res.statusText);
       return null;
     }
-    const userData = (await res.json()) as TUser;
-    console.log('👤 User data received:', userData);
-    return userData;
+    return (await res.json()) as TUser;
   } catch (error) {
-    console.error('❌ User info fetch error:', error);
+    console.error('User info fetch error:', error);
     return null;
   }
 }
 
 // fetch token
 async function fetchToken(base: string, tokenEndpoint: string): Promise<string | null> {
-  // Block during logout
   if (localStorage.getItem('logout_in_progress') === 'true') {
-    console.log('🛑 fetchToken blocked - logout in progress');
     return null;
   }
   
@@ -141,9 +119,7 @@ function isTokenExpired(token: string | null): boolean {
 
 // Refresh token function
 async function refreshToken(base: string): Promise<string | null> {
-  // CRITICAL: Block all refresh attempts if logout is in progress
   if (localStorage.getItem('logout_in_progress') === 'true') {
-    console.log('🛑 refreshToken() blocked - logout in progress');
     return null;
   }
   
@@ -180,17 +156,10 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     ? 'https://identity.asafarim.be/auth'
     : `${(import.meta as any).env?.VITE_IDENTITY_API_URL || 'http://identity.asafarim.local:5101'}/auth`;
   
-  console.log('🔐 shared-ui-react/hooks/useAuth.ts: isProd?', isProd);
-  console.log('🔐 Identity API Base:', defaultIdentityApiBase);
-  
   const authApiBase = options?.authApiBase ?? defaultIdentityApiBase;
-  console.log('🔐 Using Auth API Base:', authApiBase);
-  
   const meEndpoint = options?.meEndpoint ?? '/me';
   const tokenEndpoint = options?.tokenEndpoint ?? '/token';
   const logoutEndpoint = options?.logoutEndpoint ?? '/logout';
-  
-  console.log('🔐 Auth endpoints:', { meEndpoint, tokenEndpoint, logoutEndpoint });
 
   // For logout, ensure we use the Identity API
   const identityLogoutUrl = `${authApiBase}${logoutEndpoint}`;
@@ -255,7 +224,6 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     let cleanupTimer: ReturnType<typeof setTimeout> | null = null;
 
     const handleExternalLogout = () => {
-      console.log('🔔 auth-signout event received - clearing auth state');
       if (mounted) {
         setAuthenticated(false);
         setUser(null);
@@ -265,51 +233,39 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
     };
 
     const handleExternalLogin = () => {
-      // Avoid triggering auth checks while logout is still in progress
       if (localStorage.getItem('logout_in_progress') === 'true') {
-        console.log('🛑 Ignoring auth-login event while logout flag is set');
         return;
       }
-
-      console.log('🔔 auth-login event received - rechecking auth state');
       void checkAuth('external-login');
     };
 
     const handleStorageChange = (event: StorageEvent) => {
       if (!event.key) return;
       if (event.key === 'auth_token' && !event.newValue) {
-        console.log('🧏 Storage event detected auth_token removal - forcing logout state');
         handleExternalLogout();
         return;
       }
       if (event.key === 'auth_token' && event.newValue) {
-        console.log('🧏 Storage event detected auth_token set - revalidating auth state');
         handleExternalLogin();
         return;
       }
       if (event.key === 'logout_in_progress' && event.newValue === 'true') {
-        console.log('🧏 Storage event detected logout_in_progress - forcing logout state');
         handleExternalLogout();
       }
     };
 
-    // Listen for focus/visibility changes to re-check auth when switching tabs
     const handleFocus = () => {
       if (localStorage.getItem('logout_in_progress') === 'true') {
-        console.log('🛑 Ignoring focus event while logout in progress');
         return;
       }
-      console.log('👁️ Window focused - rechecking auth state');
       void checkAuth('window-focus');
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         if (localStorage.getItem('logout_in_progress') === 'true') {
-          console.log('🛑 Ignoring visibility change while logout in progress');
           return;
         }
-        console.log('👁️ Tab became visible - rechecking auth state');
         void checkAuth('visibility-change');
       }
     };
@@ -329,13 +285,10 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
         const logoutTimestamp = localStorage.getItem('logout_timestamp');
         if (logoutTimestamp) {
           const elapsed = Date.now() - parseInt(logoutTimestamp, 10);
-          if (elapsed > 10000) { // 10 seconds
-            console.log('🧹 Clearing stale logout flag before auth check');
+          if (elapsed > 10000) {
             localStorage.removeItem('logout_in_progress');
             localStorage.removeItem('logout_timestamp');
-            // Continue with auth check
           } else {
-            console.log('🛑 Logout in progress, skipping auth check');
             // Ensure all auth data is cleared
             localStorage.removeItem('auth_token');
             localStorage.removeItem('refresh_token');
@@ -349,22 +302,15 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
             return;
           }
         } else {
-          // No timestamp means flag is invalid, clear it
-          console.log('🧹 Clearing logout flag without timestamp');
           localStorage.removeItem('logout_in_progress');
         }
       }
 
-      // Prevent multiple simultaneous auth checks
       if (authCheckInProgress) {
-        console.log('Auth check already in progress, skipping...');
         return;
       }
 
       authCheckInProgress = true;
-      console.log(`🔍 Checking authentication status (reason: ${reason})...`);
-      console.log('API Base:', authApiBase);
-      console.log('Me endpoint:', meEndpoint);
 
       try {
         // First check if we have user info in localStorage as fallback
@@ -374,25 +320,20 @@ export function useAuth<TUser = any>(options?: UseAuthOptions): UseAuthResult<TU
         if (storedUserInfo) {
           try {
             fallbackUserInfo = JSON.parse(storedUserInfo);
-            console.log('📝 Found user info in localStorage (fallback):', fallbackUserInfo);
           } catch (e) {
-            console.warn('⚠️ Failed to parse stored user info:', e);
+            // Ignore parse errors
           }
         }
         
         // Check with the server immediately - cookies are sent with credentials: 'include'
         let ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
         
-        // RETRY LOGIC: If first check fails and we have stored user info, retry once
-        // This handles rare cases where cookies weren't sent on first request
         if (!ok && fallbackUserInfo && reason === 'initial') {
-          console.log('⚠️ First auth check failed but user info in localStorage, retrying once...');
           await new Promise(resolve => setTimeout(resolve, 200));
           ok = await fetchIsAuthenticated(authApiBase, meEndpoint);
         }
 
         if (ok) {
-          console.log('✅ User is authenticated via server');
           const userData = await fetchUserInfo<TUser>(authApiBase, meEndpoint);
           if (mounted) {
             setAuthenticated(true);

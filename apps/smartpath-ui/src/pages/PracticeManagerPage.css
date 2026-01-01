@@ -1,3 +1,4 @@
+/* D:\repos\asafarim-dot-be\apps\smartpath-ui\src\pages\PracticeManagerPage.css */
 .practice-manager-page {
   padding: var(--asm-space-6);
   max-width: 1000px;
@@ -69,12 +70,42 @@
   border-radius: var(--asm-radius-lg);
   padding: var(--asm-space-6);
   margin-bottom: var(--asm-space-xl);
-  display: flex;
-  gap: var(--asm-space-lg);
-  align-items: flex-end;
-  flex-wrap: wrap;
   box-shadow: var(--asm-effect-shadow-md);
+
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--asm-space-6);
 }
+
+.manager-controls-left {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(360px, 1fr);
+  gap: var(--asm-space-5);
+  align-items: end;
+}
+
+.manager-controls-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  min-width: 220px;
+}
+
+.manager-controls-right .btn {
+  white-space: nowrap;
+}
+
+.manager-hint {
+  color: var(--asm-color-text-secondary);
+  font-size: var(--asm-font-size-sm);
+  padding-bottom: 0.2rem;
+}
+
 
 .form-group {
   display: flex;
@@ -168,6 +199,18 @@
 .create-item-btn:active {
   transform: translateY(0);
   box-shadow: var(--asm-effect-shadow-sm);
+}
+
+.manager-controls .form-group {
+  margin-bottom: 0; /* override your global */
+}
+
+.manager-controls label {
+  margin-bottom: var(--asm-space-2);
+}
+
+.manager-controls select {
+  height: 44px;
 }
 
 /* Responsive design */
@@ -451,4 +494,25 @@
 .modal-actions button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .manager-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .manager-controls-left {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-controls-right {
+    justify-content: stretch;
+    min-width: 0;
+  }
+
+  .manager-controls-right button {
+    width: 100%;
+    justify-content: center;
+  }
 }

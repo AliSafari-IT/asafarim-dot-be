@@ -1,256 +1,279 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { ButtonComponent } from '@asafarim/shared-ui-react';
-import graphService, { Graph, Node, Edge, CreateGraphRequest } from '../api/graphService';
-import GraphCanvas from '../components/GraphCanvas';
-import PathfindingPanel from '../components/PathfindingPanel';
+import { useParams, useNavigate } from 'react-router-dom';
+import graphApi, { Graph, GraphNode, NodeDto, EdgeDto, CreateGraphDto, UpdateGraphDto } from '../api/graphApi';
 import './GraphEditorPage.css';
 
 export default function GraphEditorPage() {
+  const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const isNew = id === 'new';
+  const isNewGraph = !id;
 
+  const [graph, setGraph] = useState<Graph | null>(null);
   const [graphName, setGraphName] = useState('');
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-  const [loading, setLoading] = useState(!isNew);
-  const [saving, setSaving] = useState(false);
+  const [nodes, setNodes] = useState<NodeDto[]>([]);
+  const [edges, setEdges] = useState<EdgeDto[]>([]);
+  const [loading, setLoading] = useState(!isNewGraph);
   const [error, setError] = useState<string | null>(null);
-  const [selectedFromNode, setSelectedFromNode] = useState<number | null>(null);
-  const [edgeWeight, setEdgeWeight] = useState(1);
-  const [isDirected, setIsDirected] = useState(false);
+  const [startNodeId, setStartNodeId] = useState('');
+  const [endNodeId, setEndNodeId] = useState('');
+  const [pathResult, setPathResult] = useState<number[] | null>(null);
 
   useEffect(() => {
-    if (!isNew && id) {
+    if (!isNewGraph && id) {
       loadGraph(parseInt(id));
     }
-  }, [id, isNew]);
+  }, [id, isNewGraph]);
 
   const loadGraph = async (graphId: number) => {
     try {
       setLoading(true);
-      const graph = await graphService.getGraph(graphId);
-      setGraphName(graph.name);
-      setNodes(graph.nodes);
-      setEdges(graph.edges);
+      const data = await graphApi.getGraphById(graphId);
+      setGraph(data);
+      setGraphName(data.name);
+      setNodes(data.nodes.map(n => ({
+        clientNodeId: n.clientNodeId,
+        label: n.label,
+        x: n.x,
+        y: n.y,
+        metadata: n.metadata,
+      })));
+      setEdges(data.edges.map(e => {
+        const fromNode = data.nodes.find(n => n.id === e.fromNodeId);
+        const toNode = data.nodes.find(n => n.id === e.toNodeId);
+        return {
+          fromClientNodeId: fromNode?.clientNodeId || '',
+          toClientNodeId: toNode?.clientNodeId || '',
+          weight: e.weight,
+          isDirected: e.isDirected,
+        };
+      }));
     } catch (err) {
-      console.error('Failed to load graph:', err);
       setError('Failed to load graph');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const addNode = () => {
-    const newNode: Node = {
-      id: Math.max(0, ...nodes.map(n => n.id)) + 1,
+  const handleAddNode = () => {
+    const newClientId = `node_${Date.now()}`;
+    setNodes([...nodes, {
+      clientNodeId: newClientId,
       label: `Node ${nodes.length + 1}`,
-      x: Math.random() * 400 + 50,
-      y: Math.random() * 300 + 50,
-    };
-    setNodes([...nodes, newNode]);
+      x: Math.random() * 400,
+      y: Math.random() * 400,
+    }]);
   };
 
-  const updateNode = (nodeId: number, updates: Partial<Node>) => {
-    setNodes(nodes.map(n => (n.id === nodeId ? { ...n, ...updates } : n)));
-  };
-
-  const deleteNode = (nodeId: number) => {
-    setNodes(nodes.filter(n => n.id !== nodeId));
-    setEdges(edges.filter(e => e.fromNodeId !== nodeId && e.toNodeId !== nodeId));
-  };
-
-  const addEdge = (fromNodeId: number, toNodeId: number) => {
-    if (fromNodeId === toNodeId) {
-      setError('Cannot create self-loops');
+  const handleAddEdge = () => {
+    if (nodes.length < 2) {
+      setError('Need at least 2 nodes to create an edge');
       return;
     }
-
-    if (edgeWeight <= 0) {
-      setError('Edge weight must be positive');
-      return;
-    }
-
-    const newEdge: Edge = {
-      id: Math.max(0, ...edges.map(e => e.id)) + 1,
-      fromNodeId,
-      toNodeId,
-      weight: edgeWeight,
-      isDirected,
-    };
-
-    setEdges([...edges, newEdge]);
-    setSelectedFromNode(null);
-    setEdgeWeight(1);
-    setIsDirected(false);
-    setError(null);
+    setEdges([...edges, {
+      fromClientNodeId: nodes[0]!.clientNodeId,
+      toClientNodeId: nodes[1]!.clientNodeId,
+      weight: 1,
+      isDirected: true,
+    }]);
   };
 
-  const deleteEdge = (edgeId: number) => {
-    setEdges(edges.filter(e => e.id !== edgeId));
-  };
-
-  const saveGraph = async () => {
-    if (!graphName.trim()) {
-      setError('Graph name is required');
-      return;
-    }
-
+  const handleSaveGraph = async () => {
     try {
-      setSaving(true);
-      setError(null);
+      if (!graphName.trim()) {
+        setError('Graph name is required');
+        return;
+      }
 
-      const request: CreateGraphRequest = {
-        name: graphName,
-        nodes: nodes.map(n => ({
-          label: n.label,
-          x: n.x,
-          y: n.y,
-          metadata: n.metadata,
-        })),
-        edges: edges.map(e => ({
-          fromNodeId: e.fromNodeId,
-          toNodeId: e.toNodeId,
-          weight: e.weight,
-          isDirected: e.isDirected,
-        })),
+      const dto: CreateGraphDto | UpdateGraphDto = {
+        name: graphName.trim(),
+        nodes,
+        edges,
       };
 
-      if (isNew) {
-        const graph = await graphService.createGraph(request);
-        navigate(`/graphs/${graph.id}`);
-      } else if (id) {
-        await graphService.updateGraph(parseInt(id), request);
-        setError(null);
+      let savedGraph: Graph;
+      if (isNewGraph) {
+        savedGraph = await graphApi.createGraph(dto as CreateGraphDto);
+      } else {
+        savedGraph = await graphApi.updateGraph(parseInt(id!), dto as UpdateGraphDto);
       }
-    } catch (err) {
-      console.error('Failed to save graph:', err);
-      setError('Failed to save graph');
-    } finally {
-      setSaving(false);
+
+      setGraph(savedGraph);
+      setError(null);
+      if (isNewGraph) {
+        navigate(`/graphs/${savedGraph.id}`);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to save graph');
+      console.error(err);
+    }
+  };
+
+  const handleFindPath = async () => {
+    try {
+      if (!graph || !startNodeId || !endNodeId) {
+        setError('Select start and end nodes');
+        return;
+      }
+
+      const result = await graphApi.findShortestPath(graph.id, {
+        startNodeClientId: startNodeId,
+        endNodeClientId: endNodeId,
+        algorithm: 'Dijkstra',
+      });
+
+      setPathResult(result.pathNodeIds);
+      setError(null);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to find path');
+      console.error(err);
     }
   };
 
   if (loading) {
-    return <div className="loading" data-testid="graph-editor-loading">Loading...</div>;
+    return <div className="graph-editor-page"><div className="loading">Loading...</div></div>;
   }
 
   return (
-    <div className="graph-editor-page" data-testid="graph-editor-page">
-      <header className="editor-header" data-testid="graph-editor-header">
-        <button onClick={() => navigate('/graphs')} className="btn-back">
-          <ArrowLeft size={20} />
-          Back
-        </button>
-        <div className="header-content">
-          <input
-            type="text"
-            value={graphName}
-            onChange={(e) => setGraphName(e.target.value)}
-            placeholder="Graph name"
-            className="graph-name-input"
-            data-testid="graph-name-input"
-          />
+    <div className="graph-editor-page">
+      <header className="header">
+        <div className="header-title">
+          <h1>{isNewGraph ? 'Create Graph' : 'Edit Graph'}</h1>
         </div>
         <div className="header-actions">
-          <ButtonComponent onClick={saveGraph} variant="primary" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Graph'}
-          </ButtonComponent>
+          <input
+            type="text"
+            placeholder="Graph name"
+            value={graphName}
+            onChange={(e) => setGraphName(e.target.value)}
+            className="name-input"
+          />
+          <button onClick={handleSaveGraph} className="btn-primary">Save Graph</button>
         </div>
       </header>
 
-      {error && (
-        <div className="error-banner" data-testid="graph-editor-error">
-          <p>{error}</p>
-          <button onClick={() => setError(null)}>×</button>
-        </div>
-      )}
+      {error && <div className="error-banner">{error}</div>}
 
-      <div className="editor-container">
-        <div className="editor-left">
-          <GraphCanvas
-            nodes={nodes}
-            edges={edges}
-            onNodeClick={(nodeId) => {
-              if (selectedFromNode === null) {
-                setSelectedFromNode(nodeId);
-              } else if (selectedFromNode !== nodeId) {
-                addEdge(selectedFromNode, nodeId);
-              } else {
-                setSelectedFromNode(null);
-              }
-            }}
-            onNodeDrag={(nodeId, x, y) => updateNode(nodeId, { x, y })}
-            onNodeDelete={deleteNode}
-            selectedFromNode={selectedFromNode}
-            data-testid="graph-canvas"
-          />
-
-          <div className="editor-controls" data-testid="graph-controls">
-            <ButtonComponent onClick={addNode} variant="secondary">
-              <Plus size={20} />
-              Add Node
-            </ButtonComponent>
+      <div className="editor-layout">
+        <div className="canvas-area">
+          <div className="canvas">
+            {nodes.map((node) => (
+              <div
+                key={node.clientNodeId}
+                className="node"
+                style={{ left: `${node.x}px`, top: `${node.y}px` }}
+              >
+                {node.label}
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="editor-right">
-          <PathfindingPanel graphId={id ? parseInt(id) : 0} nodes={nodes} />
-
-          <div className="edges-panel" data-testid="edges-panel">
-            <h3>Edges</h3>
-            {selectedFromNode !== null && (
-              <div className="edge-creator" data-testid="edge-creator">
-                <p>Creating edge from Node {selectedFromNode}</p>
-                <div className="edge-form">
+        <div className="right-panel">
+          <div className="section">
+            <h3>Nodes</h3>
+            <button onClick={handleAddNode} className="btn-secondary">+ Add Node</button>
+            <div className="node-list">
+              {nodes.map((node) => (
+                <div key={node.clientNodeId} className="node-item">
                   <input
-                    type="number"
-                    min="0.1"
-                    step="0.1"
-                    value={edgeWeight}
-                    onChange={(e) => setEdgeWeight(parseFloat(e.target.value))}
-                    placeholder="Weight"
-                    data-testid="edge-weight-input"
+                    type="text"
+                    value={node.label}
+                    onChange={(e) => {
+                      const updated = nodes.map(n =>
+                        n.clientNodeId === node.clientNodeId ? { ...n, label: e.target.value } : n
+                      );
+                      setNodes(updated);
+                    }}
+                    placeholder="Node label"
                   />
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={isDirected}
-                      onChange={(e) => setIsDirected(e.target.checked)}
-                      data-testid="edge-directed-checkbox"
-                    />
-                    Directed
-                  </label>
-                  <button
-                    onClick={() => setSelectedFromNode(null)}
-                    className="btn-cancel"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-            <div className="edges-list" data-testid="edges-list">
-              {edges.map((edge) => (
-                <div key={edge.id} className="edge-item" data-testid={`edge-item-${edge.id}`}>
-                  <span>
-                    {nodes.find(n => n.id === edge.fromNodeId)?.label} →{' '}
-                    {nodes.find(n => n.id === edge.toNodeId)?.label} ({edge.weight})
-                    {edge.isDirected && ' [→]'}
-                  </span>
-                  <button
-                    onClick={() => deleteEdge(edge.id)}
-                    className="btn-delete-edge"
-                    data-testid={`edge-delete-btn-${edge.id}`}
-                  >
-                    <Trash2 size={16} />
-                  </button>
                 </div>
               ))}
             </div>
           </div>
+
+          <div className="section">
+            <h3>Edges</h3>
+            <button onClick={handleAddEdge} className="btn-secondary">+ Add Edge</button>
+            <div className="edge-list">
+              {edges.map((edge, idx) => (
+                <div key={idx} className="edge-item">
+                  <select
+                    value={edge.fromClientNodeId}
+                    onChange={(e) => {
+                      const updated = edges.map((ed, i) =>
+                        i === idx ? { ...ed, fromClientNodeId: e.target.value } : ed
+                      );
+                      setEdges(updated);
+                    }}
+                  >
+                    <option value="">From</option>
+                    {nodes.map(n => (
+                      <option key={n.clientNodeId} value={n.clientNodeId}>{n.label}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={edge.toClientNodeId}
+                    onChange={(e) => {
+                      const updated = edges.map((ed, i) =>
+                        i === idx ? { ...ed, toClientNodeId: e.target.value } : ed
+                      );
+                      setEdges(updated);
+                    }}
+                  >
+                    <option value="">To</option>
+                    {nodes.map(n => (
+                      <option key={n.clientNodeId} value={n.clientNodeId}>{n.label}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    value={edge.weight}
+                    onChange={(e) => {
+                      const updated = edges.map((ed, i) =>
+                        i === idx ? { ...ed, weight: parseFloat(e.target.value) } : ed
+                      );
+                      setEdges(updated);
+                    }}
+                    placeholder="Weight"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {graph && (
+            <div className="section">
+              <h3>Shortest Path</h3>
+              <select value={startNodeId} onChange={(e) => setStartNodeId(e.target.value)}>
+                <option value="">Select start node</option>
+                {nodes.map(n => (
+                  <option key={n.clientNodeId} value={n.clientNodeId}>{n.label}</option>
+                ))}
+              </select>
+              <select value={endNodeId} onChange={(e) => setEndNodeId(e.target.value)}>
+                <option value="">Select end node</option>
+                {nodes.map(n => (
+                  <option key={n.clientNodeId} value={n.clientNodeId}>{n.label}</option>
+                ))}
+              </select>
+              <button
+                onClick={handleFindPath}
+                disabled={!startNodeId || !endNodeId}
+                className="btn-secondary"
+              >
+                Find Path
+              </button>
+              {pathResult && (
+                <div className="path-result">
+                  Path: {pathResult.map(id => {
+                    const node = graph.nodes.find(n => n.id === id);
+                    return node?.label || `Node ${id}`;
+                  }).join(' → ')}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

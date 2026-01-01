@@ -285,6 +285,13 @@ public class SmartPathDbContext : DbContext
             .HasForeignKey(pa => pa.PracticeItemId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder
+            .Entity<PracticeAttempt>()
+            .HasOne(pa => pa.PracticeSession)
+            .WithMany(ps => ps.Attempts)
+            .HasForeignKey(pa => pa.PracticeSessionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         modelBuilder.Entity<PracticeAttempt>().HasIndex(pa => pa.AttemptedAt);
 
         // Achievement configurations
@@ -402,7 +409,7 @@ public class SmartPathDbContext : DbContext
             .HasForeignKey(s => s.LessonId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // PracticeAttempt does not have SessionId, so no direct session relationship
+        // PracticeAttempt.PracticeSessionId relationship configured above
 
         // StreakEntity configurations
         modelBuilder

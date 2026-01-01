@@ -1,19 +1,22 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartPath.Api.Services;
+using SmartPath.Api.DTOs;
 
 namespace SmartPath.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ProgressController : ControllerBase
 {
     private readonly IProgressService _progressService;
+    private readonly IFamilyService _familyService;
 
-    public ProgressController(IProgressService progressService)
+    public ProgressController(IProgressService progressService, IFamilyService familyService)
     {
         _progressService = progressService;
+        _familyService = familyService;
     }
 
     [HttpPost("enrollments")]
@@ -83,6 +86,65 @@ public class ProgressController : ControllerBase
         );
 
         return Ok(attempt);
+    }
+
+    [HttpGet("families")]
+    public async Task<IActionResult> GetFamilies()
+    {
+        var userId = (int)HttpContext.Items["UserId"]!;
+        var families = await _familyService.GetUserFamiliesAsync(userId);
+        return Ok(families);
+    }
+
+    [HttpGet("families/{familyId}/summary")]
+    public async Task<IActionResult> GetFamilySummary(
+        int familyId,
+        [FromQuery] int? memberId,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to)
+    {
+        var userId = (int)HttpContext.Items["UserId"]!;
+        var isMember = await _familyService.IsMemberAsync(familyId, userId);
+        if (!isMember)
+            return Forbid();
+
+        var summary = await _progressService.GetProgressSummaryAsync(familyId, memberId, from, to);
+        return Ok(summary);
+    }
+
+    [HttpGet("families/{familyId}/lessons")]
+    public async Task<IActionResult> GetFamilyLessons(
+        int familyId,
+        [FromQuery] int? memberId,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? sort = null)
+    {
+        var userId = (int)HttpContext.Items["UserId"]!;
+        var isMember = await _familyService.IsMemberAsync(familyId, userId);
+        if (!isMember)
+            return Forbid();
+
+        var lessons = await _progressService.GetLessonProgressListAsync(familyId, memberId, from, to, page, pageSize, sort);
+        return Ok(lessons);
+    }
+
+    [HttpGet("families/{familyId}/timeseries")]
+    public async Task<IActionResult> GetFamilyTimeSeries(
+        int familyId,
+        [FromQuery] int? memberId,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to)
+    {
+        var userId = (int)HttpContext.Items["UserId"]!;
+        var isMember = await _familyService.IsMemberAsync(familyId, userId);
+        if (!isMember)
+            return Forbid();
+
+        var timeSeries = await _progressService.GetTimeSeriesDataAsync(familyId, memberId, from, to);
+        return Ok(timeSeries);
     }
 }
 

@@ -1,12 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Home, CheckSquare, BookOpen, TrendingUp, Users, LogOut, Network, Zap, Award, Settings, BarChart3 } from 'lucide-react';
+import { Home, CheckSquare, BookOpen, TrendingUp, Users, LogOut, Network, Zap, Award, Settings, BarChart3, Menu, X } from 'lucide-react';
+import { useState } from 'react';
 import './Navbar.css';
 import { ThemeToggle } from '@asafarim/react-themes';
 
 export default function Navbar() {
     const { isAuthenticated, user, signOut } = useAuth();
     const location = useLocation();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     if (!isAuthenticated) {
         return null;
@@ -25,6 +27,10 @@ export default function Navbar() {
         { path: '/graphs', icon: Network, label: 'Graphs' },
     ];
 
+    const handleLinkClick = () => {
+        setIsMobileMenuOpen(false);
+    };
+
     return (
         <nav className="navbar" data-testid="navbar">
             <div className="navbar-container" data-testid="navbar-container">
@@ -33,16 +39,29 @@ export default function Navbar() {
                         <h1>SmartPath</h1>
                     </Link>
                 </div>
-                <ul className="navbar-menu" data-testid="navbar-menu">
-                    {navItems.map((item) => (
-                        <li key={item.path} className={location.pathname === item.path ? 'active' : ''} data-testid={`navbar-item-${item.path}`}>
-                            <Link to={item.path}>
-                                <item.icon size={20} />
-                                <span>{item.label}</span>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+
+                <button 
+                    className="navbar-hamburger" 
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    aria-label="Toggle menu"
+                    data-testid="navbar-hamburger"
+                >
+                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+
+                <div className={`navbar-menu-wrapper ${isMobileMenuOpen ? 'open' : ''}`} data-testid="navbar-menu-wrapper">
+                    <ul className="navbar-menu" data-testid="navbar-menu">
+                        {navItems.map((item) => (
+                            <li key={item.path} className={location.pathname === item.path ? 'active' : ''} data-testid={`navbar-item-${item.path}`}>
+                                <Link to={item.path} onClick={handleLinkClick}>
+                                    <item.icon size={20} />
+                                    <span>{item.label}</span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
                 <div className="navbar-user" data-testid="navbar-user">
                     <span className="user-name" data-testid="user-name">{user?.displayName}</span>
                     <ThemeToggle variant='ghost'/>
@@ -51,6 +70,14 @@ export default function Navbar() {
                     </button>
                 </div>
             </div>
+
+            {isMobileMenuOpen && (
+                <div 
+                    className="navbar-overlay" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    data-testid="navbar-overlay"
+                />
+            )}
         </nav>
     );
 }

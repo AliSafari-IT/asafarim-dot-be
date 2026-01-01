@@ -2,15 +2,15 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: var(--asm-color-background);
+  background: var(--asm-color-surface);
 }
 
 .editor-header {
   display: flex;
   align-items: center;
-  gap: var(--asm-space-md);
-  padding: var(--asm-space-md) var(--asm-space-lg);
-  background: white;
+  gap: var(--asm-space-4);
+  padding: var(--asm-space-4) var(--asm-space-6);
+  background: var(--asm-color-surface);
   border-bottom: 1px solid var(--asm-color-border);
 }
 
@@ -20,14 +20,14 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: var(--asm-space-sm);
-  color: var(--asm-color-text-primary);
+  gap: var(--asm-space-2);
+  color: var(--asm-color-text);
   font-size: 1rem;
-  padding: var(--asm-space-sm);
+  padding: var(--asm-space-2);
 }
 
 .btn-back:hover {
-  color: var(--asm-color-primary);
+  color: var(--asm-color-primary-500);
 }
 
 .header-content {
@@ -37,30 +37,32 @@
 .graph-name-input {
   width: 100%;
   max-width: 400px;
-  padding: var(--asm-space-sm) var(--asm-space-md);
+  padding: var(--asm-space-2) var(--asm-space-3);
   border: 1px solid var(--asm-color-border);
   border-radius: var(--asm-radius-sm);
   font-size: 1rem;
   font-family: inherit;
+  background: var(--asm-color-surface);
+  color: var(--asm-color-text);
 }
 
 .graph-name-input:focus {
   outline: none;
-  border-color: var(--asm-color-primary);
-  box-shadow: 0 0 0 3px var(--asm-color-primary-light);
+  border-color: var(--asm-color-primary-500);
+  box-shadow: 0 0 0 3px var(--asm-color-primary-100);
 }
 
 .header-actions {
   display: flex;
-  gap: var(--asm-space-md);
+  gap: var(--asm-space-4);
 }
 
 .error-banner {
-  background-color: var(--asm-color-error-light);
-  border: 1px solid var(--asm-color-error);
+  background-color: var(--asm-color-danger-100);
+  border: 1px solid var(--asm-color-danger-500);
   border-radius: var(--asm-radius-md);
-  padding: var(--asm-space-md);
-  margin: var(--asm-space-md);
+  padding: var(--asm-space-4);
+  margin: var(--asm-space-4);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -68,7 +70,7 @@
 
 .error-banner p {
   margin: 0;
-  color: var(--asm-color-error);
+  color: var(--asm-color-danger-500);
 }
 
 .error-banner button {
@@ -76,14 +78,14 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: var(--asm-color-error);
+  color: var(--asm-color-danger-500);
 }
 
 .editor-container {
   display: flex;
   flex: 1;
-  gap: var(--asm-space-md);
-  padding: var(--asm-space-md);
+  gap: var(--asm-space-4);
+  padding: var(--asm-space-4);
   overflow: hidden;
 }
 
@@ -91,7 +93,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--asm-space-md);
+  gap: var(--asm-space-4);
   min-width: 0;
 }
 
@@ -99,60 +101,63 @@
   width: 350px;
   display: flex;
   flex-direction: column;
-  gap: var(--asm-space-md);
+  gap: var(--asm-space-4);
   overflow-y: auto;
 }
 
 .editor-controls {
   display: flex;
-  gap: var(--asm-space-md);
+  gap: var(--asm-space-4);
 }
 
 .edges-panel {
-  background: white;
+  background: var(--asm-color-surface);
   border: 1px solid var(--asm-color-border);
   border-radius: var(--asm-radius-md);
-  padding: var(--asm-space-md);
+  padding: var(--asm-space-4);
 }
 
 .edges-panel h3 {
-  margin: 0 0 var(--asm-space-md);
+  margin: 0 0 var(--asm-space-4);
   font-size: 1rem;
-  color: var(--asm-color-text-primary);
+  color: var(--asm-color-text);
 }
 
 .edge-creator {
-  background: var(--asm-color-background-secondary);
+  background: var(--asm-color-surface-muted);
   border: 1px solid var(--asm-color-border);
   border-radius: var(--asm-radius-sm);
-  padding: var(--asm-space-md);
-  margin-bottom: var(--asm-space-md);
+  padding: var(--asm-space-4);
+  margin-bottom: var(--asm-space-4);
 }
 
 .edge-creator p {
-  margin: 0 0 var(--asm-space-sm);
+  margin: 0 0 var(--asm-space-2);
   font-size: 0.9rem;
-  color: var(--asm-color-text-secondary);
+  color: var(--asm-color-text-muted);
 }
 
 .edge-form {
   display: flex;
   flex-direction: column;
-  gap: var(--asm-space-sm);
+  gap: var(--asm-space-2);
 }
 
 .edge-form input[type="number"] {
-  padding: var(--asm-space-sm);
+  padding: var(--asm-space-2);
   border: 1px solid var(--asm-color-border);
   border-radius: var(--asm-radius-sm);
   font-size: 0.9rem;
+  background: var(--asm-color-surface);
+  color: var(--asm-color-text);
 }
 
 .edge-form label {
   display: flex;
   align-items: center;
-  gap: var(--asm-space-sm);
+  gap: var(--asm-space-2);
   font-size: 0.9rem;
+  color: var(--asm-color-text);
 }
 
 .edge-form input[type="checkbox"] {
@@ -160,22 +165,23 @@
 }
 
 .btn-cancel {
-  padding: var(--asm-space-sm);
-  background: var(--asm-color-background);
+  padding: var(--asm-space-2);
+  background: var(--asm-color-surface);
   border: 1px solid var(--asm-color-border);
   border-radius: var(--asm-radius-sm);
   cursor: pointer;
   font-size: 0.9rem;
+  color: var(--asm-color-text);
 }
 
 .btn-cancel:hover {
-  background: var(--asm-color-background-secondary);
+  background: var(--asm-color-surface-muted);
 }
 
 .edges-list {
   display: flex;
   flex-direction: column;
-  gap: var(--asm-space-sm);
+  gap: var(--asm-space-2);
   max-height: 300px;
   overflow-y: auto;
 }
@@ -184,28 +190,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--asm-space-sm);
-  background: var(--asm-color-background-secondary);
+  padding: var(--asm-space-2);
+  background: var(--asm-color-surface-muted);
   border-radius: var(--asm-radius-sm);
   font-size: 0.85rem;
 }
 
 .edge-item span {
-  color: var(--asm-color-text-primary);
+  color: var(--asm-color-text);
 }
 
 .btn-delete-edge {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--asm-color-error);
+  color: var(--asm-color-danger-500);
   padding: 0;
   display: flex;
   align-items: center;
 }
 
 .btn-delete-edge:hover {
-  color: var(--asm-color-error-dark);
+  color: var(--asm-color-danger-700);
 }
 
 .loading {
@@ -213,5 +219,5 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  color: var(--asm-color-text-secondary);
+  color: var(--asm-color-text-muted);
 }

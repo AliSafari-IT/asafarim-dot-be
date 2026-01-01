@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_SMARTPATH_API_URL || 'http://localhost:5109';
+const API_BASE_URL = import.meta.env.VITE_SMARTPATH_API_URL || 'http://smartpath.asafarim.local:5109';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -94,6 +94,30 @@ export interface PracticeItem {
   createdAt: string;
 }
 
+export interface PracticeAttemptReview {
+  attemptId: number;
+  practiceItemId: number;
+  questionText: string;
+  expectedAnswer: string;
+  answer: string;
+  isCorrect: boolean;
+  pointsAwarded: number;
+  difficulty: string;
+  attemptedAt: string;
+}
+
+export interface PracticeSessionReview {
+  id: number;
+  familyId: number;
+  childUserId: number;
+  lessonId: number;
+  startedAt: string;
+  endedAt?: string;
+  totalPoints: number;
+  status: string;
+  attempts: PracticeAttemptReview[];
+}
+
 export interface CreatePracticeItemRequest {
   lessonId: number;
   questionText: string;
@@ -131,6 +155,7 @@ export interface ChildDashboard {
   childUserId: number;
   childName: string;
   totalPoints: number;
+  maxPossiblePoints: number;
   currentStreak: number;
   accuracy: number;
   recentAttempts: AttemptSummary[];
@@ -203,6 +228,11 @@ const practiceApi = {
 
   async getNextItem(sessionId: number): Promise<PracticeItem> {
     const response = await apiClient.post(`/api/practice/sessions/${sessionId}/next-item`);
+    return response.data;
+  },
+
+  async getSessionReview(sessionId: number): Promise<PracticeSessionReview> {
+    const response = await apiClient.get(`/api/practice/sessions/${sessionId}/review`);
     return response.data;
   },
 };

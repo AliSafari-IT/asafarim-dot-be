@@ -177,55 +177,62 @@ export default function PracticeManagerPage() {
       )}
 
       <div className="manager-controls" data-testid="manager-controls">
-        <div className="form-group">
-          <label htmlFor="family">Family:</label>
-          <select
-            id="family"
-            value={selectedFamily || ''}
-            onChange={(e) => handleSelectFamily(parseInt(e.target.value))}
-            data-testid="family-select"
-          >
-            <option value="">Select family</option>
-            {families.map((family) => (
-              <option key={family.familyId} value={family.familyId}>
-                {family.familyName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {selectedFamily && (
+        <div className="manager-controls-left">
           <div className="form-group">
-            <label htmlFor="lesson">Lesson:</label>
+            <label htmlFor="family">Family:</label>
             <select
-              id="lesson"
-              value={selectedLesson || ''}
-              onChange={(e) => handleSelectLesson(parseInt(e.target.value))}
-              data-testid="lesson-select"
+              id="family"
+              value={selectedFamily || ""}
+              onChange={(e) => handleSelectFamily(parseInt(e.target.value))}
+              data-testid="family-select"
             >
-              <option value="">Select lesson</option>
-              {lessons.map((lesson) => (
-                <option key={lesson.lessonId} value={lesson.lessonId}>
-                  {lesson.title}
+              <option value="">Select family</option>
+              {families.map((family) => (
+                <option key={family.familyId} value={family.familyId}>
+                  {family.familyName}
                 </option>
               ))}
             </select>
           </div>
-        )}
 
-        {selectedLesson && (
-          <div className="create-item-container">
-            <button 
-              className="create-item-btn" 
-              onClick={() => handleOpenModal()} 
+          {selectedFamily && (
+            <div className="form-group">
+              <label htmlFor="lesson">Lesson:</label>
+              <select
+                id="lesson"
+                value={selectedLesson || ""}
+                onChange={(e) => handleSelectLesson(parseInt(e.target.value))}
+                data-testid="lesson-select"
+              >
+                <option value="">Select lesson</option>
+                {lessons.map((lesson) => (
+                  <option key={lesson.lessonId} value={lesson.lessonId}>
+                    {lesson.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+
+        <div className="manager-controls-right">
+          {selectedLesson ? (
+            <ButtonComponent
+              onClick={() => handleOpenModal()}
               data-testid="create-item-btn"
+              variant="brand"
             >
               <Plus size={18} />
-              Create Item
-            </button>
-          </div>
-        )}
+              Add Practice Item
+            </ButtonComponent>
+          ) : (
+            <div className="manager-hint" aria-live="polite">
+              Select a lesson to add items.
+            </div>
+          )}
+        </div>
       </div>
+
 
       {selectedLesson && (
         <div className="items-section" data-testid="items-section">

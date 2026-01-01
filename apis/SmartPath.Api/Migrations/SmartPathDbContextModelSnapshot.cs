@@ -527,6 +527,9 @@ namespace SmartPath.Api.Migrations
                     b.Property<int>("PracticeItemId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("PointsAwarded")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("PracticeSessionId")
                         .HasColumnType("integer");
 

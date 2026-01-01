@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SmartPath.Api.DTOs;
 
 namespace SmartPath.Api.Services;
 
@@ -32,6 +33,10 @@ public interface IPracticeService
         int userId
     );
     System.Threading.Tasks.Task<List<AchievementDto>> GetAvailableAchievementsAsync();
+    System.Threading.Tasks.Task<PracticeSessionReviewDto> GetSessionReviewAsync(
+        int sessionId,
+        int userId
+    );
 }
 
 public class CreatePracticeSessionRequestDto
@@ -76,6 +81,7 @@ public class ChildPracticeSummaryDto
     public int ChildUserId { get; set; }
     public string ChildName { get; set; } = string.Empty;
     public int TotalPoints { get; set; }
+    public int MaxPossiblePoints { get; set; }
     public int SessionsCount { get; set; }
     public int AttemptsCount { get; set; }
     public double CorrectRate { get; set; }

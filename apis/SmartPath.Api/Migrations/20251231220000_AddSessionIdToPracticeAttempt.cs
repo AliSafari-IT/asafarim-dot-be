@@ -11,39 +11,49 @@ namespace SmartPath.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "SessionId",
+                name: "PracticeSessionId",
+                table: "PracticeAttempts",
+                type: "integer",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "PointsAwarded",
                 table: "PracticeAttempts",
                 type: "integer",
                 nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.CreateIndex(
-                name: "IX_PracticeAttempts_SessionId",
+                name: "IX_PracticeAttempts_PracticeSessionId",
                 table: "PracticeAttempts",
-                column: "SessionId");
+                column: "PracticeSessionId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_PracticeAttempts_PracticeSessions_SessionId",
+                name: "FK_PracticeAttempts_PracticeSessions_PracticeSessionId",
                 table: "PracticeAttempts",
-                column: "SessionId",
+                column: "PracticeSessionId",
                 principalTable: "PracticeSessions",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_PracticeAttempts_PracticeSessions_SessionId",
+                name: "FK_PracticeAttempts_PracticeSessions_PracticeSessionId",
                 table: "PracticeAttempts");
 
             migrationBuilder.DropIndex(
-                name: "IX_PracticeAttempts_SessionId",
+                name: "IX_PracticeAttempts_PracticeSessionId",
                 table: "PracticeAttempts");
 
             migrationBuilder.DropColumn(
-                name: "SessionId",
+                name: "PracticeSessionId",
+                table: "PracticeAttempts");
+
+            migrationBuilder.DropColumn(
+                name: "PointsAwarded",
                 table: "PracticeAttempts");
         }
     }

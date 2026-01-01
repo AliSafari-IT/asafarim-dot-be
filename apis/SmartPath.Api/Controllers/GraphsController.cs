@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartPath.Api.DTOs;
 using SmartPath.Api.Services;
 
 namespace SmartPath.Api.Controllers;
@@ -25,13 +26,13 @@ public class GraphsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<GraphDto>>> GetGraphs()
+    public async Task<ActionResult<List<Entities.Graph>>> GetGraphs()
     {
         try
         {
-            var graphs = await _graphService.GetAllGraphsAsync();
-            var dtos = graphs.Select(MapToDto).ToList();
-            return Ok(dtos);
+            var userId = GetUserId();
+            var graphs = await _graphService.GetAllGraphsAsync(userId);
+            return Ok(graphs);
         }
         catch (Exception ex)
         {
@@ -41,15 +42,21 @@ public class GraphsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GraphDto>> GetGraph(int id)
+    public async Task<ActionResult<Entities.Graph>> GetGraph(int id)
     {
         try
         {
-            var graph = await _graphService.GetGraphByIdAsync(id);
+            var userId = GetUserId();
+            var graph = await _graphService.GetGraphByIdAsync(id, userId);
             if (graph == null)
-                return NotFound(new { error = $"Graph {id} not found" });
+                return NotFound(
+                    new
+                    {
+                        error = $"Graph {id} not found or you do not have permission to access it",
+                    }
+                );
 
-            return Ok(MapToDto(graph));
+            return Ok(graph);
         }
         catch (Exception ex)
         {
@@ -59,7 +66,7 @@ public class GraphsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<GraphDto>> CreateGraph([FromBody] CreateGraphDto dto)
+    public async Task<ActionResult<Entities.Graph>> CreateGraph([FromBody] CreateGraphDto dto)
     {
         try
         {
@@ -68,7 +75,7 @@ public class GraphsController : ControllerBase
 
             var userId = GetUserId();
             var graph = await _graphService.CreateGraphAsync(dto, userId);
-            return CreatedAtAction(nameof(GetGraph), new { id = graph.Id }, MapToDto(graph));
+            return CreatedAtAction(nameof(GetGraph), new { id = graph.Id }, graph);
         }
         catch (ArgumentException ex)
         {
@@ -82,12 +89,13 @@ public class GraphsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<GraphDto>> UpdateGraph(int id, [FromBody] UpdateGraphDto dto)
+    public async Task<ActionResult<Entities.Graph>> UpdateGraph(int id, [FromBody] UpdateGraphDto dto)
     {
         try
         {
-            var graph = await _graphService.UpdateGraphAsync(id, dto);
-            return Ok(MapToDto(graph));
+            var userId = GetUserId();
+            var graph = await _graphService.UpdateGraphAsync(id, dto, userId);
+            return Ok(graph);
         }
         catch (InvalidOperationException ex)
         {
@@ -109,7 +117,8 @@ public class GraphsController : ControllerBase
     {
         try
         {
-            await _graphService.DeleteGraphAsync(id);
+            var userId = GetUserId();
+            await _graphService.DeleteGraphAsync(id, userId);
             return NoContent();
         }
         catch (InvalidOperationException ex)
@@ -135,7 +144,9 @@ public class GraphsController : ControllerBase
                 return BadRequest(new { error = "Valid start and end node IDs are required" });
 
             if (string.IsNullOrWhiteSpace(request.Algorithm))
-                return BadRequest(new { error = "Algorithm must be specified (astar or dijkstra)" });
+                return BadRequest(
+                    new { error = "Algorithm must be specified (astar or dijkstra)" }
+                );
 
             var result = await _pathfindingService.FindShortestPathAsync(
                 id,
@@ -156,33 +167,6 @@ public class GraphsController : ControllerBase
             _logger.LogError(ex, "Error finding shortest path in graph {GraphId}", id);
             return StatusCode(500, new { error = "Failed to find shortest path" });
         }
-    }
-
-    private GraphDto MapToDto(Entities.Graph graph)
-    {
-        return new GraphDto
-        {
-            Id = graph.Id,
-            Name = graph.Name,
-            CreatedAt = graph.CreatedAt,
-            UpdatedAt = graph.UpdatedAt,
-            Nodes = graph.Nodes.Select(n => new NodeDto
-            {
-                Id = n.Id,
-                Label = n.Label,
-                X = n.X,
-                Y = n.Y,
-                Metadata = n.Metadata,
-            }).ToList(),
-            Edges = graph.Edges.Select(e => new EdgeDto
-            {
-                Id = e.Id,
-                FromNodeId = e.FromNodeId,
-                ToNodeId = e.ToNodeId,
-                Weight = e.Weight,
-                IsDirected = e.IsDirected,
-            }).ToList(),
-        };
     }
 
     private int GetUserId()

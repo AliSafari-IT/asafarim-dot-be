@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartPath.Api.DTOs;
 using SmartPath.Api.Services;
 
 namespace SmartPath.Api.Controllers;
@@ -189,6 +190,32 @@ public class PracticeController : ControllerBase
         {
             _logger.LogError(ex, "Error getting available achievements");
             return StatusCode(500, new { error = "Failed to get achievements" });
+        }
+    }
+
+    [HttpGet("sessions/{sessionId}/review")]
+    public async System.Threading.Tasks.Task<
+        ActionResult<PracticeSessionReviewDto>
+    > GetSessionReview(int sessionId)
+    {
+        try
+        {
+            var userId = GetUserId();
+            var review = await _practiceService.GetSessionReviewAsync(sessionId, userId);
+            return Ok(review);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting session review for {SessionId}", sessionId);
+            return StatusCode(500, new { error = "Failed to get session review" });
         }
     }
 

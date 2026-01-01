@@ -9,6 +9,7 @@ public class PracticeAttempt
     public int LessonId { get; set; }
     public string? Answer { get; set; }
     public bool IsCorrect { get; set; }
+    public int PointsAwarded { get; set; }
     public int TimeSpentSeconds { get; set; }
     public int HintsUsed { get; set; }
     public int? SelfRating { get; set; }

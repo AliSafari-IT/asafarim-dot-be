@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SmartPath.Api.Data;
+using SmartPath.Api.DTOs;
 using SmartPath.Api.Entities;
 
 namespace SmartPath.Api.Services;
@@ -9,6 +10,8 @@ public class PracticeService : IPracticeService
 {
     private readonly SmartPathDbContext _context;
     private readonly ILogger<PracticeService> _logger;
+
+    private const int DefaultPointsPerCorrectAttempt = 10;
 
     public PracticeService(SmartPathDbContext context, ILogger<PracticeService> logger)
     {
@@ -59,14 +62,38 @@ public class PracticeService : IPracticeService
     {
         var session = await _context
             .PracticeSessions.Include(s => s.Attempts)
+            .ThenInclude(a => a.PracticeItem)
             .FirstOrDefaultAsync(s => s.Id == sessionId);
 
         if (session == null)
             throw new InvalidOperationException("Session not found");
 
+        if (session.ChildUserId != userId)
+            throw new UnauthorizedAccessException(
+                "You do not have permission to complete this session"
+            );
+
+        foreach (var attempt in session.Attempts)
+        {
+            if (attempt.IsCorrect && attempt.PointsAwarded <= 0)
+            {
+                var configuredPoints = attempt.PracticeItem?.Points ?? 0;
+                attempt.PointsAwarded =
+                    configuredPoints > 0 ? configuredPoints : DefaultPointsPerCorrectAttempt;
+            }
+        }
+
+        session.TotalPoints = session.Attempts.Sum(a => a.PointsAwarded);
+
+        if (session.Status == "Completed")
+        {
+            await _context.SaveChangesAsync();
+            return MapSessionToDto(session);
+        }
+
         session.EndedAt = DateTime.UtcNow;
         session.Status = "Completed";
-        session.TotalPoints = 0;
+        session.TotalPoints = session.Attempts.Sum(a => a.PointsAwarded);
 
         await UpdateStreakAsync(session.ChildUserId);
         await AwardAchievementsAsync(session.ChildUserId);
@@ -94,6 +121,11 @@ public class PracticeService : IPracticeService
         if (session == null)
             throw new InvalidOperationException("Session not found");
 
+        if (session.ChildUserId != userId)
+            throw new UnauthorizedAccessException(
+                "You do not have permission to submit attempts for this session"
+            );
+
         var practiceItem = await _context.PracticeItems.FirstOrDefaultAsync(p =>
             p.PracticeItemId == dto.PracticeItemId
         );
@@ -103,7 +135,9 @@ public class PracticeService : IPracticeService
         var normalizedAnswer = NormalizeAnswer(dto.Answer);
         var expectedAnswer = NormalizeAnswer(practiceItem.ExpectedAnswer);
         var isCorrect = normalizedAnswer == expectedAnswer;
-        var pointsAwarded = isCorrect ? practiceItem.Points : 0;
+        var pointsAwarded = isCorrect
+            ? (practiceItem.Points > 0 ? practiceItem.Points : DefaultPointsPerCorrectAttempt)
+            : 0;
 
         var attempt = new PracticeAttempt
         {
@@ -113,6 +147,7 @@ public class PracticeService : IPracticeService
             PracticeItemId = dto.PracticeItemId,
             Answer = dto.Answer,
             IsCorrect = isCorrect,
+            PointsAwarded = pointsAwarded,
             TimeSpentSeconds = 0,
             HintsUsed = 0,
             AttemptedAt = DateTime.UtcNow,
@@ -131,7 +166,7 @@ public class PracticeService : IPracticeService
             pointsAwarded
         );
 
-        return MapAttemptToDto(attempt, pointsAwarded);
+        return MapAttemptToDto(attempt);
     }
 
     public async System.Threading.Tasks.Task<PracticeItemDto> GetNextItemAsync(
@@ -161,7 +196,9 @@ public class PracticeService : IPracticeService
             .FirstOrDefaultAsync();
 
         if (nextItem == null)
-            throw new InvalidOperationException("No more practice items available for this session");
+            throw new InvalidOperationException(
+                "No more practice items available for this session"
+            );
 
         return new PracticeItemDto
         {
@@ -210,11 +247,15 @@ public class PracticeService : IPracticeService
         var correctAttempts = attempts.Count(a => a.IsCorrect);
         var correctRate = attempts.Count > 0 ? (double)correctAttempts / attempts.Count : 0;
 
+        // Calculate max possible points: each attempt could have earned DefaultPointsPerCorrectAttempt
+        var maxPossiblePoints = attempts.Count * DefaultPointsPerCorrectAttempt;
+
         return new ChildPracticeSummaryDto
         {
             ChildUserId = childId,
             ChildName = child.Email,
             TotalPoints = totalPoints,
+            MaxPossiblePoints = maxPossiblePoints,
             SessionsCount = sessions.Count(s => s.Status == "Completed"),
             AttemptsCount = attempts.Count,
             CorrectRate = correctRate,
@@ -504,20 +545,81 @@ public class PracticeService : IPracticeService
         };
     }
 
-    private PracticeAttemptResponseDto MapAttemptToDto(
-        PracticeAttempt attempt,
-        int pointsAwarded = 0
-    )
+    private PracticeAttemptResponseDto MapAttemptToDto(PracticeAttempt attempt)
     {
         return new PracticeAttemptResponseDto
         {
             Id = attempt.AttemptId,
-            SessionId = 0,
-            Prompt = "",
+            SessionId = attempt.PracticeSessionId ?? 0,
+            Prompt = attempt.PracticeItem?.QuestionText ?? string.Empty,
             Answer = attempt.Answer ?? "",
             IsCorrect = attempt.IsCorrect,
-            PointsAwarded = pointsAwarded,
+            PointsAwarded = attempt.PointsAwarded,
             AttemptedAt = attempt.AttemptedAt,
+        };
+    }
+
+    public async System.Threading.Tasks.Task<PracticeSessionReviewDto> GetSessionReviewAsync(
+        int sessionId,
+        int userId
+    )
+    {
+        var session = await _context
+            .PracticeSessions.Include(s => s.Attempts)
+            .ThenInclude(a => a.PracticeItem)
+            .FirstOrDefaultAsync(s => s.Id == sessionId);
+
+        if (session == null)
+            throw new InvalidOperationException("Session not found");
+
+        if (session.Status != "Completed")
+            throw new InvalidOperationException(
+                "Session review is only available for completed sessions"
+            );
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+        if (user == null)
+            throw new InvalidOperationException("User not found");
+
+        var isChild = session.ChildUserId == userId;
+        var isManager = await _context.FamilyMembers.AnyAsync(fm =>
+            fm.FamilyId == session.FamilyId && fm.UserId == userId && fm.Role == "familyManager"
+        );
+        var isAdmin = user.Email?.EndsWith("@asafarim.com") == true;
+
+        if (!isChild && !isManager && !isAdmin)
+            throw new UnauthorizedAccessException(
+                "You do not have permission to view this session review"
+            );
+
+        var attempts =
+            session
+                .Attempts?.OrderBy(a => a.AttemptedAt)
+                .Select(a => new PracticeAttemptReviewDto
+                {
+                    AttemptId = a.AttemptId,
+                    PracticeItemId = a.PracticeItemId,
+                    QuestionText = a.PracticeItem?.QuestionText ?? "",
+                    ExpectedAnswer = a.PracticeItem?.ExpectedAnswer ?? "",
+                    Answer = a.Answer ?? "",
+                    IsCorrect = a.IsCorrect,
+                    PointsAwarded = a.IsCorrect ? (a.PracticeItem?.Points ?? 0) : 0,
+                    Difficulty = a.PracticeItem?.Difficulty ?? "Medium",
+                    AttemptedAt = a.AttemptedAt,
+                })
+                .ToList() ?? new();
+
+        return new PracticeSessionReviewDto
+        {
+            Id = session.Id,
+            FamilyId = session.FamilyId,
+            ChildUserId = session.ChildUserId,
+            LessonId = session.LessonId,
+            StartedAt = session.StartedAt,
+            EndedAt = session.EndedAt,
+            TotalPoints = session.TotalPoints,
+            Status = session.Status,
+            Attempts = attempts,
         };
     }
 }

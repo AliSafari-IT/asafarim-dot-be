@@ -31,17 +31,7 @@ const devConfig: UseAuthOptions = {
  * - This hook only checks authentication status via shared cookies
  */
 export const useAuth = () => {
-  // DEBUG: Log configuration and cookies BEFORE calling shared hook
-  console.log('🔐 [SmartPath useAuth] Initializing...');
-  console.log('🔐 [SmartPath useAuth] window.location.href:', window.location.href);
-  console.log('🔐 [SmartPath useAuth] document.cookie:', document.cookie || '(no cookies)');
-  
-  // Detect environment at runtime in the browser
   const config = isProduction ? prodConfig : devConfig;
-  
-  console.log('🔐 [SmartPath useAuth] Config:', config);
-  console.log('🔐 [SmartPath useAuth] Calling useSharedAuth...');
-  
   return useSharedAuth(config);
 };
 

@@ -1,4 +1,5 @@
 using SmartPath.Api.Entities;
+using SmartPath.Api.DTOs;
 
 namespace SmartPath.Api.Services;
 
@@ -21,4 +22,8 @@ public interface IProgressService
         int timeSpentSeconds,
         int hintsUsed
     );
+    
+    Task<ProgressSummaryDto> GetProgressSummaryAsync(int familyId, int? memberId, DateTime? from, DateTime? to);
+    Task<List<LessonProgressDto>> GetLessonProgressListAsync(int familyId, int? memberId, DateTime? from, DateTime? to, int page, int pageSize, string? sort);
+    Task<List<TimeSeriesDataDto>> GetTimeSeriesDataAsync(int familyId, int? memberId, DateTime? from, DateTime? to);
 }

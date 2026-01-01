@@ -5,6 +5,66 @@
   min-height: 100vh;
 }
 
+.practice-dashboard-page .attempts-section {
+  margin-top: var(--asm-space-6);
+  padding-top: var(--asm-space-6);
+  border-top: 1.5px solid var(--asm-color-border);
+}
+
+.attempts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--asm-space-4);
+}
+
+.attempts-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--asm-color-text);
+  font-weight: 600;
+}
+
+.attempts-actions {
+  display: flex;
+  gap: var(--asm-space-2);
+}
+
+.btn-icon {
+  background: var(--asm-color-surface-muted);
+  border: 1px solid var(--asm-color-border);
+  border-radius: var(--asm-radius-md);
+  padding: var(--asm-space-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--asm-color-text);
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: var(--asm-color-primary-100);
+  border-color: var(--asm-color-primary-300);
+  color: var(--asm-color-primary-700);
+}
+
+.attempts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-3);
+}
+
+.attempts-list.collapsed {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.attempts-list.expanded {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
 .practice-dashboard-page .page-header {
   margin-bottom: var(--asm-space-8);
   padding-bottom: var(--asm-space-4);
@@ -187,6 +247,13 @@
   color: var(--asm-color-text);
 }
 
+.stat-percentage {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--asm-color-text-muted);
+  margin-left: var(--asm-space-1);
+}
+
 .attempts-section,
 .weak-lessons-section {
   margin-bottom: var(--asm-space-6);
@@ -360,6 +427,79 @@
   background: var(--asm-color-surface-muted);
   border-radius: var(--asm-radius-lg);
   border: 1px dashed var(--asm-color-border);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--asm-space-4);
+}
+
+.modal-content {
+  background: var(--asm-color-surface);
+  border-radius: var(--asm-radius-lg);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--asm-space-6);
+  border-bottom: 1.5px solid var(--asm-color-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--asm-color-text);
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--asm-color-text-muted);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--asm-radius-md);
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: var(--asm-color-danger-100);
+  color: var(--asm-color-danger-700);
+}
+
+.modal-body {
+  padding: var(--asm-space-6);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.attempts-list-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asm-space-3);
 }
 
 @media (max-width: 768px) {

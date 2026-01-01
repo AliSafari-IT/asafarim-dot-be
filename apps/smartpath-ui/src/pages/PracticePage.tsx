@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, CheckCircle, Award, ChevronDown, BookOpen } from 'lucide-react';
+import { Play, CheckCircle, Award, ChevronDown, BookOpen, Eye } from 'lucide-react';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
-import practiceApi, { PracticeSession, CreateAttemptRequest } from '../api/practiceApi';
+import practiceApi, { PracticeSession, CreateAttemptRequest, PracticeSessionReview } from '../api/practiceApi';
 import smartpathService from '../api/smartpathService';
 import './PracticePage.css';
 
@@ -31,6 +31,9 @@ export default function PracticePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
+  const [sessionReview, setSessionReview] = useState<PracticeSessionReview | null>(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewFilter, setReviewFilter] = useState<'all' | 'wrong'>('all');
 
   useEffect(() => {
     loadUserAndFamilies();
@@ -199,7 +202,26 @@ export default function PracticePage() {
     }
   };
 
+  const loadSessionReview = async () => {
+    if (!currentSession) return;
+    
+    setReviewLoading(true);
+    try {
+      const review = await practiceApi.getSessionReview(currentSession.id);
+      setSessionReview(review);
+    } catch (err: any) {
+      console.error('Failed to load session review:', err);
+      setError(err?.response?.data?.error || 'Failed to load session review');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
   if (currentSession && currentSession.status === 'Completed') {
+    const filteredAttempts = sessionReview?.attempts.filter(a => 
+      reviewFilter === 'all' ? true : !a.isCorrect
+    ) || [];
+
     return (
       <div className="practice-page container" data-testid="practice-page">
         <div className="session-complete" data-testid="session-complete">
@@ -207,11 +229,82 @@ export default function PracticePage() {
           <h2>Session Complete!</h2>
           <p>Total Points: {currentSession.totalPoints}</p>
           <p>Attempts: {currentSession.attempts.length}</p>
-          <ButtonComponent onClick={() => navigate('/rewards')} variant="primary">
-            <Award size={20} />
-            View Rewards
-          </ButtonComponent>
+          <div className="session-complete-actions">
+            <ButtonComponent onClick={() => navigate('/rewards')} variant="primary">
+              <Award size={20} />
+              View Rewards
+            </ButtonComponent>
+            <ButtonComponent 
+              onClick={loadSessionReview} 
+              variant="secondary"
+              data-testid="review-answers-btn"
+            >
+              <Eye size={20} />
+              Review Answers
+            </ButtonComponent>
+          </div>
         </div>
+
+        {reviewLoading && (
+          <div className="session-review-loading">
+            <p>Loading review...</p>
+          </div>
+        )}
+
+        {sessionReview && !reviewLoading && (
+          <div className="session-review" data-testid="session-review">
+            <div className="session-review-header">
+              <h3>Session Review</h3>
+              <div className="session-review-filter" data-testid="session-review-filter">
+                <button
+                  className={reviewFilter === 'all' ? 'active' : ''}
+                  onClick={() => setReviewFilter('all')}
+                >
+                  All ({sessionReview.attempts.length})
+                </button>
+                <button
+                  className={reviewFilter === 'wrong' ? 'active' : ''}
+                  onClick={() => setReviewFilter('wrong')}
+                >
+                  Wrong Only ({sessionReview.attempts.filter(a => !a.isCorrect).length})
+                </button>
+              </div>
+            </div>
+
+            <div className="session-review-list">
+              {filteredAttempts.map((attempt) => (
+                <div 
+                  key={attempt.attemptId} 
+                  className={`session-review-item ${attempt.isCorrect ? 'correct' : 'incorrect'}`}
+                  data-testid={`session-review-item-${attempt.attemptId}`}
+                >
+                  <div className="review-item-header">
+                    <span className={`review-badge ${attempt.isCorrect ? 'correct' : 'incorrect'}`}
+                          data-testid={attempt.isCorrect ? undefined : 'session-review-wrong-badge'}>
+                      {attempt.isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                    </span>
+                    <span className="review-points">{attempt.pointsAwarded} pts</span>
+                  </div>
+                  <div className="review-item-question">
+                    <strong>Question:</strong> {attempt.questionText}
+                  </div>
+                  <div className="review-item-answers">
+                    <div className="review-answer">
+                      <strong>Your answer:</strong> {attempt.answer}
+                    </div>
+                    <div className="review-answer">
+                      <strong>Correct answer:</strong> {attempt.expectedAnswer}
+                    </div>
+                  </div>
+                  <div className="review-item-meta">
+                    <span className="review-difficulty">{attempt.difficulty}</span>
+                    <span className="review-time">{new Date(attempt.attemptedAt).toLocaleTimeString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }

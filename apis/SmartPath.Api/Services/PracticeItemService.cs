@@ -184,7 +184,7 @@ public class PracticeItemService : IPracticeItemService
                             Math.Min(50, a.PracticeItem?.QuestionText?.Length ?? 0)
                         ) ?? "",
                     IsCorrect = a.IsCorrect,
-                    PointsAwarded = 0,
+                    PointsAwarded = a.PointsAwarded,
                     LessonId = a.LessonId,
                     LessonTitle = a.PracticeItem?.Lesson?.Title ?? "",
                     AttemptedAt = a.AttemptedAt,
