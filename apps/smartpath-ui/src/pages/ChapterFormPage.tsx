@@ -3,11 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import smartpathService from '../api/smartpathService';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
+import { RichTextEditor } from '../components/RichTextEditor';
+import { toEditorJson, toApiJsonString } from '../utils/richTextHelpers';
 import './FormPage.css';
 
 interface ChapterForm {
     title: string;
-    description: string;
+    description?: string;
+    descriptionJson?: string;
+    descriptionHtml?: string;
 }
 
 export default function ChapterFormPage() {
@@ -19,11 +23,15 @@ export default function ChapterFormPage() {
     const [form, setForm] = useState<ChapterForm>({
         title: '',
         description: '',
+        descriptionJson: '',
+        descriptionHtml: '',
     });
 
     useEffect(() => {
         if (chapterId) {
             loadChapter();
+        } else {
+            setLoading(false);
         }
     }, [chapterId]);
 
@@ -35,6 +43,8 @@ export default function ChapterFormPage() {
             setForm({
                 title: chapter.title,
                 description: chapter.description || '',
+                descriptionJson: (chapter as any).descriptionJson || '',
+                descriptionHtml: (chapter as any).descriptionHtml || '',
             });
         } catch (err) {
             console.error('Failed to load chapter:', err);
@@ -58,18 +68,30 @@ export default function ChapterFormPage() {
         setSaving(true);
         setError(null);
         try {
+            const payload: any = {
+                title: form.title,
+            };
+
+            // If rich text is provided, use it; otherwise use plain description
+            if (form.descriptionHtml) {
+                payload.descriptionJson = form.descriptionJson || null;
+                payload.descriptionHtml = form.descriptionHtml;
+            } else if (form.description) {
+                payload.description = form.description;
+            }
+
             if (chapterId) {
-                await smartpathService.courses.updateChapter(Number(chapterId), form);
+                await smartpathService.courses.updateChapter(Number(chapterId), payload);
             } else {
                 await smartpathService.courses.createChapter({
                     courseId: Number(courseId),
-                    ...form,
+                    ...payload,
                 });
             }
             navigate(`/learning/${courseId}`);
         } catch (err) {
             console.error('Failed to save chapter:', err);
-            setError('Failed to save chapter');
+            setError('Failed to save chapter. Please try again.');
         } finally {
             setSaving(false);
         }
@@ -127,13 +149,13 @@ export default function ChapterFormPage() {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="description">Description</label>
-                    <textarea
-                        id="description"
-                        value={form.description}
-                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    <label>Description</label>
+                    <RichTextEditor
+                        valueJson={toEditorJson(form.descriptionJson)}
+                        valueHtml={form.descriptionHtml}
+                        onChangeJson={(json) => setForm(prev => ({ ...prev, descriptionJson: toApiJsonString(json) }))}
+                        onChangeHtml={(html) => setForm(prev => ({ ...prev, descriptionHtml: html }))}
                         placeholder="Enter chapter description"
-                        rows={4}
                     />
                 </div>
 

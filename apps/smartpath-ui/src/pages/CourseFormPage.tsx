@@ -3,11 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import smartpathService from '../api/smartpathService';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
+import { RichTextEditor } from '../components/RichTextEditor';
+import { toEditorJson, toApiJsonString } from '../utils/richTextHelpers';
 import './FormPage.css';
 
 interface CourseForm {
     name: string;
-    description: string;
+    description?: string;
+    descriptionJson?: string;
+    descriptionHtml?: string;
     gradeLevel: number;
     colorCode: string;
 }
@@ -57,6 +61,8 @@ export default function CourseFormPage() {
             setForm({
                 name: course.name,
                 description: course.description || '',
+                descriptionJson: (course as any).descriptionJson || '',
+                descriptionHtml: (course as any).descriptionHtml || '',
                 gradeLevel: course.gradeLevel,
                 colorCode: course.colorCode || '#3B82F6',
             });
@@ -86,16 +92,45 @@ export default function CourseFormPage() {
         setSaving(true);
         setError(null);
         try {
-            if (courseId) {
-                await smartpathService.courses.update(Number(courseId), form);
+            // Debug: Log form state before building payload
+            console.log('🔍 Form state before save:', {
+                description: form.description,
+                descriptionJson: form.descriptionJson,
+                descriptionHtml: form.descriptionHtml,
+            });
+
+            // Build payload - only include description if not using rich text
+            const payload: any = {
+                name: form.name,
+                gradeLevel: form.gradeLevel,
+                colorCode: form.colorCode,
+                isActive: true, // Ensure course remains active when updating
+            };
+
+            // If rich text is provided, use it; otherwise use plain description
+            if (form.descriptionHtml) {
+                payload.descriptionJson = form.descriptionJson || null;
+                payload.descriptionHtml = form.descriptionHtml;
+                console.log('✅ Using rich text - HTML length:', form.descriptionHtml.length);
+            } else if (form.description) {
+                payload.description = form.description;
+                console.log('✅ Using plain description:', form.description);
             } else {
-                const courseData = { ...form, familyId };
+                console.log('⚠️ No description provided in form state');
+            }
+
+            console.log('📤 Payload being sent:', payload);
+
+            if (courseId) {
+                await smartpathService.courses.update(Number(courseId), payload);
+            } else {
+                const courseData = { ...payload, familyId };
                 await smartpathService.courses.create(courseData);
             }
             navigate('/learning');
         } catch (err) {
             console.error('Failed to save course:', err);
-            setError('Failed to save course');
+            setError('Failed to save course. Please try again.');
         } finally {
             setSaving(false);
         }
@@ -153,13 +188,20 @@ export default function CourseFormPage() {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="description">Description</label>
-                    <textarea
-                        id="description"
-                        value={form.description}
-                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    <label>Description</label>
+                    <RichTextEditor
+                        valueJson={toEditorJson(form.descriptionJson)}
+                        valueHtml={form.descriptionHtml}
+                        onChangeJson={(json) => {
+                            const jsonString = toApiJsonString(json);
+                            console.log('📝 RichTextEditor onChangeJson:', { json, jsonString });
+                            setForm(prev => ({ ...prev, descriptionJson: jsonString }));
+                        }}
+                        onChangeHtml={(html) => {
+                            console.log('📝 RichTextEditor onChangeHtml:', html);
+                            setForm(prev => ({ ...prev, descriptionHtml: html }));
+                        }}
                         placeholder="Enter course description"
-                        rows={4}
                     />
                 </div>
 

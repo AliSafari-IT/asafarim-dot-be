@@ -7,6 +7,8 @@ public class Course
     public int CreatedByUserId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
+    public string? DescriptionJson { get; set; }
+    public string? DescriptionHtml { get; set; }
     public int GradeLevel { get; set; }
     public string? IconUrl { get; set; }
     public string? ColorCode { get; set; }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartPath.Api.DTOs;
 using SmartPath.Api.Services;
 using IAuthorizationService = SmartPath.Api.Services.IAuthorizationService;
 
@@ -134,6 +135,8 @@ public class TasksController : ControllerBase
 
         task.Title = request.Title;
         task.Description = request.Description;
+        task.DescriptionJson = request.DescriptionJson;
+        task.DescriptionHtml = request.DescriptionHtml;
         task.Category = request.Category;
         task.Priority = request.Priority;
         task.Status = request.Status;
@@ -270,6 +273,8 @@ public class TasksController : ControllerBase
             FamilyId = task.FamilyId,
             Title = task.Title,
             Description = task.Description,
+            DescriptionJson = task.DescriptionJson,
+            DescriptionHtml = task.DescriptionHtml,
             Category = task.Category,
             Priority = task.Priority,
             Status = task.Status,

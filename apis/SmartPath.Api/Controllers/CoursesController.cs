@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartPath.Api.DTOs;
 using SmartPath.Api.Services;
 using IAuthorizationService = SmartPath.Api.Services.IAuthorizationService;
 
@@ -103,6 +104,8 @@ public class CoursesController : ControllerBase
 
         course.Name = request.Name;
         course.Description = request.Description;
+        course.DescriptionJson = request.DescriptionJson;
+        course.DescriptionHtml = request.DescriptionHtml;
         course.GradeLevel = request.GradeLevel;
         course.IconUrl = request.IconUrl;
         course.ColorCode = request.ColorCode;
@@ -228,6 +231,8 @@ public class CoursesController : ControllerBase
         chapter.Title = request.Title;
         chapter.OrderIndex = request.OrderIndex;
         chapter.Description = request.Description;
+        chapter.DescriptionJson = request.DescriptionJson;
+        chapter.DescriptionHtml = request.DescriptionHtml;
         chapter.UpdatedAt = DateTime.UtcNow;
 
         var updated = await _courseService.UpdateChapterAsync(chapterId, chapter);
@@ -388,6 +393,8 @@ public class CoursesController : ControllerBase
             FamilyId = course.FamilyId,
             Name = course.Name,
             Description = course.Description,
+            DescriptionJson = course.DescriptionJson,
+            DescriptionHtml = course.DescriptionHtml,
             GradeLevel = course.GradeLevel,
             IconUrl = course.IconUrl,
             ColorCode = course.ColorCode,
@@ -416,6 +423,8 @@ public class CoursesController : ControllerBase
             Title = chapter.Title,
             OrderIndex = chapter.OrderIndex,
             Description = chapter.Description,
+            DescriptionJson = chapter.DescriptionJson,
+            DescriptionHtml = chapter.DescriptionHtml,
             CreatedAt = chapter.CreatedAt,
             UpdatedAt = chapter.UpdatedAt,
             CreatedBy =

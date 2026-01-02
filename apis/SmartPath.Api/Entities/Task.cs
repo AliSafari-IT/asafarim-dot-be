@@ -6,6 +6,8 @@ public class Task
     public int FamilyId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
+    public string? DescriptionJson { get; set; }
+    public string? DescriptionHtml { get; set; }
     public int? AssignedToUserId { get; set; }
     public int? AssignedByUserId { get; set; }
     public DateTime? AssignedAt { get; set; }

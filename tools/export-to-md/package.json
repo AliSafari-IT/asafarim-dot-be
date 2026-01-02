@@ -5,8 +5,8 @@
     "type": "module",
     "scripts": {
         "dev": "concurrently \"pnpm run exmd:web\" \"pnpm run exmd:server\"",
-        "exmd:web": "pnpm -F demo-web dev",
-        "exmd:server": "pnpm -F demo-server dev",
+        "exmd:web": "pnpm -C web dev",
+        "exmd:server": "pnpm -C server dev",
         "exmd:build": "pnpm -r build"
     },
     "devDependencies": {

@@ -3,11 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import smartpathService from '../api/smartpathService';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
+import { RichTextEditor } from '../components/RichTextEditor';
+import { toEditorJson, toApiJsonString } from '../utils/richTextHelpers';
 import './FormPage.css';
 
 interface TaskForm {
     title: string;
-    description: string;
+    description?: string;
+    descriptionJson?: string;
+    descriptionHtml?: string;
     dueDate: string;
     status: 'Pending' | 'In Progress' | 'Completed';
     familyId: number;
@@ -29,6 +33,8 @@ export default function TaskFormPage() {
     const [form, setForm] = useState<TaskForm>({
         title: '',
         description: '',
+        descriptionJson: '',
+        descriptionHtml: '',
         dueDate: '',
         status: 'Pending',
         familyId: 0,
@@ -41,6 +47,8 @@ export default function TaskFormPage() {
         loadFamilies();
         if (taskId) {
             loadTask();
+        } else {
+            setLoading(false);
         }
     }, [taskId]);
 
@@ -65,6 +73,8 @@ export default function TaskFormPage() {
             setForm({
                 title: task.title,
                 description: task.description || '',
+                descriptionJson: (task as any).descriptionJson || '',
+                descriptionHtml: (task as any).descriptionHtml || '',
                 dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
                 status: task.status,
                 familyId: task.familyId,
@@ -94,15 +104,38 @@ export default function TaskFormPage() {
         setSaving(true);
         setError(null);
         try {
+            const payload: any = {
+                title: form.title,
+                dueDate: form.dueDate || null,
+                status: form.status,
+                category: form.category || 'Homework',
+                priority: form.priority || 'Medium',
+                assignedToUserId: form.assignedToUserId || null,
+                estimatedMinutes: form.estimatedMinutes || null,
+                isRecurring: form.isRecurring || false,
+                recurrencePattern: form.recurrencePattern || null,
+            };
+
+            // If rich text is provided, use it; otherwise use plain description
+            if (form.descriptionHtml) {
+                payload.descriptionJson = form.descriptionJson || null;
+                payload.descriptionHtml = form.descriptionHtml;
+            } else if (form.description) {
+                payload.description = form.description;
+            }
+
             if (taskId) {
-                await smartpathService.tasks.update(Number(taskId), form);
+                await smartpathService.tasks.update(Number(taskId), payload);
             } else {
-                await smartpathService.tasks.create(form);
+                await smartpathService.tasks.create({
+                    familyId: form.familyId,
+                    ...payload,
+                });
             }
             navigate('/tasks');
         } catch (err) {
             console.error('Failed to save task:', err);
-            setError('Failed to save task');
+            setError('Failed to save task. Please try again.');
         } finally {
             setSaving(false);
         }
@@ -178,13 +211,13 @@ export default function TaskFormPage() {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="description">Description</label>
-                    <textarea
-                        id="description"
-                        value={form.description}
-                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    <label>Description</label>
+                    <RichTextEditor
+                        valueJson={toEditorJson(form.descriptionJson)}
+                        valueHtml={form.descriptionHtml}
+                        onChangeJson={(json) => setForm(prev => ({ ...prev, descriptionJson: toApiJsonString(json) }))}
+                        onChangeHtml={(html) => setForm(prev => ({ ...prev, descriptionHtml: html }))}
                         placeholder="Enter task description"
-                        rows={4}
                     />
                 </div>
 

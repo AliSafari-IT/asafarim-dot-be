@@ -10,6 +10,10 @@ public class Lesson
     public int OrderIndex { get; set; }
     public string? Description { get; set; }
     public string? LearningObjectives { get; set; }
+    public string? DescriptionJson { get; set; }
+    public string? DescriptionHtml { get; set; }
+    public string? LearningObjectivesJson { get; set; }
+    public string? LearningObjectivesHtml { get; set; }
     public int EstimatedMinutes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

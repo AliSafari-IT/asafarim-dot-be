@@ -603,7 +603,7 @@ public class PracticeService : IPracticeService
                     ExpectedAnswer = a.PracticeItem?.ExpectedAnswer ?? "",
                     Answer = a.Answer ?? "",
                     IsCorrect = a.IsCorrect,
-                    PointsAwarded = a.IsCorrect ? (a.PracticeItem?.Points ?? 0) : 0,
+                    PointsAwarded = a.PointsAwarded,
                     Difficulty = a.PracticeItem?.Difficulty ?? "Medium",
                     AttemptedAt = a.AttemptedAt,
                 })

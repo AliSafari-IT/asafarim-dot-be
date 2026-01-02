@@ -9,6 +9,8 @@ public class Chapter
     public string Title { get; set; } = string.Empty;
     public int OrderIndex { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionJson { get; set; }
+    public string? DescriptionHtml { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

@@ -38,7 +38,8 @@ public class FamiliesController : ControllerBase
     public async Task<IActionResult> GetMyFamilies()
     {
         var validationError = ValidateUserContext(out var userId, out _);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
 
         var families = await _familyService.GetUserFamiliesAsync(userId);
 
@@ -66,7 +67,8 @@ public class FamiliesController : ControllerBase
     public async Task<IActionResult> GetFamily(int id)
     {
         var validationError = ValidateUserContext(out var userId, out var isAdmin);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
         var family = await _familyService.GetByIdAsync(id);
 
         if (family == null)
@@ -82,7 +84,8 @@ public class FamiliesController : ControllerBase
     public async Task<IActionResult> CreateFamily([FromBody] CreateFamilyRequest request)
     {
         var validationError = ValidateUserContext(out var userId, out _);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
 
         try
         {
@@ -102,7 +105,8 @@ public class FamiliesController : ControllerBase
     public async Task<IActionResult> AddMember(int familyId, [FromBody] AddMemberRequest request)
     {
         var validationError = ValidateUserContext(out var userId, out var isAdmin);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
 
         try
         {
@@ -132,10 +136,14 @@ public class FamiliesController : ControllerBase
     }
 
     [HttpPost("{familyId}/members/by-email")]
-    public async Task<IActionResult> AddMemberByEmail(int familyId, [FromBody] AddMemberByEmailRequest request)
+    public async Task<IActionResult> AddMemberByEmail(
+        int familyId,
+        [FromBody] AddMemberByEmailRequest request
+    )
     {
         var validationError = ValidateUserContext(out var userId, out var isAdmin);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
 
         try
         {
@@ -147,13 +155,17 @@ public class FamiliesController : ControllerBase
                 isAdmin
             );
 
-            return CreatedAtAction(nameof(GetFamily), new { id = familyId }, new
-            {
-                member.FamilyMemberId,
-                member.UserId,
-                member.Role,
-                member.JoinedAt,
-            });
+            return CreatedAtAction(
+                nameof(GetFamily),
+                new { id = familyId },
+                new
+                {
+                    member.FamilyMemberId,
+                    member.UserId,
+                    member.Role,
+                    member.JoinedAt,
+                }
+            );
         }
         catch (KeyNotFoundException ex)
         {
@@ -177,7 +189,8 @@ public class FamiliesController : ControllerBase
     public async Task<IActionResult> RemoveMember(int familyId, int targetUserId)
     {
         var validationError = ValidateUserContext(out var userId, out var isAdmin);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
 
         try
         {
@@ -194,11 +207,57 @@ public class FamiliesController : ControllerBase
         }
     }
 
+    [HttpPut("{familyId}/members/{familyMemberId}/role")]
+    public async Task<IActionResult> UpdateMemberRole(
+        int familyId,
+        int familyMemberId,
+        [FromBody] UpdateMemberRoleRequest request
+    )
+    {
+        var validationError = ValidateUserContext(out var userId, out var isAdmin);
+        if (validationError != null)
+            return validationError;
+
+        try
+        {
+            var member = await _familyService.UpdateMemberRoleAsync(
+                familyId,
+                familyMemberId,
+                userId,
+                request.Role,
+                isAdmin
+            );
+
+            return Ok(
+                new
+                {
+                    member.FamilyMemberId,
+                    member.UserId,
+                    member.Role,
+                    member.FamilyId,
+                }
+            );
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { error = "Member not found" });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFamily(int id, [FromBody] UpdateFamilyRequest request)
     {
         var validationError = ValidateUserContext(out var userId, out var isAdmin);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
 
         if (!await _familyService.CanManageMembersAsync(id, userId, isAdmin))
             return Forbid();
@@ -217,7 +276,8 @@ public class FamiliesController : ControllerBase
     public async Task<IActionResult> DeleteFamily(int id)
     {
         var validationError = ValidateUserContext(out var userId, out var isAdmin);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
 
         if (!await _familyService.CanManageMembersAsync(id, userId, isAdmin))
             return Forbid();
@@ -231,7 +291,8 @@ public class FamiliesController : ControllerBase
     public async Task<IActionResult> DeleteBulkFamilies([FromBody] DeleteBulkRequest request)
     {
         var validationError = ValidateUserContext(out var userId, out var isAdmin);
-        if (validationError != null) return validationError;
+        if (validationError != null)
+            return validationError;
 
         foreach (var familyId in request.Ids)
         {
@@ -252,5 +313,7 @@ public record UpdateFamilyRequest(string FamilyName);
 public record AddMemberRequest(int UserId, string? Role = null, DateTime? DateOfBirth = null);
 
 public record AddMemberByEmailRequest(string Email, string? Role = null);
+
+public record UpdateMemberRoleRequest(string Role);
 
 public record DeleteBulkRequest(List<int> Ids);

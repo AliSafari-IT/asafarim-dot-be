@@ -144,6 +144,10 @@ public class ProgressService : IProgressService
             throw new KeyNotFoundException($"Practice item {practiceItemId} not found");
         }
 
+        var pointsAwarded = isCorrect
+            ? (practiceItem.Points > 0 ? practiceItem.Points : 10)
+            : 0;
+
         var attempt = new PracticeAttempt
         {
             ChildUserId = childUserId,
@@ -151,6 +155,7 @@ public class ProgressService : IProgressService
             LessonId = practiceItem.LessonId,
             Answer = answer,
             IsCorrect = isCorrect,
+            PointsAwarded = pointsAwarded,
             TimeSpentSeconds = timeSpentSeconds,
             HintsUsed = hintsUsed,
             AttemptedAt = DateTime.UtcNow,
@@ -191,7 +196,7 @@ public class ProgressService : IProgressService
     {
         var query = _context
             .PracticeSessions.Include(s => s.Attempts)
-            .Where(s => s.FamilyId == familyId);
+            .Where(s => s.FamilyId == familyId && s.Status == "Completed");
 
         if (memberId.HasValue)
             query = query.Where(s => s.ChildUserId == memberId.Value);
@@ -207,13 +212,17 @@ public class ProgressService : IProgressService
         var correctAttempts = allAttempts.Count(a => a.IsCorrect);
         var accuracy = totalAttempts > 0 ? (decimal)correctAttempts / totalAttempts : 0;
 
+        var streak = memberId.HasValue
+            ? await _context.Streaks.FirstOrDefaultAsync(s => s.UserId == memberId.Value)
+            : null;
+
         return new ProgressSummaryDto
         {
             TotalSessions = sessions.Count,
             TotalAttempts = totalAttempts,
             AccuracyPercentage = Math.Round(accuracy * 100, 2),
-            CurrentStreak = 0,
-            BestStreak = 0,
+            CurrentStreak = streak?.CurrentStreak ?? 0,
+            BestStreak = streak?.LongestStreak ?? 0,
             TotalPoints = sessions.Sum(s => s.TotalPoints),
         };
     }
@@ -256,7 +265,7 @@ public class ProgressService : IProgressService
                 AttemptCount = g.Count(),
                 Accuracy = g.Count() > 0 ? (decimal)g.Count(a => a.IsCorrect) / g.Count() : 0,
                 LastPracticed = g.Max(a => (DateTime?)a.AttemptedAt),
-                PointsEarned = g.Count(a => a.IsCorrect) * 10,
+                PointsEarned = g.Sum(a => a.PointsAwarded),
             })
             .ToList();
 

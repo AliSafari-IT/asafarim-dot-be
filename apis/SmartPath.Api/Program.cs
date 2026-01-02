@@ -6,6 +6,7 @@ using Serilog;
 using SmartPath.Api.Data;
 using SmartPath.Api.Middleware;
 using SmartPath.Api.Services;
+using SmartPath.Api.Services.ContentSanitization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,13 +100,12 @@ builder.Services.AddHttpClient(
     }
 );
 
+builder.Services.AddSingleton<IHtmlContentSanitizer, HtmlContentSanitizer>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFamilyService, FamilyService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
-builder.Services.AddScoped<IGraphService, GraphService>();
-builder.Services.AddScoped<IPathfindingService, PathfindingService>();
 builder.Services.AddScoped<IPracticeService, PracticeService>();
 builder.Services.AddScoped<IPracticeItemService, PracticeItemService>();
 builder.Services.AddScoped<IRewardsService, RewardsService>();

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import smartpathService from '../api/smartpathService';
-import { Users, Plus, Edit2, Trash2, UserPlus, X, Users2 } from 'lucide-react';
-import { ButtonComponent } from '@asafarim/shared-ui-react';
+import { Users, Plus, Edit2, Trash2, UserPlus, X, Users2, MoreHorizontal } from 'lucide-react';
+import { ButtonComponent, Dropdown, DropdownItem } from '@asafarim/shared-ui-react';
 import AddMemberModal from '../components/AddMemberModal';
 import './FamilyPage.css';
 
@@ -15,10 +15,32 @@ export default function FamilyPage() {
     const [selectedFamilyForAddMember, setSelectedFamilyForAddMember] = useState<number | null>(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [currentSmartPathUserId, setCurrentSmartPathUserId] = useState<number | null>(null);
+    const [familyDropdownOpen, setFamilyDropdownOpen] = useState<number | null>(null);
+    const [memberDropdownOpen, setMemberDropdownOpen] = useState<number | null>(null);
 
     useEffect(() => {
         initializeUser();
     }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (familyDropdownOpen !== null) {
+                const target = event.target as Element;
+                if (!target.closest('.family-actions-dropdown')) {
+                    setFamilyDropdownOpen(null);
+                }
+            }
+            if (memberDropdownOpen != null){
+                const target = event.target as Element;
+                if (!target.closest('.member-actions-dropdown')) {
+                    setMemberDropdownOpen(null);
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [familyDropdownOpen, memberDropdownOpen]);
 
     const initializeUser = async () => {
         try {
@@ -90,7 +112,7 @@ export default function FamilyPage() {
     const canRemoveMember = (family: any, member: any): boolean => {
         if (isAdmin) return true;
         if (!currentSmartPathUserId) return false;
-        
+
         const currentUserRole = family.members?.find((m: any) => m.userId === currentSmartPathUserId)?.role;
         if (currentUserRole !== 'familyManager') return false;
         return member.role === 'familyMember';
@@ -114,7 +136,7 @@ export default function FamilyPage() {
         <div className="family-page container" data-testid="family-page">
             <header className="page-header" data-testid="family-header">
                 <div>
-                    <h1>Family</h1>
+                    <h1><Users2 size={20} /> Family Manager</h1>
                     <p>Manage your family members</p>
                 </div>
                 <div className="header-actions" data-testid="family-header-actions">
@@ -185,15 +207,38 @@ export default function FamilyPage() {
                                                                 {age} years old
                                                             </span>
                                                         )}
-                                                        {canRemoveMember(family, member) && (
+                                                        <div className="member-actions-dropdown">
                                                             <button
-                                                                onClick={() => removeMember(family.familyId, member.userId)}
-                                                                className="btn-remove-member"
-                                                                title="Remove member"
+                                                                onClick={() => setMemberDropdownOpen(memberDropdownOpen === member.familyMemberId ? null : member.familyMemberId)}
+                                                                className="btn-member-menu"
+                                                                title="Member actions"
                                                             >
-                                                                <X size={16} />
+                                                                <MoreHorizontal size={16} />
                                                             </button>
-                                                        )}
+                                                            {memberDropdownOpen === member.familyMemberId && (
+                                                                <Dropdown className="member-dropdown-menu">
+                                                                    <DropdownItem
+                                                                        onClick={() => {
+                                                                            navigate(`/family/${family.familyId}/members/${member.familyMemberId}/edit`);
+                                                                            setMemberDropdownOpen(null);
+                                                                        }}
+                                                                        label="Edit"
+                                                                        icon={<Edit2 size={16} />}
+                                                                    />
+                                                                    {canRemoveMember(family, member) && (
+                                                                        <DropdownItem
+                                                                            onClick={() => {
+                                                                                removeMember(family.familyId, member.userId);
+                                                                                setMemberDropdownOpen(null);
+                                                                            }}
+                                                                            label="Remove member"
+                                                                            className="btn-delete"
+                                                                            icon={<X size={16} />}
+                                                                        />
+                                                                    )}
+                                                                </Dropdown>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );
@@ -218,13 +263,30 @@ export default function FamilyPage() {
                                     >
                                         <Edit2 size={18} />
                                     </button>
-                                    <button
-                                        onClick={() => deleteFamily(family.familyId)}
-                                        className="btn-action btn-delete"
-                                        title="Delete family"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
+                                    <div className="family-actions-dropdown" data-testid={`family-dropdown-${family.familyId}`}>
+                                        <ButtonComponent
+                                            variant="secondary"
+                                            onClick={() => setFamilyDropdownOpen(familyDropdownOpen === family.familyId ? null : family.familyId)}
+                                            className="bulk-actions-toggle"
+                                            data-testid={`family-toggle-${family.familyId}`}
+                                        >
+                                            <MoreHorizontal size={20} />
+                                        </ButtonComponent>
+                                        {familyDropdownOpen === family.familyId && (
+                                            <button
+                                                onClick={() => {
+                                                    deleteFamily(family.familyId);
+                                                    setFamilyDropdownOpen(null);
+                                                }}
+                                                className="btn-action btn-delete"
+                                                title="Delete family"
+                                                data-testid={`delete-family-${family.familyId}`}
+                                            >
+                                                <Trash2 size={16} />
+                                                Delete {family.familyName}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}

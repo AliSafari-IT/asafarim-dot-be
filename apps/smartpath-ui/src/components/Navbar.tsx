@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Home, CheckSquare, BookOpen, TrendingUp, Users, LogOut, Network, Zap, Award, Settings, BarChart3, Menu, X } from 'lucide-react';
+import { Home, CheckSquare, BookOpen, TrendingUp, Users, LogOut, Zap, Award, Settings, BarChart3, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import './Navbar.css';
 import { ThemeToggle } from '@asafarim/react-themes';
@@ -24,7 +24,6 @@ export default function Navbar() {
         { path: '/practice-dashboard', icon: BarChart3, label: 'Practice Dashboard' },
         { path: '/progress', icon: TrendingUp, label: 'Progress' },
         { path: '/family', icon: Users, label: 'Family' },
-        { path: '/graphs', icon: Network, label: 'Graphs' },
     ];
 
     const handleLinkClick = () => {

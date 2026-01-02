@@ -23,10 +23,6 @@ public class SmartPathDbContext : DbContext
     public DbSet<Achievement> Achievements { get; set; }
     public DbSet<UserAchievement> UserAchievements { get; set; }
     public DbSet<Streak> Streaks { get; set; }
-    public DbSet<Graph> Graphs { get; set; }
-    public DbSet<GraphNode> GraphNodes { get; set; }
-    public DbSet<GraphEdge> GraphEdges { get; set; }
-    public DbSet<PathRun> PathRuns { get; set; }
     public DbSet<PracticeSession> PracticeSessions { get; set; }
     public DbSet<StreakEntity> StreakEntities { get; set; }
 
@@ -340,42 +336,6 @@ public class SmartPathDbContext : DbContext
             .Entity<ChildCourseEnrollment>()
             .Property(e => e.AverageMastery)
             .HasPrecision(5, 2);
-
-        // Graph configurations
-        modelBuilder
-            .Entity<Graph>()
-            .HasMany(g => g.Nodes)
-            .WithOne(n => n.Graph)
-            .HasForeignKey(n => n.GraphId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder
-            .Entity<Graph>()
-            .HasMany(g => g.Edges)
-            .WithOne(e => e.Graph)
-            .HasForeignKey(e => e.GraphId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder
-            .Entity<Graph>()
-            .HasMany(g => g.PathRuns)
-            .WithOne(pr => pr.Graph)
-            .HasForeignKey(pr => pr.GraphId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder
-            .Entity<GraphEdge>()
-            .HasOne(e => e.FromNode)
-            .WithMany()
-            .HasForeignKey(e => e.FromNodeId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder
-            .Entity<GraphEdge>()
-            .HasOne(e => e.ToNode)
-            .WithMany()
-            .HasForeignKey(e => e.ToNodeId)
-            .OnDelete(DeleteBehavior.Restrict);
 
         // PracticeItem configurations
         modelBuilder.Entity<PracticeItem>().HasIndex(p => new { p.LessonId, p.IsActive });

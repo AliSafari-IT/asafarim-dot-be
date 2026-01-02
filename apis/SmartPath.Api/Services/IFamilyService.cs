@@ -44,4 +44,11 @@ public interface IFamilyService
         int targetUserId,
         bool isAdmin
     );
+    System.Threading.Tasks.Task<FamilyMember> UpdateMemberRoleAsync(
+        int familyId,
+        int familyMemberId,
+        int currentUserId,
+        string newRole,
+        bool isAdmin = false
+    );
 }

@@ -178,6 +178,7 @@ export default function TasksPage() {
                                         </span>
                                     </div>
                                     {task.description && <p className="task-description">{task.description}</p>}
+                                    {task.descriptionHtml && <div className="task-description" dangerouslySetInnerHTML={{ __html: task.descriptionHtml }} />}
                                     <div className="task-footer">
                                         {task.dueDate && (
                                             <div className="task-date">

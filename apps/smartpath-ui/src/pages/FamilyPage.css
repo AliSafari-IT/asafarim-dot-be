@@ -265,7 +265,7 @@
     border-color: var(--asm-color-primary-300);
 }
 
-.btn-action.btn-delete {
+.btn-delete {
     color: var(--asm-color-danger-600);
 }
 
@@ -345,4 +345,104 @@
     min-height: 400px;
     color: var(--asm-color-text-muted);
     font-size: 1rem;
+}
+
+/* Family Card Actions Dropdown */
+.family-actions-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.family-actions-dropdown .bulk-actions-toggle {
+    min-width: auto;
+    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-radius-lg);
+    background-color: var(--asm-color-surface);
+    color: var(--asm-color-text-muted);
+    cursor: pointer;
+    transition: all var(--asm-motion-duration-150, 0.15s) var(--asm-motion-easing-ease, ease);
+}
+
+.family-actions-dropdown .bulk-actions-toggle:hover {
+    background-color: var(--asm-color-button-ghost-bg-hover);
+    color: var(--asm-color-text);
+}
+
+.family-actions-dropdown .btn-action.btn-delete {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 0.875rem;
+    color: var(--asm-color-danger-600);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    white-space: nowrap;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--asm-color-surface);
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-border-radius-md);
+    box-shadow: var(--asm-shadow-lg);
+    z-index: 1000;
+    min-width: 180px;
+    margin-top: 0.25rem;
+}
+
+.family-actions-dropdown .btn-action.btn-delete:hover {
+    background-color: var(--asm-color-danger-50);
+}
+
+/* Member Actions Dropdown */
+.member-actions-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-member-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--asm-color-text-muted);
+    cursor: pointer;
+    border-radius: var(--asm-radius-sm);
+    transition: all var(--asm-motion-duration-150, 0.15s) var(--asm-motion-easing-ease, ease);
+    padding: 0;
+}
+
+.btn-member-menu:hover {
+    background-color: var(--asm-color-surface-hover);
+    color: var(--asm-color-text);
+}
+
+.member-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--asm-color-surface);
+    border: 1px solid var(--asm-color-border);
+    border-radius: var(--asm-border-radius-md);
+    box-shadow: var(--asm-shadow-lg);
+    z-index: 1000;
+    min-width: 150px;
+    margin-top: 0.25rem;
+    padding: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
 }

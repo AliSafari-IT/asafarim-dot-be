@@ -271,6 +271,51 @@ public class FamilyService : IFamilyService
         return targetMember.Role == "familyMember";
     }
 
+    public async System.Threading.Tasks.Task<FamilyMember> UpdateMemberRoleAsync(
+        int familyId,
+        int familyMemberId,
+        int currentUserId,
+        string newRole,
+        bool isAdmin = false
+    )
+    {
+        var canManage = await CanManageMembersAsync(familyId, currentUserId, isAdmin);
+        if (!canManage)
+            throw new UnauthorizedAccessException(
+                "Only familyManager or admin can update member roles"
+            );
+
+        var validRoles = new[] { "familyManager", "familyMember" };
+        if (!validRoles.Contains(newRole))
+            throw new ArgumentException($"Invalid role: {newRole}");
+
+        if (!isAdmin && newRole == "familyManager")
+            throw new UnauthorizedAccessException("Only admin can assign familyManager role");
+
+        var member = await _context.FamilyMembers.FirstOrDefaultAsync(fm =>
+            fm.FamilyMemberId == familyMemberId && fm.FamilyId == familyId
+        );
+
+        if (member == null)
+            throw new KeyNotFoundException("Member not found");
+
+        var oldRole = member.Role;
+        member.Role = newRole;
+        _context.FamilyMembers.Update(member);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Member {FamilyMemberId} in family {FamilyId} role updated from {OldRole} to {NewRole} by user {CurrentUserId}",
+            familyMemberId,
+            familyId,
+            oldRole,
+            newRole,
+            currentUserId
+        );
+
+        return member;
+    }
+
     public async Task<Family> UpdateAsync(Family family)
     {
         family.UpdatedAt = DateTime.UtcNow;
@@ -315,21 +360,30 @@ public class FamilyService : IFamilyService
         try
         {
             var client = _httpClientFactory.CreateClient("IdentityApi");
-            
-            var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
+
+            var token = _httpContextAccessor
+                .HttpContext?.Request.Headers["Authorization"]
+                .ToString();
             if (!string.IsNullOrEmpty(token))
             {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-                    token.StartsWith("Bearer ") ? "Bearer" : token.Split(' ')[0],
-                    token.Contains(" ") ? token.Split(' ')[1] : token
-                );
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(
+                        token.StartsWith("Bearer ") ? "Bearer" : token.Split(' ')[0],
+                        token.Contains(" ") ? token.Split(' ')[1] : token
+                    );
             }
-            
-            var response = await client.GetAsync($"/admin/users/by-email?email={Uri.EscapeDataString(normalizedEmail)}");
+
+            var response = await client.GetAsync(
+                $"/admin/users/by-email?email={Uri.EscapeDataString(normalizedEmail)}"
+            );
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("Identity API returned {StatusCode} for email {Email}", response.StatusCode, normalizedEmail);
+                _logger.LogWarning(
+                    "Identity API returned {StatusCode} for email {Email}",
+                    response.StatusCode,
+                    normalizedEmail
+                );
                 return null;
             }
 
@@ -337,9 +391,15 @@ public class FamilyService : IFamilyService
             var jsonDoc = System.Text.Json.JsonDocument.Parse(content);
             var root = jsonDoc.RootElement;
 
-            if (!root.TryGetProperty("id", out var idElement) || !Guid.TryParse(idElement.GetString(), out var identityUserId))
+            if (
+                !root.TryGetProperty("id", out var idElement)
+                || !Guid.TryParse(idElement.GetString(), out var identityUserId)
+            )
             {
-                _logger.LogWarning("Invalid response from Identity API for email {Email}", normalizedEmail);
+                _logger.LogWarning(
+                    "Invalid response from Identity API for email {Email}",
+                    normalizedEmail
+                );
                 return null;
             }
 
@@ -355,12 +415,20 @@ public class FamilyService : IFamilyService
                 displayName
             );
 
-            _logger.LogInformation("Synced user {UserId} from Identity API for email {Email}", syncedUser.UserId, normalizedEmail);
+            _logger.LogInformation(
+                "Synced user {UserId} from Identity API for email {Email}",
+                syncedUser.UserId,
+                normalizedEmail
+            );
             return syncedUser;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error syncing user from Identity API for email {Email}", normalizedEmail);
+            _logger.LogError(
+                ex,
+                "Error syncing user from Identity API for email {Email}",
+                normalizedEmail
+            );
             return null;
         }
     }

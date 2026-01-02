@@ -72,6 +72,8 @@ export const smartpathService = {
     addMemberByEmail: (familyId: number, data: { email: string; role?: string }) => 
       apiClient.post(`/families/${familyId}/members/by-email`, data),
     removeMember: (familyId: number, targetUserId: number) => apiClient.delete(`/families/${familyId}/members/users/${targetUserId}`),
+    updateMemberRole: (familyId: number, familyMemberId: number, role: string) => 
+      apiClient.put(`/families/${familyId}/members/${familyMemberId}/role`, { role }),
   },
 
   tasks: {
@@ -107,16 +109,16 @@ export const smartpathService = {
 
   progress: {
     enroll: (data: { childUserId: number; courseId: number }) => 
-      apiClient.post('/progress/enrollments', data),
-    getEnrollments: (childId: number) => apiClient.get(`/progress/children/${childId}/enrollments`),
+      apiClient.post('/api/progress/enrollments', data),
+    getEnrollments: (childId: number) => apiClient.get(`/api/progress/children/${childId}/enrollments`),
     startLesson: (lessonId: number, data: { childUserId: number }) => 
-      apiClient.post(`/progress/lessons/${lessonId}/start`, data),
+      apiClient.post(`/api/progress/lessons/${lessonId}/start`, data),
     completeLesson: (lessonId: number, data: { childUserId: number; selfAssessmentScore: number }) => 
-      apiClient.post(`/progress/lessons/${lessonId}/complete`, data),
+      apiClient.post(`/api/progress/lessons/${lessonId}/complete`, data),
     getProgress: (childId: number, courseId?: number) => 
-      apiClient.get(`/progress/children/${childId}/progress`, { params: { courseId } }),
+      apiClient.get(`/api/progress/children/${childId}/progress`, { params: { courseId } }),
     recordAttempt: (itemId: number, data: any) => 
-      apiClient.post(`/progress/practice-items/${itemId}/attempt`, data),
+      apiClient.post(`/api/progress/practice-items/${itemId}/attempt`, data),
   },
 };
 

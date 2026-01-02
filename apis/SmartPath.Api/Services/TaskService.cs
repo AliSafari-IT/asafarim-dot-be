@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SmartPath.Api.Data;
+using SmartPath.Api.Services.ContentSanitization;
 
 namespace SmartPath.Api.Services;
 
@@ -7,11 +8,17 @@ public class TaskService : ITaskService
 {
     private readonly SmartPathDbContext _context;
     private readonly ILogger<TaskService> _logger;
+    private readonly IHtmlContentSanitizer _sanitizer;
 
-    public TaskService(SmartPathDbContext context, ILogger<TaskService> logger)
+    public TaskService(
+        SmartPathDbContext context,
+        ILogger<TaskService> logger,
+        IHtmlContentSanitizer sanitizer
+    )
     {
         _context = context;
         _logger = logger;
+        _sanitizer = sanitizer;
     }
 
     public async System.Threading.Tasks.Task<List<Entities.Task>> GetFamilyTasksAsync(
@@ -57,27 +64,104 @@ public class TaskService : ITaskService
         task.CreatedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
 
+        // Handle rich text fields
+        if (!string.IsNullOrEmpty(task.DescriptionHtml))
+        {
+            _sanitizer.ValidateContentSize(
+                task.DescriptionJson,
+                task.DescriptionHtml,
+                "DescriptionJson/Html"
+            );
+            task.DescriptionHtml = _sanitizer.SanitizeArticleHtml(task.DescriptionHtml);
+        }
+
         _context.Tasks.Add(task);
         await _context.SaveChangesAsync();
 
         return task;
     }
 
-    public async System.Threading.Tasks.Task<Entities.Task> UpdateAsync(Entities.Task task, int? editingUserId = null)
+    public async System.Threading.Tasks.Task<Entities.Task> UpdateAsync(
+        Entities.Task task,
+        int? editingUserId = null
+    )
     {
-        task.UpdatedAt = DateTime.UtcNow;
+        var existing = await _context.Tasks.FirstOrDefaultAsync(t => t.TaskId == task.TaskId);
+        if (existing == null)
+            throw new InvalidOperationException("Task not found");
+
+        existing.Title = task.Title;
+        existing.Description = task.Description;
+        existing.Category = task.Category;
+        existing.Priority = task.Priority;
+        existing.Status = task.Status;
+        existing.DueDate = task.DueDate;
+        existing.EstimatedMinutes = task.EstimatedMinutes;
+        existing.IsRecurring = task.IsRecurring;
+        existing.RecurrencePattern = task.RecurrencePattern;
+        existing.CompletedAt = task.CompletedAt;
+        existing.UpdatedAt = DateTime.UtcNow;
+
         if (editingUserId.HasValue)
         {
-            task.LastEditedAt = DateTime.UtcNow;
-            task.LastEditedByUserId = editingUserId.Value;
+            existing.LastEditedAt = DateTime.UtcNow;
+            existing.LastEditedByUserId = editingUserId.Value;
         }
-        _context.Tasks.Update(task);
+
+        // Handle rich text fields - only update if rich text is provided
+        _logger.LogInformation(
+            "UpdateAsync - DescriptionHtml: {DescriptionHtml}, DescriptionJson: {DescriptionJson}, Description: {Description}",
+            task.DescriptionHtml ?? "(null)",
+            task.DescriptionJson ?? "(null)",
+            task.Description ?? "(null)"
+        );
+
+        // Debug: Check the actual values
+        _logger.LogInformation(
+            "UpdateAsync DEBUG - DescriptionHtml length: {Length}, IsNullOrEmpty: {IsNullOrEmpty}",
+            task.DescriptionHtml?.Length ?? 0,
+            string.IsNullOrEmpty(task.DescriptionHtml)
+        );
+
+        if (!string.IsNullOrEmpty(task.DescriptionHtml))
+        {
+            _sanitizer.ValidateContentSize(
+                task.DescriptionJson,
+                task.DescriptionHtml,
+                "DescriptionJson/Html"
+            );
+            existing.DescriptionJson = task.DescriptionJson;
+            existing.DescriptionHtml = _sanitizer.SanitizeArticleHtml(task.DescriptionHtml);
+            existing.Description = null; // Clear plain text when using rich text
+            _logger.LogInformation(
+                "UpdateAsync - Saved DescriptionHtml: {DescriptionHtml}",
+                existing.DescriptionHtml ?? "(null)"
+            );
+        }
+        else if (!string.IsNullOrEmpty(task.Description))
+        {
+            var html = $"<p>{System.Net.WebUtility.HtmlEncode(task.Description)}</p>";
+            existing.DescriptionHtml = _sanitizer.SanitizeArticleHtml(html);
+            existing.DescriptionJson = null;
+            _logger.LogInformation(
+                "UpdateAsync - Converted Description to HTML: {DescriptionHtml}",
+                existing.DescriptionHtml ?? "(null)"
+            );
+        }
+        // If neither rich text nor plain description provided, keep existing values
+        // (don't log this as an error - it's valid to update other fields without description)
+
+        _context.Tasks.Update(existing);
         await _context.SaveChangesAsync();
 
-        return task;
+        return existing;
     }
 
-    public async System.Threading.Tasks.Task<Entities.Task> AssignTaskAsync(int taskId, int? assignedToUserId, int assigningUserId)
+    public async System.Threading.Tasks.Task<Entities.Task> AssignTaskAsync(
+        int taskId,
+        int? assignedToUserId,
+        int assigningUserId
+    )
     {
         var task = await GetByIdAsync(taskId);
         if (task == null)
@@ -93,8 +177,12 @@ public class TaskService : ITaskService
         _context.Tasks.Update(task);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Task {TaskId} assigned to user {AssignedToUserId} by {AssigningUserId}", 
-            taskId, assignedToUserId, assigningUserId);
+        _logger.LogInformation(
+            "Task {TaskId} assigned to user {AssignedToUserId} by {AssigningUserId}",
+            taskId,
+            assignedToUserId,
+            assigningUserId
+        );
 
         return task;
     }
@@ -109,7 +197,10 @@ public class TaskService : ITaskService
         }
     }
 
-    public async System.Threading.Tasks.Task<Entities.Task> CompleteTaskAsync(int taskId, int userId)
+    public async System.Threading.Tasks.Task<Entities.Task> CompleteTaskAsync(
+        int taskId,
+        int userId
+    )
     {
         var task = await GetByIdAsync(taskId);
         if (task == null)
@@ -128,9 +219,7 @@ public class TaskService : ITaskService
 
     public async System.Threading.Tasks.Task DeleteBulkAsync(List<int> taskIds)
     {
-        var tasks = await _context.Tasks
-            .Where(t => taskIds.Contains(t.TaskId))
-            .ToListAsync();
+        var tasks = await _context.Tasks.Where(t => taskIds.Contains(t.TaskId)).ToListAsync();
 
         _context.Tasks.RemoveRange(tasks);
         await _context.SaveChangesAsync();
@@ -138,9 +227,7 @@ public class TaskService : ITaskService
 
     public async System.Threading.Tasks.Task DeleteByFamilyAsync(int familyId)
     {
-        var tasks = await _context.Tasks
-            .Where(t => t.FamilyId == familyId)
-            .ToListAsync();
+        var tasks = await _context.Tasks.Where(t => t.FamilyId == familyId).ToListAsync();
 
         _context.Tasks.RemoveRange(tasks);
         await _context.SaveChangesAsync();

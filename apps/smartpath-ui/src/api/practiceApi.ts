@@ -88,10 +88,13 @@ export interface PracticeItem {
   id: number;
   lessonId: number;
   questionText: string;
+  expectedAnswer: string;
   points: number;
   difficulty: string;
   isActive: boolean;
   createdAt: string;
+  questionJson?: string;
+  questionHtml?: string;
 }
 
 export interface PracticeAttemptReview {
@@ -124,6 +127,8 @@ export interface CreatePracticeItemRequest {
   expectedAnswer: string;
   points: number;
   difficulty: string;
+  questionJson?: string | null;
+  questionHtml?: string | null;
 }
 
 export interface UpdatePracticeItemRequest {
@@ -132,6 +137,8 @@ export interface UpdatePracticeItemRequest {
   points: number;
   difficulty: string;
   isActive: boolean;
+  questionJson?: string | null;
+  questionHtml?: string | null;
 }
 
 export interface AttemptSummary {

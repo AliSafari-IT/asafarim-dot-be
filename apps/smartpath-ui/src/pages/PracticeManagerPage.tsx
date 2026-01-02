@@ -3,6 +3,8 @@ import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
 import practiceApi, { PracticeItem, CreatePracticeItemRequest, UpdatePracticeItemRequest } from '../api/practiceApi';
 import smartpathService from '../api/smartpathService';
+import { RichTextEditor } from '../components/RichTextEditor';
+import { toEditorJson, toApiJsonString, htmlToPlainText } from '../utils/richTextHelpers';
 import './PracticeManagerPage.css';
 
 export default function PracticeManagerPage() {
@@ -15,12 +17,21 @@ export default function PracticeManagerPage() {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<PracticeItem | null>(null);
-  const [formData, setFormData] = useState<CreatePracticeItemRequest>({
+  const [formData, setFormData] = useState<CreatePracticeItemRequest & {
+    questionJson?: string;
+    questionHtml?: string;
+    expectedAnswerJson?: string;
+    expectedAnswerHtml?: string;
+  }>({
     lessonId: 0,
     questionText: '',
     expectedAnswer: '',
     points: 10,
     difficulty: 'Medium',
+    questionJson: '',
+    questionHtml: '',
+    expectedAnswerJson: '',
+    expectedAnswerHtml: '',
   });
 
   useEffect(() => {
@@ -97,14 +108,19 @@ export default function PracticeManagerPage() {
   };
 
   const handleOpenModal = (item?: PracticeItem) => {
+    setError(null);
     if (item) {
       setEditingItem(item);
       setFormData({
         lessonId: item.lessonId,
         questionText: item.questionText,
-        expectedAnswer: '',
+        expectedAnswer: (item as any).expectedAnswer || '',
         points: item.points,
         difficulty: item.difficulty,
+        questionJson: (item as any).questionJson || '',
+        questionHtml: (item as any).questionHtml || '',
+        expectedAnswerJson: (item as any).expectedAnswerJson || '',
+        expectedAnswerHtml: (item as any).expectedAnswerHtml || '',
       });
     } else {
       setEditingItem(null);
@@ -114,29 +130,71 @@ export default function PracticeManagerPage() {
         expectedAnswer: '',
         points: 10,
         difficulty: 'Medium',
+        questionJson: '',
+        questionHtml: '',
+        expectedAnswerJson: '',
+        expectedAnswerHtml: '',
       });
     }
     setShowModal(true);
   };
 
   const handleSaveItem = async () => {
-    if (!formData.questionText.trim() || !formData.expectedAnswer.trim()) {
-      setError('Question and answer are required');
+    // Derive questionText from HTML if rich text was used, otherwise use plain text
+    let questionText = '';
+    if (formData.questionHtml && formData.questionHtml.trim()) {
+      questionText = htmlToPlainText(formData.questionHtml);
+    } else if (formData.questionText && formData.questionText.trim()) {
+      questionText = formData.questionText;
+    }
+
+    if (!questionText.trim()) {
+      setError('Question content is required');
+      return;
+    }
+
+    // Derive expectedAnswer from HTML if rich text was used, otherwise use plain text
+    let expectedAnswer = '';
+    if (formData.expectedAnswerHtml && formData.expectedAnswerHtml.trim()) {
+      expectedAnswer = htmlToPlainText(formData.expectedAnswerHtml);
+    } else if (formData.expectedAnswer && formData.expectedAnswer.trim()) {
+      expectedAnswer = formData.expectedAnswer;
+    }
+
+    if (!expectedAnswer.trim()) {
+      setError('Expected answer is required');
       return;
     }
 
     try {
       setError(null);
+      const payload: any = {
+        questionText,
+        expectedAnswer,
+        points: formData.points,
+        difficulty: formData.difficulty,
+        isActive: true,
+      };
+
+      // If rich text is provided for question, use it; otherwise use plain text
+      if (formData.questionHtml) {
+        payload.questionJson = formData.questionJson || null;
+        payload.questionHtml = formData.questionHtml;
+      }
+
+      // If rich text is provided for expected answer, use it; otherwise use plain text
+      if (formData.expectedAnswerHtml) {
+        payload.expectedAnswerJson = formData.expectedAnswerJson || null;
+        payload.expectedAnswerHtml = formData.expectedAnswerHtml;
+      }
+
       if (editingItem) {
-        await practiceApi.updateItem(editingItem.id, {
-          questionText: formData.questionText,
-          expectedAnswer: formData.expectedAnswer,
-          points: formData.points,
-          difficulty: formData.difficulty,
-          isActive: true,
-        });
+        await practiceApi.updateItem(editingItem.id, payload);
       } else {
-        await practiceApi.createItem(formData);
+        await practiceApi.createItem({
+          lessonId: formData.lessonId,
+          ...payload,
+        });
       }
       setShowModal(false);
       if (selectedLesson) {
@@ -278,19 +336,22 @@ export default function PracticeManagerPage() {
             <h2>{editingItem ? 'Edit Item' : 'Create Item'}</h2>
             <div className="form-group">
               <label>Question:</label>
-              <textarea
-                value={formData.questionText}
-                onChange={(e) => setFormData({ ...formData, questionText: e.target.value })}
+              <RichTextEditor
+                valueJson={toEditorJson(formData.questionJson)}
+                valueHtml={formData.questionHtml}
+                onChangeJson={(json) => setFormData(prev => ({ ...prev, questionJson: toApiJsonString(json) }))}
+                onChangeHtml={(html) => setFormData(prev => ({ ...prev, questionHtml: html }))}
                 placeholder="Enter question text"
                 data-testid="question-input"
               />
             </div>
             <div className="form-group">
               <label>Expected Answer:</label>
-              <input
-                type="text"
-                value={formData.expectedAnswer}
-                onChange={(e) => setFormData({ ...formData, expectedAnswer: e.target.value })}
+              <RichTextEditor
+                valueJson={toEditorJson(formData.expectedAnswerJson)}
+                valueHtml={formData.expectedAnswerHtml}
+                onChangeJson={(json) => setFormData(prev => ({ ...prev, expectedAnswerJson: toApiJsonString(json) }))}
+                onChangeHtml={(html) => setFormData(prev => ({ ...prev, expectedAnswerHtml: html }))}
                 placeholder="Enter expected answer"
                 data-testid="answer-input"
               />
@@ -319,11 +380,16 @@ export default function PracticeManagerPage() {
                 </select>
               </div>
             </div>
+            {error && (
+              <div className="error-banner">
+                <p>{error}</p>
+              </div>
+            )}
             <div className="modal-actions">
-              <button onClick={() => setShowModal(false)}>
+              <button type="button" onClick={() => setShowModal(false)}>
                 Cancel
               </button>
-              <button onClick={handleSaveItem} data-testid="save-item-btn">
+              <button type="button" onClick={handleSaveItem} data-testid="save-item-btn">
                 Save
               </button>
             </div>

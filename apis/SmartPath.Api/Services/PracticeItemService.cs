@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SmartPath.Api.Data;
+using SmartPath.Api.DTOs;
 using SmartPath.Api.Entities;
+using SmartPath.Api.Services.ContentSanitization;
 
 namespace SmartPath.Api.Services;
 
@@ -9,11 +11,13 @@ public class PracticeItemService : IPracticeItemService
 {
     private readonly SmartPathDbContext _context;
     private readonly ILogger<PracticeItemService> _logger;
+    private readonly IHtmlContentSanitizer _sanitizer;
 
-    public PracticeItemService(SmartPathDbContext context, ILogger<PracticeItemService> logger)
+    public PracticeItemService(SmartPathDbContext context, ILogger<PracticeItemService> logger, IHtmlContentSanitizer sanitizer)
     {
         _context = context;
         _logger = logger;
+        _sanitizer = sanitizer;
     }
 
     public async System.Threading.Tasks.Task<List<PracticeItemDto>> GetItemsByLessonAsync(
@@ -37,12 +41,43 @@ public class PracticeItemService : IPracticeItemService
         if (lesson == null)
             throw new InvalidOperationException("Lesson not found");
 
+        // Validate content size for question
+        _sanitizer.ValidateContentSize(dto.QuestionJson, dto.QuestionHtml, "QuestionJson/Html");
+        
+        // Validate content size for expected answer
+        if (!string.IsNullOrEmpty(dto.ExpectedAnswerJson) || !string.IsNullOrEmpty(dto.ExpectedAnswerHtml))
+        {
+            _sanitizer.ValidateContentSize(dto.ExpectedAnswerJson, dto.ExpectedAnswerHtml, "ExpectedAnswerJson/Html");
+        }
+
+        // Sanitize HTML if provided for question
+        var sanitizedQuestionHtml = !string.IsNullOrEmpty(dto.QuestionHtml)
+            ? _sanitizer.SanitizeArticleHtml(dto.QuestionHtml)
+            : null;
+
+        // Extract plain text from HTML for QuestionText (first 500 chars)
+        var questionText = dto.QuestionText;
+        if (!string.IsNullOrEmpty(sanitizedQuestionHtml))
+        {
+            var plainText = System.Text.RegularExpressions.Regex.Replace(sanitizedQuestionHtml, "<[^>]*>", "");
+            questionText = plainText.Length > 500 ? plainText.Substring(0, 500) : plainText;
+        }
+
+        // Sanitize HTML if provided for expected answer
+        var sanitizedExpectedAnswerHtml = !string.IsNullOrEmpty(dto.ExpectedAnswerHtml)
+            ? _sanitizer.SanitizeArticleHtml(dto.ExpectedAnswerHtml)
+            : null;
+
         var item = new PracticeItem
         {
             LessonId = dto.LessonId,
             CreatedByUserId = userId,
-            QuestionText = dto.QuestionText,
+            QuestionText = questionText,
+            QuestionJson = dto.QuestionJson,
+            QuestionHtml = sanitizedQuestionHtml,
             ExpectedAnswer = dto.ExpectedAnswer,
+            ExpectedAnswerJson = dto.ExpectedAnswerJson,
+            ExpectedAnswerHtml = sanitizedExpectedAnswerHtml,
             Points = dto.Points,
             Difficulty = dto.Difficulty,
             IsActive = true,
@@ -74,8 +109,39 @@ public class PracticeItemService : IPracticeItemService
         if (item == null)
             throw new InvalidOperationException("Practice item not found");
 
-        item.QuestionText = dto.QuestionText;
+        // Validate content size for question
+        _sanitizer.ValidateContentSize(dto.QuestionJson, dto.QuestionHtml, "QuestionJson/Html");
+        
+        // Validate content size for expected answer
+        if (!string.IsNullOrEmpty(dto.ExpectedAnswerJson) || !string.IsNullOrEmpty(dto.ExpectedAnswerHtml))
+        {
+            _sanitizer.ValidateContentSize(dto.ExpectedAnswerJson, dto.ExpectedAnswerHtml, "ExpectedAnswerJson/Html");
+        }
+
+        // Sanitize HTML if provided for question
+        var sanitizedQuestionHtml = !string.IsNullOrEmpty(dto.QuestionHtml)
+            ? _sanitizer.SanitizeArticleHtml(dto.QuestionHtml)
+            : null;
+
+        // Extract plain text from HTML for QuestionText (first 500 chars)
+        var questionText = dto.QuestionText;
+        if (!string.IsNullOrEmpty(sanitizedQuestionHtml))
+        {
+            var plainText = System.Text.RegularExpressions.Regex.Replace(sanitizedQuestionHtml, "<[^>]*>", "");
+            questionText = plainText.Length > 500 ? plainText.Substring(0, 500) : plainText;
+        }
+
+        // Sanitize HTML if provided for expected answer
+        var sanitizedExpectedAnswerHtml = !string.IsNullOrEmpty(dto.ExpectedAnswerHtml)
+            ? _sanitizer.SanitizeArticleHtml(dto.ExpectedAnswerHtml)
+            : null;
+
+        item.QuestionText = questionText;
+        item.QuestionJson = dto.QuestionJson;
+        item.QuestionHtml = sanitizedQuestionHtml;
         item.ExpectedAnswer = dto.ExpectedAnswer;
+        item.ExpectedAnswerJson = dto.ExpectedAnswerJson;
+        item.ExpectedAnswerHtml = sanitizedExpectedAnswerHtml;
         item.Points = dto.Points;
         item.Difficulty = dto.Difficulty;
         item.IsActive = dto.IsActive;
@@ -228,6 +294,8 @@ public class PracticeItemService : IPracticeItemService
             Id = item.PracticeItemId,
             LessonId = item.LessonId,
             QuestionText = item.QuestionText,
+            QuestionJson = item.QuestionJson,
+            QuestionHtml = item.QuestionHtml,
             Points = item.Points,
             Difficulty = item.Difficulty,
             IsActive = item.IsActive,

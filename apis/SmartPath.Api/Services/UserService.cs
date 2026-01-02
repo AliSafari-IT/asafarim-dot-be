@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SmartPath.Api.Data;
+using SmartPath.Api.DTOs;
 using SmartPath.Api.Entities;
 
 namespace SmartPath.Api.Services;
@@ -66,13 +67,4 @@ public class UserService : IUserService
     {
         return await _context.Users.Where(u => userIds.Contains(u.UserId)).ToListAsync();
     }
-}
-
-public class IdentityUserDto
-{
-    public string Id { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string? PreferredLanguage { get; set; }
 }

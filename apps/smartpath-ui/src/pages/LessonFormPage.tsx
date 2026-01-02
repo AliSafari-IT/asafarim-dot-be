@@ -3,12 +3,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import smartpathService from '../api/smartpathService';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
+import { RichTextEditor } from '../components/RichTextEditor';
+import { toEditorJson, toApiJsonString } from '../utils/richTextHelpers';
 import './FormPage.css';
 
 interface LessonForm {
     title: string;
-    description: string;
+    description?: string;
+    descriptionJson?: string;
+    descriptionHtml?: string;
     learningObjectives?: string;
+    learningObjectivesJson?: string;
+    learningObjectivesHtml?: string;
     estimatedMinutes?: number;
     orderIndex?: number;
 }
@@ -41,7 +47,11 @@ export default function LessonFormPage() {
             setForm({
                 title: lesson.title,
                 description: lesson.description || '',
+                descriptionJson: lesson.descriptionJson || '',
+                descriptionHtml: lesson.descriptionHtml || '',
                 learningObjectives: lesson.learningObjectives || '',
+                learningObjectivesJson: lesson.learningObjectivesJson || '',
+                learningObjectivesHtml: lesson.learningObjectivesHtml || '',
                 estimatedMinutes: lesson.estimatedMinutes || 30,
                 orderIndex: lesson.orderIndex || 0,
             });
@@ -67,18 +77,28 @@ export default function LessonFormPage() {
         setSaving(true);
         setError(null);
         try {
+            const payload = {
+                title: form.title,
+                estimatedMinutes: form.estimatedMinutes || 30,
+                orderIndex: form.orderIndex || 0,
+                descriptionJson: form.descriptionJson || null,
+                descriptionHtml: form.descriptionHtml || null,
+                learningObjectivesJson: form.learningObjectivesJson || null,
+                learningObjectivesHtml: form.learningObjectivesHtml || null,
+            };
+
             if (lessonId) {
-                await smartpathService.courses.updateLesson(Number(lessonId), form);
+                await smartpathService.courses.updateLesson(Number(lessonId), payload);
             } else {
                 await smartpathService.courses.createLesson({
                     chapterId: Number(chapterId),
-                    ...form,
+                    ...payload,
                 });
             }
             navigate(`/learning/${courseId}`);
         } catch (err) {
             console.error('Failed to save lesson:', err);
-            setError('Failed to save lesson');
+            setError('Failed to save lesson. Please try again.');
         } finally {
             setSaving(false);
         }
@@ -136,24 +156,24 @@ export default function LessonFormPage() {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="description">Description</label>
-                    <textarea
-                        id="description"
-                        value={form.description}
-                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    <label>Description</label>
+                    <RichTextEditor
+                        valueJson={toEditorJson(form.descriptionJson)}
+                        valueHtml={form.descriptionHtml}
+                        onChangeJson={(json) => setForm({ ...form, descriptionJson: toApiJsonString(json) })}
+                        onChangeHtml={(html) => setForm({ ...form, descriptionHtml: html })}
                         placeholder="Enter lesson description"
-                        rows={4}
                     />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="learningObjectives">Learning Objectives</label>
-                    <textarea
-                        id="learningObjectives"
-                        value={form.learningObjectives}
-                        onChange={(e) => setForm({ ...form, learningObjectives: e.target.value })}
+                    <label>Learning Objectives</label>
+                    <RichTextEditor
+                        valueJson={toEditorJson(form.learningObjectivesJson)}
+                        valueHtml={form.learningObjectivesHtml}
+                        onChangeJson={(json) => setForm({ ...form, learningObjectivesJson: toApiJsonString(json) })}
+                        onChangeHtml={(html) => setForm({ ...form, learningObjectivesHtml: html })}
                         placeholder="What will students learn in this lesson?"
-                        rows={3}
                     />
                 </div>
 

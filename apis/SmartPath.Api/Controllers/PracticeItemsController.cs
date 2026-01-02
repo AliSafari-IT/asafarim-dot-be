@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartPath.Api.DTOs;
 using SmartPath.Api.Services;
 
 namespace SmartPath.Api.Controllers;
