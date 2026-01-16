@@ -27,6 +27,7 @@ import EditUserPage from "./pages/EditUserPage";
 import { PrelaunchNoticeBanner } from "@asafarim/shared-ui-react";
 import AdminDashboard from "./pages/admin-area/AdminDashboard";
 import RoleCrudOperations from "./pages/admin-area/RoleCrudOperations";
+import { ConfirmEmail } from "./pages/ConfirmEmail";
 
 function App() {
   return (
@@ -69,6 +70,14 @@ function App() {
                 element={
                   <ProtectedRoute requireAuth={false}>
                     <SetupPassword />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/confirm-email"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <ConfirmEmail />
                   </ProtectedRoute>
                 }
               />

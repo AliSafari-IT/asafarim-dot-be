@@ -3,7 +3,7 @@ import AuthStatus from "../Auth/AuthStatus";
 import { ThemeToggle } from "@asafarim/react-themes";
 import type { NavbarProps, NavLinkItem } from "./types";
 import "./Navbar.css";
-import { LanguageSwitcher } from "../LanguageSwitcher";
+import { LanguageSwitcher } from "@asafarim/shared-i18n";
 
 const defaultRenderLink = (
   link: NavLinkItem,
@@ -102,60 +102,73 @@ export const Navbar = ({
 
   return (
     <nav className={`nav-root ${className}`} aria-label="Primary">
-        <div className="nav-row">
-          {/* Left: brand */}
-          {renderBrand({
-            logo: brand?.logo,
-            text: `${brand?.text} (DEMO)`,
-            href: brand?.href,
-          })}
+      <div className="nav-row">
+        {/* Left: brand */}
+        {renderBrand({
+          logo: brand?.logo,
+          text: `${brand?.text} (DEMO)`,
+          href: brand?.href,
+        })}
 
-          {/* Center: links (desktop only) */}
-          <div className="nav-center">
-            <Links />
+        {/* Center: links (desktop only) */}
+        <div className="nav-center">
+          <Links />
+        </div>
+
+        {/* Right: theme + hamburger */}
+        <div className="nav-right align-middle">
+          {/* Auth status in header (hidden on mobile when menu is open) */}
+          {auth && showAuthInHeader && (
+            <AuthStatus
+              isAuthenticated={auth.isAuthenticated}
+              user={auth.user}
+              loading={auth.loading}
+              labels={auth.labels}
+              onSignIn={auth.onSignIn}
+              onSignOut={auth.onSignOut}
+            />
+          )}
+
+          <div className={`theme-in-header ${open ? "is-hidden" : ""}`}>
+            <LanguageSwitcher
+              variant="icon-dropdown"
+              showEmoji={true}
+              isToggler={true}
+              showIcon={true}
+              languages={["en", "nl"]}
+              unstyled={false}
+              showLabelInIconDropdown={false}
+            />
+            <ThemeToggle className="navbar-theme-toggle" />
           </div>
 
-          {/* Right: theme + hamburger */}
-          <div className="nav-right align-middle">
-            {/* Auth status in header (hidden on mobile when menu is open) */}
-            {auth && showAuthInHeader && (
-              <AuthStatus
-                isAuthenticated={auth.isAuthenticated}
-                user={auth.user}
-                loading={auth.loading}
-                labels={auth.labels}
-                onSignIn={auth.onSignIn}
-                onSignOut={auth.onSignOut}
-              />
-            )}
-
-            <div className={`theme-in-header ${open ? "is-hidden" : ""}`}>
-              <LanguageSwitcher variant="toggle" />
-              <ThemeToggle className="navbar-theme-toggle" />
-            </div>
-
-            {/* Hamburger (mobile only) */}
-            <button
-              className="hamburger"
-              type="button"
-              aria-label="Toggle menu"
-              aria-expanded={open}
-              aria-controls="mobile-menu"
-              onClick={() => setOpen((v) => !v)}
-            >
-              <span className={`hamburger__bar ${open ? "x1" : ""}`} />
-              <span className={`hamburger__bar ${open ? "x2" : ""}`} />
-              <span className={`hamburger__bar ${open ? "x3" : ""}`} />
-            </button>
-          </div>
-        </div> 
+          {/* Hamburger (mobile only) */}
+          <button
+            className="hamburger"
+            type="button"
+            aria-label="Toggle menu"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            onClick={() => setOpen((v) => !v)}
+          >
+            <span className={`hamburger__bar ${open ? "x1" : ""}`} />
+            <span className={`hamburger__bar ${open ? "x2" : ""}`} />
+            <span className={`hamburger__bar ${open ? "x3" : ""}`} />
+          </button>
+        </div>
+      </div>
 
       {/* Mobile dropdown */}
       <div id="mobile-menu" className={`mobile-menu ${open ? "open" : ""}`}>
         <div className="mobile-inner">
           <Links vertical />
           <div className="theme-in-menu">
-            <LanguageSwitcher variant="creative" />
+            <LanguageSwitcher
+              variant="icon-dropdown"
+              languages={['en', 'nl']}
+              unstyled={false}
+              showLabelInIconDropdown={true}
+            />
             {auth && showAuthInMenu && (
               <AuthStatus
                 isAuthenticated={auth.isAuthenticated}

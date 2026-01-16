@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
-=======
->>>>>>> 2cbbfa3 (```)
-=======
-import { useNavigate } from "react-router-dom";
->>>>>>> 7d4431a (```)
 import { invoicesApi } from "../api/invoicesApi";
 import { FormErrorBoundary } from "@asafarim/shared-ui-react";
 import EmailPreviewModal from "../components/EmailPreviewModal";
@@ -14,28 +7,13 @@ import type { InvoiceResponseDto } from "../types";
 import "../styles/pages/invoices.css";
 
 export default function InvoicesPage() {
-<<<<<<< HEAD
-<<<<<<< HEAD
   const navigate = useNavigate();
-=======
->>>>>>> 2cbbfa3 (```)
-=======
-  const navigate = useNavigate();
->>>>>>> 7d4431a (```)
   const [invoices, setInvoices] = useState<InvoiceResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState<string | null>(null);
-<<<<<<< HEAD
-<<<<<<< HEAD
   const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-=======
->>>>>>> 2cbbfa3 (```)
-=======
-  const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
->>>>>>> 7d4431a (```)
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] =
@@ -70,15 +48,7 @@ export default function InvoicesPage() {
       setErrors({});
       setSuccessMessage(null);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
       await invoicesApi.send(selectedInvoice.id, subject, body);
-=======
-      await invoicesApi.send(selectedInvoice.id);
->>>>>>> 2cbbfa3 (```)
-=======
-      await invoicesApi.send(selectedInvoice.id, subject, body);
->>>>>>> 7d4431a (```)
 
       setSuccessMessage(
         `Invoice ${selectedInvoice.invoiceNumber} sent successfully!`
@@ -124,14 +94,7 @@ Freelance Toolkit`;
 
   const handleDownloadPdf = async (id: string, invoiceNumber: string) => {
     try {
-<<<<<<< HEAD
-<<<<<<< HEAD
       setDownloadingPdf(id);
-=======
->>>>>>> 2cbbfa3 (```)
-=======
-      setDownloadingPdf(id);
->>>>>>> 7d4431a (```)
       const blob = await invoicesApi.downloadPdf(id);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -143,10 +106,6 @@ Freelance Toolkit`;
       document.body.removeChild(a);
     } catch (error: any) {
       setErrors({ general: "Failed to download PDF" });
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 7d4431a (```)
     } finally {
       setDownloadingPdf(null);
     }
@@ -164,11 +123,6 @@ Freelance Toolkit`;
       setErrors({ general: "Failed to delete invoice" });
     } finally {
       setDeletingId(null);
-<<<<<<< HEAD
-=======
->>>>>>> 2cbbfa3 (```)
-=======
->>>>>>> 7d4431a (```)
     }
   };
 
@@ -265,10 +219,6 @@ Freelance Toolkit`;
                           </button>
                         )}
                         <button
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 7d4431a (```)
                           className="flt-invoices-btn flt-invoices-btn--view"
                           onClick={() =>
                             window.open(
@@ -286,17 +236,10 @@ Freelance Toolkit`;
                           Edit
                         </button>
                         <button
-<<<<<<< HEAD
-=======
->>>>>>> 2cbbfa3 (```)
-=======
->>>>>>> 7d4431a (```)
                           className="flt-invoices-btn flt-invoices-btn--download"
                           onClick={() =>
                             handleDownloadPdf(invoice.id, invoice.invoiceNumber)
                           }
-<<<<<<< HEAD
-<<<<<<< HEAD
                           disabled={downloadingPdf === invoice.id}
                         >
                           {downloadingPdf === invoice.id
@@ -309,24 +252,6 @@ Freelance Toolkit`;
                           disabled={deletingId === invoice.id}
                         >
                           {deletingId === invoice.id ? "Deleting..." : "Delete"}
-=======
-                        >
-                          PDF
->>>>>>> 2cbbfa3 (```)
-=======
-                          disabled={downloadingPdf === invoice.id}
-                        >
-                          {downloadingPdf === invoice.id
-                            ? "Downloading..."
-                            : "PDF"}
-                        </button>
-                        <button
-                          className="flt-invoices-btn flt-invoices-btn--delete"
-                          onClick={() => handleDelete(invoice)}
-                          disabled={deletingId === invoice.id}
-                        >
-                          {deletingId === invoice.id ? "Deleting..." : "Delete"}
->>>>>>> 7d4431a (```)
                         </button>
                       </div>
                     </td>

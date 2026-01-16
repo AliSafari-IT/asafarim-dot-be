@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Core.Api.Data;
 using Core.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Core.Api.Controllers;
 
@@ -17,7 +17,8 @@ public class UserConversationsController : ControllerBase
 
     public UserConversationsController(
         CoreDbContext context,
-        ILogger<UserConversationsController> logger)
+        ILogger<UserConversationsController> logger
+    )
     {
         _context = context;
         _logger = logger;
@@ -32,8 +33,8 @@ public class UserConversationsController : ControllerBase
             return Unauthorized(new { error = "User not authenticated" });
         }
 
-        var conversations = await _context.UserConversations
-            .Where(c => c.UserId == userId)
+        var conversations = await _context
+            .UserConversations.Where(c => c.UserId == Guid.Parse(userId))
             .OrderByDescending(c => c.CreatedAt)
             .ToListAsync();
 
@@ -41,7 +42,7 @@ public class UserConversationsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserConversation(int id)
+    public async Task<IActionResult> GetUserConversation(Guid id)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId))
@@ -49,12 +50,12 @@ public class UserConversationsController : ControllerBase
             return Unauthorized(new { error = "User not authenticated" });
         }
 
-        var conversation = await _context.UserConversations
-            .Include(c => c.Messages)
+        var conversation = await _context
+            .UserConversations.Include(c => c.Messages)
             .ThenInclude(m => m.Attachments)
             .Include(c => c.Messages)
             .ThenInclude(m => m.Links)
-            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == Guid.Parse(userId));
 
         if (conversation == null)
         {
@@ -65,7 +66,9 @@ public class UserConversationsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUserConversation([FromBody] UserConversationRequest request)
+    public async Task<IActionResult> CreateUserConversation(
+        [FromBody] UserConversationRequest request
+    )
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId))
@@ -80,12 +83,13 @@ public class UserConversationsController : ControllerBase
         }
 
         // Generate a reference number for the conversation
-        var referenceNumber = $"CONV-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+        var referenceNumber =
+            $"CONV-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
 
         var conversation = new UserConversation
         {
             ReferenceNumber = referenceNumber,
-            UserId = userId,
+            UserId = Guid.Parse(userId),
             UserEmail = userEmail,
             Status = "Open",
             Messages = new List<ConversationMessage>
@@ -96,25 +100,35 @@ public class UserConversationsController : ControllerBase
                     Message = request.Message,
                     IsFromUser = true,
                     CreatedAt = DateTime.UtcNow,
-                    Attachments = request.Attachments?.Select(a => new MessageAttachment
-                    {
-                        FileName = a.FileName,
-                        FileType = a.FileType,
-                        FileUrl = a.FileUrl
-                    }).ToList() ?? new List<MessageAttachment>(),
-                    Links = request.Links?.Select(l => new MessageLink
-                    {
-                        Url = l.Url,
-                        Description = l.Description
-                    }).ToList() ?? new List<MessageLink>()
-                }
-            }
+                    Attachments =
+                        request
+                            .Attachments?.Select(a => new MessageAttachment
+                            {
+                                FileName = a.FileName,
+                                FileType = a.FileType,
+                                FileUrl = a.FileUrl,
+                            })
+                            .ToList() ?? new List<MessageAttachment>(),
+                    Links =
+                        request
+                            .Links?.Select(l => new MessageLink
+                            {
+                                Url = l.Url,
+                                Description = l.Description,
+                            })
+                            .ToList() ?? new List<MessageLink>(),
+                },
+            },
         };
 
         _context.UserConversations.Add(conversation);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetUserConversation), new { id = conversation.Id }, conversation);
+        return CreatedAtAction(
+            nameof(GetUserConversation),
+            new { id = conversation.Id },
+            conversation
+        );
     }
 }
 

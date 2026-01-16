@@ -5,7 +5,7 @@ echo "Testing sign-out functionality..."
 
 # Test 1: Check if the identity service endpoint works
 echo "Test 1: Testing identity service endpoint..."
-curl -I http://localhost:3099/clear-cookies 2>/dev/null | head -3
+curl -I http://localhost:5177/clear-cookies 2>/dev/null | head -3
 
 # Test 2: Verify the updated useAuth.ts file has our changes
 echo "Test 2: Checking if signOut function is updated..."

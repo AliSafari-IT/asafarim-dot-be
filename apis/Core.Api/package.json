@@ -1,11 +1,12 @@
 {
   "name": "@asafarim/core-api",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "predev": "kill-port 5102",
     "dev": "dotnet watch run --project Core.Api.csproj",
+    "prestart": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-5102.ps1",
     "start": "dotnet run --project Core.Api.csproj",
     "build": "dotnet build Core.Api.csproj",
     "preapi": "kill-port 5102",

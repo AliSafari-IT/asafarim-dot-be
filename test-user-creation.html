@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test User Creation</title>
+</head>
+<body>
+    <h1>Test User Creation API</h1>
+    <form id="testForm">
+        <div>
+            <label>Email: <input type="email" id="email" value="test123@example.com" required></label>
+        </div>
+        <div>
+            <label>Username: <input type="text" id="username" value="testuser123"></label>
+        </div>
+        <button type="submit">Create User</button>
+    </form>
+    <pre id="result"></pre>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Creating user...';
+            
+            try {
+                const response = await fetch('http://identity.asafarim.local:5101/admin/users/with-null-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: email,
+                        userName: username,
+                        roles: ['user']
+                    })
+                });
+                
+                const text = await response.text();
+                
+                resultEl.textContent = `Status: ${response.status} ${response.statusText}\n\nResponse:\n${text}`;
+                
+                if (response.ok) {
+                    resultEl.style.color = 'green';
+                } else {
+                    resultEl.style.color = 'red';
+                }
+            } catch (error) {
+                resultEl.textContent = `Error: ${error.message}`;
+                resultEl.style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>

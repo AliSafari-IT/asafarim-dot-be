@@ -1,15 +1,11 @@
-using System.ComponentModel.DataAnnotations.Schema;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models.Resume;
 
-public class WorkAchievement
+public class WorkAchievement : BaseEntity
 {
-    public Guid Id { get; set; }
     public Guid WorkExperienceId { get; set; }
     public string Text { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
-    [NotMapped]
-    public DateTime? UpdatedAt { get; set; }
 
     // Navigation property
     public WorkExperience? WorkExperience { get; set; }

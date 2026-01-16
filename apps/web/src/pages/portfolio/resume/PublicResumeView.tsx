@@ -11,6 +11,7 @@ import {
 import {
   fetchPublicResumeBySlug,
   type PublicResumeDto,
+  type PublicSkillDto,
 } from "../../../services/resumeApi";
 import { LayoutSelector } from "../../admin/resume/layouts/LayoutSelector";
 import { type LayoutType } from "../../admin/resume/layouts/types";
@@ -244,7 +245,7 @@ const PublicResumeView = () => {
               <h2 className="section-title">{t('resume.sections.skills.title')}</h2>
               <div className="section-content">
                 <div className="skills-grid">
-                  {resume.skills.map((skill: any, index: number) => (
+                  {resume.skills.map((skill: PublicSkillDto, index: number) => (
                     <div key={index} className="skill-card">
                       <div className="skill-header">
                         <h3 className="skill-name">{skill.name}</h3>

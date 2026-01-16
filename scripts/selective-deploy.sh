@@ -23,7 +23,6 @@ PACKAGES_DIR="$REPO_DIR/packages"
 LIBS_DIR="$REPO_DIR/libs"
 declare -A PACKAGES=(
     ["shared-ui-react"]="$PACKAGES_DIR/shared-ui-react"
-    ["shared-i18n"]="$PACKAGES_DIR/shared-i18n"
     ["react-themes"]="$PACKAGES_DIR/react-themes"
     ["helpers"]="$PACKAGES_DIR/helpers"
     # ["design-tokens"]="$PACKAGES_DIR/design-tokens"
@@ -376,7 +375,7 @@ if [ ${#selected_frontends[@]} -gt 0 ]; then
     
     cd "$REPO_DIR"
     
-    # Build shared packages first: @asafarim/shared-ui-react, @asafarim/shared-i18n, @asafarim/react-themes, @asafarim/helpers
+    # Build shared packages first: @asafarim/shared-ui-react, @asafarim/react-themes, @asafarim/helpers
     print_info "Building shared packages..."
     pnpm rm:nm && pnpm i
     for pkg in "${!PACKAGES[@]}"; do

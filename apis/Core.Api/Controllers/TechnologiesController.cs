@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Api.Controllers.Dtos;
 using Core.Api.Data;
+using Core.Api.DTOs.Resume;
 using Core.Api.Models.Resume;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -138,7 +138,7 @@ public class TechnologiesController : ControllerBase
     }
 }
 
-// TechnologyDto is now in Core.Api.Controllers.Resume.ResumeDtos.cs
+// TechnologyDto is now in Core.Api.DTOs.Resume.ResumeDtos.cs
 
 public class CreateTechnologyRequest
 {

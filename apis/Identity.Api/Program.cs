@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using System.Text;
 using Identity.Api;
+using Identity.Api.Data;
 using Identity.Api.Extensions;
 using Identity.Api.Middleware;
+using Identity.Api.Models;
 using Identity.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;

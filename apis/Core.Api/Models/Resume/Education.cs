@@ -1,10 +1,9 @@
-using System;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models.Resume
 {
-    public class Education
+    public class Education : BaseEntity
     {
-        public Guid Id { get; set; }
         public Guid ResumeId { get; set; }
 
         public string Institution { get; set; } = string.Empty;
@@ -15,9 +14,6 @@ namespace Core.Api.Models.Resume
         public DateTime? EndDate { get; set; } // null if still studying
 
         public string Description { get; set; } = string.Empty;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public Resume? Resume { get; set; }
     }

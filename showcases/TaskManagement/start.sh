@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 # first rebuild share ui and i18n packages
 echo "Building shared packages..."
 pnpm --filter @asafarim/shared-ui-react run build || echo "⚠️ shared-ui-react build failed, continuing..."
-pnpm --filter @asafarim/shared-i18n run build || echo "⚠️ shared-i18n build failed, continuing..."
+# pnpm --filter @asafarim/shared-i18n run build || echo "⚠️ shared-i18n build failed, continuing..."
 
 # build all api projects: identity, core,ai, taskmanagement
 echo "Building API projects..."

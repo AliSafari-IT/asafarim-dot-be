@@ -11,7 +11,7 @@ export interface ThemeProviderProps {
 
 export const ThemeProvider= ({
   children,
-  defaultMode = 'system',
+  defaultMode = 'auto' as ThemeMode,
   storageKey = 'asafarim-theme',
 }: ThemeProviderProps) => {
   // Use the theme sync hook to keep theme in sync across subdomains
@@ -19,10 +19,8 @@ export const ThemeProvider= ({
 
   return (
     <BaseThemeProvider
-      config={{
-        defaultMode,
-        storageKey,
-      }}
+      defaultMode={defaultMode}
+      storageKey={storageKey}
     >
       {children}
     </BaseThemeProvider>

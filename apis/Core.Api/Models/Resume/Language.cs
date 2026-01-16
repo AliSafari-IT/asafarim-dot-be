@@ -1,3 +1,5 @@
+using Core.Api.Models.Common;
+
 namespace Core.Api.Models.Resume;
 
 public enum LanguageLevel
@@ -8,9 +10,8 @@ public enum LanguageLevel
     Native
 }
 
-public class Language
+public class Language : BaseEntity
 {
-    public Guid Id { get; set; }
     public Guid ResumeId { get; set; }
 
     public string Name { get; set; } = string.Empty;

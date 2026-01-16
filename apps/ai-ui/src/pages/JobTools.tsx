@@ -21,8 +21,8 @@ export default function JobTools() {
   const [loading, setLoading] = useState<LoadingState>("idle");
   const [error, setError] = useState<string | null>(null);
   
-  // Configure useAuth to use AI API proxy endpoints
-  const authApiBase = isProduction ? '/api/auth' : 'http://ai-api.asafarim.local:5103/auth';
+  // Configure useAuth to use Identity API
+  const authApiBase = isProduction ? 'https://identity.asafarim.be/auth' : 'http://identity.asafarim.local:5101/auth';
   const { isAuthenticated, loading: authLoading, signIn } = useAuth({
     authApiBase,
     meEndpoint: '/me',
@@ -204,7 +204,7 @@ export default function JobTools() {
               value={skills}
               onChange={(e) => setSkills(e.target.value)}
               placeholder="e.g. React, TypeScript, Node.js"
-              className="form-input"
+              className="ai-ui-form-input"
               disabled={isDisabled("scoring")}
             />
           </div>

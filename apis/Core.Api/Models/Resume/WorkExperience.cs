@@ -1,12 +1,12 @@
-using System;
 using System.Collections.Generic;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models.Resume;
 
-public class WorkExperience
+public class WorkExperience : BaseEntity
 {
-    public Guid Id { get; set; }
     public Guid ResumeId { get; set; }
+
     // Basic details
     public string JobTitle { get; set; } = string.Empty; // e.g. "Senior Full Stack Developer"
     public string CompanyName { get; set; } = string.Empty; // e.g. "Tech Company"
@@ -28,13 +28,12 @@ public class WorkExperience
     public bool Highlighted { get; set; }
 
     // Metadata
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
     public string? UserId { get; set; } // Who added this record
     public bool IsPublished { get; set; } = true;
 
     // Many-to-many with Technology
-    public ICollection<WorkExperienceTechnology> WorkExperienceTechnologies { get; set; } = new List<WorkExperienceTechnology>();
+    public ICollection<WorkExperienceTechnology> WorkExperienceTechnologies { get; set; } =
+        new List<WorkExperienceTechnology>();
 
     // Navigation property
     public Resume? Resume { get; set; }

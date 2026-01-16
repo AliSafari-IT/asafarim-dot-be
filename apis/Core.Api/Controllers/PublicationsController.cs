@@ -79,7 +79,7 @@ public class PublicationsController : ControllerBase
 
     // GET: api/publications/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<PublicationDto>> GetPublication(int id)
+    public async Task<ActionResult<PublicationDto>> GetPublication(Guid id)
     {
         _logger.LogInformation("Getting publication with id: {Id}", id);
 
@@ -176,7 +176,7 @@ public class PublicationsController : ControllerBase
 
             return CreatedAtAction(
                 nameof(GetPublication),
-                new { id = publication?.Id ?? 0 },
+                new { id = publication?.Id },
                 publication != null ? MapToDto(publication) : null
             );
         }
@@ -193,7 +193,7 @@ public class PublicationsController : ControllerBase
     // PUT: api/publications/5
     [HttpPut("{id}")]
     [Authorize] // Any authenticated user can update their own publications
-    public async Task<IActionResult> UpdatePublication(int id, PublicationRequest request)
+    public async Task<IActionResult> UpdatePublication(Guid id, PublicationRequest request)
     {
         _logger.LogInformation("Updating publication with id: {Id}", id);
 
@@ -296,7 +296,7 @@ public class PublicationsController : ControllerBase
     // DELETE: api/publications/5
     [HttpDelete("{id}")]
     [Authorize] // Any authenticated user can delete their own publications
-    public async Task<IActionResult> DeletePublication(int id)
+    public async Task<IActionResult> DeletePublication(Guid id)
     {
         _logger.LogInformation("Deleting publication with id: {Id}", id);
 

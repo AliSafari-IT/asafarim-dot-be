@@ -1,12 +1,14 @@
 using System;
 using System.Reflection;
+using Identity.Api.Data;
+using Identity.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]  // Changed from "[controller]" to "api/[controller]"
+    [Route("api/[controller]")] // Changed from "[controller]" to "api/[controller]"
     public class HealthController : ControllerBase
     {
         private static readonly string StartTime = DateTime.UtcNow.ToString("o");

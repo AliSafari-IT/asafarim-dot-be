@@ -1,12 +1,14 @@
+using Core.Api.Models.Common;
+
 namespace Core.Api.Models.Resume;
 
-public class ProjectTechnology
+public class ProjectTechnology : BaseEntity
 {
     public Guid ProjectId { get; set; }
-    
+
     public Guid TechnologyId { get; set; }
-    
-    public virtual Project? Project { get; set; }
-    
-    public virtual Technology? Technology { get; set; }
+
+    public Project? Project { get; set; }
+
+    public Technology? Technology { get; set; }
 }

@@ -18,10 +18,12 @@ public class PortfolioService : IPortfolioService
 
     public async Task<PublicPortfolioDto?> GetPublicPortfolioBySlugAsync(string publicSlug)
     {
-        var settings = await _context.PortfolioSettings
-            .FirstOrDefaultAsync(ps => ps.PublicSlug == publicSlug && ps.IsPublic);
+        var settings = await _context.PortfolioSettings.FirstOrDefaultAsync(ps =>
+            ps.PublicSlug == publicSlug && ps.IsPublic
+        );
 
-        if (settings == null) return null;
+        if (settings == null)
+            return null;
 
         return await BuildPublicPortfolioDtoAsync(settings.UserId);
     }
@@ -34,38 +36,39 @@ public class PortfolioService : IPortfolioService
     private async Task<PublicPortfolioDto?> BuildPublicPortfolioDtoAsync(Guid userId)
     {
         var userIdString = userId.ToString();
-        
-        var resume = await _context.Resumes
-            .Include(r => r.Contact)
+
+        var resume = await _context
+            .Resumes.Include(r => r.Contact)
             .Include(r => r.Projects)
-                .ThenInclude(p => p.ProjectTechnologies)
-                .ThenInclude(pt => pt.Technology)
+            .ThenInclude(p => p.ProjectTechnologies)
+            .ThenInclude(pt => pt.Technology)
             .Include(r => r.Projects)
-                .ThenInclude(p => p.ProjectImages)
+            .ThenInclude(p => p.ProjectImages)
             .Include(r => r.Projects)
-                .ThenInclude(p => p.ProjectPublications)
-                .ThenInclude(pp => pp.Publication)
+            .ThenInclude(p => p.ProjectPublications)
+            .ThenInclude(pp => pp.Publication)
             .Include(r => r.Projects)
-                .ThenInclude(p => p.ProjectWorkExperiences)
-                .ThenInclude(pw => pw.WorkExperience)
+            .ThenInclude(p => p.ProjectWorkExperiences)
+            .ThenInclude(pw => pw.WorkExperience)
             .Include(r => r.WorkExperiences)
             .Include(r => r.Skills)
             .FirstOrDefaultAsync(r => r.UserId == userIdString);
 
-        if (resume == null) return null;
+        if (resume == null)
+            return null;
 
-        var publications = await _context.Publications
-            .Where(p => p.UserId == userIdString)
+        var publications = await _context
+            .Publications.Where(p => p.UserId == userIdString)
             .ToListAsync();
 
         // Get all technologies used in projects
-        var projectTechIds = resume.Projects
-            .SelectMany(p => p.ProjectTechnologies.Select(pt => pt.TechnologyId))
+        var projectTechIds = resume
+            .Projects.SelectMany(p => p.ProjectTechnologies.Select(pt => pt.TechnologyId))
             .Distinct()
             .ToList();
-            
-        var technologies = await _context.Technologies
-            .Where(t => projectTechIds.Contains(t.Id))
+
+        var technologies = await _context
+            .Technologies.Where(t => projectTechIds.Contains(t.Id))
             .ToListAsync();
 
         var dto = new PublicPortfolioDto
@@ -79,11 +82,11 @@ public class PortfolioService : IPortfolioService
             GithubUrl = null, // Not in ContactInfo model
             LinkedInUrl = null, // Not in ContactInfo model
             PreferredLanguage = "en", // TODO: Get from AspNetUsers
-            LastUpdated = resume.UpdatedAt
+            LastUpdated = resume.UpdatedAt,
         };
 
-        var projects = resume.Projects
-            .OrderBy(p => p.DisplayOrder)
+        var projects = resume
+            .Projects.OrderBy(p => p.DisplayOrder)
             .Select(MapToProjectShowcaseDto)
             .ToList();
 
@@ -96,12 +99,12 @@ public class PortfolioService : IPortfolioService
                 Id = t.Id,
                 Name = t.Name,
                 Category = t.Category,
-                ProficiencyLevel = null // Not in Technology model
+                ProficiencyLevel = null,
             })
             .ToList();
 
-        dto.WorkExperiences = resume.WorkExperiences
-            .OrderByDescending(w => w.StartDate)
+        dto.WorkExperiences = resume
+            .WorkExperiences.OrderByDescending(w => w.StartDate)
             .Select(w => new WorkExperienceDto
             {
                 Id = w.Id,
@@ -110,7 +113,7 @@ public class PortfolioService : IPortfolioService
                 Location = w.Location,
                 StartDate = w.StartDate,
                 EndDate = w.EndDate,
-                Description = w.Description
+                Description = w.Description,
             })
             .ToList();
 
@@ -120,10 +123,10 @@ public class PortfolioService : IPortfolioService
             {
                 Id = p.Id,
                 Title = p.Title,
-                Authors = p.AuthorId, // Using AuthorId as Authors field
+                Authors = p.AuthorId,
                 Journal = p.JournalName,
                 PublishedDate = p.CreatedAt,
-                Url = p.Link
+                Url = p.Link,
             })
             .ToList();
 
@@ -145,40 +148,42 @@ public class PortfolioService : IPortfolioService
             EndDate = project.EndDate,
             IsFeatured = project.IsFeatured,
             DisplayOrder = project.DisplayOrder,
-            Technologies = project.ProjectTechnologies
-                .Select(pt => new TechnologyDto
+            Technologies = project
+                .ProjectTechnologies.Select(pt => new TechnologyDto
                 {
                     Id = pt.Technology.Id,
                     Name = pt.Technology.Name,
-                    Category = pt.Technology.Category
+                    Category = pt.Technology.Category,
                 })
                 .ToList(),
-            Images = project.ProjectImages
-                .OrderBy(i => i.DisplayOrder)
+            Images = project
+                .ProjectImages.OrderBy(i => i.DisplayOrder)
                 .Select(i => new ProjectImageDto
                 {
                     Id = i.Id,
                     ImageUrl = i.ImageUrl,
                     Caption = i.Caption,
                     DisplayOrder = i.DisplayOrder,
-                    IsPrimary = i.IsPrimary
+                    IsPrimary = i.IsPrimary,
                 })
                 .ToList(),
-            PublicationTitles = project.ProjectPublications
-                .Select(pp => pp.Publication.Title)
+            PublicationTitles = project
+                .ProjectPublications.Select(pp => pp.Publication.Title)
                 .ToList(),
-            RelatedWorkExperiences = project.ProjectWorkExperiences
-                .Select(pw => pw.WorkExperience.JobTitle)
-                .ToList()
+            RelatedWorkExperiences = project
+                .ProjectWorkExperiences.Select(pw => pw.WorkExperience.JobTitle)
+                .ToList(),
         };
     }
 
     public async Task<PortfolioSettingsDto?> GetPortfolioSettingsAsync(Guid userId)
     {
-        var settings = await _context.PortfolioSettings
-            .FirstOrDefaultAsync(ps => ps.UserId == userId);
+        var settings = await _context.PortfolioSettings.FirstOrDefaultAsync(ps =>
+            ps.UserId == userId
+        );
 
-        if (settings == null) return null;
+        if (settings == null)
+            return null;
 
         return new PortfolioSettingsDto
         {
@@ -187,14 +192,18 @@ public class PortfolioService : IPortfolioService
             IsPublic = settings.IsPublic,
             Theme = settings.Theme,
             SectionOrder = settings.GetSectionOrder().ToList(),
-            UpdatedAt = settings.UpdatedAt
+            UpdatedAt = settings.UpdatedAt,
         };
     }
 
-    public async Task<PortfolioSettingsDto> UpdatePortfolioSettingsAsync(Guid userId, UpdatePortfolioSettingsDto dto)
+    public async Task<PortfolioSettingsDto> UpdatePortfolioSettingsAsync(
+        Guid userId,
+        UpdatePortfolioSettingsDto dto
+    )
     {
-        var existing = await _context.PortfolioSettings
-            .FirstOrDefaultAsync(ps => ps.UserId == userId);
+        var existing = await _context.PortfolioSettings.FirstOrDefaultAsync(ps =>
+            ps.UserId == userId
+        );
 
         if (existing != null)
         {
@@ -216,7 +225,7 @@ public class PortfolioService : IPortfolioService
                 IsPublic = existing.IsPublic,
                 Theme = existing.Theme,
                 SectionOrder = dto.SectionOrder,
-                UpdatedAt = existing.UpdatedAt
+                UpdatedAt = existing.UpdatedAt,
             };
         }
 
@@ -228,9 +237,9 @@ public class PortfolioService : IPortfolioService
             IsPublic = dto.IsPublic,
             Theme = dto.Theme,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            UpdatedAt = DateTime.UtcNow,
         };
-        
+
         if (dto.SectionOrder != null)
         {
             settings.SetSectionOrder(dto.SectionOrder.ToArray());
@@ -246,11 +255,14 @@ public class PortfolioService : IPortfolioService
             IsPublic = settings.IsPublic,
             Theme = settings.Theme,
             SectionOrder = dto.SectionOrder,
-            UpdatedAt = settings.UpdatedAt
+            UpdatedAt = settings.UpdatedAt,
         };
     }
 
-    public async Task<bool> IsPublicSlugAvailableAsync(string publicSlug, Guid? excludeUserId = null)
+    public async Task<bool> IsPublicSlugAvailableAsync(
+        string publicSlug,
+        Guid? excludeUserId = null
+    )
     {
         var query = _context.PortfolioSettings.Where(ps => ps.PublicSlug == publicSlug);
 
@@ -265,8 +277,7 @@ public class PortfolioService : IPortfolioService
     public async Task<ProjectShowcaseDto> CreateProjectAsync(Guid userId, CreateProjectDto dto)
     {
         var userIdString = userId.ToString();
-        var resume = await _context.Resumes
-            .FirstOrDefaultAsync(r => r.UserId == userIdString);
+        var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.UserId == userIdString);
 
         if (resume == null)
         {
@@ -288,7 +299,7 @@ public class PortfolioService : IPortfolioService
             IsFeatured = dto.IsFeatured,
             DisplayOrder = dto.DisplayOrder,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            UpdatedAt = DateTime.UtcNow,
         };
 
         _context.Projects.Add(project);
@@ -296,73 +307,77 @@ public class PortfolioService : IPortfolioService
         // Add technology associations
         foreach (var techId in dto.TechnologyIds)
         {
-            _context.ProjectTechnologies.Add(new ProjectTechnology
-            {
-                ProjectId = project.Id,
-                TechnologyId = techId
-            });
+            _context.ProjectTechnologies.Add(
+                new ProjectTechnology { ProjectId = project.Id, TechnologyId = techId }
+            );
         }
 
         // Add publication associations
         foreach (var pubId in dto.PublicationIds)
         {
-            _context.ProjectPublications.Add(new ProjectPublication
-            {
-                ProjectId = project.Id,
-                PublicationId = pubId
-            });
+            _context.ProjectPublications.Add(
+                new ProjectPublication { ProjectId = project.Id, PublicationId = pubId }
+            );
         }
 
         // Add work experience associations
         foreach (var weId in dto.WorkExperienceIds)
         {
-            _context.ProjectWorkExperiences.Add(new ProjectWorkExperience
-            {
-                ProjectId = project.Id,
-                WorkExperienceId = weId
-            });
+            _context.ProjectWorkExperiences.Add(
+                new ProjectWorkExperience { ProjectId = project.Id, WorkExperienceId = weId }
+            );
         }
 
         // Add images
         foreach (var img in dto.Images)
         {
-            _context.ProjectImages.Add(new ProjectImage
-            {
-                Id = Guid.NewGuid(),
-                ProjectId = project.Id,
-                ImageUrl = img.ImageUrl,
-                Caption = img.Caption,
-                DisplayOrder = img.DisplayOrder,
-                IsPrimary = img.IsPrimary,
-                CreatedAt = DateTime.UtcNow
-            });
+            _context.ProjectImages.Add(
+                new ProjectImage
+                {
+                    Id = Guid.NewGuid(),
+                    ProjectId = project.Id,
+                    ImageUrl = img.ImageUrl,
+                    Caption = img.Caption,
+                    DisplayOrder = img.DisplayOrder,
+                    IsPrimary = img.IsPrimary,
+                    CreatedAt = DateTime.UtcNow,
+                }
+            );
         }
 
         await _context.SaveChangesAsync();
 
         // Reload with includes
-        var created = await _context.Projects
-            .Include(p => p.ProjectTechnologies).ThenInclude(pt => pt.Technology)
+        var created = await _context
+            .Projects.Include(p => p.ProjectTechnologies)
+            .ThenInclude(pt => pt.Technology)
             .Include(p => p.ProjectImages)
-            .Include(p => p.ProjectPublications).ThenInclude(pp => pp.Publication)
-            .Include(p => p.ProjectWorkExperiences).ThenInclude(pw => pw.WorkExperience)
+            .Include(p => p.ProjectPublications)
+            .ThenInclude(pp => pp.Publication)
+            .Include(p => p.ProjectWorkExperiences)
+            .ThenInclude(pw => pw.WorkExperience)
             .FirstAsync(p => p.Id == project.Id);
 
         return MapToProjectShowcaseDto(created);
     }
 
-    public async Task<ProjectShowcaseDto?> UpdateProjectAsync(Guid userId, Guid projectId, UpdateProjectDto dto)
+    public async Task<ProjectShowcaseDto?> UpdateProjectAsync(
+        Guid userId,
+        Guid projectId,
+        UpdateProjectDto dto
+    )
     {
         var userIdString = userId.ToString();
-        var project = await _context.Projects
-            .Include(p => p.Resume)
+        var project = await _context
+            .Projects.Include(p => p.Resume)
             .Include(p => p.ProjectTechnologies)
             .Include(p => p.ProjectPublications)
             .Include(p => p.ProjectWorkExperiences)
             .Include(p => p.ProjectImages)
             .FirstOrDefaultAsync(p => p.Id == projectId && p.Resume.UserId == userIdString);
 
-        if (project == null) return null;
+        if (project == null)
+            return null;
 
         // Update basic fields
         project.Name = dto.Name;
@@ -381,59 +396,58 @@ public class PortfolioService : IPortfolioService
         _context.ProjectTechnologies.RemoveRange(project.ProjectTechnologies);
         foreach (var techId in dto.TechnologyIds)
         {
-            _context.ProjectTechnologies.Add(new ProjectTechnology
-            {
-                ProjectId = project.Id,
-                TechnologyId = techId
-            });
+            _context.ProjectTechnologies.Add(
+                new ProjectTechnology { ProjectId = project.Id, TechnologyId = techId }
+            );
         }
 
         // Update publications
         _context.ProjectPublications.RemoveRange(project.ProjectPublications);
         foreach (var pubId in dto.PublicationIds)
         {
-            _context.ProjectPublications.Add(new ProjectPublication
-            {
-                ProjectId = project.Id,
-                PublicationId = pubId
-            });
+            _context.ProjectPublications.Add(
+                new ProjectPublication { ProjectId = project.Id, PublicationId = pubId }
+            );
         }
 
         // Update work experiences
         _context.ProjectWorkExperiences.RemoveRange(project.ProjectWorkExperiences);
         foreach (var weId in dto.WorkExperienceIds)
         {
-            _context.ProjectWorkExperiences.Add(new ProjectWorkExperience
-            {
-                ProjectId = project.Id,
-                WorkExperienceId = weId
-            });
+            _context.ProjectWorkExperiences.Add(
+                new ProjectWorkExperience { ProjectId = project.Id, WorkExperienceId = weId }
+            );
         }
 
         // Update images
         _context.ProjectImages.RemoveRange(project.ProjectImages);
         foreach (var img in dto.Images)
         {
-            _context.ProjectImages.Add(new ProjectImage
-            {
-                Id = Guid.NewGuid(),
-                ProjectId = project.Id,
-                ImageUrl = img.ImageUrl,
-                Caption = img.Caption,
-                DisplayOrder = img.DisplayOrder,
-                IsPrimary = img.IsPrimary,
-                CreatedAt = DateTime.UtcNow
-            });
+            _context.ProjectImages.Add(
+                new ProjectImage
+                {
+                    Id = Guid.NewGuid(),
+                    ProjectId = project.Id,
+                    ImageUrl = img.ImageUrl,
+                    Caption = img.Caption,
+                    DisplayOrder = img.DisplayOrder,
+                    IsPrimary = img.IsPrimary,
+                    CreatedAt = DateTime.UtcNow,
+                }
+            );
         }
 
         await _context.SaveChangesAsync();
 
         // Reload with includes
-        var updated = await _context.Projects
-            .Include(p => p.ProjectTechnologies).ThenInclude(pt => pt.Technology)
+        var updated = await _context
+            .Projects.Include(p => p.ProjectTechnologies)
+            .ThenInclude(pt => pt.Technology)
             .Include(p => p.ProjectImages)
-            .Include(p => p.ProjectPublications).ThenInclude(pp => pp.Publication)
-            .Include(p => p.ProjectWorkExperiences).ThenInclude(pw => pw.WorkExperience)
+            .Include(p => p.ProjectPublications)
+            .ThenInclude(pp => pp.Publication)
+            .Include(p => p.ProjectWorkExperiences)
+            .ThenInclude(pw => pw.WorkExperience)
             .FirstAsync(p => p.Id == project.Id);
 
         return MapToProjectShowcaseDto(updated);
@@ -442,11 +456,12 @@ public class PortfolioService : IPortfolioService
     public async Task<bool> DeleteProjectAsync(Guid userId, Guid projectId)
     {
         var userIdString = userId.ToString();
-        var project = await _context.Projects
-            .Include(p => p.Resume)
+        var project = await _context
+            .Projects.Include(p => p.Resume)
             .FirstOrDefaultAsync(p => p.Id == projectId && p.Resume.UserId == userIdString);
 
-        if (project == null) return false;
+        if (project == null)
+            return false;
 
         _context.Projects.Remove(project);
         await _context.SaveChangesAsync();
@@ -456,16 +471,19 @@ public class PortfolioService : IPortfolioService
     public async Task<List<ProjectShowcaseDto>> GetUserProjectsAsync(Guid userId)
     {
         var userIdString = userId.ToString();
-        var resume = await _context.Resumes
-            .FirstOrDefaultAsync(r => r.UserId == userIdString);
+        var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.UserId == userIdString);
 
-        if (resume == null) return new List<ProjectShowcaseDto>();
+        if (resume == null)
+            return new List<ProjectShowcaseDto>();
 
-        var projects = await _context.Projects
-            .Include(p => p.ProjectTechnologies).ThenInclude(pt => pt.Technology)
+        var projects = await _context
+            .Projects.Include(p => p.ProjectTechnologies)
+            .ThenInclude(pt => pt.Technology)
             .Include(p => p.ProjectImages)
-            .Include(p => p.ProjectPublications).ThenInclude(pp => pp.Publication)
-            .Include(p => p.ProjectWorkExperiences).ThenInclude(pw => pw.WorkExperience)
+            .Include(p => p.ProjectPublications)
+            .ThenInclude(pp => pp.Publication)
+            .Include(p => p.ProjectWorkExperiences)
+            .ThenInclude(pw => pw.WorkExperience)
             .Where(p => p.ResumeId == resume.Id)
             .OrderBy(p => p.DisplayOrder)
             .ToListAsync();
@@ -476,12 +494,15 @@ public class PortfolioService : IPortfolioService
     public async Task<ProjectShowcaseDto?> GetProjectByIdAsync(Guid userId, Guid projectId)
     {
         var userIdString = userId.ToString();
-        var project = await _context.Projects
-            .Include(p => p.Resume)
-            .Include(p => p.ProjectTechnologies).ThenInclude(pt => pt.Technology)
+        var project = await _context
+            .Projects.Include(p => p.Resume)
+            .Include(p => p.ProjectTechnologies)
+            .ThenInclude(pt => pt.Technology)
             .Include(p => p.ProjectImages)
-            .Include(p => p.ProjectPublications).ThenInclude(pp => pp.Publication)
-            .Include(p => p.ProjectWorkExperiences).ThenInclude(pw => pw.WorkExperience)
+            .Include(p => p.ProjectPublications)
+            .ThenInclude(pp => pp.Publication)
+            .Include(p => p.ProjectWorkExperiences)
+            .ThenInclude(pw => pw.WorkExperience)
             .FirstOrDefaultAsync(p => p.Id == projectId && p.Resume.UserId == userIdString);
 
         return project == null ? null : MapToProjectShowcaseDto(project);

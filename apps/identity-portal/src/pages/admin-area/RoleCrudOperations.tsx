@@ -4,6 +4,7 @@ import { useToast } from '@asafarim/toast';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import './admin-dashboard.css';
 import { ButtonComponent } from '@asafarim/shared-ui-react';
+import { useTranslation } from '@asafarim/shared-i18n';
 
 interface Role {
   id: string;
@@ -16,6 +17,7 @@ export default function RoleCrudOperations() {
   const [newRoleName, setNewRoleName] = useState('');
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const { t } = useTranslation("adminArea");
 
   const fetchRoles = async () => {
   try {
@@ -153,14 +155,14 @@ export default function RoleCrudOperations() {
   return (
     <div data-testid="role-crud-operations-page" className="admin-container">
       <div className="admin-header">
-        <h1>Role Management</h1>
-        <p className="admin-subtitle">Manage user roles and permissions</p>
+        <h1>{t("roles.create.label")}</h1>
+        <p className="admin-subtitle">{t("roles.create.description")}</p>
       </div>
 
       <div className="admin-form-container">
         <div className="form-group">
           <label htmlFor="newRole" className="form-label">
-            Create New Role
+            {t("roles.create.label")}
           </label>
           <div className="flex gap-2">
             <input
@@ -178,26 +180,26 @@ export default function RoleCrudOperations() {
               disabled={loading || !newRoleName.trim()}
             >
               <Plus size={16} className="mr-2" />
-              Add Role
+              {t("roles.create.button")}
             </button>
           </div>
         </div>
 
         <div className="mt-8">
-          <h2 className="text-lg font-semibold mb-4">Existing Roles</h2>
+          <h2 className="text-lg font-semibold mb-4">{t("roles.existing.title")}</h2>
           {loading && !roles.length ? (
             <div className="loading-state">
-              <span>Loading roles...</span>
+              <span>{t("roles.existing.loading")}</span>
             </div>
           ) : roles.length === 0 ? (
-            <div className="empty-state">No roles found</div>
+            <div className="empty-state">{t("roles.existing.empty")}</div>
           ) : (
             <div className="table-container">
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Role Name</th>
-                    <th className="w-32">Actions</th>
+                    <th>{t("roles.table.headers.name")}</th>
+                    <th className="w-32">{t("roles.table.headers.actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -225,7 +227,7 @@ export default function RoleCrudOperations() {
                                 onClick={handleUpdateRole}
                                 disabled={loading}
                                 variant="success"
-                                title="Save"
+                                title={t("roles.actions.save")}
                               >
                                 <Save size={16} />
                               </ButtonComponent>
@@ -233,7 +235,7 @@ export default function RoleCrudOperations() {
                                 onClick={() => setEditingRole(null)}
                                 disabled={loading}
                                 variant="danger"
-                                title="Cancel"
+                                title={t("roles.actions.cancel")}
                               >
                                 <X size={16} />
                               </ButtonComponent>
@@ -244,7 +246,7 @@ export default function RoleCrudOperations() {
                                 className="btn-icon"
                                 onClick={() => setEditingRole({ ...role })}
                                 disabled={!!editingRole}
-                                title="Edit"
+                                title={t("roles.actions.edit")}
                               >
                                 <Edit size={16} />
                               </button>
@@ -252,7 +254,7 @@ export default function RoleCrudOperations() {
                                 className="btn-icon danger"
                                 onClick={() => handleDeleteRole(role.id)}
                                 disabled={!!editingRole}
-                                title="Delete"
+                                title={t("roles.actions.delete")}
                               >
                                 <Trash2 size={16} />
                               </button>

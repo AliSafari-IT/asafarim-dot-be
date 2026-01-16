@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models;
 
-public class Contact
+public class Contact : BaseEntity
 {
-    public int Id { get; set; }
-
     public string? UserId { get; set; }
 
     [Required, EmailAddress, MaxLength(200)]
@@ -16,8 +15,6 @@ public class Contact
 
     [Required, MaxLength(4000)]
     public string Message { get; set; } = string.Empty;
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public bool EmailSent { get; set; }
 

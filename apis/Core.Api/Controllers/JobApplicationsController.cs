@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Core.Api.Data;
 using Core.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 namespace Core.Api.Controllers;
 
@@ -11,11 +11,11 @@ namespace Core.Api.Controllers;
 [Route("api/[controller]")]
 public class JobApplicationsController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly CoreDbContext _context;
     private readonly ILogger<JobApplicationsController> _logger;
 
     public JobApplicationsController(
-        AppDbContext context,
+        CoreDbContext context,
         ILogger<JobApplicationsController> logger
     )
     {
@@ -27,7 +27,14 @@ public class JobApplicationsController : ControllerBase
     [HttpGet("health")]
     public IActionResult HealthCheck()
     {
-        return Ok(new { status = "ok" , version = "1.0.0" , timestamp = DateTime.Now });
+        return Ok(
+            new
+            {
+                status = "ok",
+                version = "1.0.0",
+                timestamp = DateTime.Now,
+            }
+        );
     }
 
     [HttpGet("analytics")]
@@ -41,8 +48,7 @@ public class JobApplicationsController : ControllerBase
         }
 
         var applications = await _context
-            .JobApplications
-            .Where(j => j.UserId == userId)
+            .JobApplications.Where(j => j.UserId == userId)
             .OrderByDescending(j => j.AppliedDate)
             .Select(j => new JobApplicationDto
             {
@@ -59,7 +65,7 @@ public class JobApplicationsController : ControllerBase
 
         return Ok(applications);
     }
-    
+
     [HttpGet]
     [Authorize]
     public async Task<ActionResult<IEnumerable<JobApplicationDto>>> GetAll()
@@ -71,8 +77,7 @@ public class JobApplicationsController : ControllerBase
         }
 
         var applications = await _context
-            .JobApplications
-            .Where(j => j.UserId == userId)
+            .JobApplications.Where(j => j.UserId == userId)
             .OrderByDescending(j => j.AppliedDate)
             .Select(j => new JobApplicationDto
             {
@@ -108,8 +113,8 @@ public class JobApplicationsController : ControllerBase
             HttpContext.Request.Path
         );
 
-        var application = await _context.JobApplications
-            .Where(j => j.Id == id && j.UserId == userId)
+        var application = await _context
+            .JobApplications.Where(j => j.Id == id && j.UserId == userId)
             .FirstOrDefaultAsync();
 
         if (application == null)
@@ -214,8 +219,8 @@ public class JobApplicationsController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var application = await _context.JobApplications
-            .Where(j => j.Id == id && j.UserId == userId)
+        var application = await _context
+            .JobApplications.Where(j => j.Id == id && j.UserId == userId)
             .FirstOrDefaultAsync();
 
         if (application == null)
@@ -263,8 +268,8 @@ public class JobApplicationsController : ControllerBase
             return Unauthorized(new { error = "User not authenticated" });
         }
 
-        var application = await _context.JobApplications
-            .Where(j => j.Id == id && j.UserId == userId)
+        var application = await _context
+            .JobApplications.Where(j => j.Id == id && j.UserId == userId)
             .FirstOrDefaultAsync();
 
         if (application == null)

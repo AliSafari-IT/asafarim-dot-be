@@ -4,12 +4,15 @@
     "description": "SmartPath API - Family Learning & Homework Tracker Backend",
     "scripts": {
         "prestart": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-5109.ps1",
-        "start": "npx kill-port 5109 && dotnet watch run --project SmartPath.Api.csproj",
+        "start": "dotnet watch run --project SmartPath.Api.csproj",
         "build": "dotnet build",
         "watch": "dotnet watch run",
-        "api": "dotnet run --project SmartPath.Api.csproj",
+        "api": "npx kill-port 5109 && dotnet run --project SmartPath.Api.csproj",
         "migrate": "dotnet ef database update",
         "migration:add": "dotnet ef migrations add"
+    },
+    "devDependencies": {
+        "kill-port": "2.0.1"
     },
     "keywords": [
         "education",

@@ -34,7 +34,7 @@ public class ProjectInquiriesController : ControllerBase
         }
 
         var inquiries = await _context
-            .ProjectInquiries.Where(p => p.UserId == userId)
+            .ProjectInquiries.Where(p => p.UserId == Guid.Parse(userId))
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
@@ -42,7 +42,7 @@ public class ProjectInquiriesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetProjectInquiry(int id)
+    public async Task<IActionResult> GetProjectInquiry(Guid id)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId))
@@ -52,7 +52,7 @@ public class ProjectInquiriesController : ControllerBase
 
         var inquiry = await _context
             .ProjectInquiries.Include(p => p.Messages)
-            .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+            .FirstOrDefaultAsync(p => p.Id == id && p.UserId == Guid.Parse(userId));
 
         if (inquiry == null)
         {
@@ -81,7 +81,7 @@ public class ProjectInquiriesController : ControllerBase
 
         var inquiry = new ProjectInquiry
         {
-            UserId = userId,
+            UserId = Guid.Parse(userId),
             UserEmail = userEmail,
             UserName = userName,
             ProjectType = request.ProjectType,
@@ -109,7 +109,7 @@ public class ProjectInquiriesController : ControllerBase
 
     [HttpPost("{id}/messages")]
     public async Task<IActionResult> AddMessage(
-        int id,
+        Guid id,
         [FromBody] ProjectInquiryMessageRequest request
     )
     {
@@ -120,7 +120,7 @@ public class ProjectInquiriesController : ControllerBase
         }
 
         var inquiry = await _context.ProjectInquiries.FirstOrDefaultAsync(p =>
-            p.Id == id && p.UserId == userId
+            p.Id == id && p.UserId == Guid.Parse(userId)
         );
 
         if (inquiry == null)

@@ -5,6 +5,8 @@ import { useAuth } from '../hooks/useAuth';
 import { Arrow, ButtonComponent as Button } from "@asafarim/shared-ui-react";
 import { useFormValidation, registerSchema, getPasswordStrength } from "@asafarim/shared-validation";
 import type { RegisterInput } from "@asafarim/shared-validation";
+import { RegistrationSuccessModal } from './RegistrationSuccessModal';
+import { useToast  } from '@asafarim/toast';
 import "./auth-layout.css";
 import "./password-strength.css";
 
@@ -60,11 +62,15 @@ export const RegisterForm = () => {
   const { errors, validate, validateField, clearFieldError } = useFormValidation(registerSchema);
   const [formData, setFormData] = useState<RegisterInput>({
     email: '',
+    userName: '',
     firstName: '',
     lastName: '',
     password: '',
     confirmPassword: ''
   });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
+  const toast = useToast();
 
   // Password strength indicator
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, feedback: [] as string[] });
@@ -99,82 +105,44 @@ export const RegisterForm = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    if (!validate(formData)) {
+    // Transform empty userName to undefined before validation
+    const submitData = {
+      ...formData,
+      userName: formData.userName || undefined
+    };
+    
+    if (!validate(submitData)) {
       return;
     }
     
     try {
-      const success = await register(formData);
+      const success = await register(submitData);
       if (success) {
-        // Show success notification
-        console.log('✅ Registration successful! Redirecting...');
-        
-        // Set flag to prevent Register page's useEffect from also redirecting
-        sessionStorage.setItem('registration_just_completed', 'true');
-        console.log('✅ Set registration_just_completed flag in sessionStorage');
-        
-        // Get returnUrl from query params
-        let returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-        console.log('🔄 Original returnUrl:', returnUrl);
-        
-        // Prevent infinite loop: if returnUrl points to register page, use dashboard instead
-        const isReturnUrlRegisterPage = returnUrl && (
-          returnUrl === '/register' || 
-          returnUrl.endsWith('/register') ||
-          returnUrl.includes('/register?') ||
-          returnUrl.includes('/register#')
-        );
-        
-        if (isReturnUrlRegisterPage) {
-          console.log('⚠️ returnUrl points to register page, redirecting to dashboard instead');
-          returnUrl = null; // Will use default '/dashboard'
-        }
-        
-        // Get the target URL
-        const targetPath = returnUrl || '/dashboard';
-        
-        // Check if we need to perform a cross-domain redirect
-        const isCrossDomainRedirect = returnUrl && (
-          returnUrl.startsWith('http://') || 
-          returnUrl.startsWith('https://') || 
-          returnUrl.includes('.asafarim.be') ||
-          returnUrl.includes('.asafarim.local')
-        );
-        
-        if (returnUrl && isCrossDomainRedirect) {
-          // For cross-domain redirects, we need to ensure cookies are fully established
-          const targetUrl = returnUrl.startsWith('http') 
-            ? returnUrl 
-            : `https://${returnUrl}`;
-            
-          console.log('🌐 Performing cross-domain redirect to:', targetUrl);
-          
-          // Add a timestamp to prevent caching issues
-          const separator = targetUrl.includes('?') ? '&' : '?';
-          const finalUrl = `${targetUrl}${separator}_t=${Date.now()}`;
-          
-          // Use window.location for cross-domain redirects
-          window.location.href = finalUrl;
-        } else {
-          // Internal navigation - use window.location to ensure it actually happens
-          console.log('🏠 Redirecting to internal path:', targetPath);
-          
-          // Force a small delay to ensure cookies are readable by the browser
-          setTimeout(() => {
-            // Use replace() to avoid back button issues
-            window.location.replace(targetPath);
-          }, 500);
-        }
+        // Show success modal instead of redirecting
+        setRegisteredEmail(formData.email);
+        setShowSuccessModal(true);
       }
     } catch {
       // Error is handled by the auth context
     }
   };
 
+  const handleResendSuccess = () => {
+    toast.success('Confirmation email sent! Please check your inbox.');
+  };
+
   const errorInfo = getErrorMessage(error);
 
   return (
-    <form className="auth-form" data-testid="register-form" onSubmit={handleSubmit}>
+    <>
+      {showSuccessModal && (
+        <RegistrationSuccessModal
+          email={registeredEmail}
+          onClose={() => setShowSuccessModal(false)}
+          onResendSuccess={handleResendSuccess}
+        />
+      )}
+      <form className="auth-form" data-testid="register-form" onSubmit={handleSubmit}>
       {errorInfo && (
         <div className="message message-error">
           <div className="message-header">
@@ -234,6 +202,19 @@ export const RegisterForm = () => {
             onChange={handleChange}
           />
         </div>
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="userName" className="form-label">Username (Optional)</label>
+        <input
+          type="text"
+          id="userName"
+          name="userName"
+          className="form-input"
+          placeholder="Leave empty to use email"
+          value={formData.userName || ''}
+          onChange={handleChange}
+        />
       </div>
       
       <div className="form-group">
@@ -316,6 +297,7 @@ export const RegisterForm = () => {
         </p>
       </div>
     </form>
+    </>
   );
 };
 

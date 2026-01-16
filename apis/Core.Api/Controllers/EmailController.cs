@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Core.Api.Data;
+using Core.Api.DTOs;
 using Core.Api.Models;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -145,13 +146,14 @@ public class EmailController : ControllerBase
 
             // Get user ID from the token (if authenticated)
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int? contactId = null;
+            Guid? contactId = null;
 
             // Store the contact in the database only if user is authenticated
             if (!string.IsNullOrEmpty(userId))
             {
                 var contact = new Contact
                 {
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Email = request.Email,
                     Name = request.Name,
@@ -159,12 +161,14 @@ public class EmailController : ControllerBase
                     Message = request.Message,
                     EmailSent = true,
                     AttachmentPath =
-                        request.Attachments?.Any() == true
+                        request.Attachments?.Count > 0
                             ? string.Join(", ", request.Attachments.Select(a => a.FileName))
                             : null,
                     ReferenceNumber = request.ReferenceNumber,
                     ReferingToConversation = request.ReferingToConversation,
-                    Links = request.Links?.Any() == true ? string.Join(", ", request.Links) : null,
+                    Links = request.Links?.Count > 0 ? string.Join(", ", request.Links) : null,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
                 };
 
                 _context.Contacts.Add(contact);
@@ -178,7 +182,7 @@ public class EmailController : ControllerBase
                     success = true,
                     message = "Email sent successfully",
                     contactId = contactId,
-                    isAuthenticated = !string.IsNullOrEmpty(userId)
+                    isAuthenticated = !string.IsNullOrEmpty(userId),
                 }
             );
         }

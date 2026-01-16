@@ -144,6 +144,10 @@ export const Dashboard = () => {
             <Button onClick={() => openInNewTab(KIDCODE_URL)} variant="success">
               KidCode Studio
             </Button>
+            {/* SmartPath UI */}
+            <Button onClick={() => openInNewTab("http://smartpath.asafarim.local:5195")} variant="secondary">
+              SmartPath UI
+            </Button>
           </div>
         </section>
       </main>

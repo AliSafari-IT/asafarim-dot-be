@@ -13,15 +13,7 @@ import "./index.css";
 import CalendarPage from "./pages/CalendarPage";
 
 import InvoicesPage from "./pages/InvoicesPage";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import InvoiceEditorPage from "./pages/InvoiceEditorPage";
-=======
-const CalendarPage = () => <div>Calendar Page (Coming Soon)</div>;
->>>>>>> 2cbbfa3 (```)
-=======
-import InvoiceEditorPage from "./pages/InvoiceEditorPage";
->>>>>>> 7d4431a (```)
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

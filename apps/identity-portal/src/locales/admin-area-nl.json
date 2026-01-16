@@ -1,0 +1,57 @@
+{
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "description": "Beheer gebruikers, rollen en systeeminstellingen",
+    "user-management": {
+      "title": "Gebruikersbeheer",
+      "description": "Bekijk en beheer gebruikersaccounts, rechten en profielen"
+    },
+    "role-management": {
+      "title": "Rolbeheer",
+      "description": "Configureer gebruikersrollen en toegangsrechten"
+    },
+    "actions": {
+      "open": "Openen"
+    }
+  },
+  "roles": {
+    "title": "Rolbeheer",
+    "subtitle": "Beheer gebruikersrollen en machtigingen",
+    "create": {
+      "label": "Nieuwe rol aanmaken",
+      "description": "Voeg een nieuwe rol toe met specifieke rechten",
+      "placeholder": "Voer rolename in",
+      "button": "Rol toevoegen"
+    },
+    "existing": {
+      "title": "Bestaande rollen",
+      "loading": "Rollen laden...",
+      "empty": "Geen rollen gevonden"
+    },
+    "table": {
+      "headers": {
+        "name": "Rolnaam",
+        "actions": "Acties"
+      }
+    },
+    "actions": {
+      "save": "Opslaan",
+      "cancel": "Annuleren",
+      "edit": "Bewerken",
+      "delete": "Verwijderen"
+    },
+    "validation": {
+      "required": "Rolnaam is verplicht"
+    },
+    "messages": {
+      "create-success": "Rol succesvol aangemaakt",
+      "update-success": "Rol succesvol bijgewerkt",
+      "delete-success": "Rol succesvol verwijderd",
+      "delete-confirm": "Weet u zeker dat u deze rol wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "create-error": "Rol aanmaken mislukt",
+      "update-error": "Rol bijwerken mislukt",
+      "delete-error": "Rol verwijderen mislukt",
+      "fetch-error": "Rollen laden mislukt"
+    }
+  }
+}

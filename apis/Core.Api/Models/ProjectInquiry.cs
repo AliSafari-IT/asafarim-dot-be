@@ -1,54 +1,45 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models
 {
-    public class ProjectInquiry
+    public class ProjectInquiry : BaseEntity
     {
-        public int Id { get; set; }
+        [Required]
+        public Guid UserId { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public string UserEmail { get; set; } = string.Empty;
 
         [Required]
-        public string UserEmail { get; set; }
+        public string UserName { get; set; } = string.Empty;
 
         [Required]
-        public string UserName { get; set; }
+        public string ProjectType { get; set; } = string.Empty;
 
         [Required]
-        public string ProjectType { get; set; }
-
-        [Required]
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         public string Status { get; set; } = "New"; // New, InDiscussion, Accepted, Declined
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? UpdatedAt { get; set; }
 
         // For tracking conversation thread
         public List<ProjectInquiryMessage> Messages { get; set; } = new();
     }
 
-    public class ProjectInquiryMessage
+    public class ProjectInquiryMessage : BaseEntity
     {
-        public int Id { get; set; }
+        [Required]
+        public Guid ProjectInquiryId { get; set; }
 
         [Required]
-        public int ProjectInquiryId { get; set; }
+        public string SenderId { get; set; } = string.Empty;
 
         [Required]
-        public string SenderId { get; set; }
+        public string SenderName { get; set; } = string.Empty;
 
         [Required]
-        public string SenderName { get; set; }
-
-        [Required]
-        public string Message { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string Message { get; set; } = string.Empty;
 
         public bool IsFromClient { get; set; }
     }

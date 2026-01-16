@@ -1,34 +1,28 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models
 {
-    public class UserConversation
+    public class UserConversation : BaseEntity
     {
-        public int Id { get; set; }
+        [Required]
+        public Guid UserId { get; set; }
 
         [Required]
-        public string ReferenceNumber { get; set; } // Format: CONV-YYYYMMDD-XXXX
-
-        [Required]
-        public string UserId { get; set; }
-
-        [Required]
-        public string UserEmail { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string UserEmail { get; set; } = string.Empty;
 
         public string Status { get; set; } = "Open"; // Open, Replied, Closed
+
+        public string ReferenceNumber { get; set; } = string.Empty;
 
         public List<ConversationMessage> Messages { get; set; } = new();
     }
 
-    public class ConversationMessage
+    public class ConversationMessage : BaseEntity
     {
-        public int Id { get; set; }
-
         [Required]
-        public int ConversationId { get; set; }
+        public Guid ConversationId { get; set; }
 
         public string? ReferencedConversationNumber { get; set; } // Optional reference to another conversation
 
@@ -42,17 +36,13 @@ namespace Core.Api.Models
 
         public List<MessageLink> Links { get; set; } = new();
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
         public bool IsFromUser { get; set; } = true;
     }
 
-    public class MessageAttachment
+    public class MessageAttachment : BaseEntity
     {
-        public int Id { get; set; }
-
         [Required]
-        public int MessageId { get; set; }
+        public Guid MessageId { get; set; }
 
         [Required]
         public string FileName { get; set; }
@@ -64,12 +54,10 @@ namespace Core.Api.Models
         public string FileUrl { get; set; }
     }
 
-    public class MessageLink
+    public class MessageLink : BaseEntity
     {
-        public int Id { get; set; }
-
         [Required]
-        public int MessageId { get; set; }
+        public Guid MessageId { get; set; }
 
         [Required]
         public string Url { get; set; }

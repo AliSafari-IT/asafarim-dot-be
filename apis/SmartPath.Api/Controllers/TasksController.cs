@@ -92,6 +92,8 @@ public class TasksController : ControllerBase
             FamilyId = request.FamilyId,
             Title = request.Title,
             Description = request.Description,
+            DescriptionJson = request.DescriptionJson,
+            DescriptionHtml = request.DescriptionHtml,
             CreatedByUserId = userId,
             AssignedToUserId = request.AssignedToUserId ?? userId,
             Category = request.Category,

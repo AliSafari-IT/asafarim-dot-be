@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Api.Controllers.Dtos;
 using Core.Api.Data;
+using Core.Api.DTOs.Resume;
 using Core.Api.Models.Resume;
 using Core.Api.Utilities;
 using Microsoft.AspNetCore.Authorization;
@@ -80,7 +80,9 @@ public class ResumesController : ControllerBase
         var isAdmin = User.IsInRole("Admin");
 
         var resume = await _context
-            .Resumes.Include(r => r.Contact)
+            .Resumes.AsNoTracking()
+            .AsSplitQuery()
+            .Include(r => r.Contact)
             .Include(r => r.Skills)
             .Include(r => r.EducationItems)
             .Include(r => r.Certificates)
@@ -99,11 +101,11 @@ public class ResumesController : ControllerBase
         if (resume?.WorkExperiences != null)
         {
             var workExperienceIds = resume.WorkExperiences.Select(we => we.Id).ToList();
-            var workExperienceTechnologies = await _context.WorkExperienceTechnologies
-                .Include(wet => wet.Technology)
+            var workExperienceTechnologies = await _context
+                .WorkExperienceTechnologies.Include(wet => wet.Technology)
                 .Where(wet => workExperienceIds.Contains(wet.WorkExperienceId))
                 .ToListAsync();
-            
+
             foreach (var workExperience in resume.WorkExperiences)
             {
                 workExperience.WorkExperienceTechnologies = workExperienceTechnologies

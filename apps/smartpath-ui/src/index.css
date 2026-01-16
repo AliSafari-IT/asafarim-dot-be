@@ -1,3 +1,6 @@
+/* Import design tokens */
+@import "@asafarim/react-dropdowns/css";
+
 :root {
     font-family: var(--asm-font-family-lato);
     line-height: 1.5;
@@ -10,71 +13,15 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    min-height: 100vh;
-}
-
-#root {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-a {
-    color: var(--asm-color-primary-500);
-    text-decoration: none;
-}
-
-a:hover {
-    color: var(--asm-color-primary-600);
-    text-decoration: underline;
-}
-
-button {
-    font-family: inherit;
-    cursor: pointer;
-    border: none;
-    background: none;
-}
-
-input,
-textarea,
-select {
-    font-family: inherit;
-    font-size: 1rem;
-}
-
 .container {
-    max-width: 1200px;
+    max-width: var(--asm-container-xl);
     margin: 0 auto;
     padding: 0 1rem;
-}
-
-.loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-    font-size: 1.25rem;
-    color: var(--asm-color-text-muted);
-}
-
-.error {
-    color: var(--asm-color-error);
-    padding: 1rem;
-    background-color: var(--asm-color-error-bg);
-    border-radius: var(--asm-radius-md);
-    margin: 1rem 0;
 }
 
 svg.lucide {
   flex-shrink: 0;
   aspect-ratio: 1 / 1;
 }
+
 

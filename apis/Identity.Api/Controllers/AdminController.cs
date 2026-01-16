@@ -1,3 +1,5 @@
+using Identity.Api.Data;
+using Identity.Api.Models;
 using Identity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -46,7 +48,14 @@ public class AdminController : ControllerBase
         if (user == null)
             return NotFound(new { error = "User not found" });
 
-        return Ok(new { id = user.Id.ToString(), email = user.Email, userName = user.UserName });
+        return Ok(
+            new
+            {
+                id = user.Id.ToString(),
+                email = user.Email,
+                userName = user.UserName,
+            }
+        );
     }
 
     [HttpGet("users")]
@@ -118,6 +127,37 @@ public class AdminController : ControllerBase
             if (string.IsNullOrEmpty(req.Email))
             {
                 return BadRequest(new { message = "Email is required" });
+            }
+
+            // Validate email format
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(req.Email);
+                if (addr.Address != req.Email)
+                {
+                    return BadRequest(new { message = "Invalid email format" });
+                }
+            }
+            catch
+            {
+                return BadRequest(new { message = "Invalid email format" });
+            }
+
+            // Check if user already exists
+            var existingUser = await _userManager.FindByEmailAsync(req.Email.Trim().ToLowerInvariant());
+            if (existingUser != null)
+            {
+                return BadRequest(new { message = $"A user with email '{req.Email}' already exists" });
+            }
+
+            // Check if username already exists (if provided)
+            if (!string.IsNullOrEmpty(req.UserName))
+            {
+                var existingUserByName = await _userManager.FindByNameAsync(req.UserName);
+                if (existingUserByName != null)
+                {
+                    return BadRequest(new { message = $"A user with username '{req.UserName}' already exists" });
+                }
             }
 
             // Create user object

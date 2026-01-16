@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ThemeProvider } from '@asafarim/react-themes';
-import { AuthSyncProvider, PrelaunchNoticeBanner } from '@asafarim/shared-ui-react';
+import { AuthSyncProvider } from '@asafarim/shared-ui-react';
 import { initI18n } from '@asafarim/shared-i18n';
 
 /**
@@ -61,8 +61,8 @@ export default function Root({ children }: RootProps): React.ReactElement {
   }, []);
   
   return (
-    <ThemeProvider config={{ defaultMode: initialTheme, storageKey: 'asafarim-theme', }}>
-      <AuthSyncProvider>
+    <ThemeProvider defaultMode={initialTheme} storageKey='asafarim-theme'>
+    <AuthSyncProvider>
         {i18nReady ? children : (
           <div style={{
             display: 'flex',

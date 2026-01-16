@@ -2,21 +2,31 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronRight, Play, Plus, Edit2, Trash2 } from 'lucide-react';
 import smartpathService from '../api/smartpathService';
-import { ButtonComponent } from '@asafarim/shared-ui-react';
 import './CourseLearningPage.css';
 
 interface Chapter {
     chapterId: number;
-    name: string;
+    title: string;
     description?: string;
+    descriptionHtml?: string;
+    descriptionJson?: string;
     lessons?: Lesson[];
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 interface Lesson {
     lessonId: number;
     title: string;
     description?: string;
+    descriptionHtml?: string;
+    descriptionJson?: string;
     chapterId: number;
+    content?: string;
+    contentHtml?: string;
+    contentJson?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 interface Course {
@@ -26,6 +36,8 @@ interface Course {
     gradeLevel: number;
     colorCode?: string;
     chapters?: Chapter[];
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export default function CourseLearningPage() {
@@ -164,40 +176,64 @@ export default function CourseLearningPage() {
                     <div className="chapters-list">
                         {chapters.map((chapter) => (
                             <div key={chapter.chapterId} className="chapter-item">
-                                <button
-                                    className={`chapter-header ${expandedChapter === chapter.chapterId ? 'expanded' : ''}`}
-                                    onClick={() => setExpandedChapter(
-                                        expandedChapter === chapter.chapterId ? null : chapter.chapterId
-                                    )}
-                                >
-                                    <ChevronRight size={20} />
-                                    <div className="chapter-info">
-                                        <h3>{chapter.name}</h3>
-                                        {chapter.description && <p>{chapter.description}</p>}
+                                <div className="chapter-header-wrapper">
+                                    <button
+                                        className={`chapter-header ${expandedChapter === chapter.chapterId ? 'expanded' : ''}`}
+                                        onClick={() => setExpandedChapter(
+                                            expandedChapter === chapter.chapterId ? null : chapter.chapterId
+                                        )}
+                                    >
+                                        <ChevronRight size={20} />
+                                        <div className="chapter-info">
+                                            <div className="chapter-header-content">
+                                                <h3>{chapter.title}</h3>
+                                                {(chapter.updatedAt || chapter.createdAt) && (
+                                                    <span className="chapter-date">
+                                                        {chapter.updatedAt ? `Updated: ${new Date(chapter.updatedAt).toLocaleDateString()}` : `Created: ${new Date(chapter.createdAt!).toLocaleDateString()}`}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {expandedChapter !== chapter.chapterId && (
+                                                <div className="chapter-preview">
+                                                    {chapter.descriptionHtml ? (
+                                                        <div className="chapter-description-preview" dangerouslySetInnerHTML={{ __html: chapter.descriptionHtml.substring(0, 150) + '...' }} />
+                                                    ) : chapter.description ? (
+                                                        <p className="chapter-description-preview">{chapter.description.substring(0, 150)}...</p>
+                                                    ) : null}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span className="lesson-count">
+                                            {chapter.lessons?.length || 0} lessons
+                                        </span>
+                                    </button>
+                                    <div className="chapter-actions">
+                                        <button
+                                            onClick={() => navigate(`/learning/${courseId}/chapter/${chapter.chapterId}/edit`)}
+                                            className="btn-action btn-edit"
+                                            title="Edit chapter"
+                                        >
+                                            <Edit2 size={18} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteChapter(chapter.chapterId)}
+                                            className="btn-action btn-delete"
+                                            title="Delete chapter"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
                                     </div>
-                                    <span className="lesson-count">
-                                        {chapter.lessons?.length || 0} lessons
-                                    </span>
-                                </button>
-                                <div className="chapter-actions">
-                                    <button
-                                        onClick={() => navigate(`/learning/${courseId}/chapter/${chapter.chapterId}/edit`)}
-                                        className="btn-action btn-edit"
-                                        title="Edit chapter"
-                                    >
-                                        <Edit2 size={18} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteChapter(chapter.chapterId)}
-                                        className="btn-action btn-delete"
-                                        title="Delete chapter"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
                                 </div>
 
                                 {expandedChapter === chapter.chapterId && (
                                     <div className="lessons-container">
+                                        <div className="chapter-full-content">
+                                            {chapter.descriptionHtml ? (
+                                                <div className="chapter-description" dangerouslySetInnerHTML={{ __html: chapter.descriptionHtml }} />
+                                            ) : chapter.description ? (
+                                                <p className="chapter-description">{chapter.description}</p>
+                                            ) : null}
+                                        </div>
                                         <button
                                             onClick={() => navigate(`/learning/${courseId}/chapter/${chapter.chapterId}/lesson/new`)}
                                             className="btn-add-lesson"

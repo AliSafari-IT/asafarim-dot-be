@@ -1,8 +1,10 @@
+import "@asafarim/react-dropdowns";     
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import smartpathService from '../api/smartpathService';
 import { Users, Plus, Edit2, Trash2, UserPlus, X, Users2, MoreHorizontal } from 'lucide-react';
-import { ButtonComponent, Dropdown, DropdownItem } from '@asafarim/shared-ui-react';
+import { ButtonComponent } from '@asafarim/shared-ui-react';
+import {Dropdown} from '@asafarim/react-dropdowns';
 import AddMemberModal from '../components/AddMemberModal';
 import './FamilyPage.css';
 
@@ -30,7 +32,7 @@ export default function FamilyPage() {
                     setFamilyDropdownOpen(null);
                 }
             }
-            if (memberDropdownOpen != null){
+            if (memberDropdownOpen != null) {
                 const target = event.target as Element;
                 if (!target.closest('.member-actions-dropdown')) {
                     setMemberDropdownOpen(null);
@@ -178,12 +180,54 @@ export default function FamilyPage() {
                                 className={`family-detail-card ${selectedFamilies.has(family.familyId) ? 'selected' : ''}`}
                                 data-testid={`family-card-${family.familyId}`}
                             >
-                                <div className="family-card-checkbox">
+                                <div className="family-card-actions">
                                     <input
                                         type="checkbox"
                                         checked={selectedFamilies.has(family.familyId)}
                                         onChange={() => toggleFamilySelection(family.familyId)}
+                                        data-testid={`family-checkbox-${family.familyId}`}
+                                        className="family-checkbox"
                                     />
+                                    <Dropdown
+                                        variant='ghost'
+                                        data-testid={`family-dropdown-${family.familyId}`}
+                                        showChevron={false}
+                                        size='md'
+                                        
+                                        items={[
+                                            {
+                                                id: `add-member-${family.familyId}`,
+                                                label: 'Add member',
+                                                icon: <UserPlus size={16} />,
+                                                onClick: () => {
+                                                    setSelectedFamilyForAddMember(family.familyId);
+                                                    setAddMemberModalOpen(true);
+                                                    setFamilyDropdownOpen(null);
+                                                }
+                                            },
+                                            {
+                                                id: `edit-family-${family.familyId}`,
+                                                label: 'Edit family',
+                                                icon: <Edit2 size={16} />,
+                                                onClick: () => {
+                                                    setFamilyDropdownOpen(null);
+                                                    navigate(`/family/${family.familyId}/edit`);
+                                                }
+                                            },
+                                            {
+                                                id: `delete-family-${family.familyId}`,
+                                                label: 'Delete family',
+                                                icon: <Trash2 size={16} />,
+                                                danger: true,
+                                                onClick: () => {
+                                                    setFamilyDropdownOpen(null);
+                                                    deleteFamily(family.familyId);
+                                                }
+                                            }
+                                        ]}
+                                    >
+                                        <MoreHorizontal size={20} data-testid={`family-toggle-${family.familyId}`} />
+                                    </Dropdown>
                                 </div>
                                 <div className="family-card-content">
                                     <div className="family-card-header">
@@ -207,87 +251,42 @@ export default function FamilyPage() {
                                                                 {age} years old
                                                             </span>
                                                         )}
-                                                        <div className="member-actions-dropdown">
-                                                            <button
-                                                                onClick={() => setMemberDropdownOpen(memberDropdownOpen === member.familyMemberId ? null : member.familyMemberId)}
-                                                                className="btn-member-menu"
-                                                                title="Member actions"
-                                                            >
-                                                                <MoreHorizontal size={16} />
-                                                            </button>
-                                                            {memberDropdownOpen === member.familyMemberId && (
-                                                                <Dropdown className="member-dropdown-menu">
-                                                                    <DropdownItem
-                                                                        onClick={() => {
-                                                                            navigate(`/family/${family.familyId}/members/${member.familyMemberId}/edit`);
-                                                                            setMemberDropdownOpen(null);
-                                                                        }}
-                                                                        label="Edit"
-                                                                        icon={<Edit2 size={16} />}
-                                                                    />
-                                                                    {canRemoveMember(family, member) && (
-                                                                        <DropdownItem
-                                                                            onClick={() => {
-                                                                                removeMember(family.familyId, member.userId);
-                                                                                setMemberDropdownOpen(null);
-                                                                            }}
-                                                                            label="Remove member"
-                                                                            className="btn-delete"
-                                                                            icon={<X size={16} />}
-                                                                        />
-                                                                    )}
-                                                                </Dropdown>
-                                                            )}
-                                                        </div>
+                                                        <Dropdown
+                                                            data-testid={`member-dropdown-${member.familyMemberId}`}
+                                                            showChevron={false}
+                                                            variant='ghost'
+                                                            items={[
+                                                                {
+                                                                    id: `edit-member-${member.familyMemberId}`,
+                                                                    label: 'Edit',
+                                                                    icon: <Edit2 size={16} />,
+                                                                    onClick: () => {
+                                                                        setMemberDropdownOpen(null);
+                                                                        navigate(`/family/${family.familyId}/members/${member.familyMemberId}/edit`);
+                                                                    }
+                                                                },
+                                                                ...(canRemoveMember(family, member) ? [{
+                                                                    id: `remove-member-${member.familyMemberId}`,
+                                                                    label: 'Remove member',
+                                                                    icon: <X size={16} />,
+                                                                    danger: true,
+                                                                    onClick: () => {
+                                                                        setMemberDropdownOpen(null);
+                                                                        removeMember(family.familyId, member.userId);
+                                                                    }
+                                                                }] : [])
+                                                            ]}
+                                                        >
+                                                            <MoreHorizontal size={18} />
+                                                        </Dropdown>
                                                     </div>
                                                 </div>
                                             );
                                         })}
                                     </div>
+
                                 </div>
-                                <div className="family-card-actions">
-                                    <button
-                                        onClick={() => {
-                                            setSelectedFamilyForAddMember(family.familyId);
-                                            setAddMemberModalOpen(true);
-                                        }}
-                                        className="btn-action btn-add-member"
-                                        title="Add member"
-                                    >
-                                        <UserPlus size={18} />
-                                    </button>
-                                    <button
-                                        onClick={() => navigate(`/family/${family.familyId}/edit`)}
-                                        className="btn-action btn-edit"
-                                        title="Edit family"
-                                    >
-                                        <Edit2 size={18} />
-                                    </button>
-                                    <div className="family-actions-dropdown" data-testid={`family-dropdown-${family.familyId}`}>
-                                        <ButtonComponent
-                                            variant="secondary"
-                                            onClick={() => setFamilyDropdownOpen(familyDropdownOpen === family.familyId ? null : family.familyId)}
-                                            className="bulk-actions-toggle"
-                                            data-testid={`family-toggle-${family.familyId}`}
-                                        >
-                                            <MoreHorizontal size={20} />
-                                        </ButtonComponent>
-                                        {familyDropdownOpen === family.familyId && (
-                                            <button
-                                                onClick={() => {
-                                                    deleteFamily(family.familyId);
-                                                    setFamilyDropdownOpen(null);
-                                                }}
-                                                className="btn-action btn-delete"
-                                                title="Delete family"
-                                                data-testid={`delete-family-${family.familyId}`}
-                                            >
-                                                <Trash2 size={16} />
-                                                Delete {family.familyName}
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
+
                             </div>
                         ))}
                     </>

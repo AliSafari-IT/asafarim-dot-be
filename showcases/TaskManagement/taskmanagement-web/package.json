@@ -1,7 +1,7 @@
 {
   "name": "@asafarim/taskmanagement-web",
   "private": true,
-  "version": "0.6.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,10 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@asafarim/react-themes": "workspace:*",
-    "@asafarim/shared-i18n": "workspace:*",
+    "@asafarim/react-themes": "^1.9.0",
+    "@asafarim/shared-i18n": "^0.6.5",
     "@asafarim/shared-ui-react": "workspace:*",
-    "@asafarim/design-tokens": "^0.4.1",    
+    "@asafarim/design-tokens": "^0.5.0",    
     "@asafarim/toast": "1.2.0",
     "framer-motion": "^12.23.12",
     "html2canvas": "^1.4.1",

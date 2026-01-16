@@ -1,9 +1,9 @@
+using Core.Api.Models.Common;
+
 namespace Core.Api.Models.Resume
 {
-    public class Technology
+    public class Technology : BaseEntity
     {
-        public Guid Id { get; set; }
-
         public string Name { get; set; } = string.Empty; // e.g., "C#", "React", "Docker"
         public string Category { get; set; } = string.Empty; // e.g., "Language", "Framework", "Tool"
 

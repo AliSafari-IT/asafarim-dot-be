@@ -22,10 +22,10 @@ namespace Core.Api.Controllers
                 {
                     Status = "Healthy",
                     Service = "Core API",
-                    Version = Version,
+                    Version,
                     Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
                         ?? "Development",
-                    StartTime = StartTime,
+                    StartTime,
                     CurrentTime = DateTime.UtcNow.ToString("o"),
                 }
             );

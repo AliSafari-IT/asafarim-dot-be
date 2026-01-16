@@ -10,12 +10,14 @@
 ## 🚀 Features
 
 ### 📊 Dashboard & Analytics
+
 - **Key Metrics**: Overview of proposals, invoices, and revenue
 - **Recent Activity**: Track recent proposals, invoices, and bookings
 - **Quick Stats**: At-a-glance business metrics
 - **Performance Tracking**: Monitor business growth and trends
 
 ### 💼 Proposal Management
+
 - **Create & Edit**: Build proposals with line items and descriptions
 - **Professional Templates**: Pre-designed proposal layouts
 - **Version Control**: Track proposal changes and history
@@ -25,6 +27,7 @@
 - **PDF Export**: Download proposals as professional PDFs
 
 ### 📄 Invoice Management
+
 - **Create from Proposals**: Generate invoices from existing proposals
 - **Payment Tracking**: Monitor payment status and due dates
 - **Email Delivery**: Send invoices to clients with payment instructions
@@ -33,6 +36,7 @@
 - **Recurring Invoices**: Set up recurring billing
 
 ### 👥 Client CRM
+
 - **Contact Management**: Store and organize client information
 - **Client History**: View all proposals and invoices per client
 - **Tags & Categories**: Organize clients by type or project
@@ -40,6 +44,7 @@
 - **Client Details**: Email, phone, address, and custom fields
 
 ### 📅 Calendar & Scheduling
+
 - **Meeting Scheduling**: Book meetings and consultations
 - **Availability Management**: Set available time slots
 - **Booking Confirmations**: Automated confirmation emails
@@ -47,6 +52,7 @@
 - **Appointment Reminders**: Automatic reminder notifications
 
 ### ⚙️ Settings & Configuration
+
 - **User Profile**: Manage account settings
 - **Company Branding**: Customize company details and logo
 - **Email Preferences**: Configure email templates and settings
@@ -54,6 +60,7 @@
 - **Notification Preferences**: Control notification types and frequency
 
 ### 🎨 User Experience
+
 - **Dark Mode**: Full dark mode support with system preference detection
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 - **Accessibility**: WCAG compliant with proper contrast and keyboard navigation
@@ -64,6 +71,7 @@
 ## 🏗️ Architecture
 
 ### Tech Stack
+
 - **Framework**: React 18.2 with TypeScript 5.2
 - **Build Tool**: Vite 5.0
 - **Routing**: React Router DOM 6.20
@@ -76,6 +84,7 @@
 - **Package Manager**: pnpm
 
 ### Project Structure
+
 ```
 freelance-toolkit-ui/
 ├── src/
@@ -133,6 +142,7 @@ freelance-toolkit-ui/
 ## 🛠️ Installation
 
 ### Prerequisites
+
 - Node.js 18+
 - pnpm 8+
 - FreelanceToolkit.Api running on port 5107
@@ -141,18 +151,21 @@ freelance-toolkit-ui/
 ### Setup
 
 1. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
 
 2. **Configure environment**:
    Create a `.env` file in the root directory:
+
    ```env
    VITE_API_URL=http://localhost:5107/api
    VITE_IDENTITY_URL=http://localhost:5101
    ```
 
 3. **Start development server**:
+
    ```bash
    pnpm dev
    # or
@@ -160,11 +173,13 @@ freelance-toolkit-ui/
    ```
 
 4. **Build for production**:
+
    ```bash
    pnpm build
    ```
 
 5. **Preview production build**:
+
    ```bash
    pnpm preview
    ```
@@ -184,6 +199,7 @@ freelance-toolkit-ui/
 ### Configuration
 
 #### Environment Variables
+
 ```bash
 # API Configuration
 VITE_API_URL=http://localhost:5107/api              # FreelanceToolkit.Api URL
@@ -199,12 +215,14 @@ VITE_ENABLE_ANALYTICS=true                          # Enable analytics
 The UI integrates with FreelanceToolkit.Api:
 
 ### Authentication
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
 - `POST /api/auth/refresh` - Refresh access token
 - `POST /api/auth/logout` - User logout
 
 ### Clients
+
 - `GET /api/clients` - Get all clients
 - `GET /api/clients/{id}` - Get client details
 - `POST /api/clients` - Create new client
@@ -212,6 +230,7 @@ The UI integrates with FreelanceToolkit.Api:
 - `DELETE /api/clients/{id}` - Delete client
 
 ### Proposals
+
 - `GET /api/proposals` - Get all proposals
 - `GET /api/proposals/{id}` - Get proposal details
 - `POST /api/proposals` - Create new proposal
@@ -222,6 +241,7 @@ The UI integrates with FreelanceToolkit.Api:
 - `GET /api/proposals/public/{link}` - View public proposal
 
 ### Invoices
+
 - `GET /api/invoices` - Get all invoices
 - `GET /api/invoices/{id}` - Get invoice details
 - `POST /api/invoices` - Create new invoice
@@ -232,6 +252,7 @@ The UI integrates with FreelanceToolkit.Api:
 - `POST /api/invoices/{id}/mark-paid` - Mark invoice as paid
 
 ### Calendar
+
 - `GET /api/calendar/bookings` - Get all bookings
 - `GET /api/calendar/available-slots` - Get available time slots
 - `POST /api/calendar/book` - Create new booking
@@ -239,12 +260,14 @@ The UI integrates with FreelanceToolkit.Api:
 - `GET /api/calendar/settings` - Get calendar settings
 
 ### Dashboard
+
 - `GET /api/dashboard/stats` - Get dashboard statistics
 - `GET /api/dashboard/recent-activity` - Get recent activity
 
 ## 🔐 Authentication
 
 The application uses JWT-based authentication:
+
 - Tokens are obtained from Identity API
 - Tokens are stored in localStorage
 - Protected routes require valid authentication
@@ -266,12 +289,14 @@ Theme switching is handled automatically based on system preferences or user sel
 ## 📱 Pages & Features
 
 ### Dashboard (`/dashboard`)
+
 - Key metrics and statistics
 - Recent activity feed
 - Quick action buttons
 - Performance charts
 
 ### Proposals (`/proposals`)
+
 - List all proposals with filters
 - Create new proposals
 - Edit existing proposals
@@ -280,6 +305,7 @@ Theme switching is handled automatically based on system preferences or user sel
 - Track proposal status
 
 ### Proposal Details (`/proposals/:id`)
+
 - View proposal details
 - Edit proposal content
 - Add/edit line items
@@ -288,6 +314,7 @@ Theme switching is handled automatically based on system preferences or user sel
 - Track status changes
 
 ### Invoices (`/invoices`)
+
 - List all invoices with filters
 - Create new invoices
 - Create from proposals
@@ -297,6 +324,7 @@ Theme switching is handled automatically based on system preferences or user sel
 - Mark as paid
 
 ### Invoice Details (`/invoices/:id`)
+
 - View invoice details
 - Edit invoice content
 - Add/edit line items
@@ -305,6 +333,7 @@ Theme switching is handled automatically based on system preferences or user sel
 - Track payment status
 
 ### Clients (`/clients`)
+
 - List all clients
 - Create new clients
 - Edit client information
@@ -312,6 +341,7 @@ Theme switching is handled automatically based on system preferences or user sel
 - Track proposals and invoices
 
 ### Client Details (`/clients/:id`)
+
 - View client details
 - Edit client information
 - View all proposals
@@ -319,6 +349,7 @@ Theme switching is handled automatically based on system preferences or user sel
 - Add notes and tags
 
 ### Calendar (`/calendar`)
+
 - View calendar with bookings
 - Schedule new meetings
 - Set availability
@@ -326,6 +357,7 @@ Theme switching is handled automatically based on system preferences or user sel
 - Manage appointments
 
 ### Settings (`/settings`)
+
 - User profile management
 - Company branding
 - Email preferences
@@ -335,6 +367,7 @@ Theme switching is handled automatically based on system preferences or user sel
 ## ✅ Form Validation
 
 Client-side validation with helpful feedback:
+
 - **Real-time validation**: Immediate feedback as user types
 - **Field-level errors**: Visual indicators for invalid fields
 - **Error messages**: Clear, actionable error messages
@@ -343,6 +376,7 @@ Client-side validation with helpful feedback:
 ## 📧 Email Integration
 
 Email functionality:
+
 - **Proposal sending**: One-click email delivery with PDF attachment
 - **Invoice sending**: Send invoices with payment instructions
 - **Status tracking**: Real-time feedback on send success/failure
@@ -352,6 +386,7 @@ Email functionality:
 ## 📄 PDF Generation
 
 PDF features:
+
 - **Professional templates**: Company branding and formatting
 - **Proposal PDFs**: Include proposal details, line items, and terms
 - **Invoice PDFs**: Include invoice details, payment terms, and company info
@@ -361,6 +396,7 @@ PDF features:
 ## 🚢 Deployment
 
 ### Production Build
+
 ```bash
 pnpm build
 ```
@@ -377,6 +413,7 @@ VITE_IDENTITY_URL=https://identity.asafarim.be
 ```
 
 ### Nginx Configuration
+
 ```nginx
 server {
     listen 80;

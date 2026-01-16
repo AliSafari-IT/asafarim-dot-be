@@ -9,18 +9,21 @@
 ## 🚀 Features
 
 ### 🤖 AI Chat Assistant
+
 - Real-time conversational AI powered by OpenAI
 - Session management with persistent chat history
 - Context-aware responses for career-related queries
 - Markdown rendering for formatted responses
 
 ### 📝 Resume Maker
+
 - AI-powered resume generation from detailed CVs
 - Functional resume format optimization
 - Professional templates and suggestions
 - Export capabilities (PDF/Canvas)
 
 ### 💼 Job Tools
+
 - **Job Description Analysis**: Extract key requirements and keywords from job postings
 - **Skills Matching**: Calculate compatibility scores between candidate skills and job requirements
 - **Cover Letter Generator**: Create tailored cover letters with AI assistance
@@ -29,6 +32,7 @@
 ## 🏗️ Architecture
 
 ### Tech Stack
+
 - **Frontend Framework**: React 18.3 with TypeScript
 - **Build Tool**: Vite 7.1
 - **Routing**: React Router DOM 6.30
@@ -41,6 +45,7 @@
 - **Notifications**: Custom Toast system (@asafarim/toast)
 
 ### Project Structure
+
 ```
 ai-ui/
 ├── src/
@@ -72,18 +77,21 @@ ai-ui/
 ## 🛠️ Installation
 
 ### Prerequisites
+
 - Node.js 18+ and pnpm
 - Access to the AI API backend (see `/apis/Ai.Api`)
 
 ### Setup
 
 1. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
 
 2. **Configure environment variables**:
    Create a `.env` file in the root directory:
+
    ```env
    VITE_AI_API_BASE=http://ai.asafarim.local:5103
    VITE_IDENTITY_API_URL=http://identity.asafarim.local:5101/api
@@ -92,6 +100,7 @@ ai-ui/
    ```
 
 3. **Start development server**:
+
    ```bash
    pnpm dev
    # or
@@ -99,11 +108,13 @@ ai-ui/
    ```
 
 4. **Build for production**:
+
    ```bash
    pnpm build
    ```
 
 5. **Preview production build**:
+
    ```bash
    pnpm preview
    ```
@@ -141,6 +152,7 @@ const response = await aiApi<ChatResponse>('/chat', {
 ```
 
 ### API Endpoints Used
+
 - `POST /chat` - Send chat messages
 - `GET /chat-sessions` - Retrieve chat sessions
 - `POST /resume/functional` - Generate functional resume
@@ -173,6 +185,7 @@ This application is part of a monorepo and uses shared workspace packages:
 ## 🚢 Deployment
 
 ### Production Build
+
 ```bash
 pnpm build
 ```
@@ -193,6 +206,7 @@ VITE_AUTH_API_BASE=https://core.asafarim.be/api
 ## 🔐 Authentication
 
 The application supports JWT-based authentication:
+
 - Tokens are stored in HTTP-only cookies (`atk`)
 - Credentials are included in API requests
 - Integration with Identity API for user management

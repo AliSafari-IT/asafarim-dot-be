@@ -6,15 +6,15 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
+        "start": "npx kill-port 5185 && vite --host freelance-toolkit.asafarim.local --port 5185",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview"
     },
     "dependencies": {
         "@asafarim/booking-calendar": "0.2.0",
         "@asafarim/shared-ui-react": "workspace:*",
-        "@asafarim/shared-tokens": "workspace:*",
-        "@asafarim/react-themes": "workspace:*",
-        "@asafarim/design-tokens": "^0.3.6",
+        "@asafarim/react-themes": "^1.8.2",
+        "@asafarim/design-tokens": "^0.5.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.20.0",

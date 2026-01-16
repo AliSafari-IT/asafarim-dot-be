@@ -1,5 +1,0 @@
-.text-center { text-align: center; }
-.text-muted { color: var(--color-neutral-500); }
-.flex-center { display: flex; justify-content: center; align-items: center; }
-.rounded-md { border-radius: var(--radius-md); }
-.shadow-md { box-shadow: var(--shadow-md); }

@@ -142,6 +142,47 @@ export default function UserProfile() {
     }
   };
 
+  const copyToClipboard= async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        // Use modern Clipboard API if available and in secure context
+        await navigator.clipboard.writeText(selectedId);
+        toast.success('User ID copied to clipboard', {
+          durationMs: 4000
+        });
+      } else {
+        // Fallback for older browsers or non-HTTPS
+        const textArea = document.createElement('textarea');
+        textArea.value = selectedId;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          toast.success('User ID copied to clipboard', {
+            durationMs: 4000
+          });
+        } else {
+          toast.error('Failed to copy to clipboard', {
+            durationMs: 3000
+          });
+        }
+      }
+      console.log(selectedId);
+    } catch (err) {
+      toast.error('Failed to copy to clipboard', {
+        description: err instanceof Error ? err.message : 'Unknown error',
+        durationMs: 3000
+      });
+    }
+  }
+
   return (
     <div className="admin-user-profile-container">
       <div className="admin-user-profile-card">
@@ -187,6 +228,18 @@ export default function UserProfile() {
                 value={userName} 
                 onChange={e => setUserName(e.target.value)} 
                 placeholder="Enter username"
+              />
+            </div>
+
+            <div className="admin-form-group">
+              <label className="admin-form-label">ID</label>
+              <input 
+                className="admin-form-input"
+                type="text"
+                value={selectedId} 
+                readOnly
+                onClick={copyToClipboard}
+                style={{ cursor: 'pointer' }}
               />
             </div>
 

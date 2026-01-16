@@ -1,0 +1,57 @@
+{
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "description": "Manage users, roles, and system settings",
+    "user-management": {
+      "title": "User Management",
+      "description": "View and manage user accounts, permissions, and profiles"
+    },
+    "role-management": {
+      "title": "Role Management",
+      "description": "Configure user roles and access permissions"
+    },
+    "actions": {
+      "open": "Open"
+    }
+  },
+  "roles": {
+    "title": "Role Management",
+    "subtitle": "Manage user roles and permissions",
+    "create": {
+      "label": "Create New Role",
+      "description": "Create a new role with specific permissions",
+      "placeholder": "Enter role name",
+      "button": "Add Role"
+    },
+    "existing": {
+      "title": "Existing Roles",
+      "loading": "Loading roles...",
+      "empty": "No roles found"
+    },
+    "table": {
+      "headers": {
+        "name": "Role Name",
+        "actions": "Actions"
+      }
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "validation": {
+      "required": "Role name is required"
+    },
+    "messages": {
+      "create-success": "Role created successfully",
+      "update-success": "Role updated successfully",
+      "delete-success": "Role deleted successfully",
+      "delete-confirm": "Are you sure you want to delete this role? This action cannot be undone.",
+      "create-error": "Failed to create role",
+      "update-error": "Failed to update role",
+      "delete-error": "Failed to delete role",
+      "fetch-error": "Failed to load roles"
+    }
+  }
+}

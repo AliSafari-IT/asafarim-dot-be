@@ -9,15 +9,7 @@ interface EmailPreviewModalProps {
   defaultSubject: string;
   defaultBody: string;
   recipientEmail: string;
-<<<<<<< HEAD
-<<<<<<< HEAD
   documentType: "Invoice" | "Proposal" | "Booking";
-=======
-  documentType: "Invoice" | "Proposal";
->>>>>>> 2cbbfa3 (```)
-=======
-  documentType: "Invoice" | "Proposal" | "Booking";
->>>>>>> 7d4431a (```)
   documentNumber: string;
 }
 

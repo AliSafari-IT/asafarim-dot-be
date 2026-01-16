@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
-using Identity.Api.Entities;
+using Identity.Api.Data;
+using Identity.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.Api.Services;

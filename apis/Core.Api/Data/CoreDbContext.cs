@@ -44,6 +44,10 @@ public class CoreDbContext : DbContext
     public DbSet<ProjectPublication> ProjectPublications { get; set; } = null!;
     public DbSet<ProjectWorkExperience> ProjectWorkExperiences { get; set; } = null!;
     public DbSet<ProjectImage> ProjectImages { get; set; } = null!;
+    
+    // Job & Timeline entities
+    public DbSet<JobApplication> JobApplications { get; set; } = null!;
+    public DbSet<TimelineMilestone> TimelineMilestones { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -322,7 +326,14 @@ public class CoreDbContext : DbContext
             entity.ToTable("ResumeProjects", "public");
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(2000);
-            entity.Property(e => e.Link).HasMaxLength(500);
+            entity.Property(e => e.ShortDescription);
+            entity.Property(e => e.Link).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.GithubUrl);
+            entity.Property(e => e.DemoUrl);
+            entity.Property(e => e.IsFeatured).HasDefaultValue(false);
+            entity.Property(e => e.DisplayOrder).HasDefaultValue(0);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
         });
 
         modelBuilder.Entity<Technology>(entity =>
@@ -467,6 +478,35 @@ public class CoreDbContext : DbContext
             entity.HasOne(e => e.Project)
                 .WithMany(p => p.ProjectImages)
                 .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure JobApplication entity
+        modelBuilder.Entity<JobApplication>(entity =>
+        {
+            entity.HasKey(j => j.Id);
+            entity.ToTable("JobApplications", "public");
+            entity.Property(j => j.Status).HasMaxLength(50).IsRequired();
+            entity.Property(j => j.Company).HasMaxLength(100).IsRequired();
+            entity.Property(j => j.Role).HasMaxLength(100).IsRequired();
+        });
+
+        // Configure TimelineMilestone entity
+        modelBuilder.Entity<TimelineMilestone>(entity =>
+        {
+            entity.HasKey(t => t.Id);
+            entity.ToTable("TimelineMilestones", "public");
+            entity.Property(t => t.Type).HasMaxLength(100).IsRequired();
+            entity.Property(t => t.Title).HasMaxLength(200).IsRequired();
+            entity.Property(t => t.Status).HasMaxLength(50).IsRequired();
+            entity.Property(t => t.Color).HasMaxLength(7).IsRequired();
+            entity.Property(t => t.Icon).HasMaxLength(10).IsRequired();
+
+            // Configure relationship with JobApplication
+            entity
+                .HasOne(t => t.JobApplication)
+                .WithMany()
+                .HasForeignKey(t => t.JobApplicationId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

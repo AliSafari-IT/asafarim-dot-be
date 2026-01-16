@@ -8,17 +8,17 @@ import { useTranslation } from "@asafarim/shared-i18n";
 export default function AdminDashboard() {
   const toast = useToast();
   const { user } = useAuth();
-  const { t } = useTranslation("identityPortal");
+  const { t } = useTranslation("adminArea");
   const dashboardData = {
     "user-management": {
-      title: t("admin-area.dashboard.user-management.title"),
-      description: t("admin-area.dashboard.user-management.description"),
+      title: t("dashboard.user-management.title"),
+      description: t("dashboard.user-management.description"),
       icon: "👥",
       link: "/admin-area/users",
     },
     "role-management": {
-      title: t("admin-area.dashboard.role-management.title"),
-      description: t("admin-area.dashboard.role-management.description"),
+      title: t("dashboard.role-management.title"),
+      description: t("dashboard.role-management.description"),
       icon: "🛡️",
       link: "/admin-area/roles",
     },
@@ -26,11 +26,11 @@ export default function AdminDashboard() {
 
   return (
     <div data-testid="admin-dashboard-page">
-      <AuthLayout title={t("admin-area.dashboard.title")}>
+      <AuthLayout title={t("dashboard.title")}>
         <div className="identity-portal-admin-dashboard">
           <header className="dashboard-header">
-            <h1>{t("admin-area.dashboard.title")}</h1>
-            <p>{t("admin-area.dashboard.description")}</p>
+            <h1>{t("dashboard.title")}</h1>
+            <p>{t("dashboard.description")}</p>
           </header>
 
           <section className="dashboard-grid">
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
                     }
                   }}
                 >
-                  {t("admin-area.dashboard.actions.open")}
+                  {t("dashboard.actions.open")}
                 </button>
               </div>
             ))}

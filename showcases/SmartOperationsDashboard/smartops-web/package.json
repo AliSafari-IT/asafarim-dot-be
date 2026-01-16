@@ -1,7 +1,7 @@
 {
   "name": "@asafarim/smartops-web",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,9 +12,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@asafarim/react-themes": "workspace:*",
-    "@asafarim/shared-i18n": "workspace:*",
-    "@asafarim/design-tokens": "^0.4.1",
+    "@asafarim/react-themes": "^1.9.0",
+    "@asafarim/shared-i18n": "^0.6.5",
+    "@asafarim/design-tokens": "^0.5.0",
     "@asafarim/shared-ui-react": "workspace:*",
     "@asafarim/toast": "1.2.0",
     "@microsoft/signalr": "^9.0.6",

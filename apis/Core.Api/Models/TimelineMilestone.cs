@@ -1,13 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models;
 
-public class TimelineMilestone
+public class TimelineMilestone : BaseEntity
 {
-    [Key]
-    public Guid Id { get; set; }
-
     [Required]
     public Guid JobApplicationId { get; set; }
 
@@ -44,10 +42,6 @@ public class TimelineMilestone
 
     [Required, MaxLength(10)]
     public string Icon { get; set; } = "📄";
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; }
 
     // Navigation property
     public JobApplication JobApplication { get; set; } = null!;

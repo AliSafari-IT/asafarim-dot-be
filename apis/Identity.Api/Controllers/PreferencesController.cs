@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Identity.Api.Data;
 using Identity.Api.DTOs;
+using Identity.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +19,8 @@ public class PreferencesController : ControllerBase
 
     public PreferencesController(
         UserManager<AppUser> userManager,
-        ILogger<PreferencesController> logger)
+        ILogger<PreferencesController> logger
+    )
     {
         _userManager = userManager;
         _logger = logger;
@@ -41,17 +44,18 @@ public class PreferencesController : ControllerBase
             return NotFound(new { message = "User not found" });
         }
 
-        return Ok(new UserPreferencesResponse
-        {
-            PreferredLanguage = user.PreferredLanguage ?? "en"
-        });
+        return Ok(
+            new UserPreferencesResponse { PreferredLanguage = user.PreferredLanguage ?? "en" }
+        );
     }
 
     /// <summary>
     /// Update current user's preferences
     /// </summary>
     [HttpPost("preferences")]
-    public async Task<ActionResult<UserPreferencesResponse>> UpdatePreferences([FromBody] UserPreferencesDto preferences)
+    public async Task<ActionResult<UserPreferencesResponse>> UpdatePreferences(
+        [FromBody] UserPreferencesDto preferences
+    )
     {
         if (!ModelState.IsValid)
         {
@@ -82,13 +86,13 @@ public class PreferencesController : ControllerBase
         // Set cookie for immediate use across subdomains
         SetLanguageCookie(preferences.PreferredLanguage);
 
-        _logger.LogInformation("Updated language preference to {Language} for user {UserId}", 
-            preferences.PreferredLanguage, userId);
+        _logger.LogInformation(
+            "Updated language preference to {Language} for user {UserId}",
+            preferences.PreferredLanguage,
+            userId
+        );
 
-        return Ok(new UserPreferencesResponse
-        {
-            PreferredLanguage = user.PreferredLanguage
-        });
+        return Ok(new UserPreferencesResponse { PreferredLanguage = user.PreferredLanguage });
     }
 
     private void SetLanguageCookie(string language)
@@ -100,7 +104,7 @@ public class PreferencesController : ControllerBase
             SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax,
             Expires = DateTimeOffset.UtcNow.AddYears(1),
             Path = "/",
-            Domain = ".asafarim.be" // Share across all subdomains
+            Domain = ".asafarim.be", // Share across all subdomains
         };
 
         Response.Cookies.Append("preferredLanguage", language, cookieOptions);

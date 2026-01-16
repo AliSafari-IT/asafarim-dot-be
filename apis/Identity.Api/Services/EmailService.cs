@@ -18,6 +18,11 @@ public interface IEmailService
     /// Send password reset magic link email (for forgot password)
     /// </summary>
     Task SendPasswordResetEmailAsync(string email, string magicLink);
+
+    /// <summary>
+    /// Send email confirmation link
+    /// </summary>
+    Task SendEmailConfirmationAsync(string email, string confirmationLink);
 }
 
 public class EmailService : IEmailService
@@ -243,6 +248,114 @@ public class EmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, "❌ Error sending password reset email to {Email}", email);
+            throw;
+        }
+    }
+
+    public async Task SendEmailConfirmationAsync(string email, string confirmationLink)
+    {
+        try
+        {
+            // Validate SMTP configuration
+            var smtpHost = _configuration["Smtp:Host"];
+            var smtpPortStr = _configuration["Smtp:Port"];
+            var smtpUser = _configuration["Smtp:User"];
+            var smtpPassword = _configuration["Smtp:Password"];
+            var fromAddress = _configuration["Smtp:From"];
+
+            if (
+                string.IsNullOrEmpty(smtpHost)
+                || string.IsNullOrEmpty(smtpPortStr)
+                || string.IsNullOrEmpty(smtpUser)
+                || string.IsNullOrEmpty(smtpPassword)
+                || string.IsNullOrEmpty(fromAddress)
+            )
+            {
+                _logger.LogWarning(
+                    "SMTP configuration incomplete. Email not sent to {Email}",
+                    email
+                );
+                _logger.LogInformation(
+                    "📧 Email Confirmation (Logged) - To: {Email}, Confirmation Link: {Link}",
+                    email,
+                    confirmationLink
+                );
+                return;
+            }
+
+            if (!int.TryParse(smtpPortStr, out var smtpPort))
+            {
+                _logger.LogError("Invalid SMTP port configuration");
+                return;
+            }
+
+            // Create email message
+            var message = new MimeMessage();
+            message.From.Add(MailboxAddress.Parse(fromAddress));
+            message.To.Add(MailboxAddress.Parse(email));
+            message.Subject = "Confirm Your Email - Asafarim";
+
+            // Create HTML body
+            var htmlContent =
+                $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }}
+        .header h1 {{ margin: 0; font-size: 28px; }}
+        .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }}
+        .button {{ display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: bold; }}
+        .button:hover {{ background: #764ba2; }}
+        .footer {{ margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; text-align: center; }}
+        .link-text {{ word-break: break-all; font-size: 12px; color: #666; margin-top: 10px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>Confirm Your Email</h1>
+        </div>
+        <div class='content'>
+            <p>Hello,</p>
+            <p>Thank you for registering with Asafarim! Please confirm your email address by clicking the button below:</p>
+            <center>
+                <a href='{confirmationLink}' class='button'>Confirm Email</a>
+            </center>
+            <p>Or copy and paste this link in your browser:</p>
+            <div class='link-text'><a href='{confirmationLink}'>{confirmationLink}</a></div>
+            <p style='color: #999; font-size: 12px;'>This link expires in 24 hours. If you didn't create this account, you can safely ignore this email.</p>
+            <div class='footer'>
+                <p>&copy; 2025 Asafarim. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>";
+
+            var bodyBuilder = new BodyBuilder { HtmlBody = htmlContent };
+            message.Body = bodyBuilder.ToMessageBody();
+
+            // Send email via SMTP
+            using var smtp = new SmtpClient();
+            var secure = _configuration.GetValue<bool>("Smtp:Secure");
+            var secureOption = secure
+                ? SecureSocketOptions.SslOnConnect
+                : SecureSocketOptions.StartTls;
+
+            await smtp.ConnectAsync(smtpHost, smtpPort, secureOption);
+            await smtp.AuthenticateAsync(smtpUser, smtpPassword);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
+
+            _logger.LogInformation("✅ Email confirmation sent successfully to {Email}", email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Error sending email confirmation to {Email}", email);
             throw;
         }
     }

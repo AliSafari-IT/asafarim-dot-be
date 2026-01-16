@@ -55,7 +55,8 @@ export default function Root({ children }: RootProps): React.ReactElement {
 
   return (
     <ThemeProvider
-      config={{ defaultMode: initialTheme, storageKey: "asafarim-theme" }}
+      defaultMode={initialTheme}
+      storageKey="asafarim-theme"
     >
       <AuthSyncProvider>{children}</AuthSyncProvider>
     </ThemeProvider>

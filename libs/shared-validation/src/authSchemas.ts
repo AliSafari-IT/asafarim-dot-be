@@ -25,6 +25,7 @@ export const emailSchema = z
 // Register schema (matches identity-portal RegisterForm)
 export const registerSchema = z.object({
   email: emailSchema,
+  userName: z.string().max(256).optional(),
   firstName: z.string().max(100).optional(),
   lastName: z.string().max(100).optional(),
   password: z.string().min(8, "Password must be at least 8 characters.").max(100),

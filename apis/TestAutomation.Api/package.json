@@ -1,10 +1,11 @@
 {
   "name": "@asafarim/testora-api",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "dotnet watch run --project TestAutomation.Api.csproj",
+    "prestart": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-5106.ps1",
     "start": "dotnet run --project TestAutomation.Api.csproj",
     "build": "dotnet build TestAutomation.Api.csproj",
     "preapi": "kill-port 5106",

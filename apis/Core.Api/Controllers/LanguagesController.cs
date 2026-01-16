@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Core.Api.Data;
 using Core.Api.Models.Resume;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Core.Api.Controllers;
 
@@ -38,8 +38,9 @@ public class LanguagesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<LanguageDto>> GetLanguage(Guid resumeId, Guid id)
     {
-        var language = await _context
-            .Languages.FirstOrDefaultAsync(l => l.Id == id && l.ResumeId == resumeId);
+        var language = await _context.Languages.FirstOrDefaultAsync(l =>
+            l.Id == id && l.ResumeId == resumeId
+        );
 
         if (language == null)
             return NotFound();
@@ -102,8 +103,9 @@ public class LanguagesController : ControllerBase
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
 
-        var language = await _context
-            .Languages.FirstOrDefaultAsync(l => l.Id == id && l.ResumeId == resumeId);
+        var language = await _context.Languages.FirstOrDefaultAsync(l =>
+            l.Id == id && l.ResumeId == resumeId
+        );
 
         if (language == null)
             return NotFound();
@@ -131,8 +133,9 @@ public class LanguagesController : ControllerBase
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
 
-        var language = await _context
-            .Languages.FirstOrDefaultAsync(l => l.Id == id && l.ResumeId == resumeId);
+        var language = await _context.Languages.FirstOrDefaultAsync(l =>
+            l.Id == id && l.ResumeId == resumeId
+        );
 
         if (language == null)
             return NotFound();

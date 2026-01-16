@@ -1,20 +1,18 @@
 {
   "name": "@asafarim/identity-api",
-  "version": "0.6.0",
+  "version": "0.7.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "dotnet watch run --project Identity.Api.csproj",
-    "start": "npx kill-port 5101 && dotnet run --project Identity.Api.csproj",
+    "prestart": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-5101.ps1",
+    "start": "dotnet run --project Identity.Api.csproj",
     "build": "dotnet build Identity.Api.csproj",
-    "preapi": "npx kill-port 5101",
+    "preapi": "powershell -ExecutionPolicy Bypass -File ./scripts/kill-port-5101.ps1",
     "api": "dotnet watch run --project Identity.Api.csproj"
-  },
-  "devDependencies": {
-    "kill-port": "^2.0.1"
   },
   "keywords": [],
   "author": "ASafariM",
   "license": "ISC",
-  "packageManager": "pnpm@10.20.0"
+  "packageManager": "pnpm@10.27.0"
 }

@@ -34,8 +34,17 @@ export interface RegisterRequest {
   email: string;
   password: string;
   confirmPassword: string;
+  userName?: string | null;
   firstName?: string;
   lastName?: string;
+}
+
+export interface RegisterResponse {
+  registered: boolean;
+  requiresEmailConfirmation: boolean;
+  email: string;
+  emailSent: boolean;
+  message: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -199,12 +208,28 @@ export const identityService = {
   },
 
   /** Register new user */
-  async register(data: RegisterRequest): Promise<AuthResponse> {
-    return apiFetch<AuthResponse>('/auth/register', {
+  async register(data: RegisterRequest): Promise<RegisterResponse> {
+    return apiFetch<RegisterResponse>('/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Confirm email address */
+  async confirmEmail(params: { userId: string; token: string }): Promise<{ confirmed: boolean; message?: string; code?: string }> {
+    return apiFetch<{ confirmed: boolean; message?: string; code?: string }>(
+      `/auth/confirm-email?userId=${encodeURIComponent(params.userId)}&token=${encodeURIComponent(params.token)}`,
+      { method: 'GET' }
+    );
+  },
+
+  /** Resend confirmation email */
+  async resendConfirmation(data: { email: string }): Promise<{ message: string }> {
+    return apiFetch<{ message: string }>('/auth/resend-confirmation', {
+      method: 'POST',
       body: JSON.stringify(data),
     });
   },

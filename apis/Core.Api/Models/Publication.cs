@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models;
 
-public class Publication
+public class Publication : BaseEntity
 {
-    public int Id { get; set; }
-
     // Basic content
     public string Title { get; set; } = string.Empty;
     public string? Subtitle { get; set; }
@@ -35,10 +34,6 @@ public class Publication
     public bool Clickable { get; set; }
     public bool Featured { get; set; }
 
-    // Timestamps
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-
     // Additional fields for filtering and organization
     public string? AuthorId { get; set; }
     public string? UserId { get; set; } // ID of the user who created this publication
@@ -50,10 +45,9 @@ public class Publication
     public string? PublicationType { get; set; } // academic, blog, presentation, etc.
 }
 
-public class PublicationMetric
+public class PublicationMetric : BaseEntity
 {
-    public int Id { get; set; }
-    public int PublicationId { get; set; }
+    public Guid PublicationId { get; set; }
     public string Label { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
 

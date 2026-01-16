@@ -1,10 +1,10 @@
 using System;
+using Core.Api.Models.Common;
 
 namespace Core.Api.Models.Resume
 {
-    public class Certificate
+    public class Certificate : BaseEntity
     {
-        public Guid Id { get; set; }
         public Guid ResumeId { get; set; }
 
         public string Name { get; set; } = string.Empty; // e.g., "AWS Certified Solutions Architect"
@@ -15,9 +15,6 @@ namespace Core.Api.Models.Resume
 
         public string CredentialId { get; set; } = string.Empty;
         public string CredentialUrl { get; set; } = string.Empty;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public Resume? Resume { get; set; }
     }

@@ -1,8 +1,9 @@
+using Core.Api.Models.Common;
+
 namespace Core.Api.Models.Resume;
 
-public class ContactInfo
+public class ContactInfo : BaseEntity
 {
-    public Guid Id { get; set; }
     public Guid ResumeId { get; set; }
 
     public string FullName { get; set; } = string.Empty;

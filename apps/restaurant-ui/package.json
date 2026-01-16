@@ -17,9 +17,9 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
     "lucide-react": "^0.460.0",
-    "@asafarim/react-themes": "workspace:*",
-    "@asafarim/shared-i18n": "workspace:*",
-    "@asafarim/design-tokens": "^0.3.6",
+    "@asafarim/react-themes": "^1.9.0",
+    "@asafarim/shared-i18n": "^0.6.5",
+    "@asafarim/design-tokens": "^0.5.0",
     "@asafarim/shared-ui-react": "workspace:*"
   },
   "devDependencies": {

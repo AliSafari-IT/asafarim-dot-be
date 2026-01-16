@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Core.Api.Data;
 using Core.Api.Models.Resume;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Core.Api.Controllers;
 
@@ -38,8 +38,9 @@ public class AwardsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<AwardDto>> GetAward(Guid resumeId, Guid id)
     {
-        var award = await _context
-            .Awards.FirstOrDefaultAsync(a => a.Id == id && a.ResumeId == resumeId);
+        var award = await _context.Awards.FirstOrDefaultAsync(a =>
+            a.Id == id && a.ResumeId == resumeId
+        );
 
         if (award == null)
             return NotFound();
@@ -78,11 +79,7 @@ public class AwardsController : ControllerBase
         _context.Awards.Add(award);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(
-            nameof(GetAward),
-            new { resumeId, id = award.Id },
-            MapToDto(award)
-        );
+        return CreatedAtAction(nameof(GetAward), new { resumeId, id = award.Id }, MapToDto(award));
     }
 
     // PUT: api/resumes/{resumeId}/awards/{id}
@@ -104,8 +101,9 @@ public class AwardsController : ControllerBase
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
 
-        var award = await _context
-            .Awards.FirstOrDefaultAsync(a => a.Id == id && a.ResumeId == resumeId);
+        var award = await _context.Awards.FirstOrDefaultAsync(a =>
+            a.Id == id && a.ResumeId == resumeId
+        );
 
         if (award == null)
             return NotFound();
@@ -135,8 +133,9 @@ public class AwardsController : ControllerBase
         if (!isAdmin && resume.UserId != userId)
             return Forbid();
 
-        var award = await _context
-            .Awards.FirstOrDefaultAsync(a => a.Id == id && a.ResumeId == resumeId);
+        var award = await _context.Awards.FirstOrDefaultAsync(a =>
+            a.Id == id && a.ResumeId == resumeId
+        );
 
         if (award == null)
             return NotFound();

@@ -1,8 +1,9 @@
+using Core.Api.Models.Common;
+
 namespace Core.Api.Models.Resume;
 
-public class Award
+public class Award : BaseEntity
 {
-    public Guid Id { get; set; }
     public Guid ResumeId { get; set; }
 
     public string Title { get; set; } = string.Empty;
@@ -12,3 +13,4 @@ public class Award
 
     public Resume? Resume { get; set; }
 }
+

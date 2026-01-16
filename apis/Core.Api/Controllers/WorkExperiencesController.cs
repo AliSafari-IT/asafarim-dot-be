@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Api.Data;
+using Core.Api.DTOs.Resume;
+using Core.Api.Models.Resume;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Core.Api.Controllers.Dtos;
-using Core.Api.Data;
-using Core.Api.Models.Resume;
 
 namespace Core.Api.Controllers;
 
@@ -232,13 +232,20 @@ public class WorkExperiencesController : ControllerBase
             var resume = await _context.Resumes.FindAsync(resumeId);
             if (resume == null)
             {
-                _logger.LogWarning("UpdateWorkExperience: Resume not found for ID {ResumeId}", resumeId);
+                _logger.LogWarning(
+                    "UpdateWorkExperience: Resume not found for ID {ResumeId}",
+                    resumeId
+                );
                 return NotFound("Resume not found");
             }
 
             if (!isAdmin && resume.UserId != userId)
             {
-                _logger.LogWarning("UpdateWorkExperience: Access denied for user {UserId} to resume {ResumeId}", userId, resumeId);
+                _logger.LogWarning(
+                    "UpdateWorkExperience: Access denied for user {UserId} to resume {ResumeId}",
+                    userId,
+                    resumeId
+                );
                 return Forbid();
             }
 
@@ -249,7 +256,10 @@ public class WorkExperiencesController : ControllerBase
                 .FirstOrDefaultAsync(w => w.Id == id && w.ResumeId == resumeId);
             if (workExperience == null)
             {
-                _logger.LogWarning("UpdateWorkExperience: Work experience not found for ID {WorkExperienceId}", id);
+                _logger.LogWarning(
+                    "UpdateWorkExperience: Work experience not found for ID {WorkExperienceId}",
+                    id
+                );
                 return NotFound();
             }
 
@@ -294,26 +304,28 @@ public class WorkExperiencesController : ControllerBase
             if (request.Technologies != null && request.Technologies.Any())
             {
                 // Get existing technology relationships for this work experience
-                var existingTechRelationships = await _context.WorkExperienceTechnologies
-                    .Where(wt => wt.WorkExperienceId == workExperience.Id)
+                var existingTechRelationships = await _context
+                    .WorkExperienceTechnologies.Where(wt =>
+                        wt.WorkExperienceId == workExperience.Id
+                    )
                     .Include(wt => wt.Technology)
                     .ToListAsync();
 
                 // Remove technologies that are no longer in the request
-                var requestedTechIds = request.Technologies
-                    .Where(t => !string.IsNullOrWhiteSpace(t.Name) && t.Id.HasValue)
+                var requestedTechIds = request
+                    .Technologies.Where(t => !string.IsNullOrWhiteSpace(t.Name) && t.Id.HasValue)
                     .Select(t => t.Id.Value)
                     .ToList();
 
-                var requestedTechNames = request.Technologies
-                    .Where(t => !string.IsNullOrWhiteSpace(t.Name))
+                var requestedTechNames = request
+                    .Technologies.Where(t => !string.IsNullOrWhiteSpace(t.Name))
                     .Select(t => t.Name.ToLower())
                     .ToList();
 
                 var technologiesToRemove = existingTechRelationships
                     .Where(wt =>
-                        !requestedTechIds.Contains(wt.TechnologyId) &&
-                        !requestedTechNames.Contains(wt.Technology.Name.ToLower())
+                        !requestedTechIds.Contains(wt.TechnologyId)
+                        && !requestedTechNames.Contains(wt.Technology.Name.ToLower())
                     )
                     .ToList();
 
@@ -323,7 +335,11 @@ public class WorkExperiencesController : ControllerBase
                 }
 
                 // Update or add new technologies
-                foreach (var techRequest in request.Technologies.Where(t => !string.IsNullOrWhiteSpace(t.Name)))
+                foreach (
+                    var techRequest in request.Technologies.Where(t =>
+                        !string.IsNullOrWhiteSpace(t.Name)
+                    )
+                )
                 {
                     Technology technology;
 
@@ -333,7 +349,10 @@ public class WorkExperiencesController : ControllerBase
                         technology = await _context.Technologies.FindAsync(techRequest.Id.Value);
                         if (technology == null)
                         {
-                            _logger.LogWarning("UpdateWorkExperience: Technology with ID {TechnologyId} not found, searching by name", techRequest.Id.Value);
+                            _logger.LogWarning(
+                                "UpdateWorkExperience: Technology with ID {TechnologyId} not found, searching by name",
+                                techRequest.Id.Value
+                            );
                             // If not found by ID but name matches an existing technology, use that
                             technology = await _context.Technologies.FirstOrDefaultAsync(t =>
                                 t.Name.ToLower() == techRequest.Name.ToLower()
@@ -341,7 +360,11 @@ public class WorkExperiencesController : ControllerBase
                         }
                         else
                         {
-                            _logger.LogDebug("UpdateWorkExperience: Found technology {TechnologyName} by ID {TechnologyId}", technology.Name, technology.Id);
+                            _logger.LogDebug(
+                                "UpdateWorkExperience: Found technology {TechnologyName} by ID {TechnologyId}",
+                                technology.Name,
+                                technology.Id
+                            );
                         }
                     }
                     else
@@ -352,7 +375,11 @@ public class WorkExperiencesController : ControllerBase
                         );
                         if (technology != null)
                         {
-                            _logger.LogDebug("UpdateWorkExperience: Found existing technology {TechnologyName} with ID {TechnologyId}", technology.Name, technology.Id);
+                            _logger.LogDebug(
+                                "UpdateWorkExperience: Found existing technology {TechnologyName} with ID {TechnologyId}",
+                                technology.Name,
+                                technology.Id
+                            );
                         }
                     }
 
@@ -365,14 +392,23 @@ public class WorkExperiencesController : ControllerBase
 
                         if (existingTech != null)
                         {
-                            _logger.LogDebug("UpdateWorkExperience: Technology {TechnologyName} already exists, using existing", techRequest.Name);
+                            _logger.LogDebug(
+                                "UpdateWorkExperience: Technology {TechnologyName} already exists, using existing",
+                                techRequest.Name
+                            );
                             technology = existingTech;
                         }
                         else
                         {
                             // Validate field lengths before creating
-                            var validatedName = techRequest.Name?.Length > 50 ? techRequest.Name.Substring(0, 50) : techRequest.Name;
-                            var validatedCategory = techRequest.Category?.Length > 50 ? techRequest.Category.Substring(0, 50) : techRequest.Category;
+                            var validatedName =
+                                techRequest.Name?.Length > 50
+                                    ? techRequest.Name.Substring(0, 50)
+                                    : techRequest.Name;
+                            var validatedCategory =
+                                techRequest.Category?.Length > 50
+                                    ? techRequest.Category.Substring(0, 50)
+                                    : techRequest.Category;
 
                             technology = new Technology
                             {
@@ -381,7 +417,11 @@ public class WorkExperiencesController : ControllerBase
                                 Category = validatedCategory ?? "Other",
                             };
                             _context.Technologies.Add(technology);
-                            _logger.LogDebug("UpdateWorkExperience: Created new technology {TechnologyName} with ID {TechnologyId}", validatedName, technology.Id);
+                            _logger.LogDebug(
+                                "UpdateWorkExperience: Created new technology {TechnologyName} with ID {TechnologyId}",
+                                validatedName,
+                                technology.Id
+                            );
                         }
                     }
                     else
@@ -393,7 +433,11 @@ public class WorkExperiencesController : ControllerBase
                         if (updatedCategory.Length > 50)
                         {
                             updatedCategory = updatedCategory.Substring(0, 50);
-                            _logger.LogWarning("UpdateWorkExperience: Truncated category '{OriginalCategory}' to 50 characters for technology {TechnologyName}", techRequest.Category, technology.Name);
+                            _logger.LogWarning(
+                                "UpdateWorkExperience: Truncated category '{OriginalCategory}' to 50 characters for technology {TechnologyName}",
+                                techRequest.Category,
+                                technology.Name
+                            );
                         }
 
                         if (technology.Category != updatedCategory)
@@ -404,13 +448,19 @@ public class WorkExperiencesController : ControllerBase
                                 _context.Technologies.Attach(technology);
                             }
                             technology.Category = updatedCategory;
-                            _logger.LogDebug("UpdateWorkExperience: Updated technology {TechnologyName} category from {OldCategory} to {NewCategory}", technology.Name, technology.Category, updatedCategory);
+                            _logger.LogDebug(
+                                "UpdateWorkExperience: Updated technology {TechnologyName} category from {OldCategory} to {NewCategory}",
+                                technology.Name,
+                                technology.Category,
+                                updatedCategory
+                            );
                         }
                     }
 
                     // Check if relationship already exists
-                    var existingRelationship = existingTechRelationships
-                        .FirstOrDefault(wt => wt.TechnologyId == technology.Id);
+                    var existingRelationship = existingTechRelationships.FirstOrDefault(wt =>
+                        wt.TechnologyId == technology.Id
+                    );
 
                     if (existingRelationship == null)
                     {
@@ -428,8 +478,10 @@ public class WorkExperiencesController : ControllerBase
             else
             {
                 // If no technologies provided, remove all existing ones
-                var existingTechRelationships = await _context.WorkExperienceTechnologies
-                    .Where(wt => wt.WorkExperienceId == workExperience.Id)
+                var existingTechRelationships = await _context
+                    .WorkExperienceTechnologies.Where(wt =>
+                        wt.WorkExperienceId == workExperience.Id
+                    )
                     .ToListAsync();
 
                 if (existingTechRelationships.Any())
@@ -442,24 +494,51 @@ public class WorkExperiencesController : ControllerBase
             try
             {
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("UpdateWorkExperience: Successfully updated work experience {WorkExperienceId} for user {UserId}", id, userId);
+                _logger.LogInformation(
+                    "UpdateWorkExperience: Successfully updated work experience {WorkExperienceId} for user {UserId}",
+                    id,
+                    userId
+                );
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException concurrencyEx)
             {
-                _logger.LogError(concurrencyEx, "UpdateWorkExperience: Concurrency error updating work experience {WorkExperienceId}", id);
-                return StatusCode(409, "Work experience was modified by another process. Please refresh and try again.");
+                _logger.LogError(
+                    concurrencyEx,
+                    "UpdateWorkExperience: Concurrency error updating work experience {WorkExperienceId}",
+                    id
+                );
+                return StatusCode(
+                    409,
+                    "Work experience was modified by another process. Please refresh and try again."
+                );
             }
         }
         catch (DbUpdateException dbEx)
         {
-            _logger.LogError(dbEx, "UpdateWorkExperience: Database update error for work experience {WorkExperienceId}. Inner exception: {InnerException}", id, dbEx.InnerException?.Message ?? "None");
-            return StatusCode(500, $"Database error occurred while updating work experience: {dbEx.InnerException?.Message ?? dbEx.Message}");
+            _logger.LogError(
+                dbEx,
+                "UpdateWorkExperience: Database update error for work experience {WorkExperienceId}. Inner exception: {InnerException}",
+                id,
+                dbEx.InnerException?.Message ?? "None"
+            );
+            return StatusCode(
+                500,
+                $"Database error occurred while updating work experience: {dbEx.InnerException?.Message ?? dbEx.Message}"
+            );
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "UpdateWorkExperience: Unexpected error updating work experience {WorkExperienceId}. Stack trace: {StackTrace}", id, ex.StackTrace);
-            return StatusCode(500, $"Internal server error occurred while updating work experience: {ex.Message}");
+            _logger.LogError(
+                ex,
+                "UpdateWorkExperience: Unexpected error updating work experience {WorkExperienceId}. Stack trace: {StackTrace}",
+                id,
+                ex.StackTrace
+            );
+            return StatusCode(
+                500,
+                $"Internal server error occurred while updating work experience: {ex.Message}"
+            );
         }
     }
 

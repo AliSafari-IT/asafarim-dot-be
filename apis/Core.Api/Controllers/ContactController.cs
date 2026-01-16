@@ -24,33 +24,41 @@ public sealed class ContactController : ControllerBase
     public IActionResult Get()
     {
         // Return a simple response indicating the contact endpoint is available
-        return Ok(new { 
-            message = "Contact endpoint is available", 
-            methods = new[] { "POST" },
-            description = "Send a POST request with email, subject, and message to submit a contact form"
-        });
+        return Ok(
+            new
+            {
+                message = "Contact endpoint is available",
+                methods = new[] { "POST" },
+                description = "Send a POST request with email, subject, and message to submit a contact form",
+            }
+        );
     }
 
     [HttpPost]
     [EnableCors("frontend")]
     public async Task<IActionResult> Post([FromBody] ContactRequest req)
     {
-        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
 
         var contact = new Contact
         {
             Email = req.Email,
             Subject = req.Subject,
             Message = req.Message,
-            EmailSent = true // Since we're sending email right away
+            EmailSent = true, // Since we're sending email right away
         };
 
         _context.Contacts.Add(contact);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Contact from {Email}: {Subject} ({Len} chars)",
-            req.Email, req.Subject, req.Message?.Length ?? 0);
-            
+        _logger.LogInformation(
+            "Contact from {Email}: {Subject} ({Len} chars)",
+            req.Email,
+            req.Subject,
+            req.Message?.Length ?? 0
+        );
+
         return Accepted(new { ok = true, id = contact.Id });
     }
 }

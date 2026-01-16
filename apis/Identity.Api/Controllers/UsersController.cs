@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Identity.Api.Data;
+using Identity.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -82,11 +84,7 @@ public class UserController : ControllerBase
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
-                users.Add(new BatchUsersResponse(
-                    user.Id.ToString(),
-                    user.Email,
-                    user.UserName
-                ));
+                users.Add(new BatchUsersResponse(user.Id.ToString(), user.Email, user.UserName));
             }
         }
 

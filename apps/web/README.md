@@ -9,6 +9,7 @@
 ## 🚀 Features
 
 ### 🏠 Portfolio Management
+
 - **Public Portfolio**: Showcase projects, research, and publications
 - **Resume Builder**: Create and manage multiple resume versions
 - **Public Resume View**: Share professional resumes with custom URLs
@@ -16,6 +17,7 @@
 - **Project Showcase**: Highlight technical projects with descriptions and links
 
 ### 📋 Resume System
+
 - **Multi-Section Management**: Skills, Education, Experience, Projects, Certifications, Languages, Awards, References
 - **Multiple Layouts**: Professional, Modern, and Print-optimized layouts
 - **PDF Export**: Generate PDF resumes with html2pdf.js
@@ -23,6 +25,7 @@
 - **Real-time Preview**: Live preview of resume changes
 
 ### 🌐 Content Pages
+
 - **Landing Page**: Modern, responsive homepage
 - **About**: Personal and professional background
 - **Contact**: Contact form with EmailJS integration
@@ -30,12 +33,14 @@
 - **What's Building**: Current projects and work-in-progress
 
 ### 🔐 Admin Features
+
 - **Protected Routes**: JWT-based authentication
 - **Entity Management**: CRUD operations for all resume sections
 - **Content Management**: Manage publications and portfolio items
 - **User-specific Data**: Multi-user support with data isolation
 
 ### 🌍 Internationalization
+
 - **Multi-language Support**: English and Dutch (expandable)
 - **i18n Integration**: Powered by @asafarim/shared-i18n
 - **Language Switching**: Seamless language transitions
@@ -43,6 +48,7 @@
 ## 🏗️ Architecture
 
 ### Tech Stack
+
 - **Frontend Framework**: React 18.3 with TypeScript
 - **Build Tool**: Vite 7.1
 - **Routing**: React Router DOM 6.30
@@ -56,6 +62,7 @@
 - **Logging**: Shared Logging (@asafarim/shared-logging)
 
 ### Project Structure
+
 ```
 web/
 ├── src/
@@ -117,6 +124,7 @@ web/
 ## 🛠️ Installation
 
 ### Prerequisites
+
 - Node.js 18+ and pnpm
 - Access to Core API backend (see `/apis/Core.Api`)
 - Access to Identity API for authentication
@@ -124,12 +132,14 @@ web/
 ### Setup
 
 1. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
 
 2. **Configure environment variables**:
    Create a `.env` file in the root directory:
+
    ```env
    VITE_CORE_API_BASE=http://core.asafarim.local:5102
    VITE_IDENTITY_API_URL=http://identity.asafarim.local:5101/api
@@ -137,6 +147,7 @@ web/
    ```
 
 3. **Start development server**:
+
    ```bash
    pnpm dev
    # or
@@ -144,11 +155,13 @@ web/
    ```
 
 4. **Build for production**:
+
    ```bash
    pnpm build
    ```
 
 5. **Preview production build**:
+
    ```bash
    pnpm preview
    ```
@@ -179,6 +192,7 @@ web/
 The application communicates with multiple backend APIs:
 
 ### Core API Endpoints
+
 - **Resumes**: `GET/POST/PUT/DELETE /api/resumes`
 - **Skills**: `GET/POST/PUT/DELETE /api/skills`
 - **Education**: `GET/POST/PUT/DELETE /api/educations`
@@ -194,6 +208,7 @@ The application communicates with multiple backend APIs:
 - **Contact**: `POST /api/contact`
 
 ### Identity API Endpoints
+
 - `POST /auth/login` - User authentication
 - `POST /auth/logout` - User logout
 - `GET /auth/me` - Get current user
@@ -226,6 +241,7 @@ This application is part of a monorepo and uses shared workspace packages:
 ## 🚢 Deployment
 
 ### Production Build
+
 ```bash
 pnpm build
 ```
@@ -233,7 +249,9 @@ pnpm build
 The build output will be in the `dist/` directory.
 
 ### Deployment Script
+
 The monorepo includes a selective deployment script:
+
 ```bash
 pnpm sd  # Select and deploy specific apps
 ```
@@ -249,11 +267,13 @@ VITE_IDENTITY_API_URL=https://identity.asafarim.be/api
 ```
 
 ### Nginx Configuration
+
 The application is served via Nginx at `/var/www/asafarim-dot-be/apps/web`
 
 ## 🔐 Authentication
 
 The application uses JWT-based authentication:
+
 - Tokens are stored in HTTP-only cookies (`atk` for access, `rtk` for refresh)
 - Protected routes require valid authentication
 - Integration with Identity API for user management
@@ -262,6 +282,7 @@ The application uses JWT-based authentication:
 ## 📱 Responsive Design
 
 The application is fully responsive:
+
 - **Mobile-first approach**
 - **Breakpoints**: xs, sm, md, lg, xl, 2xl
 - **Adaptive layouts**: Different layouts for different screen sizes
@@ -270,6 +291,7 @@ The application is fully responsive:
 ## 🖨️ PDF Export
 
 Resume PDF export features:
+
 - **html2pdf.js**: Client-side PDF generation
 - **Multiple layouts**: Choose from different resume templates
 - **Print optimization**: Special CSS for print media
@@ -278,6 +300,7 @@ Resume PDF export features:
 ## 📧 Contact Form
 
 Contact form integration:
+
 - **EmailJS**: Client-side email sending
 - **Validation**: Form validation before submission
 - **Success/Error handling**: User feedback on submission

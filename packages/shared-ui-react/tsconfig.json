@@ -17,8 +17,5 @@
     "composite": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    { "path": "../shared-i18n" }
-  ]
+  "exclude": ["node_modules", "dist"]
 }

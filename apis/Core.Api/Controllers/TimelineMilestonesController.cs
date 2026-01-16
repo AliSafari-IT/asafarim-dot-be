@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Core.Api.Data;
 using Core.Api.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -16,11 +16,11 @@ namespace Core.Api.Controllers;
 [Route("api/[controller]")]
 public class TimelineMilestonesController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly CoreDbContext _context;
     private readonly ILogger<TimelineMilestonesController> _logger;
 
     public TimelineMilestonesController(
-        AppDbContext context,
+        CoreDbContext context,
         ILogger<TimelineMilestonesController> logger
     )
     {
@@ -44,9 +44,10 @@ public class TimelineMilestonesController : ControllerBase
             }
 
             // Verify the job belongs to the user
-            var jobBelongsToUser = await _context.JobApplications
-                .AnyAsync(j => j.Id == jobId && j.UserId == userId);
-            
+            var jobBelongsToUser = await _context.JobApplications.AnyAsync(j =>
+                j.Id == jobId && j.UserId == userId
+            );
+
             if (!jobBelongsToUser)
             {
                 return NotFound();
@@ -99,8 +100,7 @@ public class TimelineMilestonesController : ControllerBase
             }
 
             var milestone = await _context
-                .TimelineMilestones
-                .Include(t => t.JobApplication)
+                .TimelineMilestones.Include(t => t.JobApplication)
                 .Where(t => t.Id == id && t.JobApplication.UserId == userId)
                 .Select(t => new TimelineMilestoneDto
                 {
@@ -153,9 +153,10 @@ public class TimelineMilestonesController : ControllerBase
             }
 
             // Verify the job application exists and belongs to the user
-            var jobBelongsToUser = await _context.JobApplications
-                .AnyAsync(j => j.Id == createDto.JobApplicationId && j.UserId == userId);
-            
+            var jobBelongsToUser = await _context.JobApplications.AnyAsync(j =>
+                j.Id == createDto.JobApplicationId && j.UserId == userId
+            );
+
             if (!jobBelongsToUser)
             {
                 return BadRequest("Job application not found or access denied");
@@ -222,7 +223,10 @@ public class TimelineMilestonesController : ControllerBase
     // PUT: api/TimelineMilestones/{id}
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<IActionResult> UpdateMilestone(Guid id, [FromBody] UpdateTimelineMilestoneDto updateDto)
+    public async Task<IActionResult> UpdateMilestone(
+        Guid id,
+        [FromBody] UpdateTimelineMilestoneDto updateDto
+    )
     {
         try
         {
@@ -232,11 +236,11 @@ public class TimelineMilestonesController : ControllerBase
                 return Unauthorized(new { error = "User not authenticated" });
             }
 
-            var milestone = await _context.TimelineMilestones
-                .Include(t => t.JobApplication)
+            var milestone = await _context
+                .TimelineMilestones.Include(t => t.JobApplication)
                 .Where(t => t.Id == id && t.JobApplication.UserId == userId)
                 .FirstOrDefaultAsync();
-            
+
             if (milestone == null)
             {
                 return NotFound();
@@ -285,11 +289,11 @@ public class TimelineMilestonesController : ControllerBase
                 return Unauthorized(new { error = "User not authenticated" });
             }
 
-            var milestone = await _context.TimelineMilestones
-                .Include(t => t.JobApplication)
+            var milestone = await _context
+                .TimelineMilestones.Include(t => t.JobApplication)
                 .Where(t => t.Id == id && t.JobApplication.UserId == userId)
                 .FirstOrDefaultAsync();
-            
+
             if (milestone == null)
             {
                 return NotFound();
@@ -328,36 +332,39 @@ public class TimelineMilestonesController : ControllerBase
                 return Unauthorized(new { error = "User not authenticated" });
             }
 
-            var totalApplications = await _context.JobApplications
-                .Where(j => j.UserId == userId)
+            var totalApplications = await _context
+                .JobApplications.Where(j => j.UserId == userId)
                 .CountAsync();
-            
-            var totalMilestones = await _context.TimelineMilestones
-                .Where(m => m.JobApplication.UserId == userId)
+
+            var totalMilestones = await _context
+                .TimelineMilestones.Where(m => m.JobApplication.UserId == userId)
                 .CountAsync();
-            
-            var completedMilestones = await _context.TimelineMilestones
-                .Where(m => m.JobApplication.UserId == userId && m.IsCompleted)
+
+            var completedMilestones = await _context
+                .TimelineMilestones.Where(m => m.JobApplication.UserId == userId && m.IsCompleted)
                 .CountAsync();
 
             // Calculate success rate (jobs with status "Offer" or "Accepted")
-            var successfulJobs = await _context.JobApplications
-                .Where(j => j.UserId == userId && (j.Status == "Offer" || j.Status == "Accepted"))
+            var successfulJobs = await _context
+                .JobApplications.Where(j =>
+                    j.UserId == userId && (j.Status == "Offer" || j.Status == "Accepted")
+                )
                 .CountAsync();
             var successRate =
                 totalApplications > 0 ? (double)successfulJobs / totalApplications * 100 : 0;
 
             // Calculate average time to offer
             var offerJobs = await _context
-                .JobApplications
-                .Where(j => j.UserId == userId && (j.Status == "Offer" || j.Status == "Accepted"))
+                .JobApplications.Where(j =>
+                    j.UserId == userId && (j.Status == "Offer" || j.Status == "Accepted")
+                )
                 .ToListAsync();
 
             double averageTimeToOffer = 0;
             if (offerJobs.Any())
             {
                 var totalDays = offerJobs.Sum(j =>
-                    (j.UpdatedAt ?? j.CreatedAt).Subtract(j.AppliedDate).TotalDays
+                    (j.UpdatedAt > j.CreatedAt ? j.UpdatedAt : j.CreatedAt).Subtract(j.AppliedDate).TotalDays
                 );
                 averageTimeToOffer = totalDays / offerJobs.Count;
             }
@@ -368,8 +375,7 @@ public class TimelineMilestonesController : ControllerBase
 
             // Get most responsive companies (companies with most milestones)
             var mostResponsiveCompanies = await _context
-                .TimelineMilestones
-                .Where(t => t.JobApplication.UserId == userId)
+                .TimelineMilestones.Where(t => t.JobApplication.UserId == userId)
                 .GroupBy(t => t.JobApplicationId)
                 .Select(g => new { JobId = g.Key, MilestoneCount = g.Count() })
                 .OrderByDescending(x => x.MilestoneCount)
@@ -385,14 +391,9 @@ public class TimelineMilestonesController : ControllerBase
 
             // Get top cities where user applied most
             var topCities = await _context
-                .JobApplications
-                .Where(j => j.UserId == userId && !string.IsNullOrEmpty(j.City))
+                .JobApplications.Where(j => j.UserId == userId && !string.IsNullOrEmpty(j.City))
                 .GroupBy(j => j.City)
-                .Select(g => new CityStatistic
-                {
-                    City = g.Key!,
-                    ApplicationCount = g.Count()
-                })
+                .Select(g => new CityStatistic { City = g.Key!, ApplicationCount = g.Count() })
                 .OrderByDescending(c => c.ApplicationCount)
                 .Take(3)
                 .ToListAsync();
@@ -557,8 +558,7 @@ public class TimelineMilestonesController : ControllerBase
                 LastUpdated =
                     lastMilestone?.UpdatedAt
                     ?? lastMilestone?.CreatedAt
-                    ?? job.UpdatedAt
-                    ?? job.CreatedAt,
+                    ?? (job.UpdatedAt > job.CreatedAt ? job.UpdatedAt : job.CreatedAt),
                 NextReminder = nextReminder,
                 StageProgress = stages,
             };

@@ -1,9 +1,14 @@
 using System.Security.Claims;
+using Identity.Api.Data;
+using Identity.Api.Models;
 using Identity.Api.Services;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using MimeKit;
 
 namespace Identity.Api.Controllers;
 
@@ -54,7 +59,7 @@ public class AuthController : ControllerBase
     /// Register a new user
     /// </summary>
     [HttpPost("register")]
-    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest req)
     {
@@ -69,12 +74,19 @@ public class AuthController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
+        var email = req.Email.Trim();
+        var userName = string.IsNullOrWhiteSpace(req.UserName) ? email : req.UserName.Trim();
+        var firstName = (req.FirstName ?? "").Trim();
+        var lastName = (req.LastName ?? "").Trim();
+
         var user = new AppUser
         {
             Id = Guid.NewGuid(),
-            Email = req.Email,
-            UserName = req.UserName ?? req.Email,
-            EmailConfirmed = false, // Set to false, implement email confirmation
+            Email = email,
+            UserName = userName,
+            FirstName = firstName,
+            LastName = lastName,
+            EmailConfirmed = false,
         };
 
         var result = await _userManager.CreateAsync(user, req.Password);
@@ -89,18 +101,34 @@ public class AuthController : ControllerBase
 
         _logger.LogInformation("User registered successfully: {Email}", req.Email);
 
-        // Generate tokens
-        var roleNames = await GetMergedRolesAsync(user);
-        var accessToken = _tokenService.CreateAccessToken(user, roleNames);
-        var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
-            user.Id,
-            GetIpAddress()
+        // Generate email confirmation token
+        var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmationLink =
+            $"{_configuration["PasswordSetup:BaseUrl"] ?? "http://identity.asafarim.local:5177"}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(emailConfirmationToken)}";
+
+        // Send confirmation email
+        bool emailSent = true;
+        try
+        {
+            await _emailService.SendEmailConfirmationAsync(user.Email!, confirmationLink);
+            _logger.LogInformation("Email confirmation sent to: {Email}", user.Email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send confirmation email to: {Email}", user.Email);
+            emailSent = false;
+        }
+
+        // Do NOT issue tokens or set cookies - user must confirm email first
+        return Ok(
+            new RegisterResponse(
+                Registered: true,
+                RequiresEmailConfirmation: true,
+                Email: user.Email!,
+                EmailSent: emailSent,
+                Message: "Registration successful. Please confirm your email before logging in."
+            )
         );
-
-        // Set cookies
-        SetAuthCookies(accessToken, refreshToken.Token, persistent: true, user);
-
-        return Ok(CreateAuthResponse(user, roleNames, accessToken, refreshToken.Token));
     }
 
     /// <summary>
@@ -120,6 +148,15 @@ public class AuthController : ControllerBase
             _logger.LogWarning("Login attempt for non-existent user: {Email}", req.Email);
             return Unauthorized(
                 new { message = "Invalid email or password", code = "user_not_found" }
+            );
+        }
+
+        // Check if email is confirmed
+        if (!user.EmailConfirmed)
+        {
+            _logger.LogWarning("Login attempt with unconfirmed email: {Email}", req.Email);
+            return Unauthorized(
+                new { message = "Email not confirmed", code = "email_not_confirmed" }
             );
         }
 
@@ -172,6 +209,78 @@ public class AuthController : ControllerBase
         SetAuthCookies(accessToken, refreshToken.Token, persistent: req.RememberMe, user);
 
         return Ok(CreateAuthResponse(user, roleNames, accessToken, refreshToken.Token));
+    }
+
+    /// <summary>
+    /// Confirm email address
+    /// </summary>
+    [HttpGet("confirm-email")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+    {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+        {
+            return BadRequest(new { confirmed = false, code = "invalid_parameters" });
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            _logger.LogWarning("Email confirmation attempt for non-existent user: {UserId}", userId);
+            return BadRequest(new { confirmed = false, code = "user_not_found" });
+        }
+
+        if (user.EmailConfirmed)
+        {
+            _logger.LogInformation("Email already confirmed for user: {Email}", user.Email);
+            return Ok(new { confirmed = true, message = "Email already confirmed" });
+        }
+
+        var result = await _userManager.ConfirmEmailAsync(user, token);
+        if (!result.Succeeded)
+        {
+            _logger.LogWarning("Invalid email confirmation token for user: {Email}", user.Email);
+            return BadRequest(new { confirmed = false, code = "invalid_token" });
+        }
+
+        _logger.LogInformation("Email confirmed successfully for user: {Email}", user.Email);
+        return Ok(new { confirmed = true, message = "Email confirmed successfully" });
+    }
+
+    /// <summary>
+    /// Resend email confirmation
+    /// </summary>
+    [HttpPost("resend-confirmation")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ResendConfirmation([FromBody] ResendConfirmationRequest req)
+    {
+        // Always return success to avoid account enumeration
+        if (string.IsNullOrEmpty(req.Email))
+        {
+            return Ok(new { message = "If an account exists, a confirmation email was sent." });
+        }
+
+        var user = await _userManager.FindByEmailAsync(req.Email);
+        if (user != null && !user.EmailConfirmed)
+        {
+            // Generate new confirmation token
+            var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink =
+                $"{_configuration["PasswordSetup:BaseUrl"] ?? "http://identity.asafarim.local:5177"}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(emailConfirmationToken)}";
+
+            try
+            {
+                await _emailService.SendEmailConfirmationAsync(user.Email!, confirmationLink);
+                _logger.LogInformation("Confirmation email resent to: {Email}", user.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to resend confirmation email to: {Email}", user.Email);
+            }
+        }
+
+        return Ok(new { message = "If an account exists, a confirmation email was sent." });
     }
 
     /// <summary>
@@ -382,19 +491,19 @@ public class AuthController : ControllerBase
         var refreshToken = await _refreshTokenService.GetActiveRefreshTokenAsync(
             refreshTokenString
         );
-        if (refreshToken == null)
+        if (refreshToken is null)
         {
             _logger.LogWarning("RefreshToken: Invalid or expired refresh token");
             ClearAuthCookies();
             return Unauthorized(new { message = "Invalid or expired refresh token" });
         }
 
-        var user = refreshToken.User;
+        var user = refreshToken!.User;
         var ipAddress = GetIpAddress();
 
         // Rotate refresh token
         var newRefreshToken = await _refreshTokenService.RotateRefreshTokenAsync(
-            refreshToken,
+            refreshToken!,
             ipAddress
         );
         if (newRefreshToken == null)
@@ -731,7 +840,11 @@ public class AuthController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Error getting merged roles for user {UserId}, falling back to Identity API roles", user.Id);
+            _logger.LogWarning(
+                ex,
+                "Error getting merged roles for user {UserId}, falling back to Identity API roles",
+                user.Id
+            );
             // Fallback to Identity API roles only
             return await _userManager.GetRolesAsync(user);
         }

@@ -74,7 +74,7 @@ public class WorkExperienceDto
 
 public class PublicationDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string? Authors { get; set; }
     public string? Journal { get; set; }

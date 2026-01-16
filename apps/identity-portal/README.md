@@ -6,9 +6,10 @@ A comprehensive identity and access management (IAM) web application built with 
 
 The Identity Portal is a modern, responsive single-page application (SPA) that serves as the central authentication and user management hub for all Asafarim applications. It provides secure login/registration, user profile management, password management, and administrative controls for managing users and roles.
 
-**Live URL:** https://identity.asafarim.be
+**Live URL:** <https://identity.asafarim.be>
 
 **Key Features:**
+
 - 🔐 **User Authentication:** Secure login, registration, and password reset
 - 👤 **Profile Management:** View and edit personal information
 - 🔑 **Password Management:** Initial setup and password change functionality
@@ -26,6 +27,7 @@ The Identity Portal is a modern, responsive single-page application (SPA) that s
 ## Tech Stack
 
 ### Core Technologies
+
 - **Frontend Framework:** React 18.3.1
 - **Language:** TypeScript 5.8.3
 - **Build Tool:** Vite 7.1.2
@@ -33,12 +35,14 @@ The Identity Portal is a modern, responsive single-page application (SPA) that s
 - **Package Manager:** pnpm (workspace)
 
 ### Styling & UI
+
 - **Design System:** `@asafarim/design-tokens` v0.4.1
 - **UI Components:** `@asafarim/shared-ui-react` (workspace)
 - **Icons:** Lucide React 0.548.0
 - **Theming:** `@asafarim/react-themes` (workspace)
 
 ### Features & Utilities
+
 - **Notifications:** `@asafarim/toast` v1.2.0
 - **Internationalization:** `@asafarim/shared-i18n` (workspace)
 - **Validation:** `@asafarim/shared-validation` (workspace)
@@ -46,6 +50,7 @@ The Identity Portal is a modern, responsive single-page application (SPA) that s
 - **Privacy:** `@asafarim/react-privacy-consent` v1.7.2
 
 ### Development Tools
+
 - **Linting:** ESLint 9.33.0 with TypeScript support
 - **Type Checking:** TypeScript 5.8.3
 - **React Plugins:** Vite React plugin, React Hooks ESLint plugin
@@ -114,23 +119,26 @@ src/
 ### Installation
 
 1. **Clone the repository** (if not already done):
+
 ```bash
 git clone https://github.com/yourusername/asafarim-dot-be.git
 cd asafarim-dot-be
 ```
 
-2. **Install dependencies** (from monorepo root):
+1. **Install dependencies** (from monorepo root):
+
 ```bash
 pnpm install
 ```
 
-3. **Configure environment variables:**
+1. **Configure environment variables:**
 Create `.env` file in `apps/identity-portal/`:
+
 ```bash
 cp apps/identity-portal/.env.example apps/identity-portal/.env
 ```
 
-4. **Edit environment variables** (see Configuration section below)
+1. **Edit environment variables** (see Configuration section below)
 
 ### Development
 
@@ -146,10 +154,12 @@ pnpm start
 ```
 
 The application will be available at:
+
 - **Local:** `http://identity.asafarim.local:5177`
 - **Network:** `http://<your-ip>:5177`
 
 **Development Features:**
+
 - Hot Module Replacement (HMR) for instant updates
 - React Fast Refresh for component state preservation
 - TypeScript type checking in real-time
@@ -171,6 +181,7 @@ pnpm build
 The optimized build output will be in the `dist/` directory.
 
 **Build Optimizations:**
+
 - Minified JavaScript and CSS
 - Tree-shaking for smaller bundle sizes
 - Code splitting for lazy-loaded routes
@@ -194,6 +205,7 @@ The preview server will start at `http://localhost:4173`
 The application uses environment files for configuration:
 
 **Development (.env):**
+
 ```
 VITE_IDENTITY_API_URL=https://identity.asafarim.be
 VITE_IS_PRODUCTION=false
@@ -201,6 +213,7 @@ VITE_TASKS_URL=https://taskmanagement.asafarim.be
 ```
 
 **Production (.env.production):**
+
 ```
 VITE_IDENTITY_API_URL=https://identity.asafarim.be
 VITE_IS_PRODUCTION=true
@@ -216,6 +229,7 @@ VITE_TASKS_URL=https://taskmanagement.asafarim.be
 | `VITE_TASKS_URL` | URL for the task management application | `https://taskmanagement.asafarim.be` |
 
 **Important Notes:**
+
 - All Vite environment variables must be prefixed with `VITE_`
 - Variables are embedded at build time (not runtime)
 - The app automatically switches configurations based on the build mode
@@ -227,12 +241,14 @@ VITE_TASKS_URL=https://taskmanagement.asafarim.be
 The application uses React Router with the following route structure:
 
 ### Public Routes (Unauthenticated)
+
 - `/login` - User login page
 - `/register` - User registration page
 - `/forgot-password` - Password reset request
 - `/setup-password` - Initial password setup
 
 ### Protected Routes (Authenticated)
+
 - `/dashboard` - User dashboard
 - `/me` - Current user profile
 - `/admin-area` - Admin dashboard
@@ -243,6 +259,7 @@ The application uses React Router with the following route structure:
 - `/admin-area/edit-user/:id` - Edit user
 
 ### Special Routes
+
 - `/logout` - Clear authentication and redirect to login
 - `/sync-logout` - Synchronize logout across sessions
 - `/` - Redirects to `/login`
@@ -262,6 +279,7 @@ The application implements a robust authentication system:
 ### Auth Context
 
 The `AuthContext` provides:
+
 - Current user information
 - Authentication state (loading, error)
 - Login/register/logout functions
@@ -271,6 +289,7 @@ The `AuthContext` provides:
 ### Protected Route Component
 
 The `ProtectedRoute` component:
+
 - Checks authentication status
 - Redirects unauthenticated users to login
 - Redirects authenticated users away from public routes
@@ -279,6 +298,7 @@ The `ProtectedRoute` component:
 ## Features
 
 ### User Authentication
+
 - **Secure Login:** Email and password authentication with JWT tokens
 - **User Registration:** Self-service registration with email validation
 - **Password Reset:** Email-based password recovery flow
@@ -289,6 +309,7 @@ The `ProtectedRoute` component:
 - **Sync Logout:** Cross-tab logout synchronization
 
 ### User Profile Management
+
 - **View Profile:** Display personal information and preferences
 - **Edit Profile:** Update name, email, and other details
 - **Change Password:** Secure password change with current password verification
@@ -297,6 +318,7 @@ The `ProtectedRoute` component:
 - **View Other Profiles:** Admin can view any user's profile
 
 ### Administrative Features
+
 - **User Management:**
   - Create new users with email invitation
   - View all users with pagination
@@ -312,6 +334,7 @@ The `ProtectedRoute` component:
 - **Admin Dashboard:** Overview of system statistics
 
 ### User Experience
+
 - **Responsive Design:** Mobile-first, works on all devices
 - **Toast Notifications:** Real-time feedback for user actions
 - **Error Handling:** Graceful error messages and recovery
@@ -341,11 +364,13 @@ pnpm lint --fix
 The project uses TypeScript for type safety and better developer experience.
 
 **Configuration Files:**
+
 - `tsconfig.json` - Main TypeScript configuration
 - `tsconfig.app.json` - Application-specific settings
 - `tsconfig.node.json` - Build tool configuration
 
 **Type Checking:**
+
 ```bash
 # Check types without building
 tsc --noEmit
@@ -359,12 +384,14 @@ pnpm build
 The project uses ESLint 9 with flat config format (`eslint.config.js`):
 
 **Enabled Rules:**
+
 - TypeScript ESLint parser and recommended rules
 - React Hooks rules for proper hook usage
 - React Refresh rules for HMR compatibility
 - Custom rules for code consistency
 
 **Ignored Patterns:**
+
 - `dist/` - Build output
 - `node_modules/` - Dependencies
 - `.vite/` - Vite cache
@@ -401,6 +428,7 @@ The application uses several shared packages from the monorepo:
 ### Adding New Pages
 
 1. **Create page component** in `src/pages/`:
+
 ```typescript
 // src/pages/NewPage.tsx
 import { FC } from 'react';
@@ -414,9 +442,10 @@ export const NewPage: FC = () => {
 };
 ```
 
-2. **Create supporting components** in `src/components/` if needed
+1. **Create supporting components** in `src/components/` if needed
 
-3. **Add route** to `App.tsx`:
+2. **Add route** to `App.tsx`:
+
 ```typescript
 import { NewPage } from './pages/NewPage';
 
@@ -428,11 +457,12 @@ import { NewPage } from './pages/NewPage';
 } />
 ```
 
-4. **Add navigation link** if needed in `Navbar.tsx`
+1. **Add navigation link** if needed in `Navbar.tsx`
 
 ### Adding New Components
 
 1. **Create component** in `src/components/`:
+
 ```typescript
 // src/components/MyComponent.tsx
 import { FC } from 'react';
@@ -453,9 +483,9 @@ export const MyComponent: FC<MyComponentProps> = ({ title, onAction }) => {
 };
 ```
 
-2. **Use shared UI components** from `@asafarim/shared-ui-react`
-3. **Apply design tokens** for consistent styling
-4. **Export** from component index if creating a library
+1. **Use shared UI components** from `@asafarim/shared-ui-react`
+2. **Apply design tokens** for consistent styling
+3. **Export** from component index if creating a library
 
 ### API Integration
 
@@ -491,6 +521,7 @@ const updateProfile = async (data: UpdateProfileData) => {
 ```
 
 **Available API Methods:**
+
 - `login(email, password)` - Authenticate user
 - `register(userData)` - Register new user
 - `logout()` - Logout current user
@@ -513,6 +544,7 @@ const updateProfile = async (data: UpdateProfileData) => {
 ## Performance Optimization
 
 ### Build-Time Optimizations
+
 - **Code Splitting:** Routes are lazy-loaded for smaller initial bundle
 - **Tree Shaking:** Unused code is eliminated from production builds
 - **Minification:** JavaScript and CSS are minified
@@ -521,6 +553,7 @@ const updateProfile = async (data: UpdateProfileData) => {
 - **Deduplication:** React and React-DOM are deduplicated across workspace
 
 ### Runtime Optimizations
+
 - **React.memo:** Prevent unnecessary re-renders
 - **useMemo/useCallback:** Memoize expensive computations
 - **Lazy Loading:** Components loaded on-demand
@@ -529,6 +562,7 @@ const updateProfile = async (data: UpdateProfileData) => {
 - **Image Lazy Loading:** Native lazy loading for images
 
 ### Performance Monitoring
+
 ```bash
 # Analyze bundle size
 pnpm build
@@ -539,6 +573,7 @@ pnpm build --mode analyze
 ```
 
 ### Performance Best Practices
+
 - Keep component render functions pure
 - Avoid inline function definitions in JSX
 - Use proper key props in lists
@@ -560,11 +595,13 @@ The application targets modern browsers with ES2020+ support:
 | Samsung Internet | 15+ | Fully supported |
 
 **Not Supported:**
+
 - Internet Explorer (all versions)
 - Legacy Edge (pre-Chromium)
 - Browsers without ES2020 support
 
 **Required Browser Features:**
+
 - ES2020 JavaScript features
 - CSS Grid and Flexbox
 - CSS Custom Properties (variables)
@@ -579,11 +616,13 @@ The application targets modern browsers with ES2020+ support:
 1. **Set production environment variables** in `.env.production`
 
 2. **Build the application:**
+
 ```bash
 pnpm build
 ```
 
-3. **Test the production build:**
+1. **Test the production build:**
+
 ```bash
 pnpm preview
 ```
@@ -595,6 +634,7 @@ pnpm preview
 Deploy the `dist/` folder to any static hosting service:
 
 **Netlify:**
+
 ```bash
 # Install Netlify CLI
 pnpm add -g netlify-cli
@@ -604,6 +644,7 @@ netlify deploy --prod --dir=dist
 ```
 
 **Vercel:**
+
 ```bash
 # Install Vercel CLI
 pnpm add -g vercel
@@ -613,6 +654,7 @@ vercel --prod
 ```
 
 **Nginx:**
+
 ```nginx
 server {
     listen 443 ssl http2;
@@ -643,6 +685,7 @@ server {
 ```
 
 **Apache:**
+
 ```apache
 <VirtualHost *:443>
     ServerName identity.asafarim.be
@@ -699,6 +742,7 @@ pnpm build --mode staging
 ### Common Issues
 
 #### Port Already in Use
+
 ```bash
 # The start script automatically kills the port
 pnpm start
@@ -708,6 +752,7 @@ npx kill-port 5177
 ```
 
 #### Module Resolution Issues
+
 ```bash
 # Clear node_modules and reinstall
 rm -rf node_modules
@@ -727,13 +772,16 @@ pnpm build
 **Symptoms:** Cannot login, token errors, 401 responses
 
 **Solutions:**
+
 1. Check environment variables are correctly set:
+
    ```bash
    cat .env
    # Verify VITE_IDENTITY_API_URL is correct
    ```
 
 2. Verify Identity API is accessible:
+
    ```bash
    curl https://identity.asafarim.be/health
    ```
@@ -741,6 +789,7 @@ pnpm build
 3. Check browser console for detailed error messages
 
 4. Clear localStorage and try again:
+
    ```javascript
    // In browser console
    localStorage.clear();
@@ -754,6 +803,7 @@ pnpm build
 #### Build Failures
 
 **TypeScript Errors:**
+
 ```bash
 # Check types without building
 tsc --noEmit
@@ -763,6 +813,7 @@ pnpm build
 ```
 
 **Missing Dependencies:**
+
 ```bash
 # Reinstall dependencies
 pnpm install
@@ -772,6 +823,7 @@ pnpm install --force
 ```
 
 **Cache Issues:**
+
 ```bash
 # Clear all caches
 rm -rf dist .vite node_modules/.vite
@@ -781,6 +833,7 @@ pnpm build
 #### Runtime Errors
 
 **White Screen / Blank Page:**
+
 1. Check browser console for errors
 2. Verify build completed successfully
 3. Check that `index.html` exists in `dist/`
@@ -788,6 +841,7 @@ pnpm build
 5. Check for JavaScript errors in production build
 
 **API Connection Errors:**
+
 1. Verify `VITE_IDENTITY_API_URL` is correct
 2. Check API is running and accessible
 3. Verify CORS configuration on API
@@ -795,6 +849,7 @@ pnpm build
 5. Verify SSL certificates if using HTTPS
 
 **Routing Issues (404 on Refresh):**
+
 1. Configure server for SPA routing (see Deployment section)
 2. Verify `try_files` directive in Nginx
 3. Check `.htaccess` rewrite rules in Apache
@@ -819,15 +874,16 @@ If you encounter issues:
 1. Check this README's troubleshooting section
 2. Review browser console errors
 3. Check API logs for backend issues
-4. Review Vite documentation: https://vitejs.dev
-5. Review React Router documentation: https://reactrouter.com
-6. Contact support: ali@asafarim.com
+4. Review Vite documentation: <https://vitejs.dev>
+5. Review React Router documentation: <https://reactrouter.com>
+6. Contact support: <ali@asafarim.com>
 
 ## Contributing
 
 When contributing to the Identity Portal:
 
 ### Code Standards
+
 1. **Follow existing code structure** and naming conventions
 2. **Use TypeScript** for all new code with proper types
 3. **Apply design tokens** for consistent styling
@@ -838,6 +894,7 @@ When contributing to the Identity Portal:
 8. **Add comments** for complex logic
 
 ### Pull Request Process
+
 1. Create a feature branch from `main`
 2. Make your changes with clear, atomic commits
 3. Test thoroughly in development mode
@@ -847,6 +904,7 @@ When contributing to the Identity Portal:
 7. Address review feedback
 
 ### Commit Message Format
+
 ```
 type(scope): subject
 
@@ -856,6 +914,7 @@ footer (optional)
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -865,6 +924,7 @@ footer (optional)
 - `chore`: Maintenance tasks
 
 **Example:**
+
 ```
 feat(auth): add password strength indicator
 
@@ -879,6 +939,7 @@ Closes #123
 ### Manual Testing Checklist
 
 **Authentication:**
+
 - [ ] Login with valid credentials
 - [ ] Login with invalid credentials
 - [ ] Register new user
@@ -889,12 +950,14 @@ Closes #123
 - [ ] Session persistence
 
 **User Profile:**
+
 - [ ] View profile
 - [ ] Edit profile
 - [ ] Change password
 - [ ] Update language preference
 
 **Admin Features:**
+
 - [ ] View users list
 - [ ] Create new user
 - [ ] Edit user
@@ -903,6 +966,7 @@ Closes #123
 - [ ] View user profile
 
 **UI/UX:**
+
 - [ ] Responsive design on mobile
 - [ ] Responsive design on tablet
 - [ ] Toast notifications appear
@@ -913,6 +977,7 @@ Closes #123
 ### Browser Testing
 
 Test on:
+
 - [ ] Chrome (latest)
 - [ ] Firefox (latest)
 - [ ] Safari (latest)
@@ -923,6 +988,7 @@ Test on:
 ## Security Considerations
 
 ### Authentication Security
+
 - JWT tokens stored in localStorage (consider httpOnly cookies for enhanced security)
 - Tokens automatically refreshed before expiration
 - Logout invalidates refresh tokens on server
@@ -930,6 +996,7 @@ Test on:
 - HTTPS required in production
 
 ### Data Protection
+
 - No sensitive data logged to console in production
 - API keys and secrets in environment variables
 - CORS properly configured on API
@@ -937,6 +1004,7 @@ Test on:
 - CSRF protection via token-based auth
 
 ### Best Practices
+
 - Keep dependencies updated
 - Regular security audits: `pnpm audit`
 - Use HTTPS in production
@@ -953,10 +1021,10 @@ This project is part of the Asafarim ecosystem.
 
 ## Support & Contact
 
-- **Email:** ali@asafarim.com
-- **Website:** https://asafarim.be
-- **Documentation:** https://docs.asafarim.be
-- **API Documentation:** https://identity.asafarim.be/swagger
+- **Email:** <ali@asafarim.com>
+- **Website:** <https://asafarim.be>
+- **Documentation:** <https://docs.asafarim.be>
+- **API Documentation:** <https://identity.asafarim.be/swagger>
 
 ## Acknowledgments
 
@@ -968,6 +1036,7 @@ This project is part of the Asafarim ecosystem.
 ## Version History
 
 ### v0.7.0 (Current)
+
 - Enhanced user profile management
 - Improved admin dashboard
 - Language preference support
@@ -976,6 +1045,7 @@ This project is part of the Asafarim ecosystem.
 - Improved error handling
 
 ### v0.6.0
+
 - Role management interface
 - User search and filtering
 - Toast notification system
@@ -983,6 +1053,7 @@ This project is part of the Asafarim ecosystem.
 - Multi-language support
 
 ### v0.5.0
+
 - Initial admin user management
 - Password setup flow
 - Responsive design improvements

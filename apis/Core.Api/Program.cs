@@ -71,7 +71,7 @@ builder.Services.AddMemoryCache();
 // Register Portfolio Service
 builder.Services.AddScoped<Core.Api.Services.IPortfolioService, Core.Api.Services.PortfolioService>();
 
-// Add database contexts
+// Add database context
 var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 if (!string.IsNullOrEmpty(defaultConnection))
 {
@@ -83,20 +83,7 @@ if (!string.IsNullOrEmpty(defaultConnection))
         )
     );
 }
-
-var jobsConnectionString = builder.Configuration.GetConnectionString("JobsConnection");
-if (!string.IsNullOrEmpty(jobsConnectionString))
-{
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(
-            jobsConnectionString,
-            npgsqlOptions =>
-                npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-        )
-    );
-}
-
-if (string.IsNullOrEmpty(defaultConnection) && string.IsNullOrEmpty(jobsConnectionString))
+else
 {
     // Log warning that database is not configured
     builder.Services.AddLogging(logging =>
@@ -104,7 +91,7 @@ if (string.IsNullOrEmpty(defaultConnection) && string.IsNullOrEmpty(jobsConnecti
         logging.AddConsole();
         logging.AddDebug();
     });
-    Console.WriteLine("WARNING: Database connection strings not found. Running without database.");
+    Console.WriteLine("WARNING: Database connection string not found. Running without database.");
 }
 
 // Authentication (share cookie "atk" from Identity)
@@ -271,10 +258,6 @@ app.MapGet(
 if (builder.Configuration.GetConnectionString("DefaultConnection") != null)
 {
     app.MigrateDatabase<CoreDbContext>().Run();
-}
-if (builder.Configuration.GetConnectionString("JobsConnection") != null)
-{
-    app.MigrateDatabase<AppDbContext>().Run();
 }
 else
 {
