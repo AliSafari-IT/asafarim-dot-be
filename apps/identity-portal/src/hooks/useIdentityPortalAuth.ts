@@ -134,69 +134,11 @@ export const useIdentityPortalAuth = () => {
     try {
       const response = await identityService.register(data);
       
-      // After successful registration, cookies should be set
-      console.log('✅ Registration successful, cookies should be set by server');
-      console.log('📦 Response received with token and user info');
-      
-      // Store the user info in localStorage as backup (non-sensitive data only)
-      try {
-        localStorage.setItem('user_info', JSON.stringify({
-          id: response.user.id,
-          email: response.user.email,
-          firstName: response.user.firstName,
-          roles: response.user.roles,
-          // Do not store the token in localStorage - it should be in HTTP-only cookie
-        }));
-        console.log('📝 User info stored in localStorage as backup');
-      } catch (storageError) {
-        console.warn('⚠️ Failed to store user info in localStorage:', storageError);
-      }
-      
-      // CRITICAL: Wait longer to ensure cookies are fully written to browser
-      console.log('⏱️ Waiting for cookies to be properly set...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Verify cookies are actually set by making a test request
-      console.log('🔍 Verifying authentication after registration...');
-      const apiBaseUrl = import.meta.env.VITE_IDENTITY_API_URL || 'http://api.asafarim.local:5101';
-      try {
-        const verifyResponse = await fetch(`${apiBaseUrl}/auth/me`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json',
-            'Cache-Control': 'no-cache'
-          }
-        });
-        
-        if (verifyResponse.ok) {
-          console.log('✅ Authentication verified successfully');
-          const userData = await verifyResponse.json();
-          console.log('👤 User data:', userData);
-        } else {
-          console.warn('⚠️ Authentication verification failed:', verifyResponse.status);
-          console.warn('⚠️ Cookies may not be set correctly for subdomains');
-          console.warn('⚠️ This is normal for cross-domain scenarios, continuing...');
-          
-          // Diagnose possible issues (but don't fail the registration)
-          const cookieStr = document.cookie;
-          console.log('📄 Current document.cookie string:', cookieStr);
-          
-          // Check if there are any cookies at all
-          if (!cookieStr) {
-            console.warn('⚠️ No cookies present in document.cookie');
-          } else {
-            console.log('🔍 Cookies found in document.cookie');
-          }
-        }
-      } catch (verifyError) {
-        console.error('❌ Failed to verify authentication:', verifyError);
-        console.warn('⚠️ Verification failed but registration succeeded - this is normal for cross-domain cookie scenarios');
-      }
-      
-      // CRITICAL: Dispatch auth-login event to notify other tabs/windows
-      console.log('📢 Dispatching auth-login event for cross-app sync');
-      window.dispatchEvent(new Event('auth-login'));
+      // Registration returns RegisterResponse, not AuthResponse
+      // User needs to confirm email or complete password setup
+      console.log('✅ Registration successful:', response);
+      console.log('📧 Email confirmation required:', response.requiresEmailConfirmation);
+      console.log('📝 Email sent:', response.emailSent);
       
       console.log('✅ Registration complete, returning success');
       return true;

@@ -174,10 +174,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log('Registering user with data:', { ...data, password: '***' });
 
       try {
-        const authResponse = await identityService.register(data);
-        console.log('Registration successful:', authResponse);
-        handleAuthSuccess(authResponse);
-        // Return true to indicate success for UI handling
+        const registerResponse = await identityService.register(data);
+        console.log('Registration successful:', registerResponse);
+        
+        // Registration returns RegisterResponse, not AuthResponse
+        // User needs to confirm email or complete password setup
+        // Return true to indicate registration was successful (but not logged in yet)
         return true;
       } catch (error: unknown) {
         console.error('Registration error:', error);
@@ -187,7 +189,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsLoading(false);
       }
     },
-    [handleAuthSuccess]
+    []
   );
 
   // Logout user

@@ -190,8 +190,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(null);
 
       try {
-        const authResponse = await identityService.register(data);
-        await handleAuthSuccess(authResponse);
+        const registerResponse = await identityService.register(data);
+        // Registration returns RegisterResponse, not AuthResponse
+        // User needs to confirm email or complete password setup
+        console.log('Registration successful:', registerResponse);
         return true;
       } catch (error: unknown) {
         const errorMessage =
@@ -202,7 +204,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsLoading(false);
       }
     },
-    [handleAuthSuccess]
+    []
   );
 
   // Clear error
